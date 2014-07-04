@@ -1,5 +1,5 @@
--- <one line to give the program's name and a brief idea of what it does.>
--- Copyright (C) <year>  <name of author>
+-- References letters
+-- Copyright (C) 2014  HENRY Florian  florian.henry@open-concept.pro
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,3 +13,19 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+CREATE TABLE IF NOT EXISTS llx_referenceletters_chapters (
+rowid integer NOT NULL auto_increment PRIMARY KEY,
+entity integer NOT NULL DEFAULT 1,
+fk_referenceletters integer NOT NULL,
+sort_order integer NOT NULL DEFAULT 1,
+title varchar(100) NOT NULL,
+content_text text,
+options_text text,
+status integer NOT NULL DEFAULT 1,
+import_key varchar(100) NULL,
+fk_user_author	integer	NOT NULL,
+datec	datetime  NOT NULL,
+fk_user_mod integer NOT NULL,
+tms timestamp NOT NULL
+)ENGINE=InnoDB;

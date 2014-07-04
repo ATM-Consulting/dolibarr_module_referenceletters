@@ -77,7 +77,7 @@ class modReferenceLetters extends DolibarrModules {
 		                                                    // for default path (eg: /referenceletters/core/xxxxx) (0=disable, 1=enable)
 		                                                    // for specific path of parts (eg: /referenceletters/core/modules/barcode)
 		                                                    // for specific css file (eg: /referenceletters/css/referenceletters.css.php)
-		$this->module_parts = array();
+		$this->module_parts = array('models' => 1);
 			// Set this to 1 if module has its own trigger directory
 			//'triggers' => 1,
 			// Set this to 1 if module has its own login method directory
@@ -107,7 +107,7 @@ class modReferenceLetters extends DolibarrModules {
 		// Config pages. Put here list of php pages
 		// stored into referenceletters/admin directory, used to setup module.
 		$this->config_page_url = array (
-				"referenceletters.php@referenceletters" 
+				"admin_referenceletters.php@referenceletters" 
 		);
 		
 		// Dependencies
@@ -132,31 +132,45 @@ class modReferenceLetters extends DolibarrModules {
 		                                                               // List of particular constants to add when module is enabled
 		                                                               // (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
 		                                                               // Example:
-		$this->const = array();
-			//	0=>array(
-			//		'MYMODULE_MYNEWCONST1',
-			//		'chaine',
-			//		'myvalue',
-			//		'This is a constant to add',
-			//		1
-			//	),
-			//	1=>array(
-			//		'MYMODULE_MYNEWCONST2',
-			//		'chaine',
-			//		'myvalue',
-			//		'This is another constant to add',
-			//		0
-			//	)
+		$this->const = array(
+				0 => array(
+						'REF_LETTER_ADDON',
+						'chaine',
+						'mod_refletter_simple',
+						'Use simple mask for reference letters ref',
+						0,
+						'allentities',
+						1
+				),
+				1 => array(
+						'REF_LETTER_UNIVERSAL_MASK',
+						'chaine',
+						'',
+						'Mask of reference letters reference',
+						0,
+						'allentities',
+						1
+				),
+			);
+		
 	
 		// Array to add new pages in new tabs
 		// Example:
-		$this->tabs = array();
+		//$this->tabs = array();
 		//	// To add a new tab identified by code tabname1
 		//	'objecttype:+tabname1:Title1:langfile@referenceletters:$user->rights->referenceletters->read:/referenceletters/mynewtab1.php?id=__ID__',
 		//	// To add another new tab identified by code tabname2
 		//	'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
 		//	// To remove an existing tab identified by code tabname
 		//	'objecttype:-tabname'
+		
+		$this->tabs = array (
+				'contract:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?element_id=__ID__&element_type=contract',
+				//'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
+				//'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__',
+				//'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_soc.php?socid=__ID__',
+				//'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__'
+		);
 		
 		
 		// where objecttype can be
@@ -265,9 +279,74 @@ class modReferenceLetters extends DolibarrModules {
 		$this->rights[$r][4] = 'delete';
 		$r ++;
 		
+		$this->rights[$r][0] = 1032584;
+		$this->rights[$r][1] = 'Use models letters';
+		$this->rights[$r][3] = 1;
+		$this->rights[$r][4] = 'use';
+		$r ++;
+		
 		// Main menu entries
 		$this->menus = array (); // List of menus to add
 		$r = 0;
+		$this->menu [$r] = array (
+				'fk_menu' => 0,
+				'type' => 'top',
+				'titre' => 'Module103258Name',
+				'mainmenu' => 'referenceletters',
+				'leftmenu' => '0',
+				'url' => '/referenceletters/index.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 100,
+				'enabled' => '$user->rights->referenceletters->read',
+				'perms' => '$user->rights->referenceletters->read',
+				'target' => '',
+				'user' => 0 
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters',
+				'type' => 'left',
+				'titre' => 'Module103258Name',
+				'leftmenu' => 'refletterlist',
+				'url' => '/referenceletters/referenceletters/list.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 101,
+				'enabled' => '$user->rights->referenceletters->read',
+				'perms' => '$user->rights->referenceletters->read',
+				'target' => '',
+				'user' => 0 
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrList',
+				'mainmenu' => 'agefodd',
+				'url' => '/referenceletters/referenceletters/list.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 102,
+				'enabled' => '$user->rights->referenceletters->read',
+				'perms' => '$user->rights->referenceletters->read',
+				'target' => '',
+				'user' => 0 
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrNew',
+				'mainmenu' => 'agefodd',
+				'url' => '/referenceletters/referenceletters/card.php?action=create',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 103,
+				'enabled' => '$user->rights->referenceletters->write',
+				'perms' => '$user->rights->referenceletters->write',
+				'target' => '',
+				'user' => 0
+		);
 		
 		// Add here entries to declare new menus
 		//
@@ -485,5 +564,3 @@ class modReferenceLetters extends DolibarrModules {
 		return $this->_load_tables('/referenceletters/sql/');
 	}
 }
-
-?>

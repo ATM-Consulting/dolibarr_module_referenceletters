@@ -30,6 +30,9 @@ if (! $res)
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once "../lib/referenceletters.lib.php";
+
+dol_include_once('/lead/lib/php-markdown/markdown.php');
+
 // require_once "../class/myclass.class.php";
 // Translations
 $langs->load("referenceletters@referenceletters");
@@ -62,7 +65,18 @@ dol_fiche_head($head, 'about', $langs->trans("Module103258Name"), 0, "referencel
 // About page goes here
 echo $langs->trans("ReferenceLettersAboutPage");
 
-llxFooter();
+echo '<br>';
 
+$buffer = file_get_contents(dol_buildpath('/referenceletters/README.md', 0));
+echo Markdown($buffer);
+
+echo '<br>',
+'<a href="' . dol_buildpath('/referenceletters/COPYING', 1) . '">',
+'<img src="' . dol_buildpath('/referenceletters/img/gplv3.png', 1) . '"/>',
+'</a>';
+
+
+// Page end
+dol_fiche_end();
+llxFooter();
 $db->close();
-?>

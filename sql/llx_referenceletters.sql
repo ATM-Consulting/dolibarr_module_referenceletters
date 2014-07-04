@@ -13,3 +13,16 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+CREATE TABLE IF NOT EXISTS llx_referenceletters (
+rowid integer NOT NULL auto_increment PRIMARY KEY,
+entity integer NOT NULL DEFAULT 1,
+title varchar(100) NOT NULL,
+element_type varchar(50) NOT NULL,
+status integer NOT NULL DEFAULT 1,
+import_key varchar(100) NULL,
+fk_user_author	integer	NOT NULL,
+datec	datetime  NOT NULL,
+fk_user_mod integer NOT NULL,
+tms timestamp NOT NULL
+)ENGINE=InnoDB;

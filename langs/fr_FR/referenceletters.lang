@@ -20,28 +20,37 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Modéles de courriers
+Module103258Name = Modèles de courriers
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Desc = Gére des modéles de courrier
+Module103258Desc = Gére des modèles de courrier
 
 #
 # Permissions
 #
-Permission1032581=Voir modéles de courrier
-Permission1032582=Modifier modéles de courrier
-Permission1032583=Supprimer modéles de courrier
+Permission1032581=Voir les modèles de courrier
+Permission1032582=Modifier les modèles de courrier
+Permission1032583=Supprimer les modèles de courrier
+Permission1032584=Utiliser les modèles de courrier
 
 #
 # Page d'administration
 #
-ReferenceLettersSetup = Configuration du module Modéle de courrier
+ReferenceLettersSetup = Configuration du module Modèle de courrier
 ReferenceLettersSettings = Réglages
-ReferenceLettersSetupPage = Page de réglage de Modéle de courrier
+ReferenceLettersSetupPage = Page de réglage de Modèle de courrier
+PropalMergePdfProductNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
+
 
 #
 # Page À propos
 #
 About = À propos
-ReferenceLettersAbout = À propos de mon module
-ReferenceLettersAboutPage = Page à propos de mon module
+ReferenceLettersAbout = À propos de Modèles de courriers
+ReferenceLettersAboutPage = Page à propos de Modèles de courriers
+
+#
+# Menu
+#
+RefLtrList=Liste des modèles de courrier
+RefLtrNew=Nouveau modèle de courrier

@@ -15,3 +15,46 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ *	\file		index.php
+ *	\ingroup	refferenceletters
+ *	\brief		index page
+ */
+
+// Load environment
+$res = 0;
+if (! $res && file_exists("../main.inc.php")) {
+	$res = @include("../main.inc.php");
+}
+if (! $res && file_exists("../../main.inc.php")) {
+	$res = @include("../../main.inc.php");
+}
+if (! $res && file_exists("../../../main.inc.php")) {
+	$res = @include("../../../main.inc.php");
+}
+if (! $res) {
+	die("Main include failed");
+}
+
+// Access control
+// Restrict access to users with invoice reading permissions
+restrictedArea($user, 'referenceletters');
+if ($user->societe_id > 0) {
+	accessforbidden();
+}
+
+
+// Load translation files required by the page
+$langs->load("referenceletters@referenceletters");
+
+
+/*
+ * VIEW
+*/
+$title = $langs->trans('Module103258Name');
+
+llxHeader('',$title);
+
+// Page end
+llxFooter();
+$db->close();

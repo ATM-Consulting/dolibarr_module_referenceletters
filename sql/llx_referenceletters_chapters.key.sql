@@ -13,3 +13,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+ALTER TABLE llx_referenceletters_chapters ADD INDEX idx_referenceletters_chapters_fk_referenceletters (fk_referenceletters);
+ALTER TABLE llx_referenceletters_chapters ADD CONSTRAINT ibfk_referenceletters_chapters_fk_referenceletters FOREIGN KEY (fk_referenceletters) REFERENCES llx_referenceletters (rowid);

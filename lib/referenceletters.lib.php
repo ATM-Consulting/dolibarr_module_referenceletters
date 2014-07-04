@@ -34,6 +34,12 @@ function referencelettersadmin_prepare_head() {
 	$head[$h][1] = $langs->trans("ReferenceLettersSettings");
 	$head[$h][2] = 'settings';
 	$h ++;
+	
+	$head[$h][0] = dol_buildpath("/referenceletters/admin/referenceletters_extrafields.php", 1);
+	$head[$h][1] = $langs->trans("ExtraFields");
+	$head[$h][2] = 'attributes';
+	$h ++;
+	
 	$head[$h][0] = dol_buildpath("/referenceletters/admin/about.php", 1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';
@@ -47,7 +53,7 @@ function referencelettersadmin_prepare_head() {
 	// $this->tabs = array(
 	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
 	// ); // to remove a tab
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'referenceletters');
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'adminreferenceletters');
 	
 	return $head;
 }

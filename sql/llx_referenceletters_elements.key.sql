@@ -1,5 +1,5 @@
--- <one line to give the program's name and a brief idea of what it does.>
--- Copyright (C) <year>  <name of author>
+-- References letters
+-- Copyright (C) 2014  HENRY Florian  florian.henry@open-concept.pro
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -13,3 +13,7 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+ALTER TABLE llx_referenceletters_elements ADD INDEX idx_referenceletters_elements_fk_referenceletters (fk_referenceletters);
+ALTER TABLE llx_referenceletters_elements ADD CONSTRAINT ibfk_referenceletters_elements_fk_referenceletters FOREIGN KEY (fk_referenceletters) REFERENCES llx_referenceletters (rowid);

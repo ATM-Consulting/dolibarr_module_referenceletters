@@ -31,6 +31,7 @@ Module103258Desc = Manage Reference Letters (models of letter to send)
 Permission1032581=See letter's models
 Permission1032582=Modify letter's models
 Permission1032583=Delete letter's models
+Permission1032584=Use letter's models
 
 #
 # Admin page
@@ -45,3 +46,9 @@ ReferenceLettersSetupPage = Reference Letters setup page
 About = About
 ReferenceLettersAbout = About Reference Letters
 ReferenceLettersAboutPage = Reference Letters about page
+
+#
+# Menu
+#
+ReferenceLettersList=List letter's models
+ReferenceLettersNew=New letter's models

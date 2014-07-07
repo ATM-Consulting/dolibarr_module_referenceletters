@@ -39,6 +39,8 @@ Permission1032584=Use letter's models
 ReferenceLettersSetup = Reference Letters setup
 ReferenceLettersSettings = Settings
 ReferenceLettersSetupPage = Reference Letters setup page
+RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
+RefLtrSimpleNumRefModelDesc=Return reference like LTR-yymm-nnnn where yy is the year, mm the month and nnnn a counter sequancial without reset
 
 #
 # About page
@@ -52,3 +54,23 @@ ReferenceLettersAboutPage = Reference Letters about page
 #
 ReferenceLettersList=List letter's models
 ReferenceLettersNew=New letter's models
+
+#
+# Pages
+#
+RefLtrCreate=New letter's model
+RefLtrTitle=Title
+RefLtrElement=Type of element
+RefLtrDelete=Delete letter's model
+RefLtrConfirmDelete=Are you sure to delete letter's model ?
+RefLtrDeleteChapter=Delete chapter
+RefLtrConfirmDeleteChapter=Are you sure to delete chapter ?
+RefLtrChapters=Chapters
+RefLtrNewChaters=New chapter
+RefLtrOptionHelp=Each line will be outputted as new checkbox line on the document
+RefLtrBackToRefLtr=Back to letter's model
+RefLtrList=Letter's model list
+RefLtrLangue=Language
+RefLtrPosition=Order number
+RefLtrOption=Options list
+RefLtrText=Texte

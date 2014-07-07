@@ -59,7 +59,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans(
 print_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
-$head = referencelettersadmin_prepare_head();
+$head = referencelettersAdminPrepareHead();
 dol_fiche_head($head, 'about', $langs->trans("Module103258Name"), 0, "referenceletters@referenceletters");
 
 // About page goes here

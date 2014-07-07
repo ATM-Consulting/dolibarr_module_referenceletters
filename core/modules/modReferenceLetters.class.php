@@ -136,7 +136,7 @@ class modReferenceLetters extends DolibarrModules {
 				0 => array(
 						'REF_LETTER_ADDON',
 						'chaine',
-						'mod_refletter_simple',
+						'mod_referenceletters_simple',
 						'Use simple mask for reference letters ref',
 						0,
 						'allentities',

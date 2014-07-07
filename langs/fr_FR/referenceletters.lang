@@ -39,8 +39,8 @@ Permission1032584=Utiliser les modèles de courrier
 ReferenceLettersSetup = Configuration du module Modèle de courrier
 ReferenceLettersSettings = Réglages
 ReferenceLettersSetupPage = Page de réglage de Modèle de courrier
-PropalMergePdfProductNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
-
+RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
+RefLtrSimpleNumRefModelDesc=Renvoie le numéro sous la forme LTR-yymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
 
 #
 # Page À propos
@@ -54,3 +54,23 @@ ReferenceLettersAboutPage = Page à propos de Modèles de courriers
 #
 RefLtrList=Liste des modèles de courrier
 RefLtrNew=Nouveau modèle de courrier
+
+#
+# Pages
+#
+RefLtrCreate=Nouveau modèle de courrier
+RefLtrTitle=Titre
+RefLtrElement=Type d'objet pour le courrier
+RefLtrDelete=Supprimer le modèle de courrier
+RefLtrConfirmDelete=Etes vous sure de supprimer le modèle de courrier ?
+RefLtrDeleteChapter=Supprimer un chapitre
+RefLtrConfirmDeleteChapter=Etes vous sure de supprimer le chapitre ?
+RefLtrChapters=Chapitres
+RefLtrNewChaters=Nouveau chapitres
+RefLtrOptionHelp=Chaque ligne produira une case à choché sur le documents
+RefLtrBackToRefLtr=Retour au modèle de courrier
+RefLtrList=Liste des modèles de courrier
+RefLtrLangue=Langue
+RefLtrPosition=Numérot d'ordre
+RefLtrOption=Liste des options
+RefLtrText=Text

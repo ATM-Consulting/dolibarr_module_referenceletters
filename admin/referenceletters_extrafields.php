@@ -1,5 +1,5 @@
 <?php
-/* 
+/* References letters
  * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ print_fiche_titre($langs->trans("ReferenceLettersSetup"), $linkback, 'setup');
 print "<br>\n";
 
 // Configuration header
-$head = referencelettersadmin_prepare_head();
+$head = referencelettersAdminPrepareHead();
 dol_fiche_head($head, 'attributes', $langs->trans("Module103258Name"), 0, "referenceletters@referenceletters");
 
 print $langs->trans("DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv("Module103258Name")) . '<br>' . "\n";

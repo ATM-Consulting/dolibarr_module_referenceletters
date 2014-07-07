@@ -1,4 +1,5 @@
 <?php
+use Zend\Filter\RealPath;
 /* References letters
  * Copyright (C) 2014  HENRY Florian  florian.henry@open-concept.pro
  *
@@ -63,7 +64,7 @@ class FormReferenceLetters extends Form
 	 *        	param to add in nav link url.
 	 * @return tring Portion HTML avec ref + boutons nav
 	 */
-	function showrefnav($object, $paramid, $morehtml = '', $shownav = 1, $fieldid = 'rowid', $fieldref = 'ref', $morehtmlref = '', $moreparam = '')
+	public function showrefnav($object, $paramid, $morehtml = '', $shownav = 1, $fieldid = 'rowid', $fieldref = 'ref', $morehtmlref = '', $moreparam = '')
 	{
 		global $langs, $conf;
 		
@@ -99,5 +100,38 @@ class FormReferenceLetters extends Form
 			$ret .= '</td></tr></table>';
 		}
 		return $ret;
+	}
+	
+	/**
+	 * Return a Select Element
+	 * 
+	 * @param strint $selected
+	 * @param string $htmlname
+	 * @return select HTML
+	 */
+	public function select_element_type($selected='',$htmlname='element_type',$showempty=0) {
+		global $langs;
+		
+		require_once 'referenceletters.class.php';
+		
+		$refletter = new Referenceletters($this->db);
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
+		if (!empty($showempty)) {
+			$select_elemnt .= '<option value=""></option>';
+		}
+		foreach($refletter->element_type_list as $element_type=>$array_data) {
+			$langs->load($array_data['trans']);
+			
+			if ($selected==$element_type) {
+				$option_selected=' selected="selected" ';
+			}else {
+				$option_selected='';
+			}
+			
+			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
+		}
+		
+		$select_elemnt .= '</select>';
+		return $select_elemnt;
 	}
 }

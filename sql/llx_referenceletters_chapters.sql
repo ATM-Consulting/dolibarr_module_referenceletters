@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS llx_referenceletters_chapters (
 rowid integer NOT NULL auto_increment PRIMARY KEY,
 entity integer NOT NULL DEFAULT 1,
 fk_referenceletters integer NOT NULL,
+lang varchar(5) DEFAULT '' NOT NULL,
 sort_order integer NOT NULL DEFAULT 1,
 title varchar(100) NOT NULL,
 content_text text,

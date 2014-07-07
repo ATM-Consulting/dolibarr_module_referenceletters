@@ -30,7 +30,7 @@ if (! $res)
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once "../lib/referenceletters.lib.php";
-// require_once "../class/myclass.class.php";
+require_once "../class/referenceletters.class.php";
 // Translations
 $langs->load("referenceletters@referenceletters");
 
@@ -78,7 +78,7 @@ $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans(
 print_fiche_titre($langs->trans($page_name), $linkback);
 
 // Configuration header
-$head = referencelettersadmin_prepare_head();
+$head = referencelettersAdminPrepareHead();
 dol_fiche_head($head, 'settings', $langs->trans("Module103258Name"), 0, "referenceletters@referenceletters");
 
 /*
@@ -112,7 +112,8 @@ foreach ($dirmodels as $reldir) {
 			$var = true;
 			
 			while (($file = readdir($handle)) !== false) {
-				if ((substr($file, 0, 9) == 'mod_referenceletters_') && substr($file, dol_strlen($file) - 3, 3) == 'php') {
+				
+				if (preg_match('/mod_referenceletters_/',$file) && substr($file, dol_strlen($file) - 3, 3) == 'php') {
 					$file = substr($file, 0, dol_strlen($file) - 4);
 					require_once $dir . $file . '.php';
 					
@@ -151,7 +152,7 @@ foreach ($dirmodels as $reldir) {
 						}
 						print '</td>';
 						
-						$businesscase = new Lead($db);
+						$businesscase = new ReferenceLetters($db);
 						$businesscase->initAsSpecimen();
 						
 						// Info

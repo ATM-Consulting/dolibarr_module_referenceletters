@@ -43,6 +43,7 @@ require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 require_once '../core/modules/referenceletters/modules_referenceletters.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
+require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
@@ -190,6 +191,16 @@ if ($action=='buildoc') {
 	
 	
 	//Create document PDF
+	
+	// Define output language
+	$outputlangs = $langs;
+	if (! empty($conf->global->MAIN_MULTILANGS))
+	{
+		$outputlangs = new Translate("",$conf);
+		$newlang=$object->thridparty->default_lang;
+		$outputlangs->setDefaultLang($newlang);
+	}
+	
 	$ret=$object_element->fetch($refletterelemntid);    // Reload to get new records
 	$result=referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
 	
@@ -200,7 +211,7 @@ if ($action=='buildoc') {
 	}
 	else
 	{
-		header('Location: '.$_SERVER["PHP_SELF"].'?id='.$object->id.(empty($conf->global->MAIN_JUMP_TAG)?'':'#builddoc'));
+		header('Location: '.$_SERVER["PHP_SELF"].'?id='.$object->id.'&element_type=' . $element_type);
 		exit;
 	}
 	
@@ -242,6 +253,7 @@ llxHeader('', $title);
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
 $formadmin = new FormAdmin($db);
+$formfile = new FormFile($db);
 
 $now = dol_now();
 
@@ -276,6 +288,7 @@ print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "", "
 print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
 print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", '', '', '', '');
 print '<td></td>';
+print '<td></td>';
 
 $result=$object_element->fetchAllByElement($id,$element_type);
 if ($result < 0)
@@ -296,6 +309,16 @@ if (is_array($object_element->lines) && count($object_element->lines)>0) {
 		print '<td>' . $line->title . '</td>';
 
 		print '<td>'.dol_print_date($line->datec,'daytext').'</td>';
+		
+		//File
+		print '<td>';
+		$filename=dol_sanitizeFileName($line->ref_int);
+		$filedir=$conf->referenceletters->dir_output . "/contract/" . $line->ref_int;
+		$linkeddoc = $formfile->getDocumentsLink('referenceletters', $filename, $filedir);
+		$linkeddoc=preg_replace('/file=/', 'file=contract%2F',$linkeddoc);
+		//var_dump($linkeddoc);
+		print $linkeddoc;
+		print '</td>';
 		
 		print '<td>';
 		print '<a href="'.$_SERVER['PHP_SELF'].'?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid='.$line->id.'&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';

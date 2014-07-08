@@ -162,7 +162,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 		$filefound=1;
 	}
 
-	$classname='rfltr_'.$element_type; 
+	$classname='pdf_rfltr_'.$element_type; 
 
 	// Charge le modele
 	if ($filefound)

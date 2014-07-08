@@ -49,6 +49,7 @@ class ReferenceLettersElements extends CommonObject
 	public $datec='';
 	public $fk_user_mod;
 	public $tms='';
+	public $title;
 	
 	public $lines=array();
 
@@ -196,9 +197,11 @@ class ReferenceLettersElements extends CommonObject
 		$sql.= " t.datec,";
 		$sql.= " t.fk_user_mod,";
 		$sql.= " t.tms";
+		$sql.= " ,p.title";
 
 		
         $sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_elements as t";
+        $sql.= " INNER JOIN ".MAIN_DB_PREFIX."referenceletters as p ON p.rowid=t.fk_referenceletters";
         $sql.= " WHERE t.rowid = ".$id;
 
     	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
@@ -222,6 +225,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
+				$this->title = $obj->title;
 
                 
             }

@@ -135,7 +135,7 @@ if ($resql != - 1) {
 	print '<td><input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10"></td>';
 	
 	print '<td>';
-	print $formrefleter->select_element_type($search_element_type, 'search_element_type',1);
+	print $formrefleter->selectElementType($search_element_type, 'search_element_type',1);
 	print '</td>';
 	
 	// edit button

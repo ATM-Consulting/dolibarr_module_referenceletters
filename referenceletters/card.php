@@ -169,7 +169,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $langs->trans('RefLtrElement');
 	print '</td>';
 	print '<td>';
-	print $formrefleter->select_element_type($refltrelement_type, 'refltrelement_type');
+	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
 	print '</td>';
 	print '</tr>';
 

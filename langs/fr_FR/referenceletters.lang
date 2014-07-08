@@ -74,3 +74,5 @@ RefLtrLangue=Langue
 RefLtrPosition=Numérot d'ordre
 RefLtrOption=Liste des options
 RefLtrText=Text
+RefLtrNoModelReadyForThisObject=Le module modèle de courrier n'est pas encore utilisatble pour %s
+RefLtrSelectModel=Sélectionner le modèle

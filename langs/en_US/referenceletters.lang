@@ -74,3 +74,5 @@ RefLtrLangue=Language
 RefLtrPosition=Order number
 RefLtrOption=Options list
 RefLtrText=Texte
+RefLtrNoModelReadyForThisObject=The letter's model is not ready for %s
+RefLtrSelectModel=Select models

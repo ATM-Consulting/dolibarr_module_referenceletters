@@ -109,7 +109,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function select_element_type($selected='',$htmlname='element_type',$showempty=0) {
+	public function selectElementType($selected='',$htmlname='element_type',$showempty=0) {
 		global $langs;
 		
 		require_once 'referenceletters.class.php';
@@ -131,6 +131,41 @@ class FormReferenceLetters extends Form
 			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
 		}
 		
+		$select_elemnt .= '</select>';
+		return $select_elemnt;
+	}
+	
+	
+	/**
+	 * Return a Select Element
+	 *
+	 * @param strint $selected
+	 * @param string $htmlname
+	 * @return select HTML
+	 */
+	public function selectReferenceletters($selected='',$htmlname='refletter',$element_type='',$showempty=0) {
+		global $langs;
+	
+		require_once 'referenceletters.class.php';
+	
+		$refletter = new Referenceletters($this->db);
+		$filter=array('t.element_type'=>$element_type);
+		$refletter->fetch_all('ASC','t.title',0,0,$filter);
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
+		if (!empty($showempty)) {
+			$select_elemnt .= '<option value=""></option>';
+		}
+		foreach($refletter->lines as $key=>$line) {
+			
+			if ($selected==$line->id) {
+				$option_selected=' selected="selected" ';
+			}else {
+				$option_selected='';
+			}
+				
+			$select_elemnt .= '<option value="' . $line->id . '" '.$option_selected.'>' . $line->title . '</option>';
+		}
+	
 		$select_elemnt .= '</select>';
 		return $select_elemnt;
 	}

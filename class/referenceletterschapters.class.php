@@ -100,7 +100,7 @@ class ReferenceLettersChapters extends CommonObject
         if (is_array($this->options_text) && count($this->options_text)>0) {
         	$option_text=serialize($this->options_text);
         } else {
-        	$option_text=$this->options_text;
+        	$option_text=trim($this->options_text);
         }
         
         if (empty($this->lang)) {
@@ -349,7 +349,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (is_array($this->options_text) && count($this->options_text)>0) {
 			$option_text=serialize($this->options_text);
 		} else {
-			$option_text=$this->options_text;
+			$option_text=trim($this->options_text);
 		}
 		
 		if (empty($this->lang)) {
@@ -369,7 +369,6 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " options_text=".(!empty($option_text)?"'".$this->db->escape($option_text)."'":"null").",";
 		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
-		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
 		$sql.= " fk_user_mod=".$user->id;
 
         

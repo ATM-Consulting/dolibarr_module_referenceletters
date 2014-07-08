@@ -105,7 +105,7 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 	 * @param Lead $lead        	
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $element_type, $lead)
+	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters='')
 	{
 		global $db, $conf;
 		
@@ -119,7 +119,7 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 			return 0;
 		}
 		
-		$numFinal = get_next_value($db, $mask, 'referenceletters', 'ref', '', $objsoc->code_client, dol_now());
+		$numFinal = get_next_value($db, $mask, 'referenceletters_elements', 'ref_int', '', $objsoc->code_client, dol_now());
 		
 		return $numFinal;
 	}

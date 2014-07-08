@@ -74,7 +74,7 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 		$sql = "SELECT MAX(SUBSTRING(ref_int FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
 		$sql .= " WHERE ref_int LIKE '" . $this->prefix . "____-%'";
-		// $sql.= " AND entity = ".$conf->entity;
+		$sql.= " AND entity = ".$conf->entity;
 		$resql = $db->query($sql);
 		if ($resql) {
 			$row = $db->fetch_row($resql);
@@ -102,15 +102,15 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 	 * @param Reference letters $referenceletters
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $element_type, $referenceletters)
+	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element)
 	{
 		global $db, $conf;
 		
 		if (!empty($element_type)) {
-			$this->prefix .= '-'.mb_strtoupper(substr($element_type,0,3));
-			$posindice = 10 + count(mb_strtoupper(substr($element_type,0,3)))+1;
+			$this->prefix .= mb_strtoupper(substr($element_type,0,3)).'-';
+			$posindice = 12 + count(mb_strtoupper(substr($element_type,0,3)))+1;
 		} else {
-			$posindice = 10;
+			$posindice = 12;
 		}
 		
 		// D'abord on recupere la valeur max
@@ -119,7 +119,9 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
 		$sql .= " WHERE ref_int like '" . $this->prefix . "____-%'";
 		$sql .= " AND element_type='".$element_type."'";
+		$sql.= " AND entity = ".$conf->entity;
 		
+		dol_syslog(get_class($this).'::getNextValue sql='.$sql,LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
 			$obj = $db->fetch_object($resql);
@@ -132,7 +134,7 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 			return - 1;
 		}
 		
-		$date = empty($referenceletters->datec) ? dol_now() : $referenceletters->datec;
+		$date = empty($referenceletters_element->datec) ? dol_now() : $referenceletters_element->datec;
 		
 		// $yymm = strftime("%y%m",time());
 		$yymm = strftime("%y%m", $date);

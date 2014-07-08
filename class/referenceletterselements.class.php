@@ -24,34 +24,33 @@
 
 // Put here all includes required by your class file
 require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
-//require_once(DOL_DOCUMENT_ROOT."/societe/class/societe.class.php");
-//require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
-
 
 /**
  *	Put here description of your class
  */
 class ReferenceLettersElements extends CommonObject
 {
-	var $db;							//!< To store db handler
-	var $error;							//!< To return error code (or message)
-	var $errors=array();				//!< To return several error codes (or messages)
-	var $element='referenceletterselements';			//!< Id that identify managed objects
-	var $table_element='referenceletterselements';		//!< Name of table without prefix where object is stored
+	public $db;							//!< To store db handler
+	public $error;							//!< To return error code (or message)
+	public $errors=array();				//!< To return several error codes (or messages)
+	public $element='referenceletterselements';			//!< Id that identify managed objects
+	public $table_element='referenceletterselements';		//!< Name of table without prefix where object is stored
 
-    var $id;
+    public $id;
     
-	var $entity;
-	var $ref_int;
-	var $fk_referenceletters;
-	var $element_type;
-	var $fk_element;
-	var $content_letter;
-	var $import_key;
-	var $fk_user_author;
-	var $datec='';
-	var $fk_user_mod;
-	var $tms='';
+	public $entity;
+	public $ref_int;
+	public $fk_referenceletters;
+	public $element_type;
+	public $fk_element;
+	public $content_letter;
+	public $import_key;
+	public $fk_user_author;
+	public $datec='';
+	public $fk_user_mod;
+	public $tms='';
+	
+	public $lines=array();
 
     
 
@@ -82,14 +81,20 @@ class ReferenceLettersElements extends CommonObject
 
 		// Clean parameters
         
-		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->ref_int)) $this->entity=trim($this->ref_int);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->element_type)) $this->element_type=trim($this->element_type);
 		if (isset($this->fk_element)) $this->fk_element=trim($this->fk_element);
-		if (isset($this->content_letter)) $this->content_letter=trim($this->content_letter);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
         
+		// Check parameters
+		// Put here code to add a control on parameters values
+		if (is_array($this->content_letter) && count($this->content_letter)>0) {
+			$content_letter=serialize($this->content_letter);
+		} else {
+			$content_letter=trim($this->content_letter);
+		}
+		
 
 		// Check parameters
 		// Put here code to add control on parameters values
@@ -106,17 +111,17 @@ class ReferenceLettersElements extends CommonObject
 		$sql.= "import_key,";
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
-		$sql.= "fk_user_mod,";
+		$sql.= "fk_user_mod";
 
 		
         $sql.= ") VALUES (";
         
-		$sql.= " ".(! isset($this->entity)?'NULL':"'".$this->entity."'").",";
+		$sql.= " ".$conf->entity.",";
 		$sql.= " ".(! isset($this->ref_int)?'NULL':"'".$this->ref_int."'").",";
 		$sql.= " ".(! isset($this->fk_referenceletters)?'NULL':"'".$this->fk_referenceletters."'").",";
 		$sql.= " ".(! isset($this->element_type)?'NULL':"'".$this->db->escape($this->element_type)."'").",";
 		$sql.= " ".(! isset($this->fk_element)?'NULL':"'".$this->fk_element."'").",";
-		$sql.= " ".(! isset($this->content_letter)?'NULL':"'".$this->db->escape($this->content_letter)."'").",";
+		$sql.= " ".(empty($content_letter)?'NULL':"'".$this->db->escape($content_letter)."'").",";
 		$sql.= " ".(! isset($this->import_key)?'NULL':"'".$this->db->escape($this->import_key)."'").",";
 		$sql.= " ".$user->id.",";
 		$sql.= " '".$this->db->idate(dol_now())."',";
@@ -211,7 +216,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->fk_referenceletters = $obj->fk_referenceletters;
 				$this->element_type = $obj->element_type;
 				$this->fk_element = $obj->fk_element;
-				$this->content_letter = $obj->content_letter;
+				$this->content_letter = unserialize($obj->content_letter);
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
@@ -230,6 +235,79 @@ class ReferenceLettersElements extends CommonObject
             dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
             return -1;
         }
+    }
+    
+    /**
+     *  Load object in memory from the database
+     *  
+     * @param int $element_id element id
+     * @param string $element_type element type
+     * @return int  <0 if KO, >0 if OK
+     */
+    public function fetchAllByElement($element_id,$element_type) {
+    	
+    	global $langs;
+    	$sql = "SELECT";
+    	$sql.= " t.rowid,";
+    	$sql.= " t.entity,";
+    	$sql.= " t.ref_int,";
+    	$sql.= " t.fk_referenceletters,";
+    	$sql.= " t.element_type,";
+    	$sql.= " t.fk_element,";
+    	$sql.= " t.content_letter,";
+    	$sql.= " t.import_key,";
+    	$sql.= " t.fk_user_author,";
+    	$sql.= " t.datec,";
+    	$sql.= " t.fk_user_mod,";
+    	$sql.= " t.tms";
+    	$sql.= " ,p.title";
+    	$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_elements as t";
+    	$sql.= " INNER JOIN ".MAIN_DB_PREFIX."referenceletters as p ON p.rowid=t.fk_referenceletters";
+    	$sql.= " WHERE t.fk_element = ".$element_id;
+    	$sql.= " AND t.element_type = '".$this->db->escape($element_type)."'";
+    	
+    	dol_syslog(get_class($this)."::fetchAllByElement sql=".$sql, LOG_DEBUG);
+    	$resql=$this->db->query($sql);
+    	if ($resql)
+    	{
+    		$num=$this->db->num_rows($resql);
+    		if ($num>0)
+    		{
+    			$this->lines=array();
+    			
+    			while($obj = $this->db->fetch_object($resql)) {
+    				
+    				$line = new ReferenceLettersElementsLine();
+    	
+	    			$line->id    = $obj->rowid;
+	    	
+	    			$line->entity = $obj->entity;
+	    			$line->ref_int = $obj->ref_int;
+	    			$line->fk_referenceletters = $obj->fk_referenceletters;
+	    			$line->element_type = $obj->element_type;
+	    			$line->fk_element = $obj->fk_element;
+	    			$line->content_letter = unserialize($obj->content_letter);
+	    			$line->import_key = $obj->import_key;
+	    			$line->fk_user_author = $obj->fk_user_author;
+	    			$line->datec = $this->db->jdate($obj->datec);
+	    			$line->fk_user_mod = $obj->fk_user_mod;
+	    			$line->tms = $this->db->jdate($obj->tms);
+	    			$line->title = $obj->title;
+	    			
+	    			$this->lines[]=$line;
+    			}
+    	
+    		}
+    		$this->db->free($resql);
+    	
+    		return $num;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetchAllByElement ".$this->error, LOG_ERR);
+    		return -1;
+    	}
     }
 
 
@@ -252,10 +330,13 @@ class ReferenceLettersElements extends CommonObject
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->element_type)) $this->element_type=trim($this->element_type);
 		if (isset($this->fk_element)) $this->fk_element=trim($this->fk_element);
-		if (isset($this->content_letter)) $this->content_letter=trim($this->content_letter);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 
-        
+		if (is_array($this->content_letter) && count($this->content_letter)>0) {
+			$content_letter=serialize($this->content_letter);
+		} else {
+			$content_letter=trim($this->content_letter);
+		}
 
 		// Check parameters
 		// Put here code to add a control on parameters values
@@ -263,14 +344,12 @@ class ReferenceLettersElements extends CommonObject
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."referenceletters_elements SET";
         
-		$sql.= " entity=".(isset($this->entity)?$this->entity:"null").",";
 		$sql.= " ref_int=".(isset($this->ref_int)?"'".$this->db->escape($this->ref_int)."'":"null").",";
 		$sql.= " fk_referenceletters=".(isset($this->fk_referenceletters)?$this->fk_referenceletters:"null").",";
 		$sql.= " element_type=".(isset($this->element_type)?"'".$this->db->escape($this->element_type)."'":"null").",";
 		$sql.= " fk_element=".(isset($this->fk_element)?$this->fk_element:"null").",";
-		$sql.= " content_letter=".(isset($this->content_letter)?"'".$this->db->escape($this->content_letter)."'":"null").",";
+		$sql.= " content_letter=".(!empty($content_letter)?"'".$this->db->escape($content_letter)."'":"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
-		$sql.= " fk_user_author=".(isset($this->fk_user_author)?$this->fk_user_author:"null").",";
 		$sql.= " fk_user_mod=".$user->id;
 
         
@@ -455,5 +534,81 @@ class ReferenceLettersElements extends CommonObject
 
 		
 	}
+	
+	/**
+	 * Returns the reference to the following non used model letters used depending on the active numbering module
+	 * defined into REF_LETTER_ADDON
+	 *
+	 * @param int $fk_user Id
+	 * @param societe $objsoc Object
+	 * @return string Reference libre pour la lead
+	 */
+	function getNextNumRef($objsoc, $fk_user='', $element_type='') {
+	
+		global $conf, $langs;
+		$langs->load ( "referenceletters@referenceletters" );
+	
+		$dirmodels = array_merge ( array (
+				'/'
+		), ( array ) $conf->modules_parts ['models'] );
+	
+		if (! empty ( $conf->global->REF_LETTER_ADDON )) {
+			foreach ( $dirmodels as $reldir ) {
+				$dir = dol_buildpath ( $reldir . "core/modules/referenceletters/" );
+				if (is_dir ( $dir )) {
+					$handle = opendir ( $dir );
+					if (is_resource ( $handle )) {
+						$var = true;
+	
+						while ( ($file = readdir ( $handle )) !== false ) {
+							if ($file == $conf->global->REF_LETTER_ADDON . '.php') {
+								$file = substr ( $file, 0, dol_strlen ( $file ) - 4 );
+								require_once $dir . $file . '.php';
+	
+								$module = new $file ();
+	
+								// Chargement de la classe de numerotation
+								$classname = $conf->global->REF_LETTER_ADDON;
+	
+								$obj = new $classname();
+	
+								$numref = "";
+								$numref = $obj->getNextValue ( $fk_user, $element_type, $objsoc, $this );
+	
+								if ($numref != "") {
+									return $numref;
+								} else {
+									$this->error = $obj->error;
+									return "";
+								}
+							}
+						}
+					}
+				}
+			}
+		} else {
+			$langs->load ( "errors" );
+			print $langs->trans ( "Error" ) . " " . $langs->trans ( "ErrorModuleSetupNotComplete" );
+			return "";
+		}
+	}
 
+}
+
+class ReferenceLettersElementsLine
+{
+	public $id;
+
+	public $entity;
+	public $ref_int;
+	public $fk_referenceletters;
+	public $element_type;
+	public $fk_element;
+	public $content_letter;
+	public $import_key;
+	public $fk_user_author;
+	public $datec='';
+	public $fk_user_mod;
+	public $tms='';
+	public $title;
 }

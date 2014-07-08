@@ -22,6 +22,34 @@
  * \brief referenceletters for numbering referenceletters
  */
 
+require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
+
+/**
+ * \class ModelePDFReferenceLetters
+ * \brief Absctart class for ReferenceLetters module
+ */
+abstract class ModelePDFReferenceLetters extends CommonDocGenerator {
+	var $error = '';
+
+	/**
+	 * Return list of active generation modules
+	 *
+	 * @param DoliDB $db handler
+	 * @param string $maxfilenamelength length of value to show
+	 * @return array of templates
+	 */
+	static function liste_modeles($db, $maxfilenamelength = 0) {
+		global $conf;
+
+		$type = 'referenceletters';
+		$liste = array ();
+
+		$liste [] = 'referenceletters';
+
+		return $liste;
+	}
+}
+
 /**
  * Classe mere des modeles de numerotation des references de lead
  */
@@ -108,5 +136,57 @@ abstract class ModeleNumRefrReferenceLetters
 		if ($this->version == 'dolibarr')
 			return DOL_VERSION;
 		return $langs->trans("NotAvailable");
+	}
+}
+
+
+/**
+ *  Create a document onto disk according to template module.
+ *
+ * 	@param	    DoliDB		$db  			 Database handler
+ * 	@param	    object		$object			 Object proposal
+ * 	@param	    object		$instance_letter Instance letter
+ * 	@param		Translate	$outputlangs	 Object langs to use for output
+ *  @param      string		$element_type    element type
+ * 	@return     int         				0 if KO, 1 if OK
+ */
+function referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $element_type)
+{
+	global $conf,$user,$langs;
+
+	$error=0;
+	$filefound=0;
+	// Search template files
+	$file=dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_'.$element_type.'.modules.php');
+	if (file_exists($file)) {
+		$filefound=1;
+	}
+
+	$classname='rfltr_'.$element_type; 
+
+	// Charge le modele
+	if ($filefound)
+	{
+		require_once $file;
+
+		$obj = new $classname($db);
+
+		// We save charset_output to restore it because write_file can change it if needed for
+		// output format that does not support UTF8.
+		if ($obj->write_file($object, $instance_letter, $outputlangs) > 0)
+		{
+			return 1;
+		}
+		else
+		{
+			setEventMessage('referenceletters_pdf_create Error: '.$obj->error, 'errors');
+			return -1;
+		}
+
+	}
+	else
+	{
+		setEventMessage($langs->trans("Error")." ".$langs->trans("ErrorFileDoesNotExists",$file), 'errors');
+		return -1;
 	}
 }

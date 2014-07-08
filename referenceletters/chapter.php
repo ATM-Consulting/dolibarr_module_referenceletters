@@ -16,7 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- *	\file		chapter.php
+ *	\file		refferenceletters/refferenceletters/chapter.php
 *	\ingroup	refferenceletters
 *	\brief		chapter pages
 */
@@ -53,7 +53,6 @@ $confirm = GETPOST('confirm', 'alpha');
 $refltrtitle=GETPOST('refltrtitle','alpha');
 $refltrelement_type=GETPOST('refltrelement_type','alpha');
 
-
 // Access control
 // Restrict access to users with invoice reading permissions
 restrictedArea($user, 'referenceletters');
@@ -61,16 +60,11 @@ restrictedArea($user, 'referenceletters');
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
 
-
-$object = new Referenceletterschapters($db);
+$object = new ReferenceLettersChapters($db);
 $object_refletter = new Referenceletters($db);
 
 
-
-$extrafields = new ExtraFields($db);
-
 $error = 0;
-
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array(
@@ -307,16 +301,6 @@ if (($action == 'create' || $action=='edit' || $action='delete') && $user->right
 	print '</td>';
 	print '</tr>';
 	
-	
-	
-
-	// Other attributes
-	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-
-	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
-		print $object->showOptionals($extrafields, 'edit');
-	}
-
 	print '</table>';
 
 	print '<center>';
@@ -326,8 +310,6 @@ if (($action == 'create' || $action=='edit' || $action='delete') && $user->right
 
 	print '</form>';
 }
-
-
 
 // Page end
 llxFooter();

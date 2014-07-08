@@ -101,7 +101,8 @@ class modReferenceLetters extends DolibarrModules {
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/referenceletters/temp");
 		$this->dirs = array (
-				'/referenceletters' 
+				'/referenceletters',
+				'/referenceletters/contract'
 		);
 		
 		// Config pages. Put here list of php pages

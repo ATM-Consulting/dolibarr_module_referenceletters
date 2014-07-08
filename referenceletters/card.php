@@ -61,7 +61,7 @@ $langs->load("referenceletters@referenceletters");
 
 
 $object = new ReferenceLetters($db);
-$object_chapters = new Referenceletterschapters($db);
+$object_chapters = new ReferenceLettersChapters($db);
 if(!empty($id)) {
 	$result=$object->fetch($id);
 	if ($result < 0) {

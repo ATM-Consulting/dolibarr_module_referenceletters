@@ -405,7 +405,9 @@ if (! empty($idletter)) {
 				print '<td>';
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
 					foreach($line_chapter->options_text as $key=>$option_text) {
+						if (!empty($option_text)) {
 						print '<input type="checkbox" checked="checked" name="use_content_option_'.$line_chapter->id.'_'.$key.'" value="1"><input type="texte class="flat" size="20" name="text_content_option_'.$line_chapter->id.'_'.$key.'" value="'.$option_text.'" ><br>';
+						}
 					}
 				}
 				print '</td>';
@@ -472,12 +474,14 @@ if (! empty($refletterelemntid)) {
 				print '<td>';
 				if (is_array($line_chapter['options']) && count($line_chapter['options'])>0) {
 					foreach($line_chapter['options'] as $keyoption=>$option_detail) {
-						if (!empty($option_detail['use_content_option'])) {
-							$checked=' checked="checked" ';
-						} else {
-							$checked='';
+						if (!empty($option_detail['text_content_option'])) {
+							if (!empty($option_detail['use_content_option'])) {
+								$checked=' checked="checked" ';
+							} else {
+								$checked='';
+							}
+							print '<input type="checkbox" '.$checked.' name="use_content_option_'.$key.'_'.$keyoption.'" value="1"><input type="texte class="flat" size="20" name="text_content_option_'.$key.'_'.$keyoption.'" value="'.$option_detail['text_content_option'].'" ><br>';
 						}
-						print '<input type="checkbox" '.$checked.' name="use_content_option_'.$key.'_'.$keyoption.'" value="1"><input type="texte class="flat" size="20" name="text_content_option_'.$key.'_'.$keyoption.'" value="'.$option_detail['text_content_option'].'" ><br>';
 					}
 				}
 				print '</td>';

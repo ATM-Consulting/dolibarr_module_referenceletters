@@ -313,6 +313,98 @@ class ReferenceLettersElements extends CommonObject
     		return -1;
     	}
     }
+    
+    /**
+     *  Load object in memory from the database
+     *
+	 * @param string $sortorder order
+	 * @param string $sortfield field
+	 * @param int $limit page
+	 * @param int $offset
+	 * @param array $filter output
+	 * @return int <0 if KO, >0 if OK
+     */
+    public function fetchAll($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+    	 
+    	global $langs;
+    	$sql = "SELECT";
+    	$sql.= " t.rowid,";
+    	$sql.= " t.entity,";
+    	$sql.= " t.ref_int,";
+    	$sql.= " t.fk_referenceletters,";
+    	$sql.= " t.element_type,";
+    	$sql.= " t.fk_element,";
+    	$sql.= " t.content_letter,";
+    	$sql.= " t.import_key,";
+    	$sql.= " t.fk_user_author,";
+    	$sql.= " t.datec,";
+    	$sql.= " t.fk_user_mod,";
+    	$sql.= " t.tms";
+    	$sql.= " ,p.title";
+    	$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_elements as t";
+    	$sql.= " INNER JOIN ".MAIN_DB_PREFIX."referenceletters as p ON p.rowid=t.fk_referenceletters";
+    	$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
+		
+		if (is_array($filter)) {
+			foreach ( $filter as $key => $value ) {
+				if ($key == 't.element_type') {
+					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
+				} else {
+					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
+				}
+			}
+		}
+		if (! empty($sortfield)) {
+			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+		}
+		
+		if (! empty($limit)) {
+			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
+		}
+    	 
+    	dol_syslog(get_class($this)."::fetchAll sql=".$sql, LOG_DEBUG);
+    	$resql=$this->db->query($sql);
+    	if ($resql)
+    	{
+    		$num=$this->db->num_rows($resql);
+    		if ($num>0)
+    		{
+    			$this->lines=array();
+    			 
+    			while($obj = $this->db->fetch_object($resql)) {
+    
+    				$line = new ReferenceLettersElementsLine();
+    				 
+    				$line->id    = $obj->rowid;
+    
+    				$line->entity = $obj->entity;
+    				$line->ref_int = $obj->ref_int;
+    				$line->fk_referenceletters = $obj->fk_referenceletters;
+    				$line->element_type = $obj->element_type;
+    				$line->fk_element = $obj->fk_element;
+    				$line->content_letter = unserialize($obj->content_letter);
+    				$line->import_key = $obj->import_key;
+    				$line->fk_user_author = $obj->fk_user_author;
+    				$line->datec = $this->db->jdate($obj->datec);
+    				$line->fk_user_mod = $obj->fk_user_mod;
+    				$line->tms = $this->db->jdate($obj->tms);
+    				$line->title = $obj->title;
+    
+    				$this->lines[]=$line;
+    			}
+    			 
+    		}
+    		$this->db->free($resql);
+    		 
+    		return $num;
+    	}
+    	else
+    	{
+    		$this->error="Error ".$this->db->lasterror();
+    		dol_syslog(get_class($this)."::fetchAll ".$this->error, LOG_ERR);
+    		return -1;
+    	}
+    }
 
 
     /**

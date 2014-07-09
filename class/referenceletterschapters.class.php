@@ -98,6 +98,10 @@ class ReferenceLettersChapters extends CommonObject
 		// Check parameters
 		// Put here code to add a control on parameters values
         if (is_array($this->options_text) && count($this->options_text)>0) {
+        	//Remove empty values
+        	foreach($this->options_text as $key=>$option) {
+				if (empty($option)) unset($this->options_text[$key]);
+			}
         	$option_text=serialize($this->options_text);
         } else {
         	$option_text=trim($this->options_text);
@@ -347,6 +351,9 @@ class ReferenceLettersChapters extends CommonObject
 		// Check parameters
 		// Put here code to add a control on parameters values
 		if (is_array($this->options_text) && count($this->options_text)>0) {
+			foreach($this->options_text as $key=>$option) {
+				if (empty($option)) unset($this->options_text[$key]);
+			}
 			$option_text=serialize($this->options_text);
 		} else {
 			$option_text=trim($this->options_text);

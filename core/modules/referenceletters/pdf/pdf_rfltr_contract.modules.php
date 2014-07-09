@@ -204,7 +204,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 								$posY = $pdf->GetY();
 								$pdf->SetXY($posX, $posY);
 								
-								$pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($option_detail['text_content_option']), 1, 1);
+								$pdf->writeHTMLCell(0, 0, $posX+3, $posY, '<b>-</b> '.$outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
 							}
 						}
 					}
@@ -352,12 +352,12 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			// Sender properties
 			$carac_emetteur='';
 		 	// Add internal contact of proposal if defined
-			$arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
+			/*$arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
 		 	if (count($arrayidcontact) > 0)
 		 	{
 		 		$object->fetch_user($arrayidcontact[0]);
 		 		$carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
-		 	}
+		 	}*/
 
 		 	$carac_emetteur .= pdf_build_address($outputlangs,$this->emetteur);
 

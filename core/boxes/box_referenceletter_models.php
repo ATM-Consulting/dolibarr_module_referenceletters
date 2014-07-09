@@ -27,8 +27,8 @@ include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
 /**
  * Class to manage the box
  */
-class mybox extends ModeleBoxes {
-	var $boxcode = "mybox";
+class box_referenceletter_models extends ModeleBoxes {
+	var $boxcode = "referenceletter_models";
 	var $boximg = "referenceletters@referenceletters";
 	var $boxlabel;
 	var $depends = array (
@@ -46,7 +46,7 @@ class mybox extends ModeleBoxes {
 		global $langs;
 		$langs->load("boxes");
 		
-		$this->boxlabel = $langs->transnoentitiesnoconv("MyBox");
+		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name");
 	}
 	
 	/**
@@ -55,23 +55,41 @@ class mybox extends ModeleBoxes {
 	 * @param int $max of records to load
 	 * @return void
 	 */
-	function loadBox($max = 5) {
+	function loadBox($max = 15) {
 		global $conf, $user, $langs, $db;
 		
 		$this->max = $max;
 		
-		// include_once DOL_DOCUMENT_ROOT . "/referenceletters/class/referenceletters.class.php";
+		dol_include_once("/referenceletters/class/referenceletters.class.php");
 		
-		$text = $langs->trans("MyBoxDescription", $max);
+		$text = $langs->trans("Module103258Name", $max);
 		$this->info_box_head = array (
 				'text' => $text,
 				'limit' => dol_strlen($text) 
 		);
 		
-		$this->info_box_contents[0][0] = array (
-				'td' => 'align="left"',
-				'text' => $langs->trans("MyBoxContent") 
-		);
+		
+		$object=new ReferenceLetters($db);
+		$result = $object->fetch_all('ASC','t.datec',5,0);
+		if ($result<0) {
+			setEventMessage($object->error,'errors');
+		}
+		
+		if (is_array($object->lines) && count($object->lines)>0) {
+			foreach($object->lines as $key=>$line) {
+				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
+						'logo' => 'label',
+						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
+				$this->info_box_contents[$key][1] = array('td' => 'align="left" width="15"',
+						'text' => $line->title,
+						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
+				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
+						'text' => dol_print_date($line->datec,'daytext'));
+			}
+		}
+		
+		
+		
 	}
 	
 	/**

@@ -36,6 +36,9 @@ if (! $res) {
 	die("Main include failed");
 }
 
+dol_include_once('/referenceletters/core/boxes/box_referenceletter_models.php');
+dol_include_once('/referenceletters/core/boxes/box_referenceletter_elements.php');
+
 // Access control
 // Restrict access to users with invoice reading permissions
 restrictedArea($user, 'referenceletters');
@@ -54,6 +57,16 @@ $langs->load("referenceletters@referenceletters");
 $title = $langs->trans('Module103258Name');
 
 llxHeader('',$title);
+
+$box = new box_referenceletter_models($db);
+
+$box->loadBox();
+$box->showBox();
+
+$box = new box_referenceletter_elements($db);
+
+$box->loadBox();
+$box->showBox();
 
 // Page end
 llxFooter();

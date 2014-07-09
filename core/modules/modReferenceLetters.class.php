@@ -241,10 +241,10 @@ class modReferenceLetters extends DolibarrModules {
 		// Boxes
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		$this->boxes = array (); // Boxes list
-		                        // $r = 0;
-		                        // Example:
-		                        
-		// $this->boxes[$r][1] = "mybox@referenceletters";
+		$r = 0; 
+		$this->boxes[$r][1] = "box_referenceletter_models@referenceletters";
+		$r ++;
+		$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
 		                        // $r ++;
 		/*
 		  $this->boxes[$r][1] = "myboxb.php";

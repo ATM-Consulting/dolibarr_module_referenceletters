@@ -42,7 +42,7 @@ class box_referenceletter_models extends ModeleBoxes {
 	/**
 	 * Constructor
 	 */
-	function mybox() {
+	function __construct() {
 		global $langs;
 		$langs->load("boxes");
 		

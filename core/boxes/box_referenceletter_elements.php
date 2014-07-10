@@ -42,7 +42,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 	/**
 	 * Constructor
 	 */
-	function mybox() {
+	function __construct() {
 		global $langs;
 		$langs->load("boxes");
 		
@@ -79,15 +79,51 @@ class box_referenceletter_elements extends ModeleBoxes {
 		
 		if (is_array($object->lines) && count($object->lines)>0) {
 			foreach($object->lines as $key=>$line) {
+				
+				// Check if current view is setup in models letter class
+				if (! is_array($object_ref->element_type_list[$line->element_type])) {
+					$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
+							'logo' => 'label');
+					$this->info_box_contents[$key][1] = array('td' => 'align="left" width="15"',
+							'text' => $langs->trans('RefLtrNoModelReadyForThisObject', $line->element_type));
+					$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
+							'text' => '');
+					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
+							'text' => '');
+					continue;
+				}
+				
+				
+				
+				// load class according
+				require_once $object_ref->element_type_list[$line->element_type]['classpath'] . $object_ref->element_type_list[$line->element_type]['class'];
+				$object = new $object_ref->element_type_list[$line->element_type]['objectclass']($db);
+				
+				$result = $object->fetch($line->fk_element);
+				if ($result < 0)
+					setEventMessage($object->error, 'errors');
+				if (method_exists($object, 'fetch_thirdparty')) {
+					$result = $object->fetch_thirdparty();
+					if ($result < 0)
+						setEventMessage($object->error, 'errors');
+				}
+				
+				
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
 						'url' => dol_buildpath('referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][1] = array('td' => 'align="left" width="15"',
 						'text' => $line->ref_int,
-						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
+						'url' => dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
 						'text' => $object_ref->displayElementElement(0,$line->element_type));
 				$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
+						'text' => $object->ref,
+						'url' => dol_buildpath($object_ref->element_type_list[$line->element_type]['card'],1).'?id='.$line->fk_element);
+				$this->info_box_contents[$key][4] = array('td' => 'align="left" width="15"',
+						'text' => $object->thirdparty->name,
+						'url' => dol_buildpath('societe/soc.php',1).'?socid='.$object->thirdparty->id);
+				$this->info_box_contents[$key][5] = array('td' => 'align="left" width="15"',
 						'text' => dol_print_date($line->datec,'daytext'));
 			}
 		}

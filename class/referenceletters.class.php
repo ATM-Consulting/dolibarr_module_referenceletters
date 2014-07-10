@@ -64,7 +64,8 @@ class ReferenceLetters extends CommonObject {
 				'trans' => 'contracts',
 				'title' => 'Contract',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/contract.lib.php',
-				'menuloader_function' => 'contract_prepare_head'
+				'menuloader_function' => 'contract_prepare_head',
+				'card' => '/contrat/fiche.php'
 		);
 		return 1;
 	}

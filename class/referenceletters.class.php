@@ -512,15 +512,46 @@ class ReferenceLetters extends CommonObject {
 		
 		// Load source object
 		$object->fetch($fromid);
-		$result = $object->create($user);
+		$object->title = $object->title. ' (Clone)';
+		$clonedrefletterid = $object->create($user);
 		
 		// Other options
-		if ($result < 0) {
-			$this->error = $object->error;
+		if ($clonedrefletterid < 0) {
+			$this->errors[] = $object->error;
 			$error ++;
 		}
 		
 		if (! $error) {
+			//Clone Chapters
+			require_once 'referenceletterschapters.class.php';
+			$chapters = new ReferenceLettersChapters($this->db);
+			$chaptersnew = new ReferenceLettersChapters($this->db);
+			$result=$chapters->fetch_byrefltr($fromid);
+			if ($result < 0) {
+				$this->errors[] = $object->error;
+				$error ++;
+			} else {
+				if (is_array($chapters->lines_chapters) && count($chapters->lines_chapters)>0) {
+					foreach($chapters->lines_chapters as $line) {
+						$chaptersnew = new ReferenceLettersChapters($this->db);
+						$chaptersnew->entity = $line->entity;
+						$chaptersnew->fk_referenceletters =$object->id;
+						$chaptersnew->lang = $line->lang;
+						$chaptersnew->sort_order = $line->sort_order;
+						$chaptersnew->title = $line->title;
+						$chaptersnew->content_text = $line->content_text;
+						$chaptersnew->options_text = $line->options_text;
+						$chaptersnew->status = $line->status;
+						$result=$chaptersnew->create($user);
+						if ($result < 0) {
+							$this->errors[] = $object->error;
+							$error ++;
+						}
+					}
+				}
+			}
+			
+			
 		}
 		
 		// End
@@ -528,6 +559,10 @@ class ReferenceLetters extends CommonObject {
 			$this->db->commit();
 			return $object->id;
 		} else {
+			foreach ( $this->errors as $errmsg ) {
+				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			}
 			$this->db->rollback();
 			return - 1;
 		}

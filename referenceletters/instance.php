@@ -43,14 +43,14 @@ require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 require_once '../core/modules/referenceletters/modules_referenceletters.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
-require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $idletter = GETPOST('idletter', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
-$refletterelemntid=GETPOST('refletterelemntid','int');
+$refletterelemntid = GETPOST('refletterelemntid', 'int');
 
 $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
@@ -101,16 +101,15 @@ $hookmanager->initHooks(array (
 $parameters = array ();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
-
-if ($action=='buildoc') {
+if ($action == 'buildoc') {
 	
-	//New letter
+	// New letter
 	if (empty($refletterelemntid)) {
-		//Save data
-		$object_element->ref_int=GETPOST('ref_int');
-		$object_element->fk_element=$object->id;
-		$object_element->element_type=$element_type;
-		$object_element->fk_referenceletters=$idletter;
+		// Save data
+		$object_element->ref_int = GETPOST('ref_int');
+		$object_element->fk_element = $object->id;
+		$object_element->element_type = $element_type;
+		$object_element->fk_referenceletters = $idletter;
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thridparty->default_lang;
@@ -120,38 +119,39 @@ if ($action=='buildoc') {
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
-		
-		//Use a big array into class it is serialize
-		$content_letter=array();
-		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
-			foreach($object_chapters->lines_chapters as $key=>$line_chapter) {
+			
+			// Use a big array into class it is serialize
+		$content_letter = array ();
+		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
+			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				
-				$options=array();
-				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
-					foreach($line_chapter->options_text as $key=>$option_text) {
-						$options[$key]=array(
-							'use_content_option'=>GETPOST('use_content_option_'.$line_chapter->id.'_'.$key),
-							'text_content_option'=>GETPOST('text_content_option_'.$line_chapter->id.'_'.$key));
+				$options = array ();
+				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
+					foreach ( $line_chapter->options_text as $key => $option_text ) {
+						$options[$key] = array (
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key) 
+						);
 					}
 				}
 				
-				
-				$content_letter[$line_chapter->id]=array('content_text'=>GETPOST('content_text_'.$line_chapter->id),
-														'options'=>$options);
+				$content_letter[$line_chapter->id] = array (
+						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'options' => $options 
+				);
 			}
 		}
 		
-		$object_element->content_letter=$content_letter;
+		$object_element->content_letter = $content_letter;
 		
-		$result=$object_element->create($user);
+		$result = $object_element->create($user);
 		if ($result < 0)
 			setEventMessage($object_element->error, 'errors');
 	} else {
-		//Edit letter
-		$result=$object_element->fetch($refletterelemntid);
+		// Edit letter
+		$result = $object_element->fetch($refletterelemntid);
 		if ($result < 0)
 			setEventMessage($object_element->error, 'errors');
-		
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thridparty->default_lang;
@@ -161,76 +161,58 @@ if ($action=='buildoc') {
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
-		
-		//Use a big array into class it is serialize
-		$content_letter=array();
-		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
-			foreach($object_chapters->lines_chapters as $key=>$line_chapter) {
-		
-				$options=array();
-				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
-					foreach($line_chapter->options_text as $key=>$option_text) {
-						$options[$key]=array(
-								'use_content_option'=>GETPOST('use_content_option_'.$line_chapter->id.'_'.$key),
-								'text_content_option'=>GETPOST('text_content_option_'.$line_chapter->id.'_'.$key));
+			
+		// Use a big array into class it is serialize
+		$content_letter = array ();
+		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
+			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
+				
+				$options = array ();
+				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
+					foreach ( $line_chapter->options_text as $key => $option_text ) {
+						$options[$key] = array (
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key) 
+						);
 					}
 				}
-		
-		
-				$content_letter[$line_chapter->id]=array('content_text'=>GETPOST('content_text_'.$line_chapter->id),
-						'options'=>$options);
+				
+				$content_letter[$line_chapter->id] = array (
+						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'options' => $options 
+				);
 			}
 		}
 		
-		$object_element->content_letter=$content_letter;
+		$object_element->content_letter = $content_letter;
 		
-		$result=$object_element->update($user);
+		$result = $object_element->update($user);
 		if ($result < 0)
 			setEventMessage($object_element->error, 'errors');
 	}
 	
-	
-	//Create document PDF
-	
-	// Define output language
-	$outputlangs = $langs;
-	if (! empty($conf->global->MAIN_MULTILANGS))
-	{
-		$outputlangs = new Translate("",$conf);
-		$newlang=$object->thridparty->default_lang;
-		$outputlangs->setDefaultLang($newlang);
-	}
-	
-	$ret=$object_element->fetch($refletterelemntid);    // Reload to get new records
-	$result=referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
-	
-	if ($result <= 0)
-	{
-		dol_print_error($db,$result);
-		exit;
-	}
-	else
-	{
-		header('Location: '.$_SERVER["PHP_SELF"].'?id='.$object->id.'&element_type=' . $element_type);
-		exit;
-	}
-	
-	/*if (GETPOST('model'))
-	{
-		$object->setDocModel($user, GETPOST('model'));
-	}
+	// Create document PDF
 	
 	// Define output language
 	$outputlangs = $langs;
-	if (! empty($conf->global->MAIN_MULTILANGS))
-	{
-		$outputlangs = new Translate("",$conf);
-		$newlang=(GETPOST('lang_id') ? GETPOST('lang_id') : $object->client->default_lang);
+	if (! empty($conf->global->MAIN_MULTILANGS)) {
+		$outputlangs = new Translate("", $conf);
+		$newlang = $object->thridparty->default_lang;
 		$outputlangs->setDefaultLang($newlang);
 	}
-	*/
+	
+	$ret = $object_element->fetch($refletterelemntid); // Reload to get new records
+	$result = referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
+	
+	if ($result <= 0) {
+		dol_print_error($db, $result);
+		exit();
+	} else {
+		header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
+		exit();
+	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
-	$result=$object_element->fetch($refletterelemntid);
+	$result = $object_element->fetch($refletterelemntid);
 	if ($result < 0) {
 		setEventMessage($object_element->error, 'errors');
 	} else {
@@ -238,7 +220,7 @@ if ($action=='buildoc') {
 		if ($result < 0) {
 			setEventMessage($object->errors, 'errors');
 		} else {
-			header('Location:' . dol_buildpath('/referenceletters/referenceletters/instance.php', 1).'?id=' . $object->id . '&element_type=' . $element_type);
+			header('Location:' . dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $object->id . '&element_type=' . $element_type);
 		}
 	}
 }
@@ -257,8 +239,6 @@ $formfile = new FormFile($db);
 
 $now = dol_now();
 
-
-
 // load menu according context (element_type)
 $head = call_user_func($object_refletter->element_type_list[$element_type]['menuloader_function'], $object);
 dol_fiche_head($head, 'tabReferenceLetters', $object_refletter->element_type_list[$element_type]['title'], 0, $element_type);
@@ -266,21 +246,20 @@ dol_fiche_head($head, 'tabReferenceLetters', $object_refletter->element_type_lis
 // Include a template to display the object
 include_once dol_buildpath('/referenceletters/tpl/' . $element_type . '.tpl.php');
 
-//Display existing letter already created
+// Display existing letter already created
 print_fiche_titre($langs->trans('RefLtrExistingLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 // Confirm form
 $formconfirm = '';
 if ($action == 'delete') {
-	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid='.$refletterelemntid, $langs->trans('RefLtrDeleteLetter'), $langs->trans('RefLtrConfirmDeleteLetter'), 'confirm_delete', '', 0, 1);
+	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $refletterelemntid, $langs->trans('RefLtrDeleteLetter'), $langs->trans('RefLtrConfirmDeleteLetter'), 'confirm_delete', '', 0, 1);
 }
 
 if (empty($formconfirm)) {
-	$parameters = array();
+	$parameters = array ();
 	$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 }
 print $formconfirm;
-
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -290,44 +269,42 @@ print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.
 print '<td></td>';
 print '<td></td>';
 
-$result=$object_element->fetchAllByElement($id,$element_type);
+$result = $object_element->fetchAllByElement($id, $element_type);
 if ($result < 0)
 	setEventMessage($object_element->error, 'errors');
 
-
-if (is_array($object_element->lines) && count($object_element->lines)>0) {
-	foreach ($object_element->lines as $line) {
-	
+if (is_array($object_element->lines) && count($object_element->lines) > 0) {
+	foreach ( $object_element->lines as $line ) {
+		
 		// Affichage tableau des lead
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-	
-		// Title
-		print '<td><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid='.$line->id.'&action=edit">' . $line->ref_int . '</a></td>';
-	
-		//Element
-		print '<td>' . $line->title . '</td>';
-
-		print '<td>'.dol_print_date($line->datec,'daytext').'</td>';
 		
-		//File
+		// Title
+		print '<td><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=edit">' . $line->ref_int . '</a></td>';
+		
+		// Element
+		print '<td>' . $line->title . '</td>';
+		
+		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
+		
+		// File
 		print '<td>';
-		$filename=dol_sanitizeFileName($line->ref_int);
-		$filedir=$conf->referenceletters->dir_output . "/contract/" . $line->ref_int;
+		$filename = dol_sanitizeFileName($line->ref_int);
+		$filedir = $conf->referenceletters->dir_output . "/contract/" . $line->ref_int;
 		$linkeddoc = $formfile->getDocumentsLink('referenceletters', $filename, $filedir);
-		$linkeddoc=preg_replace('/file=/', 'file=contract%2F',$linkeddoc);
-		//var_dump($linkeddoc);
+		$linkeddoc = preg_replace('/file=/', 'file=contract%2F', $linkeddoc);
+		// var_dump($linkeddoc);
 		print $linkeddoc;
 		print '</td>';
 		
 		print '<td>';
-		print '<a href="'.$_SERVER['PHP_SELF'].'?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid='.$line->id.'&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		print '</td>';
 		print "</tr>\n";
-	
 	}
 }
-	
+
 print '</table>';
 
 print_fiche_titre($langs->trans('RefLtrNewLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
@@ -349,7 +326,7 @@ print '</table>';
 
 print '</form>';
 
-//New letter
+// New letter
 if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -366,47 +343,48 @@ if (! empty($idletter)) {
 		print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="buildoc">';
-		print '<input type="hidden" name="idletter" value="'.$idletter.'">';
+		print '<input type="hidden" name="idletter" value="' . $idletter . '">';
 		
 		print '<table class="border" width="100%">';
-		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
+		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
 			
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrRef');
 			print '</td>';
 			print '<td>';
-			$ref_int=$object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
+			$ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
 			print $ref_int;
-			print '<input type="hidden" name="ref_int" value="'.$ref_int.'">';
+			print '<input type="hidden" name="ref_int" value="' . $ref_int . '">';
 			print '</td>';
 			print '</tr>';
 			
-			foreach($object_chapters->lines_chapters as $key=>$line_chapter) {
+			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrText');
 				print '</td>';
 				print '<td>';
 				
-				require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
-				$nbrows=ROWS_2;
-				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT)) $nbrows=$conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable=(isset($conf->global->FCKEDITOR_ENABLE_DETAILS)?$conf->global->FCKEDITOR_ENABLE_DETAILS:0);
-				$doleditor=new DolEditor('content_text_'.$line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+				$nbrows = ROWS_2;
+				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+				$enable = (isset($conf->global->FCKEDITOR_ENABLE_DETAILS) ? $conf->global->FCKEDITOR_ENABLE_DETAILS : 0);
+				$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 				$doleditor->Create();
 				print '</td>';
 				print '</tr>';
-					
+				
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrOption');
 				print '</td>';
 				print '<td>';
-				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
-					foreach($line_chapter->options_text as $key=>$option_text) {
-						if (!empty($option_text)) {
-						print '<input type="checkbox" checked="checked" name="use_content_option_'.$line_chapter->id.'_'.$key.'" value="1"><input type="texte class="flat" size="20" name="text_content_option_'.$line_chapter->id.'_'.$key.'" value="'.$option_text.'" ><br>';
+				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
+					foreach ( $line_chapter->options_text as $key => $option_text ) {
+						if (! empty($option_text)) {
+							print '<input type="checkbox" checked="checked" name="use_content_option_' . $line_chapter->id . '_' . $key . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $line_chapter->id . '_' . $key . '" value="' . $option_text . '" ><br>';
 						}
 					}
 				}
@@ -417,31 +395,29 @@ if (! empty($idletter)) {
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
 			print '</td>';
-			
 		}
 		print '</table>';
 		
 		print '</form>';
-		
-	} 
+	}
 }
-//Edit existing letter
+// Edit existing letter
 if (! empty($refletterelemntid)) {
-	if ($action=='edit') {
-		$result=$object_element->fetch($refletterelemntid);
+	if ($action == 'edit') {
+		$result = $object_element->fetch($refletterelemntid);
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		} else {
-		
-			//Edit a existing letter
+			
+			// Edit a existing letter
 			print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 			print '<input type="hidden" name="action" value="buildoc">';
-			print '<input type="hidden" name="idletter" value="'.$object_element->fk_referenceletters.'">';
-			print '<input type="hidden" name="refletterelemntid" value="'.$object_element->id.'">';
-		
+			print '<input type="hidden" name="idletter" value="' . $object_element->fk_referenceletters . '">';
+			print '<input type="hidden" name="refletterelemntid" value="' . $object_element->id . '">';
+			
 			print '<table class="border" width="100%">';
-		
+			
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrRef');
@@ -450,37 +426,38 @@ if (! empty($refletterelemntid)) {
 			print $object_element->ref_int;
 			print '</td>';
 			print '</tr>';
-	
-			foreach($object_element->content_letter as $key=>$line_chapter) {
+			
+			foreach ( $object_element->content_letter as $key => $line_chapter ) {
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrText');
 				print '</td>';
 				print '<td>';
-	
-				require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
-				$nbrows=ROWS_2;
-				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT)) $nbrows=$conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable=(isset($conf->global->FCKEDITOR_ENABLE_DETAILS)?$conf->global->FCKEDITOR_ENABLE_DETAILS:0);
-				$doleditor=new DolEditor('content_text_'.$key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+				
+				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+				$nbrows = ROWS_2;
+				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+				$enable = (isset($conf->global->FCKEDITOR_ENABLE_DETAILS) ? $conf->global->FCKEDITOR_ENABLE_DETAILS : 0);
+				$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 				$doleditor->Create();
 				print '</td>';
 				print '</tr>';
-					
+				
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrOption');
 				print '</td>';
 				print '<td>';
-				if (is_array($line_chapter['options']) && count($line_chapter['options'])>0) {
-					foreach($line_chapter['options'] as $keyoption=>$option_detail) {
-						if (!empty($option_detail['text_content_option'])) {
-							if (!empty($option_detail['use_content_option'])) {
-								$checked=' checked="checked" ';
+				if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
+					foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
+						if (! empty($option_detail['text_content_option'])) {
+							if (! empty($option_detail['use_content_option'])) {
+								$checked = ' checked="checked" ';
 							} else {
-								$checked='';
+								$checked = '';
 							}
-							print '<input type="checkbox" '.$checked.' name="use_content_option_'.$key.'_'.$keyoption.'" value="1"><input type="texte class="flat" size="20" name="text_content_option_'.$key.'_'.$keyoption.'" value="'.$option_detail['text_content_option'].'" ><br>';
+							print '<input type="checkbox" ' . $checked . ' name="use_content_option_' . $key . '_' . $keyoption . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $key . '_' . $keyoption . '" value="' . $option_detail['text_content_option'] . '" ><br>';
 						}
 					}
 				}

@@ -195,8 +195,41 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 					$pdf->SetXY($posX, $posY);
 					
-					$test=$pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($line_chapter['content_text']), 0, 1, false, true);
-											  //$w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=false, $reseth=true, $align='', $autopadding=true
+					$chapter_text=$line_chapter['content_text'];
+					
+					//User substitution value
+					$tmparray=$this->get_substitutionarray_user($user,$outputlangs);
+					$substitution_array=array();
+					if (is_array($tmparray) && count($tmparray)>0) {
+						foreach($tmparray as $key=>$value) {
+							$substitution_array['{'.$key.'}']=$value;
+						}
+						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+					}
+					
+					$tmparray=$this->get_substitutionarray_mysoc($mysoc,$outputlangs);
+					$substitution_array=array();
+					if (is_array($tmparray) && count($tmparray)>0) {
+						foreach($tmparray as $key=>$value) {
+							$substitution_array['{'.$key.'}']=$value;
+						}
+						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+					}
+					
+					
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socobject = $object->contact;
+					else $socobject = $object->thirdparty;
+					
+					$tmparray=$this->get_substitutionarray_thirdparty($socobject,$outputlangs);
+					$substitution_array=array();
+					if (is_array($tmparray) && count($tmparray)>0) {
+						foreach($tmparray as $key=>$value) {
+							$substitution_array['{'.$key.'}']=$value;
+						}
+						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+					}
+					
+					$test=$pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					//var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options'])>0) {
 						foreach($line_chapter['options'] as $keyoption=>$option_detail) {

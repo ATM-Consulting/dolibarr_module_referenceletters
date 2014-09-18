@@ -22,13 +22,13 @@
  * \brief referenceletters for numbering referenceletters
  */
 
-require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
+require_once '../class/commondocgeneratorreferenceletters.class.php';
 
 /**
  * \class ModelePDFReferenceLetters
  * \brief Absctart class for ReferenceLetters module
  */
-abstract class ModelePDFReferenceLetters extends CommonDocGenerator {
+abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLetters {
 	var $error = '';
 
 	/**

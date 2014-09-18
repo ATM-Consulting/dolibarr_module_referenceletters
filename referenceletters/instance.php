@@ -112,10 +112,10 @@ if ($action == 'buildoc') {
 		$object_element->fk_referenceletters = $idletter;
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
-			$langs_chapter = $object->thridparty->default_lang;
-		} else {
-			$langs_chapter = $langs->defaultlang;
-		}
+			$langs_chapter = $object->thirdparty->default_lang;
+		} 
+		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
@@ -154,10 +154,10 @@ if ($action == 'buildoc') {
 			setEventMessage($object_element->error, 'errors');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
-			$langs_chapter = $object->thridparty->default_lang;
-		} else {
-			$langs_chapter = $langs->defaultlang;
-		}
+			$langs_chapter = $object->thirdparty->default_lang;
+		} 
+		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
@@ -330,11 +330,10 @@ print '</form>';
 if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
-			$object->fetch_thirdparty();
 			$langs_chapter = $object->thirdparty->default_lang;
 		} 
-
 		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
@@ -434,7 +433,7 @@ if (! empty($refletterelemntid)) {
 				print $langs->trans('RefLtrText');
 				print '</td>';
 				print '<td>';
-				
+
 				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 				$nbrows = ROWS_2;
 				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))

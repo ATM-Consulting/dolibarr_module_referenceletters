@@ -238,7 +238,7 @@ if (($action == 'create' || $action=='edit' || $action='delete') && $user->right
 		if (empty($object->lang)) {
 			$object->lang=$langs->defaultlang;
 		}
-		print $formadmin->select_language($object->lang,'chapter_lang,');
+		print $formadmin->select_language($object->lang,'chapter_lang');
 		print '</td>';
 		print '</tr>';
 	}

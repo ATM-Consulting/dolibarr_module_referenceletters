@@ -60,7 +60,7 @@ class modReferenceLetters extends DolibarrModules {
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '0.4';
+		$this->version = '0.5';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -124,7 +124,7 @@ class modReferenceLetters extends DolibarrModules {
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
 				3,
-				5 
+				4
 		);
 		$this->langfiles = array (
 				"referenceletters@referenceletters" 
@@ -167,9 +167,10 @@ class modReferenceLetters extends DolibarrModules {
 		
 		$this->tabs = array (
 				'contract:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
+				'thirdparty:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
+				'contact:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				//'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
 				//'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__',
-				//'thirdparty:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_soc.php?socid=__ID__',
 				//'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__'
 		);
 		

@@ -59,7 +59,6 @@ restrictedArea($user, 'referenceletters');
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
 
-
 $object = new ReferenceLetters($db);
 $object_chapters = new ReferenceLettersChapters($db);
 if(!empty($id)) {

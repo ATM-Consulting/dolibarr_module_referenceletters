@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_contract.modules.php
+ *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_contact.modules.php
  *	\ingroup    refferenceletters
  *	\brief      Class file to create PDF for letter's model on contract
  */
@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 /**
  *	Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_contract extends ModelePDFReferenceLetters
+class pdf_rfltr_contact extends ModelePDFReferenceLetters
 {
 	var $db;
 	var $name;
@@ -65,7 +65,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "referenceletter_contract";
+		$this->name = "referenceletter_contact";
 		$this->description = $langs->trans('Module103258Name');
 
 		// Dimension page pour format A4
@@ -108,6 +108,8 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 		$outputlangs->load("companies");
 		$outputlangs->load("referenceletters@referenceletters");
 
+		$nblignes = count($object->lines);
+
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray=array();
 	
@@ -118,7 +120,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/contract/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/contact/" . $objectref;
 			$file = $dir .'/'. $objectref . ".pdf";
 
 			if (! file_exists($dir))
@@ -215,10 +217,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 					}
 					
 					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socobject = $object->contact;
-					else $socobject = $object->thirdparty;
-					
-					$tmparray=$this->get_substitutionarray_thirdparty($socobject,$outputlangs);
+					$tmparray=$this->get_substitutionarray_thirdparty($object->thirdparty,$outputlangs);
 					$substitution_array=array();
 					if (is_array($tmparray) && count($tmparray)>0) {
 						foreach($tmparray as $key=>$value) {

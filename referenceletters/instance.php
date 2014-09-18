@@ -291,9 +291,9 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		// File
 		print '<td>';
 		$filename = dol_sanitizeFileName($line->ref_int);
-		$filedir = $conf->referenceletters->dir_output . "/contract/" . $line->ref_int;
+		$filedir = $conf->referenceletters->dir_output . "/".$element_type."/" . $line->ref_int;
 		$linkeddoc = $formfile->getDocumentsLink('referenceletters', $filename, $filedir);
-		$linkeddoc = preg_replace('/file=/', 'file=contract%2F', $linkeddoc);
+		$linkeddoc = preg_replace('/file=/', 'file='.$element_type.'%2F', $linkeddoc);
 		// var_dump($linkeddoc);
 		print $linkeddoc;
 		print '</td>';
@@ -330,10 +330,11 @@ print '</form>';
 if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
-			$langs_chapter = $object->thridparty->default_lang;
-		} else {
-			$langs_chapter = $langs->defaultlang;
-		}
+			$object->fetch_thirdparty();
+			$langs_chapter = $object->thirdparty->default_lang;
+		} 
+
+		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');

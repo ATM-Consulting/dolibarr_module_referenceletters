@@ -67,6 +67,28 @@ class ReferenceLetters extends CommonObject {
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/fiche.php'
 		);
+		/*$this->element_type_list['thirdparty'] = array (
+				'class' => 'societe.class.php',
+				'securityclass' => 'societe',
+				'objectclass' => 'Societe',
+				'classpath' => DOL_DOCUMENT_ROOT.'/societe/class/',
+				'trans' => 'Customer',
+				'title' => 'Customer',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php',
+				'menuloader_function' => 'societe_prepare_head',
+				'card' => 'societe/soc.php'
+		);*/
+		$this->element_type_list['contact'] = array (
+				'class' => 'contact.class.php',
+				'securityclass' => 'societe',
+				'objectclass' => 'Contact',
+				'classpath' => DOL_DOCUMENT_ROOT.'/contact/class/',
+				'trans' => 'Contact',
+				'title' => 'Contact',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/contact.lib.php',
+				'menuloader_function' => 'contact_prepare_head',
+				'card' => 'contact/fiche.php'
+		);
 		return 1;
 	}
 	

@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_contract.modules.php
+ *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_thirdparty.modules.php
  *	\ingroup    refferenceletters
  *	\brief      Class file to create PDF for letter's model on contract
  */
@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 /**
  *	Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_contract extends ModelePDFReferenceLetters
+class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 {
 	var $db;
 	var $name;
@@ -113,12 +113,10 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 	
 		if ($conf->referenceletters->dir_output)
 		{
-			$object->fetch_thirdparty();
-
 			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/contract/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/thirdparty/" . $objectref;
 			$file = $dir .'/'. $objectref . ".pdf";
 
 			if (! file_exists($dir))
@@ -214,11 +212,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socobject = $object->contact;
-					else $socobject = $object->thirdparty;
-					
-					$tmparray=$this->get_substitutionarray_thirdparty($socobject,$outputlangs);
+					$tmparray=$this->get_substitutionarray_thirdparty($object,$outputlangs);
 					$substitution_array=array();
 					if (is_array($tmparray) && count($tmparray)>0) {
 						foreach($tmparray as $key=>$value) {

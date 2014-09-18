@@ -158,7 +158,7 @@ foreach ($dirmodels as $reldir) {
 						// Info
 						$htmltooltip = '';
 						$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
-						$nextval = $module->getNextValue($user->id, 'contract', $propal);
+						$nextval = $module->getNextValue($user->id, 'contract', '','');
 						if ("$nextval" != $langs->trans("NotAvailable")) 						// Keep " on nextval
 						{
 							$htmltooltip .= '' . $langs->trans("NextValue") . ': ';

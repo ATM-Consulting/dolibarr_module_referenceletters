@@ -308,6 +308,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 		$outputlangs->load("main");
 		$outputlangs->load("bills");
+		$outputlangs->load("dict");
 		$outputlangs->load("propal");
 		$outputlangs->load("companies");
 

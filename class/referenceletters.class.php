@@ -67,7 +67,7 @@ class ReferenceLetters extends CommonObject {
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/fiche.php'
 		);
-		/*$this->element_type_list['thirdparty'] = array (
+		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
 				'objectclass' => 'Societe',
@@ -77,7 +77,7 @@ class ReferenceLetters extends CommonObject {
 				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php',
 				'menuloader_function' => 'societe_prepare_head',
 				'card' => 'societe/soc.php'
-		);*/
+		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => 'societe',

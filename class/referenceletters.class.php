@@ -72,7 +72,7 @@ class ReferenceLetters extends CommonObject {
 				'securityclass' => 'societe',
 				'objectclass' => 'Societe',
 				'classpath' => DOL_DOCUMENT_ROOT.'/societe/class/',
-				'trans' => 'Customer',
+				'trans' => 'companies',
 				'title' => 'Customer',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php',
 				'menuloader_function' => 'societe_prepare_head',
@@ -83,12 +83,23 @@ class ReferenceLetters extends CommonObject {
 				'securityclass' => 'societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT.'/contact/class/',
-				'trans' => 'Contact',
+				'trans' => 'contact',
 				'title' => 'Contact',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/fiche.php'
 		);
+		$this->element_type_list['propal'] = array (
+				'class' => 'propal.class.php',
+				'securityclass' => 'propal',
+				'objectclass' => 'Propal',
+				'classpath' => DOL_DOCUMENT_ROOT.'/comm/propal/class/',
+				'trans' => 'propal',
+				'title' => 'Proposal',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/propal.lib.php',
+				'menuloader_function' => 'propal_prepare_head',
+				'card' => 'comm/propal.php'
+		);	
 		return 1;
 	}
 	

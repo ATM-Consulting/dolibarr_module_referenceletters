@@ -102,7 +102,10 @@ class modReferenceLetters extends DolibarrModules {
 		// Example: this->dirs = array("/referenceletters/temp");
 		$this->dirs = array (
 				'/referenceletters',
-				'/referenceletters/contract'
+				'/referenceletters/contract',
+				'/referenceletters/contact',
+				'/referenceletters/thirdparty',
+				'/referenceletters/propal'
 		);
 		
 		// Config pages. Put here list of php pages
@@ -170,7 +173,7 @@ class modReferenceLetters extends DolibarrModules {
 				'thirdparty:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
 				'contact:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				//'invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_invoiceid=__ID__',
-				//'propal:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_propalid=__ID__',
+				'propal:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
 				//'supplier_invoice:+tabAgefodd:AgfMenuSess:agefodd@agefodd:/agefodd/session/list_fin.php?search_fourninvoiceid=__ID__'
 		);
 		

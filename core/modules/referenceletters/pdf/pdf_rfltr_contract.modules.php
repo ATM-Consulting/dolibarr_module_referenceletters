@@ -399,7 +399,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 		 		$carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
 		 	}*/
 
-		 	$carac_emetteur .= pdf_build_address($outputlangs,$this->emetteur);
+		 	$carac_emetteur .= pdf_build_address($outputlangs,$this->emetteur, $object->client);
 
 			// Show sender
 			$posy=42;

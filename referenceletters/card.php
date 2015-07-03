@@ -171,7 +171,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
 	print '</td>';
 	print '</tr>';
-
+	print '<tr>';
+	
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 

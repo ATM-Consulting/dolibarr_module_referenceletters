@@ -83,3 +83,6 @@ RefLtrNewLetters=Nouveaux courrier
 RefLtrConfirmDeleteLetter=Etes-vous sûre de supprimer ce courrier ?
 RefLtrDeleteLetter=Supprimer un courrier
 RefLtrDatec=Date de création
+RefLtrTag=Tag
+RefLtrDisplayTag=Afficher les tags
+RefLtrNoneExists=Aucun(e) %s existe, impossible d'afficher un exemple

@@ -201,6 +201,18 @@ $now = dol_now();
 // Add new proposal
 if (($action == 'create' || $action=='edit' || $action='delete') && $user->rights->referenceletters->write) {
 	
+	print '<script>';
+	print 'function DivStatus( tbl_){' . "\n";
+	print '	var Obj = document.getElementById( tbl_);' . "\n";
+	print '	if( Obj.style.display=="none"){' . "\n";
+	print '		Obj.style.display ="block";' . "\n";
+	print '	}' . "\n";
+	print '	else{' . "\n";
+	print '		Obj.style.display="none";' . "\n";
+	print '	}' . "\n";
+	print '}' . "\n";
+	print '</script>';
+	
 	
 	// Confirm form
 	$formconfirm = '';
@@ -260,6 +272,14 @@ if (($action == 'create' || $action=='edit' || $action='delete') && $user->right
 	print '</td>';
 	print '</tr>';
 	
+	print '<td width="20%">';
+	print $langs->trans('RefLtrTag');
+	print '</td>';
+	print '<td>';
+	print '<a href="javascript:DivStatus(\'refltertags\');" title="'.$langs->trans('RefLtrDisplayTag').'" style="font-size:14px;">+</a>';
+	print $formrefleter->displaySubtitutionKey($user,$object_refletter);
+	print '</td>';
+	print '</tr>';
 	
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');

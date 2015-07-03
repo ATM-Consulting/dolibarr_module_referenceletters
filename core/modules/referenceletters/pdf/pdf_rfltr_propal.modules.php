@@ -18,7 +18,7 @@
  */
 
 /**
- *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_thirdparty.modules.php
+ *	\file       refferenceletters/core/modules/refferenceletters/pdf_rfltr_contract.modules.php
  *	\ingroup    refferenceletters
  *	\brief      Class file to create PDF for letter's model on contract
  */
@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 /**
  *	Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
+class pdf_rfltr_propal extends ModelePDFReferenceLetters
 {
 	var $db;
 	var $name;
@@ -65,7 +65,7 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "referenceletter_contract";
+		$this->name = "referenceletter_propal";
 		$this->description = $langs->trans('Module103258Name');
 
 		// Dimension page pour format A4
@@ -113,10 +113,12 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 	
 		if ($conf->referenceletters->dir_output)
 		{
+			$object->fetch_thirdparty();
+
 			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/thirdparty/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/propal/" . $objectref;
 			$file = $dir .'/'. $objectref . ".pdf";
 
 			if (! file_exists($dir))
@@ -212,7 +214,20 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					$tmparray=$this->get_substitutionarray_thirdparty($object,$outputlangs);
+					
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socobject = $object->contact;
+					else $socobject = $object->thirdparty;
+					
+					$tmparray=$this->get_substitutionarray_thirdparty($socobject,$outputlangs);
+					$substitution_array=array();
+					if (is_array($tmparray) && count($tmparray)>0) {
+						foreach($tmparray as $key=>$value) {
+							$substitution_array['{cust_'.$key.'}']=$value;
+						}
+						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+					}
+					
+					$tmparray=$this->get_substitutionarray_other($outputlangs);
 					$substitution_array=array();
 					if (is_array($tmparray) && count($tmparray)>0) {
 						foreach($tmparray as $key=>$value) {
@@ -221,7 +236,7 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					$tmparray=$this->get_substitutionarray_other($outputlangs);
+					$tmparray=$this->get_substitutionarray_object($object,$outputlangs);
 					$substitution_array=array();
 					if (is_array($tmparray) && count($tmparray)>0) {
 						foreach($tmparray as $key=>$value) {
@@ -354,13 +369,26 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 		$posy+=1;
 		$pdf->SetFont('','', $default_font_size - 1);
 
+		if ($object->ref_client)
+		{
+			$posy+=5;
+			$pdf->SetXY($posx,$posy);
+			$pdf->SetTextColor(0,0,60);
+			$pdf->MultiCell(100, 3, $outputlangs->transnoentities("RefCustomer")." : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+		}
 
-		if ($object->code_client)
+		$posy+=4;
+		$pdf->SetXY($posx,$posy);
+		$pdf->SetTextColor(0,0,60);
+		$pdf->MultiCell(100, 3, $outputlangs->transnoentities("Date")." : " . dol_print_date($object->date_contrat,"day",false,$outputlangs,true), '', 'R');
+
+
+		if ($object->thirdparty->code_client)
 		{
 			$posy+=4;
 			$pdf->SetXY($posx,$posy);
 			$pdf->SetTextColor(0,0,60);
-			$pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->code_client), '', 'R');
+			$pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
 		$posy+=2;
@@ -380,7 +408,7 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 		 		$carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
 		 	}*/
 
-		 	$carac_emetteur .= pdf_build_address($outputlangs,$this->emetteur);
+		 	$carac_emetteur .= pdf_build_address($outputlangs,$this->emetteur, $object->client);
 
 			// Show sender
 			$posy=42;
@@ -419,9 +447,20 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				$result=$object->fetch_contact($arrayidcontact[0]);
 			}
 
-			$carac_client_name=$outputlangs->convToOutputCharset($object->name);
+			// Recipient name
+			if (! empty($usecontact))
+			{
+				// On peut utiliser le nom de la societe du contact
+				if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socname = $object->contact->socname;
+				else $socname = $object->client->nom;
+				$carac_client_name=$outputlangs->convToOutputCharset($socname);
+			}
+			else
+			{
+				$carac_client_name=$outputlangs->convToOutputCharset($object->client->nom);
+			}
 
-			$carac_client=pdf_build_address($outputlangs,$this->emetteur,$object,0,0,'target');
+			$carac_client=pdf_build_address($outputlangs,$this->emetteur,$object->client,($usecontact?$object->contact:''),$usecontact,'target');
 
 			// Show recipient
 			$widthrecbox=100;

@@ -60,46 +60,62 @@ class ReferenceLetters extends CommonObject {
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
 				'objectclass' => 'Contrat',
-				'classpath' => DOL_DOCUMENT_ROOT.'/contrat/class/',
+				'classpath' => DOL_DOCUMENT_ROOT . '/contrat/class/',
 				'trans' => 'contracts',
 				'title' => 'Contract',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/contract.lib.php',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contract.lib.php',
 				'menuloader_function' => 'contract_prepare_head',
-				'card' => '/contrat/fiche.php'
+				'card' => '/contrat/fiche.php',
+				'substitution_method' => 'get_substitutionarray_object' 
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
 				'objectclass' => 'Societe',
-				'classpath' => DOL_DOCUMENT_ROOT.'/societe/class/',
+				'classpath' => DOL_DOCUMENT_ROOT . '/societe/class/',
 				'trans' => 'companies',
 				'title' => 'Customer',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php',
 				'menuloader_function' => 'societe_prepare_head',
-				'card' => 'societe/soc.php'
+				'card' => 'societe/soc.php',
+				'substitution_method' => 'get_substitutionarray_thirdparty' 
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => 'societe',
 				'objectclass' => 'Contact',
-				'classpath' => DOL_DOCUMENT_ROOT.'/contact/class/',
+				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
 				'trans' => 'contact',
 				'title' => 'Contact',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/contact.lib.php',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
-				'card' => 'contact/fiche.php'
+				'card' => 'contact/fiche.php',
+				'substitution_method' => 'get_substitutionarray_contact' 
 		);
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
 				'objectclass' => 'Propal',
-				'classpath' => DOL_DOCUMENT_ROOT.'/comm/propal/class/',
+				'classpath' => DOL_DOCUMENT_ROOT . '/comm/propal/class/',
 				'trans' => 'propal',
 				'title' => 'Proposal',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT.'/core/lib/propal.lib.php',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
-				'card' => 'comm/propal.php'
-		);	
+				'card' => 'comm/propal.php',
+				'substitution_method' => 'get_substitutionarray_object' 
+		);
+		$this->element_type_list['invoice'] = array (
+				'class' => 'facture.class.php',
+				'securityclass' => 'facture',
+				'objectclass' => 'Facture',
+				'classpath' => DOL_DOCUMENT_ROOT . '/compta/facture/class/',
+				'trans' => 'bills',
+				'title' => 'Bill',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
+				'menuloader_function' => 'facture_prepare_head',
+				'card' => 'compta/facture.php',
+				'substitution_method' => 'get_substitutionarray_object'
+		);
 		return 1;
 	}
 	
@@ -370,6 +386,135 @@ class ReferenceLetters extends CommonObject {
 	 * @return string translated element label
 	 *        
 	 */
+	public function getSubtitutionKey($user) {
+		global $conf, $langs, $mysoc;
+		
+		require_once 'commondocgeneratorreferenceletters.class.php';
+		$langs->load('admin');
+		
+		$subst_array = '';
+		$docgen = new commondocgeneratorreferenceletters($this->db);
+		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
+		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
+		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
+		
+		foreach ( $this->element_type_list as $type => $item ) {
+			if ($this->element_type == $type) {
+				
+				$langs->load($item['trans']);
+				
+				require_once $item['classpath'] . $item['class'];
+				$testObj = new $item['objectclass']($this->db);
+				
+				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+					if ($num > 0) {
+						$obj = $this->db->fetch_object($resql);
+					}
+				}
+				if (! empty($obj->rowid) && $num > 0) {
+					$testObj->fetch($obj->rowid);
+					
+					if (method_exists($testObj, 'fetch_thirdparty')) {
+						$testObj->fetch_thirdparty();
+					}
+					
+					$subst_array[$langs->trans($item['title'])] = $docgen->$item['substitution_method']($testObj, $langs);
+					if (!empty($testObj->thirdparty->id)) {
+						$array_first_thirdparty_object=$docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
+						foreach($array_first_thirdparty_object as $key=>$value) {
+							$array_second_thirdparty_object['cust_'.$key]=$value;
+						}
+					}
+					$subst_array[$langs->trans($item['title'])]=array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+				} else {
+					$subst_array[$langs->trans($item['title'])] = array ($langs->trans('RefLtrNoneExists',$langs->trans($item['title']))=>$langs->trans('RefLtrNoneExists',$langs->trans($item['title'])));
+				}
+			}
+		}
+		
+		/*
+		
+		if ($this->element_type=='contact') {
+			require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
+			$testObj= new Contact($this->db);
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$testObj->table_element.' WHERE entity IN ('.getEntity($conf->entity,1).') '.$this->db->plimit(1);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$num = $this->db->num_rows($resql);
+				if ($num > 0) {
+					$obj = $this->db->fetch_object($resql);
+				}
+			}
+			if (!empty($obj->rowid) && $num>0) {
+				$testObj->fetch($obj->rowid);
+				
+				$langs->load($this->element_type_list['contact']['trans']);
+				
+				
+				$subst_array[$langs->trans($this->element_type_list[''])]=$docgen->get_substitutionarray_contact($testObj,$langs);
+			} else {
+				$subst_array['contact']=array();
+			}
+			
+		}
+		
+		if ($this->element_type=='contract') {
+			require_once DOL_DOCUMENT_ROOT.'/contrat/class/contrat.class.php';
+			$testObj= new Contrat($this->db);
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$testObj->table_element.' WHERE entity IN ('.getEntity($conf->entity,1).') '.$this->db->plimit(1);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$num = $this->db->num_rows($resql);
+				if ($num > 0) {
+					$obj = $this->db->fetch_object($resql);
+				}
+			}
+			if (!empty($obj->rowid) && $num>0) {
+				$testObj->fetch($obj->rowid);
+				$subst_array['contract']=$docgen->get_substitutionarray_object($testObj,$langs);
+			} else {
+				$subst_array['contract']=array();
+			}
+				
+		}
+		
+		if ($this->element_type=='contract') {
+			require_once DOL_DOCUMENT_ROOT.'/comm/class/contrat.class.php';
+			$testObj= new Contrat($this->db);
+			$sql = 'SELECT rowid FROM '.MAIN_DB_PREFIX.$testObj->table_element.' WHERE entity IN ('.getEntity($conf->entity,1).') '.$this->db->plimit(1);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if ($resql) {
+				$num = $this->db->num_rows($resql);
+				if ($num > 0) {
+					$obj = $this->db->fetch_object($resql);
+				}
+			}
+			if (!empty($obj->rowid) && $num>0) {
+				$testObj->fetch($obj->rowid);
+				$subst_array['propal']=$docgen->get_substitutionarray_object($testObj,$langs);
+			} else {
+				$subst_array['propal']=array();
+			}
+		
+		}*/
+		
+		return $subst_array;
+	}
+	
+	/**
+	 * return translated label of element linked
+	 *
+	 * @param int $mode trans normal, 1 transnoentities
+	 * @return string translated element label
+	 *        
+	 */
 	public function displayElementElement($mode = 0, $element_type = '') {
 		global $langs;
 		
@@ -440,8 +585,8 @@ class ReferenceLetters extends CommonObject {
 		
 		if (! $error) {
 			
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) 			// For avoid conflicts if trigger used
-			{
+			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+{
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -545,7 +690,7 @@ class ReferenceLetters extends CommonObject {
 		
 		// Load source object
 		$object->fetch($fromid);
-		$object->title = $object->title. ' (Clone)';
+		$object->title = $object->title . ' (Clone)';
 		$clonedrefletterid = $object->create($user);
 		
 		// Other options
@@ -555,27 +700,27 @@ class ReferenceLetters extends CommonObject {
 		}
 		
 		if (! $error) {
-			//Clone Chapters
+			// Clone Chapters
 			require_once 'referenceletterschapters.class.php';
 			$chapters = new ReferenceLettersChapters($this->db);
 			$chaptersnew = new ReferenceLettersChapters($this->db);
-			$result=$chapters->fetch_byrefltr($fromid);
+			$result = $chapters->fetch_byrefltr($fromid);
 			if ($result < 0) {
 				$this->errors[] = $object->error;
 				$error ++;
 			} else {
-				if (is_array($chapters->lines_chapters) && count($chapters->lines_chapters)>0) {
-					foreach($chapters->lines_chapters as $line) {
+				if (is_array($chapters->lines_chapters) && count($chapters->lines_chapters) > 0) {
+					foreach ( $chapters->lines_chapters as $line ) {
 						$chaptersnew = new ReferenceLettersChapters($this->db);
 						$chaptersnew->entity = $line->entity;
-						$chaptersnew->fk_referenceletters =$object->id;
+						$chaptersnew->fk_referenceletters = $object->id;
 						$chaptersnew->lang = $line->lang;
 						$chaptersnew->sort_order = $line->sort_order;
 						$chaptersnew->title = $line->title;
 						$chaptersnew->content_text = $line->content_text;
 						$chaptersnew->options_text = $line->options_text;
 						$chaptersnew->status = $line->status;
-						$result=$chaptersnew->create($user);
+						$result = $chaptersnew->create($user);
 						if ($result < 0) {
 							$this->errors[] = $object->error;
 							$error ++;
@@ -583,8 +728,6 @@ class ReferenceLetters extends CommonObject {
 					}
 				}
 			}
-			
-			
 		}
 		
 		// End

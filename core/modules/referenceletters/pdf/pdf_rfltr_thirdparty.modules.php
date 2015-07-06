@@ -363,7 +363,10 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 			$pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode")." : " . $outputlangs->transnoentities($object->code_client), '', 'R');
 		}
 
-		$posy+=2;
+		$posy+=4;
+		$pdf->SetXY($posx,$posy);
+		$pdf->SetTextColor(0,0,60);
+		$pdf->MultiCell(100, 3, $outputlangs->transnoentities("Date")." : " . dol_print_date(dol_now(),"day",false,$outputlangs,true), '', 'R');
 
 		// Show list of linked objects
 		$posy = pdf_writeLinkedObjects($pdf, $object, $outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
@@ -386,7 +389,7 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 			$posy=42;
 		 	$posx=$this->marge_gauche;
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT)) $posx=$this->page_largeur-$this->marge_droite-80;
-			$hautcadre=40;
+			$hautcadre=45;
 
 			// Show sender frame
 			$pdf->SetTextColor(0,0,0);
@@ -466,5 +469,3 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 	}
 
 }
-
-?>

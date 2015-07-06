@@ -393,7 +393,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 			$posx = $this->marge_gauche;
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
 				$posx = $this->page_largeur - $this->marge_droite - 80;
-			$hautcadre = 40;
+			$hautcadre = 45;
 			
 			// Show sender frame
 			$pdf->SetTextColor(0, 0, 0);

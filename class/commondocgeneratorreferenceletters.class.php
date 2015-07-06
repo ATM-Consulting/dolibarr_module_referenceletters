@@ -33,7 +33,7 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php");
 class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 {
 	var $error='';
-
+	var $db;
 
     /**
      * Define array with couple subtitution key => subtitution value
@@ -49,7 +49,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         $langs->load("dict");
         
         $code=(! empty($contact->civilite_id)?$contact->civilite_id:(! empty($contact->civility_id)?$contact->civility_id:''));
-        $civility=$langs->getLabelFromKey($db, "Civility".$code, "c_civilite", "code", "civilite", $code);
+        $civility=$langs->getLabelFromKey($this->db, "Civility".$code, "c_civilite", "code", "civilite", $code);
         
         return array(
             'contact_lastname'=>$contact->lastname,

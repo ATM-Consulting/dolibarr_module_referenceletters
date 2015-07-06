@@ -60,7 +60,7 @@ class modReferenceLetters extends DolibarrModules {
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '0.5';
+		$this->version = '0.6';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -128,7 +128,7 @@ class modReferenceLetters extends DolibarrModules {
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
 				3,
-				4
+				6
 		);
 		$this->langfiles = array (
 				"referenceletters@referenceletters" 

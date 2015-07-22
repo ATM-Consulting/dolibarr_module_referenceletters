@@ -170,7 +170,7 @@ if ($action=='create') {
 	$action_next='add';
 	
 	
-} elseif ($action=='edit' || $action='delete') {
+} elseif ($action=='edit' || $action == 'delete') {
 	
 	if(!empty($id)) {
 		$result=$object->fetch($id);
@@ -199,7 +199,7 @@ $formadmin = new FormAdmin($db);
 
 $now = dol_now();
 // Add new proposal
-if (($action == 'create' || $action=='edit' || $action='delete') && $user->rights->referenceletters->write) {
+if (($action == 'create' || $action=='edit' || $action=='delete') && $user->rights->referenceletters->write) {
 	
 	print '<script>';
 	print 'function DivStatus( tbl_){' . "\n";

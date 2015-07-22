@@ -59,6 +59,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
+				'securityfeature'=>'',
 				'objectclass' => 'Contrat',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contrat/class/',
 				'trans' => 'contracts',
@@ -71,6 +72,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
+				'securityfeature'=>'&societe',
 				'objectclass' => 'Societe',
 				'classpath' => DOL_DOCUMENT_ROOT . '/societe/class/',
 				'trans' => 'companies',
@@ -83,6 +85,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => 'societe',
+				'securityfeature'=>'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
 				'trans' => 'contact',
@@ -95,6 +98,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
+				'securityfeature'=>'',
 				'objectclass' => 'Propal',
 				'classpath' => DOL_DOCUMENT_ROOT . '/comm/propal/class/',
 				'trans' => 'propal',
@@ -107,6 +111,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
+				'securityfeature'=>'',
 				'objectclass' => 'Facture',
 				'classpath' => DOL_DOCUMENT_ROOT . '/compta/facture/class/',
 				'trans' => 'bills',

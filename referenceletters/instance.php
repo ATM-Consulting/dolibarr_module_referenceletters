@@ -70,7 +70,7 @@ require_once $object_refletter->element_type_list[$element_type]['classpath'] . 
 require_once $object_refletter->element_type_list[$element_type]['menuloader_lib'];
 
 // Access control
-restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id);
+restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature']);
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");

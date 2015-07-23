@@ -297,7 +297,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 	$nbrows=ROWS_2;
 	if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT)) $nbrows=$conf->global->MAIN_INPUT_DESC_HEIGHT;
-	$enable=(isset($conf->global->FCKEDITOR_ENABLE_DETAILS)?$conf->global->FCKEDITOR_ENABLE_DETAILS:0);
+	$enable=(isset($conf->global->FCKEDITOR_ENABLE_SOCIETE)?$conf->global->FCKEDITOR_ENABLE_SOCIETE:0);
 	$doleditor=new DolEditor('content_text', $object->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 	$doleditor->Create();
 	print '</td>';

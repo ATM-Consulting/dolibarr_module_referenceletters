@@ -370,7 +370,7 @@ if (! empty($idletter)) {
 				$nbrows = ROWS_2;
 				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
 					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable = (isset($conf->global->FCKEDITOR_ENABLE_DETAILS) ? $conf->global->FCKEDITOR_ENABLE_DETAILS : 0);
+				$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
 				$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 				$doleditor->Create();
 				print '</td>';
@@ -438,7 +438,7 @@ if (! empty($refletterelemntid)) {
 				$nbrows = ROWS_2;
 				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
 					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable = (isset($conf->global->FCKEDITOR_ENABLE_DETAILS) ? $conf->global->FCKEDITOR_ENABLE_DETAILS : 0);
+				$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
 				$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 				$doleditor->Create();
 				print '</td>';

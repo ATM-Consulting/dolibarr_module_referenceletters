@@ -1,24 +1,24 @@
 <?php
 /* References letters
  * Copyright (C) 2014  HENRY Florian  florian.henry@open-concept.pro
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 /**
- * \file		instance.php
- * \ingroup	refferenceletters
- * \brief		intance pages
+ * \file instance.php
+ * \ingroup refferenceletters
+ * \brief intance pages
  */
 
 // Load environment
@@ -96,7 +96,7 @@ $hookmanager->initHooks(array (
 
 /*
  * Actions
-*/
+ */
 
 $parameters = array ();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
@@ -113,8 +113,9 @@ if ($action == 'buildoc') {
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
-		} 
-		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		}
+		if (empty($langs_chapter))
+			$langs_chapter = $langs->defaultlang;
 		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
@@ -155,14 +156,15 @@ if ($action == 'buildoc') {
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
-		} 
-		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		}
+		if (empty($langs_chapter))
+			$langs_chapter = $langs->defaultlang;
 		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
 			
-		// Use a big array into class it is serialize
+			// Use a big array into class it is serialize
 		$content_letter = array ();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
@@ -226,7 +228,7 @@ if ($action == 'buildoc') {
 }
 /*
  * VIEW
-*/
+ */
 
 $title = $langs->trans($object_refletter->element_type_list[$element_type]['title']) . ' - ' . $langs->trans('Module103258Name');
 
@@ -291,9 +293,9 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		// File
 		print '<td>';
 		$filename = dol_sanitizeFileName($line->ref_int);
-		$filedir = $conf->referenceletters->dir_output . "/".$element_type."/" . $line->ref_int;
+		$filedir = $conf->referenceletters->dir_output . "/" . $element_type . "/" . $line->ref_int;
 		$linkeddoc = $formfile->getDocumentsLink('referenceletters', $filename, $filedir);
-		$linkeddoc = preg_replace('/file=/', 'file='.$element_type.'%2F', $linkeddoc);
+		$linkeddoc = preg_replace('/file=/', 'file=' . $element_type . '%2F', $linkeddoc);
 		// var_dump($linkeddoc);
 		print $linkeddoc;
 		print '</td>';
@@ -331,8 +333,9 @@ if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
-		} 
-		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		}
+		if (empty($langs_chapter))
+			$langs_chapter = $langs->defaultlang;
 		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
@@ -360,36 +363,43 @@ if (! empty($idletter)) {
 			print '</tr>';
 			
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrText');
-				print '</td>';
-				print '<td>';
-				
-				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-				$nbrows = ROWS_2;
-				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
-				$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
-				$doleditor->Create();
-				print '</td>';
-				print '</tr>';
-				
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrOption');
-				print '</td>';
-				print '<td>';
-				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
-					foreach ( $line_chapter->options_text as $key => $option_text ) {
-						if (! empty($option_text)) {
-							print '<input type="checkbox" checked="checked" name="use_content_option_' . $line_chapter->id . '_' . $key . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $line_chapter->id . '_' . $key . '" value="' . $option_text . '" ><br>';
+				if ($line_chapter->content_text == '@breakpage@') {
+					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+					print '<input type="hidden" name="content_text_' . $line_chapter->id . '" value="' . $line_chapter->content_text . '"/>';
+					print $langs->trans('RefLtrPageBreak');
+					print '</td></tr>';
+				} else {
+					print '<tr>';
+					print '<td  width="20%">';
+					print $langs->trans('RefLtrText');
+					print '</td>';
+					print '<td>';
+					
+					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+					$nbrows = ROWS_2;
+					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+					$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+					$doleditor->Create();
+					print '</td>';
+					print '</tr>';
+					
+					print '<tr>';
+					print '<td  width="20%">';
+					print $langs->trans('RefLtrOption');
+					print '</td>';
+					print '<td>';
+					if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
+						foreach ( $line_chapter->options_text as $key => $option_text ) {
+							if (! empty($option_text)) {
+								print '<input type="checkbox" checked="checked" name="use_content_option_' . $line_chapter->id . '_' . $key . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $line_chapter->id . '_' . $key . '" value="' . $option_text . '" ><br>';
+							}
 						}
 					}
+					print '</td>';
+					print '</tr>';
 				}
-				print '</td>';
-				print '</tr>';
 			}
 			
 			print '<td colspan="2" align="center">';
@@ -428,41 +438,48 @@ if (! empty($refletterelemntid)) {
 			print '</tr>';
 			
 			foreach ( $object_element->content_letter as $key => $line_chapter ) {
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrText');
-				print '</td>';
-				print '<td>';
-
-				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-				$nbrows = ROWS_2;
-				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-				$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
-				$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
-				$doleditor->Create();
-				print '</td>';
-				print '</tr>';
-				
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrOption');
-				print '</td>';
-				print '<td>';
-				if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
-					foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
-						if (! empty($option_detail['text_content_option'])) {
-							if (! empty($option_detail['use_content_option'])) {
-								$checked = ' checked="checked" ';
-							} else {
-								$checked = '';
+				if ($line_chapter['content_text'] == '@breakpage@') {
+					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+					print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
+					print $langs->trans('RefLtrPageBreak');
+					print '</td></tr>';
+				} else {
+					print '<tr>';
+					print '<td  width="20%">';
+					print $langs->trans('RefLtrText');
+					print '</td>';
+					print '<td>';
+					
+					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+					$nbrows = ROWS_2;
+					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+					$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+					$doleditor->Create();
+					print '</td>';
+					print '</tr>';
+					
+					print '<tr>';
+					print '<td  width="20%">';
+					print $langs->trans('RefLtrOption');
+					print '</td>';
+					print '<td>';
+					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
+						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
+							if (! empty($option_detail['text_content_option'])) {
+								if (! empty($option_detail['use_content_option'])) {
+									$checked = ' checked="checked" ';
+								} else {
+									$checked = '';
+								}
+								print '<input type="checkbox" ' . $checked . ' name="use_content_option_' . $key . '_' . $keyoption . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $key . '_' . $keyoption . '" value="' . $option_detail['text_content_option'] . '" ><br>';
 							}
-							print '<input type="checkbox" ' . $checked . ' name="use_content_option_' . $key . '_' . $keyoption . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $key . '_' . $keyoption . '" value="' . $option_detail['text_content_option'] . '" ><br>';
 						}
 					}
+					print '</td>';
+					print '</tr>';
 				}
-				print '</td>';
-				print '</tr>';
 			}
 			
 			print '<tr>';

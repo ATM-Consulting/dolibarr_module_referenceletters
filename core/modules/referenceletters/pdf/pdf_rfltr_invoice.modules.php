@@ -195,6 +195,18 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					
 					$chapter_text=$line_chapter['content_text'];
 					
+					if ($chapter_text=='@breakpage@') {
+						$this->_pagefoot($pdf,$object,$outputlangs);
+						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+						$pdf->AddPage();
+						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+						$pagenb++;
+					
+						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+					
+						continue;
+					}
+					
 					//User substitution value
 					$tmparray=$this->get_substitutionarray_user($user,$outputlangs);
 					$substitution_array=array();

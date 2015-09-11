@@ -132,6 +132,19 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+} elseif($action=='addbreakpage') {
+	$object_chapters_breakpage = new ReferenceLettersChapters($db);
+	$object_chapters_breakpage->fk_referenceletters=$object->id;
+	$object_chapters_breakpage->title ='';
+	$object_chapters_breakpage->content_text = '@breakpage@';
+	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$result = $object_chapters_breakpage->create($user);
+	if ($result < 0) {
+		$action = 'addbreakpage';
+		setEventMessage($object_chapters_breakpage->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 }
 
 /*
@@ -241,66 +254,77 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
-			print '<table class="border" width="100%">';
-			
-			if ($user->rights->referenceletters->write) {
-				print '<tr><td rowspan="5" width="20px">';
-				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			if ($line_chapter->content_text=='@breakpage@') {
+				print '<table class="border" width="100%">';
+				print '<tr><td style="text-align:center;font-weight:bold">';
+				print $langs->trans('RefLtrPageBreak');
 				print '</td></tr>';
-			}
-			
-			if (! empty($conf->global->MAIN_MULTILANGS))
-			{
+				print '</table>';
+			} else {
+				print '<table class="border" width="100%">';
+				
+				if ($user->rights->referenceletters->write) {
+					print '<tr><td rowspan="5" width="20px">';
+					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+					print '</td></tr>';
+				}
+				
+				if (! empty($conf->global->MAIN_MULTILANGS))
+				{
+					print '<tr>';
+					print '<td  width="20%">';
+					print $langs->trans('RefLtrLangue');
+					print '</td>';
+					print '<td>';
+					$langs->load("languages");
+					$labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
+					print $labellang;
+					print '</td>';
+					print '</tr>';
+				}
+				
 				print '<tr>';
 				print '<td  width="20%">';
-				print $langs->trans('RefLtrLangue');
+				print $langs->trans('RefLtrTitle');
 				print '</td>';
 				print '<td>';
-				$langs->load("languages");
-				$labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
-				print $labellang;
+				print $line_chapter->title;
 				print '</td>';
 				print '</tr>';
-			}
-			
-			print '<tr>';
-			print '<td  width="20%">';
-			print $langs->trans('RefLtrTitle');
-			print '</td>';
-			print '<td>';
-			print $line_chapter->title;
-			print '</td>';
-			print '</tr>';
-			
-			print '<tr>';
-			print '<td  width="20%">';
-			print $langs->trans('RefLtrText');
-			print '</td>';
-			print '<td>';
-			print $line_chapter->content_text;
-			print '</td>';
-			print '</tr>';
-			
-			print '<tr>';
-			print '<td  width="20%">';
-			print $langs->trans('RefLtrOption');
-			print '</td>';
-			print '<td>';
-			if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
-				foreach($line_chapter->options_text as $key=>$option_text) {
-					print '<input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'">'.$option_text.'<br>';
+				
+				print '<tr>';
+				print '<td  width="20%">';
+				print $langs->trans('RefLtrText');
+				print '</td>';
+				print '<td>';
+				print $line_chapter->content_text;
+				print '</td>';
+				print '</tr>';
+				
+				print '<tr>';
+				print '<td  width="20%">';
+				print $langs->trans('RefLtrOption');
+				print '</td>';
+				print '<td>';
+				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
+					foreach($line_chapter->options_text as $key=>$option_text) {
+						print '<input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'">'.$option_text.'<br>';
+					}
 				}
+				print '</td>';
+				print '</tr>';
+				
+				print '</table>';
 			}
-			print '</td>';
-			print '</tr>';
-			
-			print '</table>';
 		}
 	}
 	
 	print '<div class="tabsAction">';
-	print '<div class="inline-block divButAction"><a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . "</a></div>\n";
+	print '<div class="inline-block divButAction">';
+	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
+	print "</div>\n";
 	print '</div>';
 	
 	print "</div>\n";

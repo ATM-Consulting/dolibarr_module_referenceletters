@@ -86,3 +86,5 @@ RefLtrDatec=Creation date
 RefLtrTag=Tag
 RefLtrDisplayTag=Display tags
 RefLtrNoneExists=%s not found (probaly none element exsits yet), impossible to display exemple data
+RefLtrAddPageBreak=Add page break
+RefLtrPageBreak=Page break

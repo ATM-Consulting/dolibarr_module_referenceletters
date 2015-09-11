@@ -1,5 +1,8 @@
 English Reference Letters ChangeLog
 
+***** ChangeLog for 1.0 compared to 1.1 *****
+-FIX : Cannot create models without title 
+
 ***** ChangeLog for 0.9 compared to 1.0 *****
 -NEW : Add break page option
 -FIX : Contact models output a contact adress

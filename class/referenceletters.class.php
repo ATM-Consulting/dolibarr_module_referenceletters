@@ -137,6 +137,12 @@ class ReferenceLetters extends CommonObject {
 		
 		// Clean parameters
 		
+		if (empty($this->title)) {
+			$this->errors[] = $langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("RefLtrTitle"));
+			$error++;
+		}
+		
+		
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
 		if (isset($this->title))

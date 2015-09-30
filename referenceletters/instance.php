@@ -368,6 +368,11 @@ if (! empty($idletter)) {
 					print '<input type="hidden" name="content_text_' . $line_chapter->id . '" value="' . $line_chapter->content_text . '"/>';
 					print $langs->trans('RefLtrPageBreak');
 					print '</td></tr>';
+				}elseif ($line_chapter->content_text == '@breakpagenohead@') {
+					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+					print '<input type="hidden" name="content_text_' . $line_chapter->id . '" value="' . $line_chapter->content_text . '"/>';
+					print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+					print '</td></tr>';
 				} else {
 					print '<tr>';
 					print '<td  width="20%">';
@@ -443,7 +448,12 @@ if (! empty($refletterelemntid)) {
 					print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
 					print $langs->trans('RefLtrPageBreak');
 					print '</td></tr>';
-				} else {
+				} elseif ($line_chapter['content_text'] == '@breakpagenohead@') {
+					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+					print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
+					print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+					print '</td></tr>';
+				}else {
 					print '<tr>';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrText');

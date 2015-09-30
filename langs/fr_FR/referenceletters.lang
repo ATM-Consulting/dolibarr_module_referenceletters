@@ -88,3 +88,4 @@ RefLtrDisplayTag=Afficher les tags
 RefLtrNoneExists=Aucun(e) %s existe, impossible d'afficher un exemple
 RefLtrAddPageBreak=Ajouter un saut de page
 RefLtrPageBreak=Saut de page
+RefLtrAddPageBreakWithoutHeader=Saut de page (sans répéter l'entête sur la page suivante)

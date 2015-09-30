@@ -145,6 +145,19 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+} elseif ($action=='addbreakpagewithoutheader') {
+	$object_chapters_breakpage = new ReferenceLettersChapters($db);
+	$object_chapters_breakpage->fk_referenceletters=$object->id;
+	$object_chapters_breakpage->title ='';
+	$object_chapters_breakpage->content_text = '@breakpagenohead@';
+	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$result = $object_chapters_breakpage->create($user);
+	if ($result < 0) {
+		$action = 'addbreakpagewithoutheader';
+		setEventMessage($object_chapters_breakpage->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 }
 
 /*
@@ -260,6 +273,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print $langs->trans('RefLtrPageBreak');
 				print '</td></tr>';
 				print '</table>';
+			} elseif ($line_chapter->content_text=='@breakpagenohead@') {
+				print '<table class="border" width="100%">';
+				print '<tr><td style="text-align:center;font-weight:bold">';
+				print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+				print '</td></tr>';
+				print '</table>';
 			} else {
 				print '<table class="border" width="100%">';
 				
@@ -323,6 +342,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<div class="tabsAction">';
 	print '<div class="inline-block divButAction">';
 	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
 	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 	print "</div>\n";
 	print '</div>';
@@ -348,8 +368,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
 	}
 	print '</div>';
-	
-	
 	
 }
 

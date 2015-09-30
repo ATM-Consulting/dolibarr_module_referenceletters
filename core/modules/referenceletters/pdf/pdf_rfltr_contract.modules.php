@@ -207,6 +207,21 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 						continue;
 					}
 					
+					if ($chapter_text=='@breakpagenohead@') {
+						$this->_pagefoot($pdf,$object,$outputlangs);
+						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+						$pdf->AddPage();
+						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
+						$pagenb++;
+							
+						$posY=$this->marge_haute;
+						$posX=$this->marge_gauche;
+						$pdf->SetXY($posX, $posY);
+						$pdf->SetTextColor(0,0,0);
+					
+						continue;
+					}
+					
 					//User substitution value
 					$tmparray=$this->get_substitutionarray_user($user,$outputlangs);
 					$substitution_array=array();

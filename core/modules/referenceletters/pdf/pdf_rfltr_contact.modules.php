@@ -233,7 +233,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 					$substitution_array=array();
 					if (is_array($tmparray) && count($tmparray)>0) {
 						foreach($tmparray as $key=>$value) {
-							$substitution_array['{'.$key.'}']=$value;
+							$substitution_array['{cust_'.$key.'}']=$value;
 						}
 						$chapter_text=str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}

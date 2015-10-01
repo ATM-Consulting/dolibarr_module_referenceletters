@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Reference Letters
+Module103258Name = Letter template
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Manage Reference Letters (models of letter to send)
@@ -28,64 +28,65 @@ Module103258Desc = Manage Reference Letters (models of letter to send)
 #
 # Permissions
 #
-Permission1032581=See letter's models
-Permission1032582=Modify letter's models
-Permission1032583=Delete letter's models
-Permission1032584=Use letter's models
+Permission1032581=See letters templates
+Permission1032582=Modify letters templates
+Permission1032583=Delete letters templates
+Permission1032584=Use letters templates
 
 #
 # Admin page
 #
-ReferenceLettersSetup = Reference Letters setup
+ReferenceLettersSetup = letters templates setup
 ReferenceLettersSettings = Settings
-ReferenceLettersSetupPage = Reference Letters setup page
-RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
-RefLtrSimpleNumRefModelDesc=Return reference like LTR-yymm-nnnn where yy is the year, mm the month and nnnn a counter sequancial without reset
+ReferenceLettersSetupPage = letters templates setup page
+RefLtrNothingToSet = This module has no particular settings. Go to the main menu tab "letters templates".
+RefLtrSimpleNumRefModelDesc=Return reference like LTR-yymm-nnnn where yy is the year, mm the month and nnnn a sequancial counter without reset
 
 #
 # About page
 #
 About = About
-ReferenceLettersAbout = About Reference Letters
-ReferenceLettersAboutPage = Reference Letters about page
+ReferenceLettersAbout = About Letter template
+ReferenceLettersAboutPage = Letter template about page
 
 #
 # Menu
 #
-ReferenceLettersList=List letter's models
-ReferenceLettersNew=New letter's models
+ReferenceLettersList=List of Letter templates
+ReferenceLettersNew=New letter template
 
 #
 # Pages
 #
-RefLtrCreate=New letter's model
+RefLtrCreate=New letter template
 RefLtrTitle=Title
 RefLtrElement=Type of element
-RefLtrDelete=Delete letter's model
-RefLtrConfirmDelete=Are you sure to delete letter's model ?
+RefLtrDelete=Delete Letter template
+RefLtrConfirmDelete=Are you sure to delete this letter template ?
 RefLtrDeleteChapter=Delete chapter
-RefLtrConfirmDeleteChapter=Are you sure to delete chapter ?
+RefLtrConfirmDeleteChapter=Are you sure to delete this chapter ?
 RefLtrChapters=Chapters
 RefLtrNewChaters=New chapter
-RefLtrOptionHelp=Each line will be outputted as new checkbox line on the document
-RefLtrBackToRefLtr=Back to letter's model
-RefLtrList=Letter's model list
+RefLtrNew=New Letter template
+RefLtrOptionHelp=Each line will be outputted as a new checkbox line on the document
+RefLtrBackToRefLtr=Back to letter template
+RefLtrList=Letters templates list
 RefLtrLangue=Language
 RefLtrPosition=Order number
 RefLtrOption=Options list
-RefLtrText=Texte
-RefLtrNoModelReadyForThisObject=The letter's model is not ready for %s
-RefLtrSelectModel=Select models
+RefLtrText=Text
+RefLtrNoModelReadyForThisObject=The letter template is not ready for %s
+RefLtrSelectModel=Select template
 RefLtrCreateDoc=Create Document
 RefLtrRef=Letter Ref.
 RefLtrExistingLetters=Existing Letters
 RefLtrNewLetters=New letter
-RefLtrConfirmDeleteLetter=Are you sure to delete letter ?
+RefLtrConfirmDeleteLetter=Are you sure to delete this letter ?
 RefLtrDeleteLetter=Delete letter
 RefLtrDatec=Creation date
 RefLtrTag=Tag
 RefLtrDisplayTag=Display tags
-RefLtrNoneExists=%s not found (probaly none element exsits yet), impossible to display exemple data
+RefLtrNoneExists=%s not found (probaly no element yet), can't display exemple data
 RefLtrAddPageBreak=Add page break
 RefLtrPageBreak=Page break
 RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)

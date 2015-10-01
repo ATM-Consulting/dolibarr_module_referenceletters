@@ -65,6 +65,11 @@ dol_fiche_head($head, 'about', $langs->trans("Module103258Name"), 0, "referencel
 // About page goes here
 echo $langs->trans("ReferenceLettersAboutPage");
 
+
+print '<BR><BR><BR><BR>--------------------------------';
+print '<BR><a href="http://www.open-concept.pro/images/doc/Mod%C3%A8les%20de%20courriers%20-%20Guide%20utilisateur%20-%20FR.pdf" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR>';
+
 echo '<br>';
 
 $buffer = file_get_contents(dol_buildpath('/referenceletters/README.md', 0));

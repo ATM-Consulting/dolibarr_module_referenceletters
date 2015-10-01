@@ -1,6 +1,10 @@
 English Reference Letters ChangeLog
 
-***** ChangeLog for 1.0 compared to 1.1 *****
+***** ChangeLog for 1.3 compared to 1.2 *****
+-NEW : Review french/english/spanish translation
+-NEW : Add french/english/spanish documentation
+
+***** ChangeLog for 1.2 compared to 1.1 *****
 -NEW : Add break page option without repeat head
 -FIX : tag type {cust_...} on contact letter works 
 

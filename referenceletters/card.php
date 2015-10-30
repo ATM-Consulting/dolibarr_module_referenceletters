@@ -271,12 +271,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '<table class="border" width="100%">';
 				print '<tr><td style="text-align:center;font-weight:bold">';
 				print $langs->trans('RefLtrPageBreak');
+				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 				print '</td></tr>';
 				print '</table>';
 			} elseif ($line_chapter->content_text=='@breakpagenohead@') {
 				print '<table class="border" width="100%">';
 				print '<tr><td style="text-align:center;font-weight:bold">';
 				print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 				print '</td></tr>';
 				print '</table>';
 			} else {

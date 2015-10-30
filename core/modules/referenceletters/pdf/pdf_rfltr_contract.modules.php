@@ -242,8 +242,12 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 					}
 					
 					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT)) $socobject = $object->contact;
-					else $socobject = $object->thirdparty;
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && !empty($object->contact)) {
+						$socobject = $object->contact;
+					}
+					else {
+						$socobject = $object->thirdparty;
+					} 
 					
 					$tmparray=$this->get_substitutionarray_thirdparty($socobject,$outputlangs);
 					$substitution_array=array();

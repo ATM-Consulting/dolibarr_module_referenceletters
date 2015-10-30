@@ -232,10 +232,12 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && !empty($object->contact)) {
 						$socobject = $object->contact;
-					else
+					}
+					else {
 						$socobject = $object->thirdparty;
+					} 
 					
 					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 					$substitution_array = array ();

@@ -261,7 +261,9 @@ if (empty($formconfirm)) {
 	$parameters = array ();
 	$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 }
-print $formconfirm;
+if (!empty($formconfirm)) {
+	print $formconfirm;
+}
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';

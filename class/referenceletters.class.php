@@ -76,7 +76,7 @@ class ReferenceLetters extends CommonObject {
 				'objectclass' => 'Societe',
 				'classpath' => DOL_DOCUMENT_ROOT . '/societe/class/',
 				'trans' => 'companies',
-				'title' => 'Customer',
+				'title' => 'ThirdParties',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php',
 				'menuloader_function' => 'societe_prepare_head',
 				'card' => 'societe/soc.php',

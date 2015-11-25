@@ -22,7 +22,7 @@
  *	\ingroup    refferenceletters
  *	\brief      Class file to create PDF for letter's model on contract
  */
-dol_include_once('/refferenceletters/core/modules/refferenceletters/refferenceletters_modules.php');
+dol_include_once('/refferenceletters/core/modules/refferenceletters/modules_refferenceletters.php');
 require_once DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';

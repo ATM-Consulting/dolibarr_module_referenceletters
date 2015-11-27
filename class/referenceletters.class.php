@@ -23,8 +23,8 @@
  */
 
 // Put here all includes required by your class file
-require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
-// require_once(DOL_DOCUMENT_ROOT."/societe/class/societe.class.php");
+require_once DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php";
+require_once DOL_DOCUMENT_ROOT."/core/class/extrafields.class.php";
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
@@ -596,6 +596,18 @@ class ReferenceLetters extends CommonObject {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
 			
+			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+		
+		if (! $error) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
+			$sql .= " WHERE fk_object=" . $this->id;
+				
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {

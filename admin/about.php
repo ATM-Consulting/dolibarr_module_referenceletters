@@ -31,7 +31,7 @@ if (! $res)
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once "../lib/referenceletters.lib.php";
 
-dol_include_once('/lead/lib/php-markdown/markdown.php');
+dol_include_once('referenceletters/lib/php-markdown/markdown.php');
 
 // require_once "../class/myclass.class.php";
 // Translations

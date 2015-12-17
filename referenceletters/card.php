@@ -232,7 +232,9 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	}
-	print $formconfirm;
+	if (!empty($formconfirm)) {
+		print $formconfirm;
+	}
 	
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
 	print $linkback;

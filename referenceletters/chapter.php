@@ -224,7 +224,9 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	}
-	print $formconfirm;
+	if (!empty($formconfirm)) {
+		print $formconfirm;
+	}
 	
 	
 	print_fiche_titre($subtitle, '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);

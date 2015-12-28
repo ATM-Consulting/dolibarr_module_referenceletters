@@ -180,6 +180,16 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<input type="hidden" name="action" value="add">';
 
 	print '<table class="border" width="100%">';
+	
+	print '<tr>';
+	print '<td class="fieldrequired"  width="20%">';
+	print $langs->trans('RefLtrElement');
+	print '</td>';
+	print '<td>';
+	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
+	print '</td>';
+	print '</tr>';
+	
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');
@@ -189,16 +199,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '</td>';
 	print '</tr>';
 
-	print '<tr>';
-	print '<td class="fieldrequired"  width="20%">';
-	print $langs->trans('RefLtrElement');
-	print '</td>';
-	print '<td>';
-	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
-	print '</td>';
-	print '</tr>';
-	print '<tr>';
-	
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 

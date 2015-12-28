@@ -60,7 +60,7 @@ class modReferenceLetters extends DolibarrModules {
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '1.3';
+		$this->version = '1.4';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -337,7 +337,7 @@ class modReferenceLetters extends DolibarrModules {
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
 				'type' => 'left',
 				'titre' => 'RefLtrList',
-				'mainmenu' => 'agefodd',
+				'mainmenu' => 'referenceletters',
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 102,
@@ -352,12 +352,27 @@ class modReferenceLetters extends DolibarrModules {
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
 				'type' => 'left',
 				'titre' => 'RefLtrNew',
-				'mainmenu' => 'agefodd',
+				'mainmenu' => 'referenceletters',
 				'url' => '/referenceletters/referenceletters/card.php?action=create',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 103,
 				'enabled' => '$user->rights->referenceletters->write',
 				'perms' => '$user->rights->referenceletters->write',
+				'target' => '',
+				'user' => 0
+		);
+		
+		$r ++;
+		$this->menu [$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrListInstance',
+				'mainmenu' => 'referenceletters',
+				'url' => '/referenceletters/referenceletters/list_instance.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 104,
+				'enabled' => '$user->rights->referenceletters->read',
+				'perms' => '$user->rights->referenceletters->read',
 				'target' => '',
 				'user' => 0
 		);

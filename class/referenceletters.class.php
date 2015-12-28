@@ -66,7 +66,7 @@ class ReferenceLetters extends CommonObject {
 				'title' => 'Contract',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contract.lib.php',
 				'menuloader_function' => 'contract_prepare_head',
-				'card' => '/contrat/fiche.php',
+				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object' 
 		);
 		$this->element_type_list['thirdparty'] = array (
@@ -92,7 +92,7 @@ class ReferenceLetters extends CommonObject {
 				'title' => 'Contact',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
-				'card' => 'contact/fiche.php',
+				'card' => 'contact/card.php',
 				'substitution_method' => 'get_substitutionarray_contact' 
 		);
 		$this->element_type_list['propal'] = array (

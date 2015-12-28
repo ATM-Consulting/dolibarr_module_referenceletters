@@ -90,3 +90,4 @@ RefLtrNoneExists=%s not found (probaly no element yet), can't display exemple da
 RefLtrAddPageBreak=Add page break
 RefLtrPageBreak=Page break
 RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)
+RefLtrListInstance=Letter list

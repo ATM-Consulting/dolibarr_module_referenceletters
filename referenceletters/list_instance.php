@@ -121,8 +121,6 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "t.fk_element", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $option, '', $sortfield, $sortorder);
-	print '<td align="center"></td>';
-	
 	print "</tr>\n";
 	
 	print '<tr class="liste_titre">';

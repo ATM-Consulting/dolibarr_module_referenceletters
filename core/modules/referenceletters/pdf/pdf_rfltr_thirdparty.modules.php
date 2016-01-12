@@ -202,6 +202,9 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 					
 						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 					
+						$posX=$pdf->getX();
+						$posY=$pdf->getY();
+						
 						continue;
 					}
 					

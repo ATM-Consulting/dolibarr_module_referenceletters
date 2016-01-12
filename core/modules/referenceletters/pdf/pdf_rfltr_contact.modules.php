@@ -528,9 +528,8 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	 */
 	function _pagefoot(&$pdf,$object,$outputlangs,$hidefreetext=0)
 	{
+		$pdf->SetX($this->marge_gauche);
 		return pdf_pagefoot($pdf,$outputlangs,'',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,0,$hidefreetext);
 	}
 
 }
-
-?>

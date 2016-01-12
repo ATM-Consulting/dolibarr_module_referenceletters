@@ -146,8 +146,12 @@ if ($action == 'buildoc') {
 		$object_element->content_letter = $content_letter;
 		
 		$result = $object_element->create($user);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
+		} 
+		
+		$object_element->fetch($result);
+			
 	} else {
 		// Edit letter
 		$result = $object_element->fetch($refletterelemntid);

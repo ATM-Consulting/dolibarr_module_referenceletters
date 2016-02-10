@@ -143,13 +143,11 @@ class ReferenceLettersElements extends CommonObject
 
 			if (! $notrigger)
 			{
-	            // Uncomment this and change MYOBJECT to your own tag if you
-	            // want this action calls a trigger.
-
+	           
 	            //// Call triggers
 	            //include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 	            //$interface=new Interfaces($this->db);
-	            //$result=$interface->run_triggers('MYOBJECT_CREATE',$this,$user,$langs,$conf);
+	            //$result=$interface->run_triggers('REFLETTERINSTANCE_CREATE',$this,$user,$langs,$conf);
 	            //if ($result < 0) { $error++; $this->errors=$interface->errors; }
 	            //// End call triggers
 			}
@@ -531,6 +529,17 @@ class ReferenceLettersElements extends CommonObject
     		$resql = $this->db->query($sql);
         	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		}
+		
+		if (! $error)
+		{
+			$sql = "UPDATE ".MAIN_DB_PREFIX."actioncomm SET fk_element=NULL, elementtype=NULL";
+			$sql.= " WHERE fk_element=".$this->id;
+			$sql.= " AND elementtype=\'referenceletters_referenceletterselements\' ";
+		
+			dol_syslog(get_class($this)."::delete sql=".$sql);
+			$resql = $this->db->query($sql);
+			if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
+		}
 
         // Commit or rollback
 		if ($error)
@@ -687,6 +696,26 @@ class ReferenceLettersElements extends CommonObject
 			print $langs->trans ( "Error" ) . " " . $langs->trans ( "ErrorModuleSetupNotComplete" );
 			return "";
 		}
+	}
+	
+	/**
+	 * getNomUrl
+	 * @param number $withpicto
+	 * @param string $option
+	 * @return string
+	 */
+	public function getNomUrl($withpicto=0,$option='') {
+		global $langs;
+	
+		$result = '';
+	
+		$url = dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $this->fk_element.'&amp;element_type='.$this->element_type;
+	
+		
+		
+		$result = '<a href="' . $url . '">' . ((!empty($withpicto))?img_pdf($this->ref_int):'').$this->ref_int . '</a>';
+	
+		return $result;
 	}
 
 }

@@ -30,7 +30,8 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_propal extends ModelePDFReferenceLetters {
+class pdf_rfltr_propal extends ModelePDFReferenceLetters
+{
 	var $db;
 	var $name;
 	var $description;
@@ -186,33 +187,37 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 					
 					$chapter_text = $line_chapter['content_text'];
 					
-					if ($chapter_text=='@breakpage@') {
-						$this->_pagefoot($pdf,$object,$outputlangs);
-						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+					if ($chapter_text == '@breakpage@') {
+						$this->_pagefoot($pdf, $object, $outputlangs);
+						if (method_exists($pdf, 'AliasNbPages'))
+							$pdf->AliasNbPages();
 						$pdf->AddPage();
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-						$pagenb++;
-					
+						if (! empty($tplidx))
+							$pdf->useTemplate($tplidx);
+						$pagenb ++;
+						
 						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 						
-						$posX=$pdf->getX();
-						$posY=$pdf->getY();
-					
+						$posX = $pdf->getX();
+						$posY = $pdf->getY();
+						
 						continue;
 					}
 					
-					if ($chapter_text=='@breakpagenohead@') {
-						$this->_pagefoot($pdf,$object,$outputlangs);
-						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+					if ($chapter_text == '@breakpagenohead@') {
+						$this->_pagefoot($pdf, $object, $outputlangs);
+						if (method_exists($pdf, 'AliasNbPages'))
+							$pdf->AliasNbPages();
 						$pdf->AddPage();
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-						$pagenb++;
-							
-						$posY=$this->marge_haute;
-						$posX=$this->marge_gauche;
+						if (! empty($tplidx))
+							$pdf->useTemplate($tplidx);
+						$pagenb ++;
+						
+						$posY = $this->marge_haute;
+						$posX = $this->marge_gauche;
 						$pdf->SetXY($posX, $posY);
-						$pdf->SetTextColor(0,0,0);
-					
+						$pdf->SetTextColor(0, 0, 0);
+						
 						continue;
 					}
 					
@@ -235,12 +240,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && !empty($object->contact)) {
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
 						$socobject = $object->contact;
-					}
-					else {
+					} else {
 						$socobject = $object->thirdparty;
-					} 
+					}
 					
 					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 					$substitution_array = array ();
@@ -299,7 +303,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 				$parameters = array (
 						'file' => $file,
 						'object' => $object,
-						'outputlangs' => $outputlangs 
+						'outputlangs' => $outputlangs,
+						'instance_letter' => $instance_letter 
 				);
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
@@ -324,7 +329,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 	/**
 	 * Show top header of page.
 	 *
-	 * @param PDF			&$pdf Object PDF
+	 * @param PDF &$pdf Object PDF
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
 	 * @param Translate $outputlangs for output
@@ -412,11 +417,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 			$carac_emetteur = '';
 			// Add internal contact of proposal if defined
 			/*$arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
-		 	if (count($arrayidcontact) > 0)
-		 	{
-		 		$object->fetch_user($arrayidcontact[0]);
-		 		$carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
-		 	}*/
+			 if (count($arrayidcontact) > 0)
+			 {
+			 $object->fetch_user($arrayidcontact[0]);
+			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+			 }*/
 			
 			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->client);
 			
@@ -504,7 +509,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 	 * Show footer of page.
 	 * Need this->emetteur object
 	 *
-	 * @param PDF			&$pdf PDF
+	 * @param PDF &$pdf PDF
 	 * @param Object $object show
 	 * @param Translate $outputlangs for output
 	 * @param int $hidefreetext text

@@ -56,6 +56,9 @@ $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
 
+// Load translation files required by the page
+$langs->load("referenceletters@referenceletters");
+
 // Check if current view is setup in models letter class
 if (! is_array($object_refletter->element_type_list[$element_type])) {
 	llxHeader('');
@@ -73,7 +76,6 @@ require_once $object_refletter->element_type_list[$element_type]['menuloader_lib
 restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature']);
 
 // Load translation files required by the page
-$langs->load("referenceletters@referenceletters");
 $langs->load($object_refletter->element_type_list[$element_type]['trans']);
 
 $error = 0;
@@ -88,6 +90,8 @@ if (method_exists($object, 'fetch_thirdparty')) {
 	if ($result < 0)
 		setEventMessage($object->error, 'errors');
 }
+//Needed for hook builddoc
+$object_element->srcobject=$object;
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array (
@@ -114,14 +118,16 @@ if ($action == 'buildoc') {
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
-		if (empty($langs_chapter))
+		if (empty($langs_chapter)) {
 			$langs_chapter = $langs->defaultlang;
+		}
 		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_chapters->error, 'errors');
+		}
 			
-			// Use a big array into class it is serialize
+		// Use a big array into class it is serialize
 		$content_letter = array ();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
@@ -274,8 +280,8 @@ print '<tr class="liste_titre">';
 print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
 print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
 print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", '', '', '', '');
-print '<td></td>';
-print '<td></td>';
+print '<th></th>';
+print '<th></th>';
 
 $result = $object_element->fetchAllByElement($id, $element_type);
 if ($result < 0)

@@ -41,6 +41,11 @@ ReferenceLettersSettings = Settings
 ReferenceLettersSetupPage = letters templates setup page
 RefLtrNothingToSet = This module has no particular settings. Go to the main menu tab "letters templates".
 RefLtrSimpleNumRefModelDesc=Return reference like LTR-yymm-nnnn where yy is the year, mm the month and nnnn a sequancial counter without reset
+RefLtrREF_LETTER_CREATEEVENT=Create calendar event on letters creation
+RefLtrHelpREF_LETTER_CREATEEVENT=Create calendar event on letters creation
+RefLtrREF_LETTER_EVTCOPYFILE=Copy PDF letter as attachement of event
+RefLtrHelpREF_LETTER_EVTCOPYFILE=Copy PDF letter as attachement of event
+RefLtrConfirmChangeState=Are you sure to change this option?
 
 #
 # About page
@@ -91,3 +96,5 @@ RefLtrAddPageBreak=Add page break
 RefLtrPageBreak=Page break
 RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)
 RefLtrListInstance=Letter list
+RefLtrDoc=Document
+RefLtrErrorCopyFile=Error during copying letter PDF into event 

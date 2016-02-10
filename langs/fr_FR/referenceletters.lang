@@ -41,6 +41,12 @@ ReferenceLettersSettings = Réglages
 ReferenceLettersSetupPage = Page de réglage de Modèle de courrier
 RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
 RefLtrSimpleNumRefModelDesc=Renvoie le numéro sous la forme LTR-yymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
+RefLtrREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
+RefLtrHelpREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
+RefLtrREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
+RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
+RefLtrConfirmChangeState=Etes-vous sûr de changer cette option ?
+
 
 #
 # Page À propos
@@ -91,3 +97,5 @@ RefLtrAddPageBreak=Ajouter un saut de page
 RefLtrPageBreak=Saut de page
 RefLtrAddPageBreakWithoutHeader=Saut de page (sans répéter l'entête sur la page suivante)
 RefLtrListInstance=Liste des courriers
+RefLtrDoc=Document
+RefLtrErrorCopyFile=Erreur durant la copie du document PDF de la lettre sur l'événement de l'agenda

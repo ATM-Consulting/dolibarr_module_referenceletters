@@ -1,5 +1,10 @@
 English Reference Letters ChangeLog
 
+***** ChangeLog for 1.4 compared to 1.3 *****
+-NEW : Admin option to create calendar event on each letter creation
+-NEW : Admin option to copy generated letters as attachement of event
+-NEW : Add background PDF in models 
+
 ***** ChangeLog for 1.3 compared to 1.2 *****
 -NEW : Review french/english/spanish translation
 -NEW : Add french/english/spanish documentation

@@ -99,3 +99,5 @@ RefLtrAddPageBreakWithoutHeader=Saut de page (sans répéter l'entête sur la pa
 RefLtrListInstance=Liste des courriers
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Erreur durant la copie du document PDF de la lettre sur l'événement de l'agenda
+RefLtrBackground=Image de fond
+RefLtrBackgroundHelp=Seul les fichiers PDF seront utilisé comme image de fond des courriers généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés

@@ -144,6 +144,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$tplidx = $pdf->importPage(1);
 				}
 				
+				
+				
 				$pdf->Open();
 				$pagenb = 0;
 				$pdf->SetDrawColor(128, 128, 128);
@@ -163,6 +165,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 				if (! empty($tplidx))
 					$pdf->useTemplate($tplidx);
 				$pagenb ++;
+				
+				importImageBackground($pdf,$outputlangs,$instance_letter->fk_referenceletters);
 				
 				$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				

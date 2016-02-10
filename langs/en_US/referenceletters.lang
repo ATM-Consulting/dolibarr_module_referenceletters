@@ -98,3 +98,5 @@ RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)
 RefLtrListInstance=Letter list
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Error during copying letter PDF into event 
+RefLtrBackground=Background image
+RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore

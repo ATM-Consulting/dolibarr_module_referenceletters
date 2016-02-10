@@ -111,7 +111,8 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/contact',
 				'/referenceletters/thirdparty',
 				'/referenceletters/propal',
-				'/referenceletters/invoice' 
+				'/referenceletters/invoice',
+				'/referenceletters/referenceletters',
 		);
 		
 		// Config pages. Put here list of php pages

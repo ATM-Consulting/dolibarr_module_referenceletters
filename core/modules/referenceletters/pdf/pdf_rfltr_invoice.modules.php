@@ -164,6 +164,8 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					$pdf->useTemplate($tplidx);
 				$pagenb ++;
 				
+				importImageBackground($pdf,$outputlangs,$instance_letter->fk_referenceletters);
+				
 				$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				
 				$pdf->SetFont('', '', $default_font_size - 1);

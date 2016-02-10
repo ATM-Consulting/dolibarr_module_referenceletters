@@ -230,7 +230,7 @@ if ($action == 'buildoc') {
 	} else {
 		$result = $object_element->delete($user);
 		if ($result < 0) {
-			setEventMessage($object->errors, 'errors');
+			setEventMessage($object_element->errors, 'errors');
 		} else {
 			header('Location:' . dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $object->id . '&element_type=' . $element_type);
 		}

@@ -534,7 +534,7 @@ class ReferenceLettersElements extends CommonObject
 		{
 			$sql = "UPDATE ".MAIN_DB_PREFIX."actioncomm SET fk_element=NULL, elementtype=NULL";
 			$sql.= " WHERE fk_element=".$this->id;
-			$sql.= " AND elementtype=\'referenceletters_referenceletterselements\' ";
+			$sql.= " AND elementtype='referenceletters_referenceletterselements'";
 		
 			dol_syslog(get_class($this)."::delete sql=".$sql);
 			$resql = $this->db->query($sql);

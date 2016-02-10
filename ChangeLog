@@ -4,6 +4,7 @@ English Reference Letters ChangeLog
 -NEW : Admin option to create calendar event on each letter creation
 -NEW : Admin option to copy generated letters as attachement of event
 -NEW : Add background PDF in models 
+-NEW : Add read only chpter option (cannot be seen/modified during letter creation)
 
 ***** ChangeLog for 1.3 compared to 1.2 *****
 -NEW : Review french/english/spanish translation

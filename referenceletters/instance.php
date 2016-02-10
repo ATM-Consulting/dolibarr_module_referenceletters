@@ -386,7 +386,7 @@ if (! empty($idletter)) {
 					print $langs->trans('RefLtrAddPageBreakWithoutHeader');
 					print '</td></tr>';
 				} else {
-					print '<tr>';
+					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrText');
 					print '</td>';
@@ -402,7 +402,7 @@ if (! empty($idletter)) {
 					print '</td>';
 					print '</tr>';
 					
-					print '<tr>';
+					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrOption');
 					print '</td>';

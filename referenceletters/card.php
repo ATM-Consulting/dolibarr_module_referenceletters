@@ -287,7 +287,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '<table class="border" width="100%">';
 				
 				if ($user->rights->referenceletters->write) {
-					print '<tr><td rowspan="5" width="20px">';
+					print '<tr><td rowspan="6" width="20px">';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 					print '</td></tr>';
@@ -335,6 +335,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						print '<input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'">'.$option_text.'<br>';
 					}
 				}
+				print '</td>';
+				print '</tr>';
+				
+				print '<tr>';
+				print '<td width="20%">';
+				print $langs->trans('RefLtrReadOnly');
+				print '</td>';
+				print '<td>';
+				print '<input type="checkbox" name="refltrreadonly" size="20" disabled="disabled" '.(!empty($line_chapter->readonly)?'checked="checked"':'').' value="1"/>';
 				print '</td>';
 				print '</tr>';
 				

@@ -1,0 +1,1 @@
+ALTER TABLE llx_referenceletters_chapters ADD COLUMN readonly integer NOT NULL DEFAULT 0 AFTER options_text;

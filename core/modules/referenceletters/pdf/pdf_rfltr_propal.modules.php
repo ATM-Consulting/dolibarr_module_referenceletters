@@ -196,6 +196,10 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						$pdf->AddPage();
 						if (! empty($tplidx))
 							$pdf->useTemplate($tplidx);
+						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
+						
+							
 						$pagenb ++;
 						
 						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
@@ -214,6 +218,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						if (! empty($tplidx))
 							$pdf->useTemplate($tplidx);
 						$pagenb ++;
+						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 						
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;

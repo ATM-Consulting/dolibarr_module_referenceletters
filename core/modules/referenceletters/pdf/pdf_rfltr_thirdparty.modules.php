@@ -196,6 +196,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 							$pdf->useTemplate($tplidx);
 						$pagenb ++;
 						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
+						
 						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 						
 						$posX = $pdf->getX();
@@ -212,6 +214,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						if (! empty($tplidx))
 							$pdf->useTemplate($tplidx);
 						$pagenb ++;
+						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 						
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;

@@ -149,7 +149,7 @@ class modReferenceLetters extends DolibarrModules
 				'mod_referenceletters_simple',
 				'Use simple mask for reference letters ref',
 				0,
-				'allentities',
+				'current',
 				1 
 		);
 		$this->const[] = array (
@@ -158,7 +158,7 @@ class modReferenceLetters extends DolibarrModules
 				'',
 				'Mask of reference letters reference',
 				0,
-				'allentities',
+				'current',
 				1 
 		);
 		$this->const[] = array (
@@ -167,7 +167,7 @@ class modReferenceLetters extends DolibarrModules
 				'1',
 				'Enabled WYSYWYG on modules',
 				0,
-				'allentities',
+				'current',
 				1 
 		);
 		$this->const[] = array (
@@ -193,7 +193,16 @@ class modReferenceLetters extends DolibarrModules
 				'chaine',
 				'other',
 				'Event name like <Letter Ref.  {ref_int}>(normal) or like <{model title} - {customer name}>(other)',
-				1,
+				0,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'REF_LETTER_OUTPUTREFLET',
+				'yesno',
+				'1',
+				'Output document ref',
+				0,
 				'current',
 				1
 		);

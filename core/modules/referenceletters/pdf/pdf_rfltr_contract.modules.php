@@ -164,7 +164,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 					$pdf->useTemplate($tplidx);
 				$pagenb ++;
 				
-				importImageBackground($pdf,$outputlangs,$instance_letter->fk_referenceletters);
+				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 				
 				$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				
@@ -275,7 +275,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					//Get instance letter substitution
+					// Get instance letter substitution
 					$tmparray = $this->get_substitutionarray_refletter($instance_letter, $outputlangs);
 					$substitution_array = array ();
 					if (is_array($tmparray) && count($tmparray) > 0) {
@@ -384,11 +384,14 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		
-		$pdf->SetFont('', 'B', $default_font_size + 3);
-		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
-		$title = $outputlangs->convToOutputCharset($instance_letter->title);
-		$pdf->MultiCell(100, 4, $title, '', 'R');
+		if (! empty($instance_letter->outputref)) {
+			$pdf->SetFont('', 'B', $default_font_size + 3);
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$title = $outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
+			$pdf->MultiCell(100, 4, $title, '', 'R');
+			$posy += 5;
+		}
 		
 		$pdf->SetFont('', 'B', $default_font_size);
 		
@@ -397,10 +400,12 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 		$pdf->SetTextColor(0, 0, 60);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref), '', 'R');
 		
-		$posy += 5;
-		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
-		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+		if (! empty($instance_letter->outputref)) {
+			$posy += 5;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+		}
 		
 		$posy += 1;
 		$pdf->SetFont('', '', $default_font_size - 1);

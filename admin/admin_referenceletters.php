@@ -66,6 +66,8 @@ if ($action == 'updateMask') {
 	}
 } else if ($action == 'setmod') {
 	dolibarr_set_const($db, "REF_LETTER_ADDON", $value, 'chaine', 0, '', $conf->entity);
+} else if ($action == 'setvar') {
+	dolibarr_set_const($db, "REF_LETTER_TYPEEVENTNAME", GETPOST('REF_LETTER_TYPEEVENTNAME', 'alpha'), 'chaine', 0, '', $conf->entity);
 }
 
 /*
@@ -84,8 +86,8 @@ dol_fiche_head($head, 'settings', $langs->trans("Module103258Name"), 0, "referen
 
 if ($conf->use_javascript_ajax) {
 	print ' <script type="text/javascript">';
-	print 'window.fnDisplayFileCopyOption=function() {$( "#ifeventyes" ).show();};' . "\n";
-	print 'window.fnHideFileCopyOption=function() {$( "#ifeventyes" ).hide();};' . "\n";
+	print 'window.fnDisplayFileCopyOption=function() {$( ".ifeventyes" ).show();};' . "\n";
+	print 'window.fnHideFileCopyOption=function() {$( ".ifeventyes" ).hide();};' . "\n";
 	print ' </script>';
 }
 
@@ -167,8 +169,8 @@ foreach ( $dirmodels as $reldir ) {
 						$htmltooltip = '';
 						$htmltooltip .= '' . $langs->trans("Version") . ': <b>' . $module->getVersion() . '</b><br>';
 						$nextval = $module->getNextValue($user->id, 'contract', '', '');
-						if ("$nextval" != $langs->trans("NotAvailable")) // Keep " on nextval
-{
+						// Keep " on nextval
+						if ("$nextval" != $langs->trans("NotAvailable")) {
 							$htmltooltip .= '' . $langs->trans("NextValue") . ': ';
 							if ($nextval) {
 								$htmltooltip .= $nextval . '<br>';
@@ -190,6 +192,10 @@ foreach ( $dirmodels as $reldir ) {
 	}
 }
 print "</table><br>\n";
+
+print '<form name="setvar" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
+print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="action" value="setvar">';
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -236,7 +242,7 @@ print '</td>';
 print '</tr>';
 
 if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
-	print '<tr class="impair" class="ifeventyes"><td>' . $langs->trans("RefLtrREF_LETTER_EVTCOPYFILE") . '</td>';
+	print '<tr class="impair ifeventyes"><td style="padding-left:20px"> - ' . $langs->trans("RefLtrREF_LETTER_EVTCOPYFILE") . '</td>';
 	print '<td align="left">';
 	if ($conf->use_javascript_ajax) {
 		print ajax_constantonoff('REF_LETTER_EVTCOPYFILE');
@@ -252,9 +258,44 @@ if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
 	print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_EVTCOPYFILE"), 1, 'help');
 	print '</td>';
 	print '</tr>';
+	
+	print '<tr class="pair ifeventyes"><td style="padding-left:20px"> - ' . $langs->trans("RefLtrREF_LETTER_TYPEEVENTNAME") . '</td>';
+	print '<td align="left">';
+	$arrval = array (
+			'normal' => $langs->trans("RefLtrREF_LETTER_TYPEEVENTNAME_normal"),
+			'other' => $langs->trans("RefLtrREF_LETTER_TYPEEVENTNAME_other") 
+	);
+	print $form->selectarray("REF_LETTER_TYPEEVENTNAME", $arrval, $conf->global->REF_LETTER_TYPEEVENTNAME);
+	print '</td>';
+	print '<td align="center">';
+	print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
+	print '</td>';
+	print '</tr>';
 }
 
+print '<tr class="pair ifeventyes"><td>' . $langs->trans("RefLtrREF_LETTER_OUTPUTREFLET") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+	print ajax_constantonoff('REF_LETTER_OUTPUTREFLET');
+} else {
+	$arrval = array (
+			'0' => $langs->trans("No"),
+			'1' => $langs->trans("Yes") 
+	);
+	print $form->selectarray("REF_LETTER_OUTPUTREFLET", $arrval, $conf->global->REF_LETTER_OUTPUTREFLET);
+}
+print '</td>';
+print '<td align="center">';
+// print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_TYPEEVENTNAME"), 1, 'help');
+print '</td>';
+print '</tr>';
+
 print "</table><br>\n";
+if (! $conf->use_javascript_ajax) {
+	print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
+}
+
+print '</form>';
 
 llxFooter();
 $db->close();

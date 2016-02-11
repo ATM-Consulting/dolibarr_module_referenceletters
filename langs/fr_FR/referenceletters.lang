@@ -46,7 +46,10 @@ RefLtrHelpREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la cr�
 RefLtrREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
 RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
 RefLtrConfirmChangeState=Etes-vous sûr de changer cette option ?
-
+RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement crée
+RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de courrier  {ref_int}>
+RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modéle} - {nom du client}>
+RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du courrier dans l'entête du document PDF
 
 #
 # Page À propos

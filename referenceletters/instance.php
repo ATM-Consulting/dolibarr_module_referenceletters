@@ -118,6 +118,7 @@ if ($action == 'buildoc') {
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
+		$object_element->outputref = GETPOST('outputref','int');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -170,6 +171,7 @@ if ($action == 'buildoc') {
 		}
 		
 		$object_element->title = GETPOST('title_instance');
+		$object_element->outputref = GETPOST('outputref','int');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -396,6 +398,15 @@ if (! empty($idletter)) {
 			print '</td>';
 			print '</tr>';
 			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
+			print '</td>';
+			print '<td>';
+			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
+			print '</td>';
+			print '</tr>';
+			
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -482,6 +493,15 @@ if (! empty($refletterelemntid)) {
 			print '</td>';
 			print '<td>';
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
+			print '</td>';
+			print '<td>';
+			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
 			

@@ -48,6 +48,7 @@ class ReferenceLettersElements extends CommonObject
 	public $fk_user_mod;
 	public $tms = '';
 	public $title;
+	public $outputref;
 	public $title_referenceletters;
 	public $lines = array ();
 	
@@ -86,6 +87,8 @@ class ReferenceLettersElements extends CommonObject
 			$this->import_key = trim($this->import_key);
 		if (isset($this->title))
 			$this->title = trim($this->title);
+		if (isset($this->outputref))
+			$this->outputref = trim($this->outputref);
 			
 			// Check parameters
 			// Put here code to add a control on parameters values
@@ -104,6 +107,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= "entity,";
 		$sql .= "ref_int,";
 		$sql .= "title,";
+		$sql .= "outputref,";
 		$sql .= "fk_referenceletters,";
 		$sql .= "element_type,";
 		$sql .= "fk_element,";
@@ -118,6 +122,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->ref_int) ? 'NULL' : "'" . $this->ref_int . "'") . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->title . "'") . ",";
+		$sql .= " " . (empty($this->outputref) ? '0' : $this->outputref) . ",";
 		$sql .= " " . (! isset($this->fk_referenceletters) ? 'NULL' : $this->fk_referenceletters) . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
 		$sql .= " " . (! isset($this->fk_element) ? 'NULL' : $this->fk_element) . ",";
@@ -180,6 +185,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.entity,";
 		$sql .= " t.ref_int,";
 		$sql .= " t.title,";
+		$sql .= " t.outputref,";
 		$sql .= " t.fk_referenceletters,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
@@ -215,6 +221,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 				$this->title = $obj->title;
+				$this->outputref = $obj->outputref;
 				$this->title_referenceletters = $obj->title_referenceletters;
 			}
 			$this->db->free($resql);
@@ -245,6 +252,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.entity,";
 		$sql .= " t.ref_int,";
 		$sql .= " t.title,";
+		$sql .= " t.outputref,";
 		$sql .= " t.fk_referenceletters,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
@@ -284,6 +292,7 @@ class ReferenceLettersElements extends CommonObject
 					$line->entity = $obj->entity;
 					$line->ref_int = $obj->ref_int;
 					$line->fk_referenceletters = $obj->fk_referenceletters;
+					$line->outputref = $obj->outputref;
 					$line->element_type = $obj->element_type;
 					$line->fk_element = $obj->fk_element;
 					$line->content_letter = unserialize($obj->content_letter);
@@ -325,6 +334,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.entity,";
 		$sql .= " t.ref_int,";
 		$sql .= " t.title,";
+		$sql .= " t.outputref,";
 		$sql .= " t.fk_referenceletters,";
 		$sql .= " t.element_type,";
 		$sql .= " t.fk_element,";
@@ -409,6 +419,7 @@ class ReferenceLettersElements extends CommonObject
 						$line->entity = $obj->entity;
 						$line->ref_int = $obj->ref_int;
 						$line->fk_referenceletters = $obj->fk_referenceletters;
+						$line->outputref = $obj->outputref;
 						$line->element_type = $obj->element_type;
 						$line->fk_element = $obj->fk_element;
 						$line->content_letter = unserialize($obj->content_letter);
@@ -465,6 +476,8 @@ class ReferenceLettersElements extends CommonObject
 			$this->import_key = trim($this->import_key);
 		if (isset($this->title))
 			$this->title = trim($this->title);
+		if (isset($this->outputref))
+			$this->outputref = trim($this->outputref);
 		
 		if (is_array($this->content_letter) && count($this->content_letter) > 0) {
 			$content_letter = serialize($this->content_letter);
@@ -481,6 +494,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " ref_int=" . (isset($this->ref_int) ? "'" . $this->db->escape($this->ref_int) . "'" : "null") . ",";
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " fk_referenceletters=" . (isset($this->fk_referenceletters) ? $this->fk_referenceletters : "null") . ",";
+		$sql .= " outputref=" . (!empty($this->outputref) ? $this->outputref : "0") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " fk_element=" . (isset($this->fk_element) ? $this->fk_element : "null") . ",";
 		$sql .= " content_letter=" . (! empty($content_letter) ? "'" . $this->db->escape($content_letter) . "'" : "null") . ",";
@@ -750,5 +764,6 @@ class ReferenceLettersElementsLine
 	public $fk_user_mod;
 	public $tms = '';
 	public $title;
+	public $outputref;
 	public $title_referenceletters;
 }

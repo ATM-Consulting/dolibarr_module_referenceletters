@@ -46,6 +46,10 @@ RefLtrHelpREF_LETTER_CREATEEVENT=Create calendar event on letters creation
 RefLtrREF_LETTER_EVTCOPYFILE=Copy PDF letter as attachement of event
 RefLtrHelpREF_LETTER_EVTCOPYFILE=Copy PDF letter as attachement of event
 RefLtrConfirmChangeState=¿ Seguro que desea cambiar esta opción ?
+RefLtrREF_LETTER_TYPEEVENTNAME=Label of created event
+RefLtrREF_LETTER_TYPEEVENTNAME_normal=<New letter template  {ref_int}>
+RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
+RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
 
 #
 # Page À propos

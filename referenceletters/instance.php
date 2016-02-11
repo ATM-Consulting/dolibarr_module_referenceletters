@@ -52,6 +52,9 @@ $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
 
+$sortfield=GETPOST('sortfield','alpha');
+$sortorder=GETPOST('sortorder','alpha');
+
 $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
@@ -110,7 +113,8 @@ if ($action == 'buildoc') {
 	// New letter
 	if (empty($refletterelemntid)) {
 		// Save data
-		$object_element->ref_int = GETPOST('ref_int');
+		$object_element->ref_int = GETPOST('ref_int','alpha');
+		$object_element->title = GETPOST('title_instance');
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
@@ -161,8 +165,11 @@ if ($action == 'buildoc') {
 	} else {
 		// Edit letter
 		$result = $object_element->fetch($refletterelemntid);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
+		}
+		
+		$object_element->title = GETPOST('title_instance');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -275,15 +282,18 @@ if (!empty($formconfirm)) {
 	print $formconfirm;
 }
 
+$options='&amp;element_type='.$element_type.'&amp;id='.$id;
+
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
-print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
-print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", '', '', '', '');
+print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitleModel"), $_SERVEUR['PHP_SELF'], "p.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
 print '<th></th>';
 print '<th></th>';
 
-$result = $object_element->fetchAllByElement($id, $element_type);
+$result = $object_element->fetchAllByElement($id, $element_type, $sortorder, $sortfield);
 if ($result < 0)
 	setEventMessage($object_element->error, 'errors');
 
@@ -294,11 +304,14 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		$var = ! $var;
 		print "<tr $bc[$var]>";
 		
-		// Title
+		// Ref int
 		print '<td><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=edit">' . $line->ref_int . '</a></td>';
 		
-		// Element
+		// title
 		print '<td>' . $line->title . '</td>';
+		
+		// title
+		print '<td>' . $line->title_referenceletters . '</td>';
 		
 		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
 		
@@ -371,6 +384,15 @@ if (! empty($idletter)) {
 			$ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
 			print $ref_int;
 			print '<input type="hidden" name="ref_int" value="' . $ref_int . '">';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrTitle');
+			print '</td>';
+			print '<td>';
+			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
 			print '</td>';
 			print '</tr>';
 			
@@ -451,6 +473,15 @@ if (! empty($refletterelemntid)) {
 			print '</td>';
 			print '<td>';
 			print $object_element->ref_int;
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrTitle');
+			print '</td>';
+			print '<td>';
+			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
 			print '</td>';
 			print '</tr>';
 			

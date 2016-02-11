@@ -71,6 +71,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         	'contact_civility'=>$civility
         );
     }
+    
+    /**
+     * 
+     * @param unknown $referenceletters
+     * @param unknown $outputlangs
+     * @return NULL[]
+     */
+    function get_substitutionarray_refletter($referenceletters,$outputlangs)
+    {
+ 
+    	return array(
+    			'referenceletters_title'=>$referenceletters->title,
+    			'referenceletters_ref_int'=>$referenceletters->ref_int,
+    			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
+    	);
+    }
 }
-
-?>

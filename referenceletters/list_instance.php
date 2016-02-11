@@ -40,30 +40,37 @@ if (! $user->rights->referenceletters->read)
 
 $langs->load("referenceletters@referenceletters");
 
-
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
 
-
 // Search criteria
 $search_ref_int = GETPOST("search_ref_int");
 $search_element_type = GETPOST("search_element_type");
-
+$search_title = GETPOST("search_title");
+$search_company = GETPOST("search_company");
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_ref_int = '';
 	$search_element_type = '';
 }
 
-$filter = array();
+$filter = array ();
 if (! empty($search_ref_int)) {
 	$filter['t.ref_int'] = $search_ref_int;
-	$option .= '&amp;search_ref_int=' . $search_ref_int;
+	$options .= '&amp;search_ref_int=' . $search_ref_int;
 }
 if (! empty($search_element_type)) {
 	$filter['t.element_type'] = $search_element_type;
-	$option .= '&amp;search_element_type=' . $search_element_type;
+	$options .= '&amp;search_element_type=' . $search_element_type;
+}
+if (! empty($search_title)) {
+	$filter['t.title'] = $search_title;
+	$options .= '&amp;search_title=' . $search_title;
+}
+if (! empty($search_company)) {
+	$filter['search_company'] = $search_company;
+	$options .= '&amp;search_company=' . $search_company;
 }
 
 if ($page == - 1) {
@@ -76,13 +83,15 @@ $pagenext = $page + 1;
 
 $form = new Form($db);
 $object = new ReferenceLettersElements($db);
-$object_ref=new ReferenceLetters($db);
+$object_ref = new ReferenceLetters($db);
 $formrefleter = new FormReferenceLetters($db);
 
-if (empty($sortorder))
+if (empty($sortorder)) {
 	$sortorder = "ASC";
-if (empty($sortfield))
+}
+if (empty($sortfield)) {
 	$sortfield = "t.datec";
+}
 
 $title = $langs->trans('RefLtrListInstance');
 
@@ -94,14 +103,14 @@ $result =
 $nbtotalofrecords = 0;
 
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
-	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield,0,0,$filter);
+	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield, 0, 0, $filter);
 }
-$resql = $object->fetchAll($sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
 
-if ($resql != - 1) {
-	$num = $resql;
+$num = $object->fetchAll($sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+
+if ($num != - 1) {
 	
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
 	
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 	
@@ -112,15 +121,15 @@ if ($resql != - 1) {
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
 	
-	
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "t.fk_element", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "t.fk_element", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $options, '', $sortfield, $sortorder);
 	print "</tr>\n";
 	
 	print '<tr class="liste_titre">';
@@ -128,13 +137,18 @@ if ($resql != - 1) {
 	print '<td><input type="text" class="flat" name="search_ref_int" value="' . $search_ref_int . '" size="10"></td>';
 	
 	print '<td>';
-	print $formrefleter->selectElementType($search_element_type, 'search_element_type',1);
+	print $formrefleter->selectElementType($search_element_type, 'search_element_type', 1);
 	print '</td>';
 	
+	print '<td>';
+	print '<input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10">';
+	print '</td>';
 	
-	//print '<td><input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="10"></td>';
 	print '<td></td>';
-	print '<td></td>';
+	
+	print '<td>';
+	print '<input type="text" class="flat" name="search_company" value="' . $search_company . '" size="10">';
+	print '</td>';
 	
 	// edit button
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
@@ -147,54 +161,54 @@ if ($resql != - 1) {
 	
 	$var = true;
 	
-	foreach ($object->lines as $line) {
+	foreach ( $object->lines as $line ) {
 		
 		// Affichage tableau des lead
 		$var = ! $var;
 		print "<tr $bc[$var]>";
 		
 		// Title
-		print '<td><a href="'.dol_buildpath('referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type.'">' . $line->ref_int . '</a></td>';
+		print '<td><a href="' . dol_buildpath('referenceletters/referenceletters/instance.php', 1) . '?id=' . $line->fk_element . '&element_type=' . $line->element_type . '">' . $line->ref_int . '</a></td>';
 		
-		//Element
+		// Element
 		require_once $object_ref->element_type_list[$line->element_type]['classpath'] . $object_ref->element_type_list[$line->element_type]['class'];
 		$object_src = new $object_ref->element_type_list[$line->element_type]['objectclass']($db);
 		
 		$result = $object_src->fetch($line->fk_element);
-		if ($result < 0)
-			setEventMessage($object->error, 'errors');
-			if (method_exists($object, 'fetch_thirdparty')) {
-				$result = $object_src->fetch_thirdparty();
-				if ($result < 0)
-					setEventMessage($object->error, 'errors');
+		if ($result < 0) {
+			setEventMessage($object_src->error, 'errors');
+		}
+		if (method_exists($object_src, 'fetch_thirdparty')) {
+			$result = $object_src->fetch_thirdparty();
+			if ($result < 0) {
+				setEventMessage($object_src->error, 'errors');
 			}
-		
-		
-		print '<td>' . $object_ref->displayElementElement(0,$line->element_type) . '</a></td>';
-	
-		if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
-			print '<td><a href="'.dol_buildpath('societe/soc.php',1).'?socid='.$object_src->id.'">' . $object_src->name . '</a></td>';
-		} else {
-			print '<td><a href="'.dol_buildpath($object_ref->element_type_list[$line->element_type]['card'],1).'?id='.$line->fk_element.'">' . $object_src->ref . '</a></td>';
 		}
 		
-		if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
-			print '<td><a href="'.dol_buildpath('societe/soc.php',1).'?socid='.$object_src->id.'">' . $object_src->name . '</a></td>';
+		print '<td>' . $object_ref->displayElementElement(0, $line->element_type) . '</a></td>';
+		
+		print '<td>' . $line->title . '</a></td>';
+		
+		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
 		} else {
-			print '<td><a href="'.dol_buildpath('societe/soc.php',1).'?socid='.$object_src->thirdparty->id.'">' . $object_src->thirdparty->name . '</a></td>';
+			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->ref . '</a></td>';
 		}
 		
+		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
+		} else {
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->name . '</a></td>';
+		}
 		
 		print '<td>' . dol_print_date($line->datec) . '</a></td>';
 		
 		print "</tr>\n";
-		
 	}
 	
 	print "</table>";
-	
 } else {
-	setEventMessage($object->error, 'errors');
+	setEventMessages($object->error, $object->errors, 'errors');
 }
 
 llxFooter();

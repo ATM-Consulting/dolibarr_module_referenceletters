@@ -24,13 +24,14 @@
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php";
-require_once DOL_DOCUMENT_ROOT."/core/class/extrafields.class.php";
+require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
  * Put here description of your class
  */
-class ReferenceLetters extends CommonObject {
+class ReferenceLetters extends CommonObject
+{
 	public $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
@@ -59,7 +60,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
-				'securityfeature'=>'',
+				'securityfeature' => '',
 				'objectclass' => 'Contrat',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contrat/class/',
 				'trans' => 'contracts',
@@ -72,7 +73,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
-				'securityfeature'=>'&societe',
+				'securityfeature' => '&societe',
 				'objectclass' => 'Societe',
 				'classpath' => DOL_DOCUMENT_ROOT . '/societe/class/',
 				'trans' => 'companies',
@@ -85,7 +86,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => 'societe',
-				'securityfeature'=>'socpeople&societe',
+				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
 				'trans' => 'contact',
@@ -98,7 +99,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
-				'securityfeature'=>'',
+				'securityfeature' => '',
 				'objectclass' => 'Propal',
 				'classpath' => DOL_DOCUMENT_ROOT . '/comm/propal/class/',
 				'trans' => 'propal',
@@ -111,7 +112,7 @@ class ReferenceLetters extends CommonObject {
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
-				'securityfeature'=>'',
+				'securityfeature' => '',
 				'objectclass' => 'Facture',
 				'classpath' => DOL_DOCUMENT_ROOT . '/compta/facture/class/',
 				'trans' => 'bills',
@@ -119,7 +120,7 @@ class ReferenceLetters extends CommonObject {
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
 				'card' => 'compta/facture.php',
-				'substitution_method' => 'get_substitutionarray_object'
+				'substitution_method' => 'get_substitutionarray_object' 
 		);
 		return 1;
 	}
@@ -139,9 +140,8 @@ class ReferenceLetters extends CommonObject {
 		
 		if (empty($this->title)) {
 			$this->errors[] = $langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("RefLtrTitle"));
-			$error++;
+			$error ++;
 		}
-		
 		
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
@@ -435,19 +435,42 @@ class ReferenceLetters extends CommonObject {
 					}
 					
 					$subst_array[$langs->trans($item['title'])] = $docgen->$item['substitution_method']($testObj, $langs);
-					$array_second_thirdparty_object=array();
-					if (!empty($testObj->thirdparty->id)) {
-						$array_first_thirdparty_object=$docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
-						foreach($array_first_thirdparty_object as $key=>$value) {
-							$array_second_thirdparty_object['cust_'.$key]=$value;
+					$array_second_thirdparty_object = array ();
+					if (! empty($testObj->thirdparty->id)) {
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
+						foreach ( $array_first_thirdparty_object as $key => $value ) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
 					}
-					//var_dump($array_second_thirdparty_object);
-					$subst_array[$langs->trans($item['title'])]=array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+					// var_dump($array_second_thirdparty_object);
+					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
-					$subst_array[$langs->trans($item['title'])] = array ($langs->trans('RefLtrNoneExists',$langs->trans($item['title']))=>$langs->trans('RefLtrNoneExists',$langs->trans($item['title'])));
+					$subst_array[$langs->trans($item['title'])] = array (
+							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) 
+					);
 				}
 			}
+		}
+		
+		require_once 'referenceletterselements.class.php';
+		$testObj = new ReferenceLettersElements($this->db);
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			if ($num > 0) {
+				$obj = $this->db->fetch_object($resql);
+			}
+		}
+		if (! empty($obj->rowid) && $num > 0) {
+			$testObj->fetch($obj->rowid);
+			
+			$subst_array[$langs->trans('Module103258Name')] = $docgen->get_substitutionarray_refletter($testObj, $langs);
+		} else {
+			$subst_array[$langs->trans('Module103258Name')] = array (
+					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) 
+			);
 		}
 		
 		return $subst_array;
@@ -607,7 +630,7 @@ class ReferenceLetters extends CommonObject {
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
-				
+			
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -755,7 +778,8 @@ class ReferenceLetters extends CommonObject {
 		}
 	}
 }
-class ReferenceLettersLine {
+class ReferenceLettersLine
+{
 	public $id;
 	public $entity;
 	public $title;

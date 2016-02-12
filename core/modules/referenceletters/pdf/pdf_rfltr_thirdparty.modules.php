@@ -143,7 +143,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				}
 				
 				$pdf->Open();
-				$pagenb = 0;
 				$pdf->SetDrawColor(128, 128, 128);
 				
 				$pdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
@@ -160,7 +159,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				$pdf->AddPage();
 				if (! empty($tplidx))
 					$pdf->useTemplate($tplidx);
-				$pagenb ++;
 				
 				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 				
@@ -194,7 +192,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$pdf->AddPage();
 						if (! empty($tplidx))
 							$pdf->useTemplate($tplidx);
-						$pagenb ++;
 						
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 						
@@ -213,7 +210,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$pdf->AddPage();
 						if (! empty($tplidx))
 							$pdf->useTemplate($tplidx);
-						$pagenb ++;
 						
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 						

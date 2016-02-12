@@ -383,7 +383,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " title=".(isset($this->title)?"'".$this->db->escape($this->title)."'":"null").",";
 		$sql.= " content_text=".(isset($this->content_text)?"'".$this->db->escape($this->content_text)."'":"null").",";
 		$sql.= " options_text=".(!empty($option_text)?"'".$this->db->escape($option_text)."'":"null").",";
-		$sql.= " readonly=".(isset($this->readonly)?$this->readonly:"null").",";
+		$sql.= " readonly=".(!empty($this->readonly)?$this->readonly:"0").",";
 		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id;

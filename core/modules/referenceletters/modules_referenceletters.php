@@ -187,17 +187,17 @@ function importImageBackground(&$pdf, $outputlangs, $id) {
 		
 		// add doc from attached files of training
 		$upload_dir = $conf->referenceletters->dir_output . "/referenceletters/" . $id;
-		$filearray = dol_dir_list($upload_dir, "files", 0, '\.pdf$', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
+		$filearray = dol_dir_list($upload_dir, "files", 0, '\.pdf$', '\.meta$', "name", SORT_ASC, 1);
 		if (is_array($filearray) && count($filearray) > 0) {
 			//Take first PDF file added
 			$filedetail = reset($filearray);
 			if (file_exists($filedetail['fullname'])) {
 				$count = $pdf->setSourceFile($filedetail['fullname']);
-				// import all page
-				//for($i = 1; $i <= $count; $i ++) {
+				// import only first pages
+				if ($count>0) {
 					$tplIdx = $pdf->importPage(1);
 					$pdf->useTemplate($tplIdx);
-				//}
+				}
 			}
 		}
 	}

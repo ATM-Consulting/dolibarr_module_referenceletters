@@ -103,6 +103,6 @@ RefLtrListInstance=Letter list
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Error during copying letter PDF into event 
 RefLtrBackground=Background image
-RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore
+RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore. <BR> Only page with "manual" break page will use background image
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
 RefLtrTitleModel=Letter title

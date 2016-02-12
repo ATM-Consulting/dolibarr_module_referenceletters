@@ -105,7 +105,11 @@ class ActionsReferenceLetters
 				$actioncomm->punctual = 1;
 				$actioncomm->percentage = - 1; // Not applicable
 				                               // $actioncomm->contact = $contactforaction;
-				$actioncomm->socid = $instance_letter->srcobject->thirdparty->id;
+				if ($instance_letter->element_type == 'thirdparty') {
+					$actioncomm->socid = $instance_letter->srcobject->id;
+				} else {
+					$actioncomm->socid = $instance_letter->srcobject->thirdparty->id;
+				}
 				$actioncomm->author = $user; // User saving action
 				$actioncomm->userdone = $user; // User doing action
 				$actioncomm->fk_element = $instance_letter->id;

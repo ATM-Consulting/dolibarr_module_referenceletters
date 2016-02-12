@@ -54,6 +54,7 @@ class ReferenceLettersChapters extends CommonObject
 	public $datec='';
 	public $fk_user_mod;
 	public $tms='';
+	public $readonly='';
 	
 	public $lines_chapters = array();
     
@@ -93,6 +94,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->content_text)) $this->content_text=trim($this->content_text);
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
+		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
 		
 		
 		// Check parameters
@@ -121,6 +123,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= "title,";
 		$sql.= "content_text,";
 		$sql.= "options_text,";
+		$sql.= "readonly,";
 		$sql.= "status,";
 		$sql.= "import_key,";
 		$sql.= "fk_user_author,";
@@ -134,7 +137,8 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " ".(! isset($this->title)?'NULL':"'".$this->db->escape($this->title)."'").",";
 		$sql.= " ".(! isset($this->content_text)?'NULL':"'".$this->db->escape($this->content_text)."'").",";
 		$sql.= " ".(empty($option_text)?'NULL':"'".$this->db->escape($option_text)."'").",";
-		$sql.= " ".(! isset($this->status)?'0':"'".$this->status."'").",";
+		$sql.= " ".(empty($this->readonly)?'0':$this->readonly).",";
+		$sql.= " ".(! isset($this->status)?'0':$this->status).",";
 		$sql.= " ".(! isset($this->import_key)?'NULL':"'".$this->db->escape($this->import_key)."'").",";
 		$sql.= " ".$user->id.",";
 		$sql.= " '".$this->db->idate(dol_now())."',";
@@ -202,6 +206,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.title,";
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
+		$sql.= " t.readonly,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -228,6 +233,7 @@ class ReferenceLettersChapters extends CommonObject
 				$this->title = $obj->title;
 				$this->content_text = $obj->content_text;
 				$this->options_text = unserialize($obj->options_text);
+				$this->readonly = $obj->readonly;
 				$this->status = $obj->status;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
@@ -267,6 +273,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.title,";
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
+		$sql.= " t.readonly,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -301,6 +308,7 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->title = $obj->title;
 					$chapter->content_text = $obj->content_text;
 					$chapter->options_text = unserialize($obj->options_text);
+					$chapter->readonly = $obj->readonly;
 					$chapter->status = $obj->status;
 					$chapter->import_key = $obj->import_key;
 					$chapter->fk_user_author = $obj->fk_user_author;
@@ -345,6 +353,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->title)) $this->title=trim($this->title);
 		if (isset($this->content_text)) $this->content_text=trim($this->content_text);
 		if (isset($this->status)) $this->status=trim($this->status);
+		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 
 		
@@ -374,6 +383,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " title=".(isset($this->title)?"'".$this->db->escape($this->title)."'":"null").",";
 		$sql.= " content_text=".(isset($this->content_text)?"'".$this->db->escape($this->content_text)."'":"null").",";
 		$sql.= " options_text=".(!empty($option_text)?"'".$this->db->escape($option_text)."'":"null").",";
+		$sql.= " readonly=".(isset($this->readonly)?$this->readonly:"null").",";
 		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id;
@@ -553,6 +563,7 @@ class ReferenceLettersChapters extends CommonObject
 		$this->title='';
 		$this->content_text='';
 		$this->options_text='';
+		$this->readonly='';
 		$this->status='';
 		$this->import_key='';
 		$this->fk_user_author='';

@@ -85,6 +85,7 @@ if ($action == "add") {
 	$object->title = GETPOST('refltrtitle');
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
+	$object->readonly=GETPOST('refltrreadonly','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -114,6 +115,7 @@ if ($action == "add") {
 	$object->title = GETPOST('refltrtitle');
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
+	$object->readonly=GETPOST('refltrreadonly','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -224,7 +226,9 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	}
-	print $formconfirm;
+	if (!empty($formconfirm)) {
+		print $formconfirm;
+	}
 	
 	
 	print_fiche_titre($subtitle, '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
@@ -318,6 +322,14 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '</td><td>';
 	print $form->textwithpicto('', $langs->trans("RefLtrOptionHelp".$type),1,0);
 	print '</td></tr></table>';
+	print '</td>';
+	print '</tr>';
+	
+	print '<td width="20%">';
+	print $langs->trans('RefLtrReadOnly');
+	print '</td>';
+	print '<td>';
+	print '<input type="checkbox" name="refltrreadonly" size="20"  '.(!empty($object->readonly)?'checked="checked"':'').' value="1"/>';
 	print '</td>';
 	print '</tr>';
 	

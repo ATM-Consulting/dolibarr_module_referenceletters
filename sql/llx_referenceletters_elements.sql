@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS llx_referenceletters_elements (
 rowid integer NOT NULL auto_increment PRIMARY KEY,
 entity integer NOT NULL DEFAULT 1,
 ref_int varchar(20) NULL,
+title varchar(255) NULL,
+outputref integer NOT NULL DEFAULT 1,
 fk_referenceletters integer NOT NULL,
 element_type varchar(50) NOT NULL,
 fk_element integer NOT NULL,

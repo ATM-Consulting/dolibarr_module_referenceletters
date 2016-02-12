@@ -180,6 +180,16 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<input type="hidden" name="action" value="add">';
 
 	print '<table class="border" width="100%">';
+	
+	print '<tr>';
+	print '<td class="fieldrequired"  width="20%">';
+	print $langs->trans('RefLtrElement');
+	print '</td>';
+	print '<td>';
+	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
+	print '</td>';
+	print '</tr>';
+	
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');
@@ -189,16 +199,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '</td>';
 	print '</tr>';
 
-	print '<tr>';
-	print '<td class="fieldrequired"  width="20%">';
-	print $langs->trans('RefLtrElement');
-	print '</td>';
-	print '<td>';
-	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
-	print '</td>';
-	print '</tr>';
-	print '<tr>';
-	
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 
@@ -232,7 +232,9 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	}
-	print $formconfirm;
+	if (!empty($formconfirm)) {
+		print $formconfirm;
+	}
 	
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
 	print $linkback;
@@ -285,7 +287,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '<table class="border" width="100%">';
 				
 				if ($user->rights->referenceletters->write) {
-					print '<tr><td rowspan="5" width="20px">';
+					print '<tr><td rowspan="6" width="20px">';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 					print '</td></tr>';
@@ -333,6 +335,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						print '<input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'">'.$option_text.'<br>';
 					}
 				}
+				print '</td>';
+				print '</tr>';
+				
+				print '<tr>';
+				print '<td width="20%">';
+				print $langs->trans('RefLtrReadOnly');
+				print '</td>';
+				print '<td>';
+				print '<input type="checkbox" name="refltrreadonly" size="20" disabled="disabled" '.(!empty($line_chapter->readonly)?'checked="checked"':'').' value="1"/>';
 				print '</td>';
 				print '</tr>';
 				

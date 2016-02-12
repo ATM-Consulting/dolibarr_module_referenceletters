@@ -72,6 +72,12 @@ function referenceletterPrepareHead($object) {
 	$head[$h][2] = 'card';
 	$h ++;
 	
+	
+	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/background.php", 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("RefLtrBackground");
+	$head[$h][2] = 'background';
+	$h ++;
+	
 	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/info.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';

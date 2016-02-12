@@ -13,3 +13,5 @@
 --
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
+INSERT INTO llx_c_actioncomm (id, code, type, libelle, module, active, todo, position) VALUES (1032581, 'AC_LTR_DOC', 'referenceletters', 'Documents', 'referenceletters', 1, NULL, 100);
+ALTER TABLE llx_actioncomm MODIFY COLUMN elementtype varchar(255) DEFAULT NULL;

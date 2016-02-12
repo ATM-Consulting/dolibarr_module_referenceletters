@@ -108,9 +108,6 @@ class box_referenceletter_elements extends ModeleBoxes {
 						setEventMessage($object->error, 'errors');
 				}
 				
-				
-				
-				
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
 						'url' => dol_buildpath('referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
@@ -119,9 +116,17 @@ class box_referenceletter_elements extends ModeleBoxes {
 						'url' => dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
 						'text' => $object_ref->displayElementElement(0,$line->element_type));
-				$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
+				
+				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
+					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
+							'text' => $object->name,
+							'url' => dol_buildpath('societe/soc.php',1).'?socid='.$object->id);
+				} else {
+					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
 						'text' => $object->ref,
 						'url' => dol_buildpath($object_ref->element_type_list[$line->element_type]['card'],1).'?id='.$line->fk_element);
+				}
+				
 				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
 					$this->info_box_contents[$key][4] = array('td' => 'align="left" width="15"',
 							'text' => $object->name,

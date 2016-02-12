@@ -30,7 +30,8 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_propal extends ModelePDFReferenceLetters {
+class pdf_rfltr_propal extends ModelePDFReferenceLetters
+{
 	var $db;
 	var $name;
 	var $description;
@@ -163,6 +164,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 					$pdf->useTemplate($tplidx);
 				$pagenb ++;
 				
+				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
+				
 				$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				
 				$pdf->SetFont('', '', $default_font_size - 1);
@@ -186,30 +189,43 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 					
 					$chapter_text = $line_chapter['content_text'];
 					
-					if ($chapter_text=='@breakpage@') {
-						$this->_pagefoot($pdf,$object,$outputlangs);
-						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+					if ($chapter_text == '@breakpage@') {
+						$this->_pagefoot($pdf, $object, $outputlangs);
+						if (method_exists($pdf, 'AliasNbPages'))
+							$pdf->AliasNbPages();
 						$pdf->AddPage();
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-						$pagenb++;
-					
+						if (! empty($tplidx))
+							$pdf->useTemplate($tplidx);
+						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
+						
+							
+						$pagenb ++;
+						
 						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
-					
+						
+						$posX = $pdf->getX();
+						$posY = $pdf->getY();
+						
 						continue;
 					}
 					
-					if ($chapter_text=='@breakpagenohead@') {
-						$this->_pagefoot($pdf,$object,$outputlangs);
-						if (method_exists($pdf,'AliasNbPages')) $pdf->AliasNbPages();
+					if ($chapter_text == '@breakpagenohead@') {
+						$this->_pagefoot($pdf, $object, $outputlangs);
+						if (method_exists($pdf, 'AliasNbPages'))
+							$pdf->AliasNbPages();
 						$pdf->AddPage();
-						if (! empty($tplidx)) $pdf->useTemplate($tplidx);
-						$pagenb++;
-							
-						$posY=$this->marge_haute;
-						$posX=$this->marge_gauche;
+						if (! empty($tplidx))
+							$pdf->useTemplate($tplidx);
+						$pagenb ++;
+						
+						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
+						
+						$posY = $this->marge_haute;
+						$posX = $this->marge_gauche;
 						$pdf->SetXY($posX, $posY);
-						$pdf->SetTextColor(0,0,0);
-					
+						$pdf->SetTextColor(0, 0, 0);
+						
 						continue;
 					}
 					
@@ -232,12 +248,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && !empty($object->contact)) {
+					if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
 						$socobject = $object->contact;
-					}
-					else {
+					} else {
 						$socobject = $object->thirdparty;
-					} 
+					}
 					
 					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 					$substitution_array = array ();
@@ -258,6 +273,16 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 					}
 					
 					$tmparray = $this->get_substitutionarray_object($object, $outputlangs);
+					$substitution_array = array ();
+					if (is_array($tmparray) && count($tmparray) > 0) {
+						foreach ( $tmparray as $key => $value ) {
+							$substitution_array['{' . $key . '}'] = $value;
+						}
+						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+					}
+					
+					// Get instance letter substitution
+					$tmparray = $this->get_substitutionarray_refletter($instance_letter, $outputlangs);
 					$substitution_array = array ();
 					if (is_array($tmparray) && count($tmparray) > 0) {
 						foreach ( $tmparray as $key => $value ) {
@@ -296,7 +321,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 				$parameters = array (
 						'file' => $file,
 						'object' => $object,
-						'outputlangs' => $outputlangs 
+						'outputlangs' => $outputlangs,
+						'instance_letter' => $instance_letter 
 				);
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
@@ -321,7 +347,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 	/**
 	 * Show top header of page.
 	 *
-	 * @param PDF			&$pdf Object PDF
+	 * @param PDF &$pdf Object PDF
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
 	 * @param Translate $outputlangs for output
@@ -364,23 +390,27 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 			$pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		
-		$pdf->SetFont('', 'B', $default_font_size + 3);
-		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
-		$title = $outputlangs->convToOutputCharset($instance_letter->title);
-		$pdf->MultiCell(100, 4, $title, '', 'R');
+		if (! empty($instance_letter->outputref)) {
+			$pdf->SetFont('', 'B', $default_font_size + 3);
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$title = $outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
+			$pdf->MultiCell(100, 4, $title, '', 'R');
+			$posy += 5;
+		}
 		
 		$pdf->SetFont('', 'B', $default_font_size);
 		
-		$posy += 5;
 		$pdf->SetXY($posx, $posy);
 		$pdf->SetTextColor(0, 0, 60);
 		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref), '', 'R');
 		
-		$posy += 5;
-		$pdf->SetXY($posx, $posy);
-		$pdf->SetTextColor(0, 0, 60);
-		$pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+		if (! empty($instance_letter->outputref)) {
+			$posy += 5;
+			$pdf->SetXY($posx, $posy);
+			$pdf->SetTextColor(0, 0, 60);
+			$pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+		}
 		
 		$posy += 1;
 		$pdf->SetFont('', '', $default_font_size - 1);
@@ -409,11 +439,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 			$carac_emetteur = '';
 			// Add internal contact of proposal if defined
 			/*$arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
-		 	if (count($arrayidcontact) > 0)
-		 	{
-		 		$object->fetch_user($arrayidcontact[0]);
-		 		$carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
-		 	}*/
+			 if (count($arrayidcontact) > 0)
+			 {
+			 $object->fetch_user($arrayidcontact[0]);
+			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+			 }*/
 			
 			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->client);
 			
@@ -501,15 +531,14 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters {
 	 * Show footer of page.
 	 * Need this->emetteur object
 	 *
-	 * @param PDF			&$pdf PDF
+	 * @param PDF &$pdf PDF
 	 * @param Object $object show
 	 * @param Translate $outputlangs for output
 	 * @param int $hidefreetext text
 	 * @return int height of bottom margin including footer text
 	 */
 	function _pagefoot(&$pdf, $object, $outputlangs, $hidefreetext = 0) {
+		$pdf->SetX($this->marge_gauche);
 		return pdf_pagefoot($pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}
 }
-
-?>

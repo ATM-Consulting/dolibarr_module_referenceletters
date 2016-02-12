@@ -17,18 +17,19 @@
  */
 
 /**
- * \defgroup	referenceletters	ReferenceLetters module
- * \brief		ReferenceLetters module descriptor.
- * \file		core/modules/modReferenceLetters.class.php
- * \ingroup	referenceletters
- * \brief		Description and activation file for module ReferenceLetters
+ * \defgroup referenceletters ReferenceLetters module
+ * \brief ReferenceLetters module descriptor.
+ * \file core/modules/modReferenceLetters.class.php
+ * \ingroup referenceletters
+ * \brief Description and activation file for module ReferenceLetters
  */
 include_once DOL_DOCUMENT_ROOT . "/core/modules/DolibarrModules.class.php";
 
 /**
  * Description and activation class for module ReferenceLetters
  */
-class modReferenceLetters extends DolibarrModules {
+class modReferenceLetters extends DolibarrModules
+{
 	
 	/**
 	 * Constructor.
@@ -60,7 +61,7 @@ class modReferenceLetters extends DolibarrModules {
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '1.3';
+		$this->version = '1.4';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -77,26 +78,30 @@ class modReferenceLetters extends DolibarrModules {
 		                                                    // for default path (eg: /referenceletters/core/xxxxx) (0=disable, 1=enable)
 		                                                    // for specific path of parts (eg: /referenceletters/core/modules/barcode)
 		                                                    // for specific css file (eg: /referenceletters/css/referenceletters.css.php)
-		$this->module_parts = array('models' => 1);
-			// Set this to 1 if module has its own trigger directory
-			//'triggers' => 1,
-			// Set this to 1 if module has its own login method directory
-			//'login' => 0,
-			// Set this to 1 if module has its own substitution function file
-			//'substitutions' => 0,
-			// Set this to 1 if module has its own menus handler directory
-			//'menus' => 0,
-			// Set this to 1 if module has its own barcode directory
-			//'barcode' => 0,
-			// Set this to 1 if module has its own models directory
-			//'models' => 0,
-			// Set this to relative path of css if module has its own css file
-			//'css' => '/referenceletters/css/mycss.css.php',
-			// Set here all hooks context managed by module
-			//'hooks' => array('hookcontext1','hookcontext2')
-			// Set here all workflow context managed by module
-			//'workflow' => array('order' => array('WORKFLOW_ORDER_AUTOCREATE_INVOICE'))
-
+		$this->module_parts = array (
+				'models' => 1,
+				'hooks' => array (
+						'pdfgeneration' 
+				) 
+		);
+		// Set this to 1 if module has its own trigger directory
+		// 'triggers' => 1,
+		// Set this to 1 if module has its own login method directory
+		// 'login' => 0,
+		// Set this to 1 if module has its own substitution function file
+		// 'substitutions' => 0,
+		// Set this to 1 if module has its own menus handler directory
+		// 'menus' => 0,
+		// Set this to 1 if module has its own barcode directory
+		// 'barcode' => 0,
+		// Set this to 1 if module has its own models directory
+		// 'models' => 0,
+		// Set this to relative path of css if module has its own css file
+		// 'css' => '/referenceletters/css/mycss.css.php',
+		// Set here all hooks context managed by module
+		// 'hooks' => array('hookcontext1','hookcontext2')
+		// Set here all workflow context managed by module
+		// 'workflow' => array('order' => array('WORKFLOW_ORDER_AUTOCREATE_INVOICE'))
 		
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/referenceletters/temp");
@@ -106,7 +111,8 @@ class modReferenceLetters extends DolibarrModules {
 				'/referenceletters/contact',
 				'/referenceletters/thirdparty',
 				'/referenceletters/propal',
-				'/referenceletters/invoice'
+				'/referenceletters/invoice',
+				'/referenceletters/referenceletters',
 		);
 		
 		// Config pages. Put here list of php pages
@@ -128,64 +134,96 @@ class modReferenceLetters extends DolibarrModules {
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
 				3,
-				6
+				6 
 		);
 		$this->langfiles = array (
 				"referenceletters@referenceletters" 
 		); // langfiles@referenceletters
-		                                                               // Constants
-		                                                               // List of particular constants to add when module is enabled
-		                                                               // (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
-		                                                               // Example:
-		$this->const = array(
-				0 => array(
-						'REF_LETTER_ADDON',
-						'chaine',
-						'mod_referenceletters_simple',
-						'Use simple mask for reference letters ref',
-						0,
-						'allentities',
-						1
-				),
-				1 => array(
-						'REF_LETTER_UNIVERSAL_MASK',
-						'chaine',
-						'',
-						'Mask of reference letters reference',
-						0,
-						'allentities',
-						1
-				),
-				1 => array(
-						'FCKEDITOR_ENABLE_SOCIETE',
-						'yesno',
-						'1',
-						'Enabled WYSYWYG on modules',
-						0,
-						'allentities',
-						1
-				),
-			);
+		   // Constants
+		   // List of particular constants to add when module is enabled
+		   // (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
+		   // Example:
+		$this->const[] = array (
+				'REF_LETTER_ADDON',
+				'chaine',
+				'mod_referenceletters_simple',
+				'Use simple mask for reference letters ref',
+				0,
+				'current',
+				1 
+		);
+		$this->const[] = array (
+				'REF_LETTER_UNIVERSAL_MASK',
+				'chaine',
+				'',
+				'Mask of reference letters reference',
+				0,
+				'current',
+				1 
+		);
+		$this->const[] = array (
+				'FCKEDITOR_ENABLE_SOCIETE',
+				'yesno',
+				'1',
+				'Enabled WYSYWYG on modules',
+				0,
+				'current',
+				1 
+		);
+		$this->const[] = array (
+				'REF_LETTER_CREATEEVENT',
+				'yesno',
+				'1',
+				'CreateEvent',
+				0,
+				'current',
+				1 
+		);
+		$this->const[] = array (
+				'REF_LETTER_EVTCOPYFILE',
+				'yesno',
+				'1',
+				'copy file event',
+				0,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'REF_LETTER_TYPEEVENTNAME',
+				'chaine',
+				'other',
+				'Event name like <Letter Ref.  {ref_int}>(normal) or like <{model title} - {customer name}>(other)',
+				0,
+				'current',
+				1
+		);
+		$this->const[] = array (
+				'REF_LETTER_OUTPUTREFLET',
+				'yesno',
+				'1',
+				'Output document ref',
+				0,
+				'current',
+				1
+		);
 		
-	
 		// Array to add new pages in new tabs
 		// Example:
-		//$this->tabs = array();
-		//	// To add a new tab identified by code tabname1
-		//	'objecttype:+tabname1:Title1:langfile@referenceletters:$user->rights->referenceletters->read:/referenceletters/mynewtab1.php?id=__ID__',
-		//	// To add another new tab identified by code tabname2
-		//	'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
-		//	// To remove an existing tab identified by code tabname
-		//	'objecttype:-tabname'
+		// $this->tabs = array();
+		// // To add a new tab identified by code tabname1
+		// 'objecttype:+tabname1:Title1:langfile@referenceletters:$user->rights->referenceletters->read:/referenceletters/mynewtab1.php?id=__ID__',
+		// // To add another new tab identified by code tabname2
+		// 'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
+		// // To remove an existing tab identified by code tabname
+		// 'objecttype:-tabname'
 		
 		$this->tabs = array (
 				'contract:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
 				'thirdparty:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
 				'contact:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				'propal:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
-				'invoice:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
+				'invoice:+tabReferenceLetters:Module103258Name:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice' 
 		);
-		
 		
 		// where objecttype can be
 		// 'thirdparty' to add a tab in third party view
@@ -211,57 +249,57 @@ class modReferenceLetters extends DolibarrModules {
 		}
 		$this->dictionnaries = array ();
 		/* Example:
-		  // This is to avoid warnings
-		  if (! isset($conf->referenceletters->enabled)) $conf->referenceletters->enabled=0;
-		  $this->dictionnaries=array(
-		  'langs'=>'referenceletters@referenceletters',
-		  // List of tables we want to see into dictonnary editor
-		  'tabname'=>array(
-		  MAIN_DB_PREFIX."table1",
-		  MAIN_DB_PREFIX."table2",
-		  MAIN_DB_PREFIX."table3"
-		  ),
-		  // Label of tables
-		  'tablib'=>array("Table1","Table2","Table3"),
-		  // Request to select fields
-		  'tabsql'=>array(
-		  'SELECT f.rowid as rowid, f.code, f.label, f.active'
-		  . ' FROM ' . MAIN_DB_PREFIX . 'table1 as f',
-		  'SELECT f.rowid as rowid, f.code, f.label, f.active'
-		  . ' FROM ' . MAIN_DB_PREFIX . 'table2 as f',
-		  'SELECT f.rowid as rowid, f.code, f.label, f.active'
-		  . ' FROM ' . MAIN_DB_PREFIX . 'table3 as f'
-		  ),
-		  // Sort order
-		  'tabsqlsort'=>array("label ASC","label ASC","label ASC"),
-		  // List of fields (result of select to show dictionnary)
-		  'tabfield'=>array("code,label","code,label","code,label"),
-		  // List of fields (list of fields to edit a record)
-		  'tabfieldvalue'=>array("code,label","code,label","code,label"),
-		  // List of fields (list of fields for insert)
-		  'tabfieldinsert'=>array("code,label","code,label","code,label"),
-		  // Name of columns with primary key (try to always name it 'rowid')
-		  'tabrowid'=>array("rowid","rowid","rowid"),
-		  // Condition to show each dictionnary
-		  'tabcond'=>array(
-		  $conf->referenceletters->enabled,
-		  $conf->referenceletters->enabled,
-		  $conf->referenceletters->enabled
-		  )
-		  );
+		 // This is to avoid warnings
+		 if (! isset($conf->referenceletters->enabled)) $conf->referenceletters->enabled=0;
+		 $this->dictionnaries=array(
+		 'langs'=>'referenceletters@referenceletters',
+		 // List of tables we want to see into dictonnary editor
+		 'tabname'=>array(
+		 MAIN_DB_PREFIX."table1",
+		 MAIN_DB_PREFIX."table2",
+		 MAIN_DB_PREFIX."table3"
+		 ),
+		 // Label of tables
+		 'tablib'=>array("Table1","Table2","Table3"),
+		 // Request to select fields
+		 'tabsql'=>array(
+		 'SELECT f.rowid as rowid, f.code, f.label, f.active'
+		 . ' FROM ' . MAIN_DB_PREFIX . 'table1 as f',
+		 'SELECT f.rowid as rowid, f.code, f.label, f.active'
+		 . ' FROM ' . MAIN_DB_PREFIX . 'table2 as f',
+		 'SELECT f.rowid as rowid, f.code, f.label, f.active'
+		 . ' FROM ' . MAIN_DB_PREFIX . 'table3 as f'
+		 ),
+		 // Sort order
+		 'tabsqlsort'=>array("label ASC","label ASC","label ASC"),
+		 // List of fields (result of select to show dictionnary)
+		 'tabfield'=>array("code,label","code,label","code,label"),
+		 // List of fields (list of fields to edit a record)
+		 'tabfieldvalue'=>array("code,label","code,label","code,label"),
+		 // List of fields (list of fields for insert)
+		 'tabfieldinsert'=>array("code,label","code,label","code,label"),
+		 // Name of columns with primary key (try to always name it 'rowid')
+		 'tabrowid'=>array("rowid","rowid","rowid"),
+		 // Condition to show each dictionnary
+		 'tabcond'=>array(
+		 $conf->referenceletters->enabled,
+		 $conf->referenceletters->enabled,
+		 $conf->referenceletters->enabled
+		 )
+		 );
 		 */
 		
 		// Boxes
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		$this->boxes = array (); // Boxes list
-		$r = 0; 
+		$r = 0;
 		$this->boxes[$r][1] = "box_referenceletter_models@referenceletters";
 		$r ++;
 		$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
-		                        // $r ++;
+		// $r ++;
 		/*
-		  $this->boxes[$r][1] = "myboxb.php";
-		  $r++;
+		 $this->boxes[$r][1] = "myboxb.php";
+		 $r++;
 		 */
 		
 		// Permissions
@@ -302,7 +340,7 @@ class modReferenceLetters extends DolibarrModules {
 		// Main menu entries
 		$this->menus = array (); // List of menus to add
 		$r = 0;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 0,
 				'type' => 'top',
 				'titre' => 'Module103258Name',
@@ -318,7 +356,7 @@ class modReferenceLetters extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters',
 				'type' => 'left',
 				'titre' => 'Module103258Name',
@@ -333,11 +371,11 @@ class modReferenceLetters extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
 				'type' => 'left',
 				'titre' => 'RefLtrList',
-				'mainmenu' => 'agefodd',
+				'mainmenu' => 'referenceletters',
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 102,
@@ -348,18 +386,33 @@ class modReferenceLetters extends DolibarrModules {
 		);
 		
 		$r ++;
-		$this->menu [$r] = array (
+		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
 				'type' => 'left',
 				'titre' => 'RefLtrNew',
-				'mainmenu' => 'agefodd',
+				'mainmenu' => 'referenceletters',
 				'url' => '/referenceletters/referenceletters/card.php?action=create',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 103,
 				'enabled' => '$user->rights->referenceletters->write',
 				'perms' => '$user->rights->referenceletters->write',
 				'target' => '',
-				'user' => 0
+				'user' => 0 
+		);
+		
+		$r ++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrListInstance',
+				'mainmenu' => 'referenceletters',
+				'url' => '/referenceletters/referenceletters/list_instance.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 104,
+				'enabled' => '$user->rights->referenceletters->read',
+				'perms' => '$user->rights->referenceletters->read',
+				'target' => '',
+				'user' => 0 
 		);
 		
 		// Add here entries to declare new menus

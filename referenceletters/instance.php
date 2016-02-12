@@ -52,9 +52,15 @@ $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
 
+$sortfield=GETPOST('sortfield','alpha');
+$sortorder=GETPOST('sortorder','alpha');
+
 $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
+
+// Load translation files required by the page
+$langs->load("referenceletters@referenceletters");
 
 // Check if current view is setup in models letter class
 if (! is_array($object_refletter->element_type_list[$element_type])) {
@@ -73,7 +79,6 @@ require_once $object_refletter->element_type_list[$element_type]['menuloader_lib
 restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature']);
 
 // Load translation files required by the page
-$langs->load("referenceletters@referenceletters");
 $langs->load($object_refletter->element_type_list[$element_type]['trans']);
 
 $error = 0;
@@ -88,6 +93,8 @@ if (method_exists($object, 'fetch_thirdparty')) {
 	if ($result < 0)
 		setEventMessage($object->error, 'errors');
 }
+//Needed for hook builddoc
+$object_element->srcobject=$object;
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array (
@@ -106,20 +113,24 @@ if ($action == 'buildoc') {
 	// New letter
 	if (empty($refletterelemntid)) {
 		// Save data
-		$object_element->ref_int = GETPOST('ref_int');
+		$object_element->ref_int = GETPOST('ref_int','alpha');
+		$object_element->title = GETPOST('title_instance');
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
+		$object_element->outputref = GETPOST('outputref','int');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
-		if (empty($langs_chapter))
+		if (empty($langs_chapter)) {
 			$langs_chapter = $langs->defaultlang;
+		}
 		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_chapters->error, 'errors');
+		}
 			
 			// Use a big array into class it is serialize
 		$content_letter = array ();
@@ -146,13 +157,21 @@ if ($action == 'buildoc') {
 		$object_element->content_letter = $content_letter;
 		
 		$result = $object_element->create($user);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
+		} 
+		
+		$object_element->fetch($result);
+			
 	} else {
 		// Edit letter
 		$result = $object_element->fetch($refletterelemntid);
-		if ($result < 0)
+		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
+		}
+		
+		$object_element->title = GETPOST('title_instance');
+		$object_element->outputref = GETPOST('outputref','int');
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -220,7 +239,7 @@ if ($action == 'buildoc') {
 	} else {
 		$result = $object_element->delete($user);
 		if ($result < 0) {
-			setEventMessage($object->errors, 'errors');
+			setEventMessage($object_element->errors, 'errors');
 		} else {
 			header('Location:' . dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $object->id . '&element_type=' . $element_type);
 		}
@@ -265,15 +284,18 @@ if (!empty($formconfirm)) {
 	print $formconfirm;
 }
 
+$options='&amp;element_type='.$element_type.'&amp;id='.$id;
+
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
-print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "", "", '', '', '', '');
-print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", '', '', '', '');
-print '<td></td>';
-print '<td></td>';
+print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitleModel"), $_SERVEUR['PHP_SELF'], "p.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
+print '<th></th>';
+print '<th></th>';
 
-$result = $object_element->fetchAllByElement($id, $element_type);
+$result = $object_element->fetchAllByElement($id, $element_type, $sortorder, $sortfield);
 if ($result < 0)
 	setEventMessage($object_element->error, 'errors');
 
@@ -284,11 +306,14 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		$var = ! $var;
 		print "<tr $bc[$var]>";
 		
-		// Title
+		// Ref int
 		print '<td><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=edit">' . $line->ref_int . '</a></td>';
 		
-		// Element
+		// title
 		print '<td>' . $line->title . '</td>';
+		
+		// title
+		print '<td>' . $line->title_referenceletters . '</td>';
 		
 		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
 		
@@ -364,6 +389,24 @@ if (! empty($idletter)) {
 			print '</td>';
 			print '</tr>';
 			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrTitle');
+			print '</td>';
+			print '<td>';
+			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
+			print '</td>';
+			print '<td>';
+			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
+			print '</td>';
+			print '</tr>';
+			
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -376,7 +419,7 @@ if (! empty($idletter)) {
 					print $langs->trans('RefLtrAddPageBreakWithoutHeader');
 					print '</td></tr>';
 				} else {
-					print '<tr>';
+					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrText');
 					print '</td>';
@@ -392,7 +435,7 @@ if (! empty($idletter)) {
 					print '</td>';
 					print '</tr>';
 					
-					print '<tr>';
+					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrOption');
 					print '</td>';
@@ -441,6 +484,24 @@ if (! empty($refletterelemntid)) {
 			print '</td>';
 			print '<td>';
 			print $object_element->ref_int;
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrTitle');
+			print '</td>';
+			print '<td>';
+			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
+			print '</td>';
+			print '<td>';
+			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
 			

@@ -63,6 +63,7 @@ ReferenceLettersAboutPage = Letter template about page
 #
 ReferenceLettersList=List of Letter templates
 ReferenceLettersNew=New letter template
+RefLtrLetters=Letters
 
 #
 # Pages

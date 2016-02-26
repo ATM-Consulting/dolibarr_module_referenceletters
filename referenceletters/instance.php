@@ -262,7 +262,7 @@ $now = dol_now();
 
 // load menu according context (element_type)
 $head = call_user_func($object_refletter->element_type_list[$element_type]['menuloader_function'], $object);
-dol_fiche_head($head, 'tabReferenceLetters', $object_refletter->element_type_list[$element_type]['title'], 0, $element_type);
+dol_fiche_head($head, 'tabReferenceLetters', $langs->trans($object_refletter->element_type_list[$element_type]['title']), 0, $element_type);
 
 // Include a template to display the object
 include_once dol_buildpath('/referenceletters/tpl/' . $element_type . '.tpl.php');

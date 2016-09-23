@@ -103,8 +103,9 @@ class ActionsReferenceLetters
 				$actioncomm->datef = $now;
 				$actioncomm->durationp = 0;
 				$actioncomm->punctual = 1;
-				$actioncomm->percentage = - 1; // Not applicable
-				                               // $actioncomm->contact = $contactforaction;
+				// Not applicable
+				$actioncomm->percentage = - 1;
+				// $actioncomm->contact = $contactforaction;
 				if ($instance_letter->element_type == 'thirdparty') {
 					$actioncomm->socid = $instance_letter->srcobject->id;
 				} else {

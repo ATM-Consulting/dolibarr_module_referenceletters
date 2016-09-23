@@ -30,7 +30,7 @@ include_once DOL_DOCUMENT_ROOT . "/core/modules/DolibarrModules.class.php";
  */
 class modReferenceLetters extends DolibarrModules
 {
-	
+
 	/**
 	 * Constructor.
 	 * Define names, constants, directories, boxes, permissions
@@ -39,16 +39,16 @@ class modReferenceLetters extends DolibarrModules
 	 */
 	function __construct($db) {
 		global $langs, $conf;
-		
+
 		$this->db = $db;
-		
+
 		// Id for module (must be unique).
 		// Use a free id here
 		// (See in Home -> System information -> Dolibarr for list of used modules id).
 		$this->numero = 103258;
 		// Key text used to identify module (for permissions, menus, etc...)
 		$this->rights_class = 'referenceletters';
-		
+
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
 		$this->family = "other";
@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '1.6';
+		$this->version = '1.7';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -81,8 +81,8 @@ class modReferenceLetters extends DolibarrModules
 		$this->module_parts = array (
 				'models' => 1,
 				'hooks' => array (
-						'pdfgeneration' 
-				) 
+						'pdfgeneration'
+				)
 		);
 		// Set this to 1 if module has its own trigger directory
 		// 'triggers' => 1,
@@ -102,7 +102,7 @@ class modReferenceLetters extends DolibarrModules
 		// 'hooks' => array('hookcontext1','hookcontext2')
 		// Set here all workflow context managed by module
 		// 'workflow' => array('order' => array('WORKFLOW_ORDER_AUTOCREATE_INVOICE'))
-		
+
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/referenceletters/temp");
 		$this->dirs = array (
@@ -114,13 +114,13 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/invoice',
 				'/referenceletters/referenceletters',
 		);
-		
+
 		// Config pages. Put here list of php pages
 		// stored into referenceletters/admin directory, used to setup module.
 		$this->config_page_url = array (
-				"admin_referenceletters.php@referenceletters" 
+				"admin_referenceletters.php@referenceletters"
 		);
-		
+
 		// Dependencies
 		// List of modules id that must be enabled if this module is enabled
 		$this->depends = array ();
@@ -129,15 +129,15 @@ class modReferenceLetters extends DolibarrModules
 		// Minimum version of PHP required by module
 		$this->phpmin = array (
 				5,
-				2 
+				2
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
 				3,
-				6 
+				6
 		);
 		$this->langfiles = array (
-				"referenceletters@referenceletters" 
+				"referenceletters@referenceletters"
 		); // langfiles@referenceletters
 		   // Constants
 		   // List of particular constants to add when module is enabled
@@ -150,7 +150,7 @@ class modReferenceLetters extends DolibarrModules
 				'Use simple mask for reference letters ref',
 				0,
 				'current',
-				1 
+				1
 		);
 		$this->const[] = array (
 				'REF_LETTER_UNIVERSAL_MASK',
@@ -159,7 +159,7 @@ class modReferenceLetters extends DolibarrModules
 				'Mask of reference letters reference',
 				0,
 				'current',
-				1 
+				1
 		);
 		$this->const[] = array (
 				'FCKEDITOR_ENABLE_SOCIETE',
@@ -168,7 +168,7 @@ class modReferenceLetters extends DolibarrModules
 				'Enabled WYSYWYG on modules',
 				0,
 				'current',
-				1 
+				1
 		);
 		$this->const[] = array (
 				'REF_LETTER_CREATEEVENT',
@@ -177,7 +177,7 @@ class modReferenceLetters extends DolibarrModules
 				'CreateEvent',
 				0,
 				'current',
-				1 
+				1
 		);
 		$this->const[] = array (
 				'REF_LETTER_EVTCOPYFILE',
@@ -206,7 +206,7 @@ class modReferenceLetters extends DolibarrModules
 				'current',
 				1
 		);
-		
+
 		// Array to add new pages in new tabs
 		// Example:
 		// $this->tabs = array();
@@ -216,15 +216,15 @@ class modReferenceLetters extends DolibarrModules
 		// 'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
 		// // To remove an existing tab identified by code tabname
 		// 'objecttype:-tabname'
-		
+
 		$this->tabs = array (
 				'contract:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
 				'thirdparty:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
 				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
-				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice' 
+				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice'
 		);
-		
+
 		// where objecttype can be
 		// 'thirdparty' to add a tab in third party view
 		// 'intervention' to add a tab in intervention view
@@ -288,7 +288,7 @@ class modReferenceLetters extends DolibarrModules
 		 )
 		 );
 		 */
-		
+
 		// Boxes
 		// Add here list of php file(s) stored in core/boxes that contains class to show a box.
 		$this->boxes = array (); // Boxes list
@@ -301,42 +301,42 @@ class modReferenceLetters extends DolibarrModules
 		 $this->boxes[$r][1] = "myboxb.php";
 		 $r++;
 		 */
-		
+
 		// Permissions
 		$this->rights = array (); // Permission array used by this module
 		$r = 0;
-		
+
 		// Add here list of permission defined by
 		// an id, a label, a boolean and two constant strings.
 		// Example:
 		// // Permission id (must not be already used)
 		$this->rights = array ();
 		$r = 0;
-		
+
 		$this->rights[$r][0] = 1032581;
 		$this->rights[$r][1] = 'See models letters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'read';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1032582;
 		$this->rights[$r][1] = 'Modify models letters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'write';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1032583;
 		$this->rights[$r][1] = 'Delete models letters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'delete';
 		$r ++;
-		
+
 		$this->rights[$r][0] = 1032584;
 		$this->rights[$r][1] = 'Use models letters';
 		$this->rights[$r][3] = 1;
 		$this->rights[$r][4] = 'use';
 		$r ++;
-		
+
 		// Main menu entries
 		$this->menus = array (); // List of menus to add
 		$r = 0;
@@ -352,9 +352,9 @@ class modReferenceLetters extends DolibarrModules
 				'enabled' => '$user->rights->referenceletters->read',
 				'perms' => '$user->rights->referenceletters->read',
 				'target' => '',
-				'user' => 0 
+				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters',
@@ -367,9 +367,9 @@ class modReferenceLetters extends DolibarrModules
 				'enabled' => '$user->rights->referenceletters->read',
 				'perms' => '$user->rights->referenceletters->read',
 				'target' => '',
-				'user' => 0 
+				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
@@ -382,9 +382,9 @@ class modReferenceLetters extends DolibarrModules
 				'enabled' => '$user->rights->referenceletters->read',
 				'perms' => '$user->rights->referenceletters->read',
 				'target' => '',
-				'user' => 0 
+				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
@@ -397,9 +397,9 @@ class modReferenceLetters extends DolibarrModules
 				'enabled' => '$user->rights->referenceletters->write',
 				'perms' => '$user->rights->referenceletters->write',
 				'target' => '',
-				'user' => 0 
+				'user' => 0
 		);
-		
+
 		$r ++;
 		$this->menu[$r] = array (
 				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
@@ -412,9 +412,9 @@ class modReferenceLetters extends DolibarrModules
 				'enabled' => '$user->rights->referenceletters->read',
 				'perms' => '$user->rights->referenceletters->read',
 				'target' => '',
-				'user' => 0 
+				'user' => 0
 		);
-		
+
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:
@@ -496,7 +496,7 @@ class modReferenceLetters extends DolibarrModules
 		// $r++;
 		// Exports
 		// $r = 1;
-		
+
 		// Example:
 		// $this->export_code[$r]=$this->rights_class.'_'.$r;
 		// // Translation key (used only if key ExportDataset_xxx_z not found)
@@ -587,7 +587,7 @@ class modReferenceLetters extends DolibarrModules
 		// . 'AND f.rowid = fd.fk_facture';
 		// $r++;
 	}
-	
+
 	/**
 	 * Function called when module is enabled.
 	 * The init function add constants, boxes, permissions and menus
@@ -599,12 +599,12 @@ class modReferenceLetters extends DolibarrModules
 	 */
 	function init($options = '') {
 		$sql = array ();
-		
+
 		$result = $this->load_tables();
-		
+
 		return $this->_init($sql, $options);
 	}
-	
+
 	/**
 	 * Function called when module is disabled.
 	 * Remove from database constants, boxes and permissions from Dolibarr database.
@@ -615,10 +615,10 @@ class modReferenceLetters extends DolibarrModules
 	 */
 	function remove($options = '') {
 		$sql = array ();
-		
+
 		return $this->_remove($sql, $options);
 	}
-	
+
 	/**
 	 * Create tables, keys and data required by module
 	 * Files llx_table1.sql, llx_table1.key.sql llx_data.sql with create table, create keys

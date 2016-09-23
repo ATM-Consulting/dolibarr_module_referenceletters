@@ -222,7 +222,8 @@ if ($action == 'buildoc') {
 		$outputlangs->setDefaultLang($newlang);
 	}
 
-	$ret = $object_element->fetch($refletterelemntid); // Reload to get new records
+	// Reload to get new records
+	$ret = $object_element->fetch($refletterelemntid);
 	$result = referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
 
 	if ($result <= 0) {

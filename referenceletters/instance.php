@@ -98,7 +98,7 @@ $object_element->srcobject=$object;
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array (
-		'referencelettersinstacecard' 
+		'referencelettersinstacecard'
 ));
 
 /*
@@ -109,7 +109,7 @@ $parameters = array ();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 if ($action == 'buildoc') {
-	
+
 	// New letter
 	if (empty($refletterelemntid)) {
 		// Save data
@@ -119,101 +119,101 @@ if ($action == 'buildoc') {
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
-		
+
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter)) {
 			$langs_chapter = $langs->defaultlang;
 		}
-		
+
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0) {
 			setEventMessage($object_chapters->error, 'errors');
 		}
-			
-			// Use a big array into class it is serialize
+
+		// Use a big array into class it is serialize
 		$content_letter = array ();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-				
+
 				$options = array ();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ( $line_chapter->options_text as $key => $option_text ) {
 						$options[$key] = array (
 								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
-								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key) 
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
 						);
 					}
 				}
-				
+
 				$content_letter[$line_chapter->id] = array (
 						'content_text' => GETPOST('content_text_' . $line_chapter->id),
-						'options' => $options 
+						'options' => $options
 				);
 			}
 		}
-		
+
 		$object_element->content_letter = $content_letter;
-		
+
 		$result = $object_element->create($user);
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
-		} 
-		
+		}
+
 		$object_element->fetch($result);
-			
+
 	} else {
 		// Edit letter
 		$result = $object_element->fetch($refletterelemntid);
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		}
-		
+
 		$object_element->title = GETPOST('title_instance');
 		$object_element->outputref = GETPOST('outputref','int');
-		
+
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter))
 			$langs_chapter = $langs->defaultlang;
-		
+
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
-			
+
 			// Use a big array into class it is serialize
 		$content_letter = array ();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-				
+
 				$options = array ();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ( $line_chapter->options_text as $key => $option_text ) {
 						$options[$key] = array (
 								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
-								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key) 
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
 						);
 					}
 				}
-				
+
 				$content_letter[$line_chapter->id] = array (
 						'content_text' => GETPOST('content_text_' . $line_chapter->id),
-						'options' => $options 
+						'options' => $options
 				);
 			}
 		}
-		
+
 		$object_element->content_letter = $content_letter;
-		
+
 		$result = $object_element->update($user);
 		if ($result < 0)
 			setEventMessage($object_element->error, 'errors');
 	}
-	
+
 	// Create document PDF
-	
+
 	// Define output language
 	$outputlangs = $langs;
 	if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -221,10 +221,11 @@ if ($action == 'buildoc') {
 		$newlang = $object->thridparty->default_lang;
 		$outputlangs->setDefaultLang($newlang);
 	}
-	
-	$ret = $object_element->fetch($refletterelemntid); // Reload to get new records
+
+	// Reload to get new records
+	$ret = $object_element->fetch($refletterelemntid);
 	$result = referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
-	
+
 	if ($result <= 0) {
 		dol_print_error($db, $result);
 		exit();
@@ -262,7 +263,12 @@ $now = dol_now();
 
 // load menu according context (element_type)
 $head = call_user_func($object_refletter->element_type_list[$element_type]['menuloader_function'], $object);
-dol_fiche_head($head, 'tabReferenceLetters', $object_refletter->element_type_list[$element_type]['title'], 0, $element_type);
+if (array_key_exists('picto', $object_refletter->element_type_list[$element_type])) {
+	$picto=$object_refletter->element_type_list[$element_type]['picto'];
+} else {
+	$picto=$element_type;
+}
+dol_fiche_head($head, 'tabReferenceLetters', $langs->trans($object_refletter->element_type_list[$element_type]['title']), 0, $picto);
 
 // Include a template to display the object
 include_once dol_buildpath('/referenceletters/tpl/' . $element_type . '.tpl.php');
@@ -301,22 +307,22 @@ if ($result < 0)
 
 if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 	foreach ( $object_element->lines as $line ) {
-		
+
 		// Affichage tableau des lead
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		
+
 		// Ref int
 		print '<td><a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=edit">' . $line->ref_int . '</a></td>';
-		
+
 		// title
 		print '<td>' . $line->title . '</td>';
-		
+
 		// title
 		print '<td>' . $line->title_referenceletters . '</td>';
-		
+
 		print '<td>' . dol_print_date($line->datec, 'daytext') . '</td>';
-		
+
 		// File
 		print '<td>';
 		$filename = dol_sanitizeFileName($line->ref_int);
@@ -326,7 +332,7 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		// var_dump($linkeddoc);
 		print $linkeddoc;
 		print '</td>';
-		
+
 		print '<td>';
 		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		print '</td>';
@@ -363,21 +369,21 @@ if (! empty($idletter)) {
 		}
 		if (empty($langs_chapter))
 			$langs_chapter = $langs->defaultlang;
-		
+
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0)
 			setEventMessage($object_chapters->error, 'errors');
-		
+
 		print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
-		
+
 		print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
 		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="buildoc">';
 		print '<input type="hidden" name="idletter" value="' . $idletter . '">';
-		
+
 		print '<table class="border" width="100%">';
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrRef');
@@ -388,7 +394,7 @@ if (! empty($idletter)) {
 			print '<input type="hidden" name="ref_int" value="' . $ref_int . '">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrTitle');
@@ -397,7 +403,7 @@ if (! empty($idletter)) {
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
@@ -406,7 +412,7 @@ if (! empty($idletter)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-			
+
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -424,7 +430,7 @@ if (! empty($idletter)) {
 					print $langs->trans('RefLtrText');
 					print '</td>';
 					print '<td>';
-					
+
 					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 					$nbrows = ROWS_2;
 					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
@@ -434,7 +440,7 @@ if (! empty($idletter)) {
 					$doleditor->Create();
 					print '</td>';
 					print '</tr>';
-					
+
 					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrOption');
@@ -451,13 +457,13 @@ if (! empty($idletter)) {
 					print '</tr>';
 				}
 			}
-			
+
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
 			print '</td>';
 		}
 		print '</table>';
-		
+
 		print '</form>';
 	}
 }
@@ -468,16 +474,16 @@ if (! empty($refletterelemntid)) {
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		} else {
-			
+
 			// Edit a existing letter
 			print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
 			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 			print '<input type="hidden" name="action" value="buildoc">';
 			print '<input type="hidden" name="idletter" value="' . $object_element->fk_referenceletters . '">';
 			print '<input type="hidden" name="refletterelemntid" value="' . $object_element->id . '">';
-			
+
 			print '<table class="border" width="100%">';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrRef');
@@ -486,7 +492,7 @@ if (! empty($refletterelemntid)) {
 			print $object_element->ref_int;
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrTitle');
@@ -495,7 +501,7 @@ if (! empty($refletterelemntid)) {
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
@@ -504,7 +510,7 @@ if (! empty($refletterelemntid)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-			
+
 			foreach ( $object_element->content_letter as $key => $line_chapter ) {
 				if ($line_chapter['content_text'] == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -522,7 +528,7 @@ if (! empty($refletterelemntid)) {
 					print $langs->trans('RefLtrText');
 					print '</td>';
 					print '<td>';
-					
+
 					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 					$nbrows = ROWS_2;
 					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
@@ -532,7 +538,7 @@ if (! empty($refletterelemntid)) {
 					$doleditor->Create();
 					print '</td>';
 					print '</tr>';
-					
+
 					print '<tr>';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrOption');
@@ -554,13 +560,13 @@ if (! empty($refletterelemntid)) {
 					print '</tr>';
 				}
 			}
-			
+
 			print '<tr>';
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '</table>';
 		}
 	}

@@ -14,11 +14,11 @@ INSTALL
 
 	http://wiki.dolibarr.org/index.php/FAQ_Repertoire_Custom_Module_Externe
 	http://wiki.dolibarr.org/index.php/FAQ_ModuleCustomDirectory
-	
+
 INSTAL FROM GIT (into "custom" directory)
 ---------------
 
-	$git clone git@git.framasoft.org:open-concept.pro/dolibarr_referenceletters.git referenceletters
+	$git clone git@github.com:ATM-Consulting/dolibarr_module_referenceletters.git referenceletters
 	
 DOCUMENTATION
 ---------------
@@ -29,8 +29,8 @@ DOCUMENTATION
 DOLISTORE
 ---------------
 
-	https://www.dolistore.com/fr/modules/504-Mod--le-de-courrier-pour-cr--er-vos-PDF.html
-	https://www.dolistore.com/en/modules/504-Template-letters-to-create-PDF.html
+	https://www.dolistore.com/fr/modules/658-Mod--le-de-courrier-pour-cr--er-vos-PDF-3-7---4-0.html
+	https://www.dolistore.com/en/modules/658-Template-letters-to-create-PDF-3-7---4-0.html
 
 
 DOLIBARR WIKI PAGE
@@ -42,7 +42,7 @@ DOLIBARR WIKI PAGE
 LIVE DEMO
 ---------------
 
-	http://demo.open-concept.pro/dolibarr/htdocs/
+	http://dolibarr.atm-consulting.fr/
 	
 Other Licences
 --------------

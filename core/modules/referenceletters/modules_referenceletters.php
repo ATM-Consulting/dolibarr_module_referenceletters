@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ require_once '../class/commondocgeneratorreferenceletters.class.php';
 abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLetters
 {
 	var $error = '';
-	
+
 	/**
 	 * Return list of active generation modules
 	 *
@@ -40,12 +40,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	static function liste_modeles($db, $maxfilenamelength = 0) {
 		global $conf;
-		
+
 		$type = 'referenceletters';
 		$liste = array ();
-		
+
 		$liste[] = 'referenceletters';
-		
+
 		return $liste;
 	}
 }
@@ -56,7 +56,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 abstract class ModeleNumRefrReferenceLetters
 {
 	var $error = '';
-	
+
 	/**
 	 * Return if a module can be used or not
 	 *
@@ -65,7 +65,7 @@ abstract class ModeleNumRefrReferenceLetters
 	function isEnabled() {
 		return true;
 	}
-	
+
 	/**
 	 * Renvoi la description par defaut du modele de numerotation
 	 *
@@ -76,7 +76,7 @@ abstract class ModeleNumRefrReferenceLetters
 		$langs->load("referenceletters@referenceletters");
 		return $langs->trans("NoDescription");
 	}
-	
+
 	/**
 	 * Renvoi un exemple de numerotation
 	 *
@@ -87,7 +87,7 @@ abstract class ModeleNumRefrReferenceLetters
 		$langs->load("referenceletters");
 		return $langs->trans("NoExample");
 	}
-	
+
 	/**
 	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
 	 * de conflits qui empechera cette numerotation de fonctionner.
@@ -97,7 +97,7 @@ abstract class ModeleNumRefrReferenceLetters
 	function canBeActivated() {
 		return true;
 	}
-	
+
 	/**
 	 * Renvoi prochaine valeur attribuee
 	 *
@@ -106,11 +106,11 @@ abstract class ModeleNumRefrReferenceLetters
 	 * @param Lead $lead
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $objsoc, $lead) {
+	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element) {
 		global $langs;
 		return $langs->trans("NotAvailable");
 	}
-	
+
 	/**
 	 * Renvoi version du module numerotation
 	 *
@@ -119,7 +119,7 @@ abstract class ModeleNumRefrReferenceLetters
 	function getVersion() {
 		global $langs;
 		$langs->load("admin");
-		
+
 		if ($this->version == 'development')
 			return $langs->trans("VersionDevelopment");
 		if ($this->version == 'experimental')
@@ -142,7 +142,7 @@ abstract class ModeleNumRefrReferenceLetters
  */
 function referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $element_type) {
 	global $conf, $user, $langs;
-	
+
 	$error = 0;
 	$filefound = 0;
 	// Search template files
@@ -150,15 +150,15 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	if (file_exists($file)) {
 		$filefound = 1;
 	}
-	
+
 	$classname = 'pdf_rfltr_' . $element_type;
-	
+
 	// Charge le modele
 	if ($filefound) {
 		require_once $file;
-		
+
 		$obj = new $classname($db);
-		
+
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		if ($obj->write_file($object, $instance_letter, $outputlangs) > 0) {
@@ -174,7 +174,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 }
 
 /**
- * 
+ *
  * @param unknown $pdf
  * @param unknown $outputlangs
  * @param unknown $id
@@ -182,9 +182,9 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 function importImageBackground(&$pdf, $outputlangs, $id) {
 	global $conf;
 	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-		
+
 		// add doc from attached files of training
 		$upload_dir = $conf->referenceletters->dir_output . "/referenceletters/" . $id;
 		$filearray = dol_dir_list($upload_dir, "files", 0, '\.pdf$', '\.meta$', "name", SORT_ASC, 1);
@@ -196,7 +196,11 @@ function importImageBackground(&$pdf, $outputlangs, $id) {
 				// import only first pages
 				if ($count>0) {
 					$tplIdx = $pdf->importPage(1);
-					$pdf->useTemplate($tplIdx);
+					if ($tplIdx!==false) {
+						$pdf->useTemplate($tplIdx);
+					} else {
+						setEventMessages(null, array($filedetail['fullname'].' cannot be added to current doc, probably Protected PDF'),'warnings');
+					}
 				}
 			}
 		}

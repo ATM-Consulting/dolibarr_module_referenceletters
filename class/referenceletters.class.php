@@ -49,7 +49,7 @@ class ReferenceLetters extends CommonObject
 	public $tms = '';
 	public $element_type_list = array ();
 	public $lines = array ();
-	
+
 	/**
 	 * Constructor
 	 *
@@ -68,7 +68,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contract.lib.php',
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/card.php',
-				'substitution_method' => 'get_substitutionarray_object' 
+				'substitution_method' => 'get_substitutionarray_object'
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -81,7 +81,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php',
 				'menuloader_function' => 'societe_prepare_head',
 				'card' => 'societe/soc.php',
-				'substitution_method' => 'get_substitutionarray_thirdparty' 
+				'substitution_method' => 'get_substitutionarray_thirdparty',
+				'picto' => 'company'
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
@@ -94,7 +95,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/card.php',
-				'substitution_method' => 'get_substitutionarray_contact' 
+				'substitution_method' => 'get_substitutionarray_contact'
 		);
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
@@ -107,7 +108,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
 				'card' => 'comm/propal.php',
-				'substitution_method' => 'get_substitutionarray_object' 
+				'substitution_method' => 'get_substitutionarray_object'
 		);
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
@@ -120,11 +121,11 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
 				'card' => 'compta/facture.php',
-				'substitution_method' => 'get_substitutionarray_object' 
+				'substitution_method' => 'get_substitutionarray_object'
 		);
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -135,14 +136,14 @@ class ReferenceLetters extends CommonObject
 	function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (empty($this->title)) {
 			$this->errors[] = $langs->trans('ErrorFieldRequired', $langs->transnoentitiesnoconv("RefLtrTitle"));
 			$error ++;
 		}
-		
+
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
 		if (isset($this->title))
@@ -153,13 +154,13 @@ class ReferenceLetters extends CommonObject
 			$this->status = trim($this->status);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
-			
+
 			// Check parameters
 			// Put here code to add control on parameters values
-			
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-		
+
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
@@ -168,9 +169,9 @@ class ReferenceLetters extends CommonObject
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-		
+
 		$sql .= ") VALUES (";
-		
+
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
@@ -179,25 +180,25 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-		
+
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "referenceletters");
-			
+
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -206,9 +207,9 @@ class ReferenceLetters extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
-			
+
 			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
@@ -216,7 +217,7 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -230,7 +231,7 @@ class ReferenceLetters extends CommonObject
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -241,7 +242,7 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.entity,";
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
@@ -251,18 +252,18 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE t.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$this->id = $obj->rowid;
-				
+
 				$this->entity = $obj->entity;
 				$this->title = $obj->title;
 				$this->element_type = $obj->element_type;
@@ -272,7 +273,7 @@ class ReferenceLetters extends CommonObject
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
-				
+
 				$extrafields = new ExtraFields($this->db);
 				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
 				if (count($extralabels) > 0) {
@@ -280,7 +281,7 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -288,7 +289,7 @@ class ReferenceLetters extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -303,7 +304,7 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.entity,";
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
@@ -313,11 +314,11 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
-		
+
 		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
-		
+
 		if (is_array($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
@@ -327,15 +328,15 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 		}
-		
+
 		if (! empty($sortfield)) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
-		
+
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
-		
+
 		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -343,11 +344,11 @@ class ReferenceLetters extends CommonObject
 			if ($num > 0) {
 				$this->lines = array ();
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					
+
 					$line = new ReferenceLettersLine();
-					
+
 					$line->id = $obj->rowid;
-					
+
 					$line->entity = $obj->entity;
 					$line->title = $obj->title;
 					$line->element_type = $obj->element_type;
@@ -357,12 +358,12 @@ class ReferenceLetters extends CommonObject
 					$line->datec = $this->db->jdate($obj->datec);
 					$line->fk_user_mod = $obj->fk_user_mod;
 					$line->tms = $this->db->jdate($obj->tms);
-					
+
 					$this->lines[] = $line;
 				}
 			}
 			$this->db->free($resql);
-			
+
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -370,17 +371,17 @@ class ReferenceLetters extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * return translated label of element linked
 	 *
 	 * @param int $mode trans normal, 1 transnoentities
 	 * @return string translated element label
-	 *        
+	 *
 	 */
 	public function displayElement($mode = 0) {
 		global $langs;
-		
+
 		$langs->load($this->element_type_list[$this->element_type]['trans']);
 		if (empty($mode)) {
 			$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
@@ -389,35 +390,35 @@ class ReferenceLetters extends CommonObject
 		}
 		return $label;
 	}
-	
+
 	/**
 	 * return translated label of element linked
 	 *
 	 * @param int $mode trans normal, 1 transnoentities
 	 * @return string translated element label
-	 *        
+	 *
 	 */
 	public function getSubtitutionKey($user) {
 		global $conf, $langs, $mysoc;
-		
+
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
-		
+
 		$subst_array = '';
 		$docgen = new commondocgeneratorreferenceletters($this->db);
 		$docgen->db = $this->db;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
-		
+
 		foreach ( $this->element_type_list as $type => $item ) {
 			if ($this->element_type == $type) {
-				
+
 				$langs->load($item['trans']);
-				
+
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
-				
+
 				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
 				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
@@ -429,12 +430,11 @@ class ReferenceLetters extends CommonObject
 				}
 				if (! empty($obj->rowid) && $num > 0) {
 					$testObj->fetch($obj->rowid);
-					
+
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-					
-					$subst_array[$langs->trans($item['title'])] = $docgen->$item['substitution_method']($testObj, $langs);
+					$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 					$array_second_thirdparty_object = array ();
 					if (! empty($testObj->thirdparty->id)) {
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
@@ -446,12 +446,12 @@ class ReferenceLetters extends CommonObject
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
 					$subst_array[$langs->trans($item['title'])] = array (
-							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) 
+							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
 			}
 		}
-		
+
 		require_once 'referenceletterselements.class.php';
 		$testObj = new ReferenceLettersElements($this->db);
 		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
@@ -465,31 +465,31 @@ class ReferenceLetters extends CommonObject
 		}
 		if (! empty($obj->rowid) && $num > 0) {
 			$testObj->fetch($obj->rowid);
-			
+
 			$subst_array[$langs->trans('Module103258Name')] = $docgen->get_substitutionarray_refletter($testObj, $langs);
 		} else {
 			$subst_array[$langs->trans('Module103258Name')] = array (
-					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) 
+					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
 			);
 		}
-		
+
 		return $subst_array;
 	}
-	
+
 	/**
 	 * return translated label of element linked
 	 *
 	 * @param int $mode trans normal, 1 transnoentities
 	 * @return string translated element label
-	 *        
+	 *
 	 */
 	public function displayElementElement($mode = 0, $element_type = '') {
 		global $langs;
-		
+
 		$this->element_type = $element_type;
 		return $this->displayElement($mode);
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -500,9 +500,9 @@ class ReferenceLetters extends CommonObject
 	function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
 		if (isset($this->title))
@@ -513,35 +513,35 @@ class ReferenceLetters extends CommonObject
 			$this->status = trim($this->status);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
-			
+
 			// Check parameters
 			// Put here code to add a control on parameters values
-			
+
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "referenceletters SET";
-		
+
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id;
-		
+
 		$sql .= " WHERE rowid=" . $this->id;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -550,9 +550,9 @@ class ReferenceLetters extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
-			
+
 			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
 {
 				$result = $this->insertExtraFields();
@@ -561,7 +561,7 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -575,7 +575,7 @@ class ReferenceLetters extends CommonObject
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -586,14 +586,14 @@ class ReferenceLetters extends CommonObject
 	function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		$this->db->begin();
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -602,11 +602,11 @@ class ReferenceLetters extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_chapters";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -614,11 +614,11 @@ class ReferenceLetters extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -626,11 +626,11 @@ class ReferenceLetters extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -638,7 +638,7 @@ class ReferenceLetters extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -652,7 +652,7 @@ class ReferenceLetters extends CommonObject
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -661,24 +661,24 @@ class ReferenceLetters extends CommonObject
 	 */
 	function createFromClone($fromid) {
 		global $user, $langs;
-		
+
 		$error = 0;
-		
+
 		$object = new Referenceletters($this->db);
-		
+
 		$this->db->begin();
-		
+
 		// Load source object
 		$object->fetch($fromid);
 		$object->title = $object->title . ' (Clone)';
 		$clonedrefletterid = $object->create($user);
-		
+
 		// Other options
 		if ($clonedrefletterid < 0) {
 			$this->errors[] = $object->error;
 			$error ++;
 		}
-		
+
 		if (! $error) {
 			// Clone Chapters
 			require_once 'referenceletterschapters.class.php';
@@ -709,7 +709,7 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 		}
-		
+
 		// End
 		if (! $error) {
 			$this->db->commit();
@@ -723,7 +723,7 @@ class ReferenceLetters extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -732,7 +732,7 @@ class ReferenceLetters extends CommonObject
 	 */
 	function initAsSpecimen() {
 		$this->id = 0;
-		
+
 		$this->entity = '';
 		$this->title = '';
 		$this->element_type = '';
@@ -743,7 +743,7 @@ class ReferenceLetters extends CommonObject
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
-	
+
 	/**
 	 * Give information on the object
 	 *
@@ -752,12 +752,12 @@ class ReferenceLetters extends CommonObject
 	 */
 	function info($id) {
 		global $langs;
-		
+
 		$sql = "SELECT";
 		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as p";
 		$sql .= " WHERE p.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {

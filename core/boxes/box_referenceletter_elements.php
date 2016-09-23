@@ -32,23 +32,23 @@ class box_referenceletter_elements extends ModeleBoxes {
 	var $boximg = "referenceletters@referenceletters";
 	var $boxlabel;
 	var $depends = array (
-			"referenceletters" 
+			"referenceletters"
 	);
 	var $db;
 	var $param;
 	var $info_box_head = array ();
 	var $info_box_contents = array ();
-	
+
 	/**
 	 * Constructor
 	 */
 	function __construct() {
 		global $langs;
 		$langs->load("boxes");
-		
+
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name");
 	}
-	
+
 	/**
 	 * Load data into info_box_contents array to show array later.
 	 *
@@ -57,29 +57,29 @@ class box_referenceletter_elements extends ModeleBoxes {
 	 */
 	function loadBox($max = 10) {
 		global $conf, $user, $langs, $db;
-		
+
 		$this->max = $max;
-		
+
 		dol_include_once("/referenceletters/class/referenceletterselements.class.php");
 		dol_include_once("/referenceletters/class/referenceletters.class.php");
-		
+
 		$text = $langs->trans("Module103258Name", $max);
 		$this->info_box_head = array (
 				'text' => $text,
-				'limit' => dol_strlen($text) 
+				'limit' => dol_strlen($text)
 		);
-		
+
 		$object_ref=new ReferenceLetters($db);
-		
+
 		$object=new ReferenceLettersElements($db);
 		$result = $object->fetchAll('ASC','t.datec',5,0);
 		if ($result<0) {
 			setEventMessage($object->error,'errors');
 		}
-		
+
 		if (is_array($object->lines) && count($object->lines)>0) {
 			foreach($object->lines as $key=>$line) {
-				
+
 				// Check if current view is setup in models letter class
 				if (! is_array($object_ref->element_type_list[$line->element_type])) {
 					$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
@@ -92,13 +92,13 @@ class box_referenceletter_elements extends ModeleBoxes {
 							'text' => '');
 					continue;
 				}
-				
-				
-				
+
+
+
 				// load class according
 				require_once $object_ref->element_type_list[$line->element_type]['classpath'] . $object_ref->element_type_list[$line->element_type]['class'];
 				$object = new $object_ref->element_type_list[$line->element_type]['objectclass']($db);
-				
+
 				$result = $object->fetch($line->fk_element);
 				if ($result < 0)
 					setEventMessage($object->error, 'errors');
@@ -107,7 +107,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 					if ($result < 0)
 						setEventMessage($object->error, 'errors');
 				}
-				
+
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
 						'url' => dol_buildpath('referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
@@ -116,7 +116,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 						'url' => dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
 						'text' => $object_ref->displayElementElement(0,$line->element_type));
-				
+
 				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
 					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
 							'text' => $object->name,
@@ -126,7 +126,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 						'text' => $object->ref,
 						'url' => dol_buildpath($object_ref->element_type_list[$line->element_type]['card'],1).'?id='.$line->fk_element);
 				}
-				
+
 				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
 					$this->info_box_contents[$key][4] = array('td' => 'align="left" width="15"',
 							'text' => $object->name,
@@ -140,21 +140,20 @@ class box_referenceletter_elements extends ModeleBoxes {
 						'text' => dol_print_date($line->datec,'daytext'));
 			}
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 	/**
 	 * Method to show box
 	 *
 	 * @param array $head with properties of box title
 	 * @param array $contents with properties of box lines
+	 * @param integer $nooutput nooutput
 	 * @return void
 	 */
-	function showBox($head = null, $contents = null) {
+	function showBox($head = null, $contents = null, $nooutput = 0) {
 		parent::showBox($this->info_box_head, $this->info_box_contents);
 	}
 }
-
-?>

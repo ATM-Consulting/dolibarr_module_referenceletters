@@ -42,15 +42,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
      * @param   Translate	$outputlangs    Language object for output
      * @return	array						Array of substitution key->code
      */
-    function get_substitutionarray_contact($contact,$outputlangs)
+    function get_substitutionarray_contact($contact,$outputlangs, $array_key = 'object')
     {
         global $conf,$langs,$db;
-        
+
         $langs->load("dict");
-        
+
         $code=(! empty($contact->civilite_id)?$contact->civilite_id:(! empty($contact->civility_id)?$contact->civility_id:''));
         $civility=$langs->getLabelFromKey($this->db, "Civility".$code, "c_civilite", "code", "civilite", $code);
-        
+
         return array(
             'contact_lastname'=>$contact->lastname,
             'contact_firstname'=>$contact->firstname,
@@ -71,16 +71,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         	'contact_civility'=>$civility
         );
     }
-    
+
     /**
-     * 
+     *
      * @param unknown $referenceletters
      * @param unknown $outputlangs
      * @return NULL[]
      */
     function get_substitutionarray_refletter($referenceletters,$outputlangs)
     {
- 
+
     	return array(
     			'referenceletters_title'=>$referenceletters->title,
     			'referenceletters_ref_int'=>$referenceletters->ref_int,

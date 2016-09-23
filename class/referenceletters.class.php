@@ -434,8 +434,7 @@ class ReferenceLetters extends CommonObject
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-
-					$subst_array[$langs->trans($item['title'])] = $docgen->$item['substitution_method']($testObj, $langs);
+					$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 					$array_second_thirdparty_object = array ();
 					if (! empty($testObj->thirdparty->id)) {
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);

@@ -106,7 +106,7 @@ abstract class ModeleNumRefrReferenceLetters
 	 * @param Lead $lead
 	 * @return string Valeur
 	 */
-	function getNextValue($fk_user, $objsoc, $lead) {
+	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element) {
 		global $langs;
 		return $langs->trans("NotAvailable");
 	}

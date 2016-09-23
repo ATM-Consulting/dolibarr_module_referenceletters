@@ -32,23 +32,23 @@ class box_referenceletter_models extends ModeleBoxes {
 	var $boximg = "referenceletters@referenceletters";
 	var $boxlabel;
 	var $depends = array (
-			"referenceletters" 
+			"referenceletters"
 	);
 	var $db;
 	var $param;
 	var $info_box_head = array ();
 	var $info_box_contents = array ();
-	
+
 	/**
 	 * Constructor
 	 */
 	function __construct() {
 		global $langs;
 		$langs->load("boxes");
-		
+
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name");
 	}
-	
+
 	/**
 	 * Load data into info_box_contents array to show array later.
 	 *
@@ -57,24 +57,24 @@ class box_referenceletter_models extends ModeleBoxes {
 	 */
 	function loadBox($max = 15) {
 		global $conf, $user, $langs, $db;
-		
+
 		$this->max = $max;
-		
+
 		dol_include_once("/referenceletters/class/referenceletters.class.php");
-		
+
 		$text = $langs->trans("Module103258Name", $max);
 		$this->info_box_head = array (
 				'text' => $text,
-				'limit' => dol_strlen($text) 
+				'limit' => dol_strlen($text)
 		);
-		
-		
+
+
 		$object=new ReferenceLetters($db);
 		$result = $object->fetch_all('ASC','t.datec',5,0);
 		if ($result<0) {
 			setEventMessage($object->error,'errors');
 		}
-		
+
 		if (is_array($object->lines) && count($object->lines)>0) {
 			foreach($object->lines as $key=>$line) {
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
@@ -87,21 +87,20 @@ class box_referenceletter_models extends ModeleBoxes {
 						'text' => dol_print_date($line->datec,'daytext'));
 			}
 		}
-		
-		
-		
+
+
+
 	}
-	
+
 	/**
 	 * Method to show box
 	 *
 	 * @param array $head with properties of box title
 	 * @param array $contents with properties of box lines
+	 * @param integer $nooutput nooutput
 	 * @return void
 	 */
-	function showBox($head = null, $contents = null) {
+	function showBox($head = null, $contents = null, $nooutput=0) {
 		parent::showBox($this->info_box_head, $this->info_box_contents);
 	}
 }
-
-?>

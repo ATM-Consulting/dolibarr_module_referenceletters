@@ -36,43 +36,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	var $db;
 
     /**
-     * Define array with couple subtitution key => subtitution value
-     *
-     * @param   User		$contact        contact
-     * @param   Translate	$outputlangs    Language object for output
-     * @return	array						Array of substitution key->code
-     */
-    function get_substitutionarray_contact($contact,$outputlangs, $array_key = 'object')
-    {
-        global $conf,$langs,$db;
-
-        $langs->load("dict");
-
-        $code=(! empty($contact->civilite_id)?$contact->civilite_id:(! empty($contact->civility_id)?$contact->civility_id:''));
-        $civility=$langs->getLabelFromKey($this->db, "Civility".$code, "c_civilite", "code", "civilite", $code);
-
-        return array(
-            'contact_lastname'=>$contact->lastname,
-            'contact_firstname'=>$contact->firstname,
-            'contact_phone_pro'=>$contact->phone_pro,
-            'contact_phone_perso'=>$contact->phone_perso,
-            'contact_phone_mobile'=>$contact->phone_mobile,
-       		'contact_address'=>$contact->address,
-       		'contact_zip'=>$contact->zip,
-       		'contact_town'=>$contact->town,
-       		'contact_country'=>$contact->country,
-        	'contact_country_code'=>$contact->country_code,
-       		'contact_state'=>$contact->state,
-        	'contact_state_code'=>$contact->state_code,
-        	'contact_fax'=>$contact->fax,
-            'contact_email'=>$contact->email,
-        	'contact_job'=>$contact->poste,
-        	'contact_civility_id'=>$contact->civilite_id,
-        	'contact_civility'=>$civility
-        );
-    }
-
-    /**
      *
      * @param unknown $referenceletters
      * @param unknown $outputlangs

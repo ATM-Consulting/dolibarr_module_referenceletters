@@ -80,7 +80,7 @@ $parameters = array();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 if ($action == "add") {
-	
+
 	$object->fk_referenceletters=$idletter;
 	$object->title = GETPOST('refltrtitle');
 	$object->content_text = GETPOST('content_text');
@@ -91,13 +91,13 @@ if ($action == "add") {
 		$chapter_lang=$langs->defaultlang;
 	}
 	$object->lang=$chapter_lang;
-	
+
 	$options = GETPOST('option_text');
 	if (!empty($options)) {
 		 $option_array = explode("\r\n",$options);
 	}
 	$object->options_text = $option_array;
-	
+
 	$result = $object->create($user);
 	if ($result < 0) {
 		$action = 'create';
@@ -111,7 +111,7 @@ if ($action == "add") {
 		$action = 'edit';
 		setEventMessage($object->error, 'errors');
 	}
-	
+
 	$object->title = GETPOST('refltrtitle');
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
@@ -121,13 +121,13 @@ if ($action == "add") {
 		$chapter_lang=$langs->defaultlang;
 	}
 	$object->lang=$chapter_lang;
-	
+
 	$options = GETPOST('option_text');
 	if (!empty($options)) {
 		$option_array = explode("\r\n",$options);
 	}
 	$object->options_text = $option_array;
-	
+
 	$result = $object->update($user);
 	if ($result < 0) {
 		$action = 'edit';
@@ -155,7 +155,7 @@ if ($action == "add") {
 
 $title = $langs->trans('Module103258Name');
 if ($action=='create') {
-	
+
 	if (!empty($idletter)) {
 		$result=$object_refletter->fetch($idletter);
 		if ($result < 0) {
@@ -165,15 +165,15 @@ if ($action=='create') {
 	} else {
 		setEventMessage('Page call wtih wrong argument', 'errors');
 	}
-	
-	
+
+
 	$subtitle=$langs->trans("RefLtrNewChaters").' - '.$object_refletter->title;
 	$button_text='Create';
 	$action_next='add';
-	
-	
+
+
 } elseif ($action=='edit' || $action == 'delete') {
-	
+
 	if(!empty($id)) {
 		$result=$object->fetch($id);
 		if ($result < 0) {
@@ -184,11 +184,11 @@ if ($action=='create') {
 			setEventMessage($object->error, 'errors');
 		}
 	}
-	
-	
-	
+
+
+
 	$subtitle=$langs->trans("RefLtrChapters").' - '.$object_refletter->title;
-	
+
 	$button_text='Modify';
 	$action_next='update';
 }
@@ -202,7 +202,7 @@ $formadmin = new FormAdmin($db);
 $now = dol_now();
 // Add new proposal
 if (($action == 'create' || $action=='edit' || $action=='delete') && $user->rights->referenceletters->write) {
-	
+
 	print '<script>';
 	print 'function DivStatus( tbl_){' . "\n";
 	print '	var Obj = document.getElementById( tbl_);' . "\n";
@@ -214,14 +214,14 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '	}' . "\n";
 	print '}' . "\n";
 	print '</script>';
-	
-	
+
+
 	// Confirm form
 	$formconfirm = '';
 	if ($action == 'delete') {
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDeleteChapter'), $langs->trans('RefLtrConfirmDeleteChapter'), 'confirm_delete', '', 0, 1);
 	}
-	
+
 	if (empty($formconfirm)) {
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -229,13 +229,13 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	if (!empty($formconfirm)) {
 		print $formconfirm;
 	}
-	
-	
+
+
 	print_fiche_titre($subtitle, '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?id='.$object->fk_referenceletters.'">' . $langs->trans("RefLtrBackToRefLtr") . '</a>';
 	print $linkback;
-	
+
 	print '<form name="addreferenceletters" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	print '<input type="hidden" name="idletter" value="'.$idletter.'">';
@@ -244,7 +244,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 
 	print '<table class="border" width="100%">';
 	print '<tr>';
-	
+
 	if (! empty($conf->global->MAIN_MULTILANGS))
 	{
 		print '<td class="fieldrequired"  width="20%">';
@@ -258,8 +258,8 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		print '</td>';
 		print '</tr>';
 	}
-	
-	
+
+
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrPosition');
 	print '</td>';
@@ -275,7 +275,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '<input type="text" name="sort_order" size="2" value="' . $object->sort_order . '"/>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('RefLtrTag');
 	print '</td>';
@@ -284,7 +284,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print $formrefleter->displaySubtitutionKey($user,$object_refletter);
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');
 	print '</td>';
@@ -306,7 +306,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('RefLtrOption');
 	print '</td>';
@@ -324,7 +324,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '</td></tr></table>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('RefLtrReadOnly');
 	print '</td>';
@@ -332,7 +332,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '<input type="checkbox" name="refltrreadonly" size="20"  '.(!empty($object->readonly)?'checked="checked"':'').' value="1"/>';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '</table>';
 
 	print '<center>';

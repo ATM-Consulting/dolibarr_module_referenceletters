@@ -68,7 +68,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contract.lib.php',
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/card.php',
-				'substitution_method' => 'get_substitutionarray_object'
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -108,7 +109,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
 				'card' => 'comm/propal.php',
-				'substitution_method' => 'get_substitutionarray_object'
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
@@ -121,7 +123,22 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
 				'card' => 'compta/facture.php',
-				'substitution_method' => 'get_substitutionarray_object'
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
+		$this->element_type_list['order'] = array (
+				'class' => 'commande.class.php',
+				'securityclass' => 'commande',
+				'securityfeature' => '',
+				'objectclass' => 'Commande',
+				'classpath' => DOL_DOCUMENT_ROOT . '/commande/class/',
+				'trans' => 'orders',
+				'title' => 'CustomerOrder',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
+				'menuloader_function' => 'commande_prepare_head',
+				'card' => 'commande/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
 		return 1;
 	}
@@ -449,6 +466,8 @@ class ReferenceLetters extends CommonObject
 							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
+
+				//TODO : add line replacement
 			}
 		}
 

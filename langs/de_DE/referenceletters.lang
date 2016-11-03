@@ -39,7 +39,7 @@ Permission1032584=Brief-Vorlagen verwenden
 ReferenceLettersSetup = Brief-Vorlagen Einstellungen
 ReferenceLettersSettings = Einstellungen
 ReferenceLettersSetupPage = Brief-Vorlagen Einstellungsseite
-RefLtrNothingToSet = Keine Einstellungen vorhangen. Gehen Sie zurück zum Hauptmenü.
+RefLtrNothingToSet = Keine Einstellungen vorhanden. Gehen Sie zurück zum Hauptmenü.
 RefLtrSimpleNumRefModelDesc=Erzeugt die Nummerierung LTR-yymm-nnnn wobei yy das Jahr, mm der Monat und nnnn eine fortlaufende Nummer ist
 RefLtrREF_LETTER_CREATEEVENT=Termin im Kalender erstellen wenn ein Brief erstellt wird
 RefLtrHelpREF_LETTER_CREATEEVENT=Termin im Kalender erstellen wenn ein Brief erstellt wird
@@ -49,7 +49,7 @@ RefLtrConfirmChangeState=Sind Sie sicher das Sie diese option ändern möchten?
 RefLtrREF_LETTER_TYPEEVENTNAME=Name des erstellten Termins
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
-RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PFD ein
+RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PDF ein
 
 #
 # About page
@@ -96,7 +96,7 @@ RefLtrDeleteLetter=Brief löschen
 RefLtrDatec=Erstelldatum
 RefLtrTag=Kategorie (Tag)
 RefLtrDisplayTag=Kategorie (Tags) anzeigen
-RefLtrNoneExists=%s nicht gefunden (exisitiert vermutlich nicht), keine Beispieldaten vorhanden
+RefLtrNoneExists=%s nicht gefunden (existiert vermutlich nicht), keine Beispieldaten vorhanden
 RefLtrAddPageBreak=Seitenumbruch einfügen
 RefLtrPageBreak=Seitenumbruch
 RefLtrAddPageBreakWithoutHeader=Seitenumbruch (ohne Kopfzeile)

@@ -1,0 +1,109 @@
+# <one line to give the program's name and a brief idea of what it does.>
+# Copyright (C) <year>  <name of author>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+# Module label 'ModuleXXXName'
+# (where XXX is value of numeric property 'numero' of module)
+Module103258Name = Brief-Vorlagen
+# Module description 'ModuleXXXDesc'
+# (where XXX is value of numeric property 'numero' of module)
+Module103258Desc = Briefe und Brief-Vorlagen verwalten
+
+#
+# Permissions
+#
+Permission1032581=Brief-Vorlagen anzeigen
+Permission1032582=Brief-Vorlagen anpassen
+Permission1032583=Brief-Vorlagen löschen
+Permission1032584=Brief-Vorlagen verwenden
+
+#
+# Admin page
+#
+ReferenceLettersSetup = Brief-Vorlagen Einstellungen
+ReferenceLettersSettings = Einstellungen
+ReferenceLettersSetupPage = Brief-Vorlagen Einstellungsseite
+RefLtrNothingToSet = Keine Einstellungen vorhangen. Gehen Sie zurück zum Hauptmenü.
+RefLtrSimpleNumRefModelDesc=Erzeugt die Nummerierung LTR-yymm-nnnn wobei yy das Jahr, mm der Monat und nnnn eine fortlaufende Nummer ist
+RefLtrREF_LETTER_CREATEEVENT=Termin im Kalender erstellen wenn ein Brief erstellt wird
+RefLtrHelpREF_LETTER_CREATEEVENT=Termin im Kalender erstellen wenn ein Brief erstellt wird
+RefLtrREF_LETTER_EVTCOPYFILE=Kopie (PDF) des Briefs als Anhang an Termin (Kalender)
+RefLtrHelpREF_LETTER_EVTCOPYFILE=Kopie (PDF) des Briefs als Anhang an Termin (Kalender)
+RefLtrConfirmChangeState=Sind Sie sicher das Sie diese option ändern möchten?
+RefLtrREF_LETTER_TYPEEVENTNAME=Name des erstellten Termins
+RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
+RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
+RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PFD ein
+
+#
+# About page
+#
+About = Über
+ReferenceLettersAbout = Über Brief Vorlagen
+ReferenceLettersAboutPage = Brief Vorlagen Über Seite
+
+#
+# Menu
+#
+ReferenceLettersList=Liste Brief Vorlagen
+ReferenceLettersNew=Neue Brief Vorlage
+RefLtrLetters=Briefe
+
+#
+# Pages
+#
+RefLtrCreate=Neue Brief Vorlage
+RefLtrTitle=Titel
+RefLtrElement=Brief Art
+RefLtrDelete=Brief Vorlage löschen
+RefLtrConfirmDelete=Sind Sie sicher das Sie diese Vorlage löschen möchten?
+RefLtrDeleteChapter=Kapitel löschen
+RefLtrConfirmDeleteChapter=Sind Sie sicher das sie dieses Kapitel löschen möchten?
+RefLtrChapters=Kapitel
+RefLtrNewChaters=Neues Kapitel
+RefLtrNew=Neue Brief Vorlage
+RefLtrOptionHelp=Jede Zeile entspricht einem Kontrollkästchen bei der Brieferstellung
+RefLtrBackToRefLtr=Zurück zu Brief-Vorlagen
+RefLtrList=Liste von Brief-Vorlagen
+RefLtrLangue=Sprache
+RefLtrPosition=Bestellnummer
+RefLtrOption=Optionen
+RefLtrText=Text
+RefLtrNoModelReadyForThisObject=Die Brief-Vorlage ist nicht bereit für %s
+RefLtrSelectModel=Vorlage auswählen
+RefLtrCreateDoc=Brief erstellen
+RefLtrRef=Referenz
+RefLtrExistingLetters=Bestehende Briefe
+RefLtrNewLetters=Neuer Brief
+RefLtrConfirmDeleteLetter=Sind Sie sicher das Sie diesen Brief löschen möchten?
+RefLtrDeleteLetter=Brief löschen
+RefLtrDatec=Erstelldatum
+RefLtrTag=Kategorie (Tag)
+RefLtrDisplayTag=Kategorie (Tags) anzeigen
+RefLtrNoneExists=%s nicht gefunden (exisitiert vermutlich nicht), keine Beispieldaten vorhanden
+RefLtrAddPageBreak=Seitenumbruch einfügen
+RefLtrPageBreak=Seitenumbruch
+RefLtrAddPageBreakWithoutHeader=Seitenumbruch (ohne Kopfzeile)
+RefLtrListInstance=Liste von Briefen
+RefLtrDoc=Dokument
+RefLtrErrorCopyFile=Fehler beim kopieren der PDF in den Termin
+RefLtrBackground=Hintergrund
+RefLtrBackgroundHelp=Nur PDF Dateien können für Hintergründe verwendet werden. URLs funktionieren nicht. <BR> Nur Seiten mit manuellem Seitenumbruch verwenden den Hintergrund. 
+RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt)
+RefLtrTitleModel=Brief Titel

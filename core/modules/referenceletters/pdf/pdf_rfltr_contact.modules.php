@@ -486,10 +486,10 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 				if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
 					$socname = $object->contact->socname;
 				else
-					$socname = $object->client->nom;
+					$socname = $object->thirdparty->nom;
 				$carac_client_name = $outputlangs->convToOutputCharset($socname);
 			} else {
-				$carac_client_name = $outputlangs->convToOutputCharset($object->client->nom);
+				$carac_client_name = $outputlangs->convToOutputCharset($object->thirdparty->nom);
 			}
 
 			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object, ($usecontact ? $object : ''), $usecontact, 'target');

@@ -135,7 +135,7 @@ class ActionsReferenceLetters
 						dol_include_once('/core/lib/files.lib.php');
 
 						$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-						$srcdir = $conf->referenceletters->dir_output . "/propal/" . $objectref;
+						$srcdir = $conf->referenceletters->dir_output . "/".$instance_letter->element_type."/" . $objectref;
 						$srcfile = $srcdir . '/' . $objectref . ".pdf";
 						$destdir = $conf->agenda->dir_output . '/' . $ret;
 						$destfile = $destdir . '/' . $objectref . ".pdf";

@@ -134,8 +134,8 @@ class modReferenceLetters extends DolibarrModules
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
-				3,
-				6
+				4,
+				0
 		);
 		$this->langfiles = array (
 				"referenceletters@referenceletters"

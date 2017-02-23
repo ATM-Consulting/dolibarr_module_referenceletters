@@ -217,4 +217,56 @@ class FormReferenceLetters extends Form
 
 		return $html;
 	}
+
+	/**
+	 *
+	 *
+	 * @param unknown $user
+	 * @param unknown $object
+	 */
+	public function displaySubtitutionKeyLine($user,$reflettersobject) {
+		global $langs,$bc;
+
+
+		$subs_array=$reflettersobject->getSubtitutionKey($user);
+
+		$html='<table witdh="100%" id="refltertagsline" style="display:none">';
+
+
+		if (is_array($subs_array) && count($subs_array)>0) {
+			foreach($subs_array as $block=>$data) {
+				$html.='<tr class="liste_titre">';
+				$html.='<td colspan="2">';
+				$html.=$block;
+				$html.='</td>';
+				$html.='</tr>';
+				$html.='<tr class="liste_titre">';
+				$html.='<td>';
+				$html.=$langs->trans('RefLtrTag');
+				$html.='</td>';
+				$html.='<td>';
+				$html.=$langs->trans('Value');
+				$html.='</td>';
+				$html.='</tr>';
+				if (count($data)>0) {
+					$var=true;
+					foreach($data as $key=>$value) {
+						$var = ! $var;
+						$html.="<tr $bc[$var]>";
+						$html.='<td>';
+						$html.='{'.$key.'}';
+						$html.='</td>';
+						$html.='<td>';
+						$html.=$value;
+						$html.='</td>';
+						$html.='</tr>';
+					}
+				}
+			}
+		}
+
+		$html.='</table>';
+
+		return $html;
+	}
 }

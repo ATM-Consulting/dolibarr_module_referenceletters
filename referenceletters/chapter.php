@@ -285,6 +285,17 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '</td>';
 	print '</tr>';
 
+	if (array_key_exists('substitution_method_line',$object_refletter->element_type_list[$object_refletter->element_type])) {
+		print '<td width="20%">';
+		print $langs->trans('RefLtrTagLine');
+		print '</td>';
+		print '<td>';
+		print '<a href="javascript:DivStatus(\'refltertagsline\');" title="'.$langs->trans('RefLtrDisplayTagLine').'" style="font-size:14px;">+</a>';
+		print $formrefleter->displaySubtitutionKeyLine($user,$object_refletter);
+		print '</td>';
+		print '</tr>';
+	}
+
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');
 	print '</td>';

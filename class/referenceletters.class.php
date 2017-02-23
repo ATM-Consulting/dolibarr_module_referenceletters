@@ -466,8 +466,6 @@ class ReferenceLetters extends CommonObject
 							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
-
-				//TODO : add line replacement
 			}
 		}
 
@@ -490,6 +488,64 @@ class ReferenceLetters extends CommonObject
 			$subst_array[$langs->trans('Module103258Name')] = array (
 					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
 			);
+		}
+
+		return $subst_array;
+	}
+
+	public function getSubtitutionKeyLines($user) {
+		global $conf, $langs, $mysoc;
+
+		$langs->load('admin');
+
+		$subst_array = '';
+		$docgen = new commondocgeneratorreferenceletters($this->db);
+		$docgen->db = $this->db;
+		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
+		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
+		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
+
+		foreach ( $this->element_type_list as $type => $item ) {
+			if ($this->element_type == $type) {
+
+				$langs->load($item['trans']);
+
+				require_once $item['classpath'] . $item['class'];
+				$testObj = new $item['objectclass']($this->db);
+
+				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+				$resql = $this->db->query($sql);
+				if ($resql) {
+					$num = $this->db->num_rows($resql);
+					if ($num > 0) {
+						$obj = $this->db->fetch_object($resql);
+					}
+				}
+				if (! empty($obj->rowid) && $num > 0) {
+					$testObj->fetch($obj->rowid);
+
+					if (method_exists($testObj, 'fetch_thirdparty')) {
+						$testObj->fetch_thirdparty();
+					}
+					$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+					$array_second_thirdparty_object = array ();
+					if (! empty($testObj->thirdparty->id)) {
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
+						foreach ( $array_first_thirdparty_object as $key => $value ) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
+						}
+					}
+					// var_dump($array_second_thirdparty_object);
+					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+				} else {
+					$subst_array[$langs->trans($item['title'])] = array (
+							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
+					);
+				}
+
+				//TODO : add line replacement
+			}
 		}
 
 		return $subst_array;

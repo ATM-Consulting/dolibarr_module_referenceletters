@@ -77,6 +77,8 @@ class box_referenceletter_models extends ModeleBoxes {
 
 		if (is_array($object->lines) && count($object->lines)>0) {
 			foreach($object->lines as $key=>$line) {
+				$langs->load($object->element_type_list[$line->element_type]['trans']);
+
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
 						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
@@ -85,6 +87,8 @@ class box_referenceletter_models extends ModeleBoxes {
 						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
 						'text' => dol_print_date($line->datec,'daytext'));
+				$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
+						'text' => $langs->trans($object->element_type_list[$line->element_type]['title']));
 			}
 		}
 

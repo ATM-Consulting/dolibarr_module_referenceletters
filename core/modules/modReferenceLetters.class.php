@@ -417,6 +417,21 @@ class modReferenceLetters extends DolibarrModules
 				'user' => 0
 		);
 
+		$r ++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrListMassGen',
+				'mainmenu' => 'referenceletters',
+				'url' => '/referenceletters/referenceletters/mass_gen.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 104,
+				'enabled' => '$user->rights->referenceletters->write',
+				'perms' => '$user->rights->referenceletters->write',
+				'target' => '',
+				'user' => 0
+		);
+		
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:

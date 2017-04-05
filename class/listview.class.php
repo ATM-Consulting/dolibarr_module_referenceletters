@@ -472,7 +472,7 @@ class Listview
     {
 		$javaScript = '<script language="javascript">
 		if(typeof(Listview_include)=="undefined") {
-			document.write("<script type=\"text/javascript\" src=\"'.DOL_URL_ROOT.'/core/js/listview.js?version='.DOL_VERSION.'\"></scr");
+			document.write("<script type=\"text/javascript\" src=\"'.dol_buildpath('/referenceletters/class/listview.js',1).'?version='.DOL_VERSION.'\"></scr");
 	  		document.write("ipt>");
 		}
 		</script>';

@@ -51,6 +51,8 @@ $idletter = GETPOST('idletter', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
+$justinformme = GETPOST('justinformme');
+
 
 $sortfield=GETPOST('sortfield','alpha');
 $sortorder=GETPOST('sortorder','alpha');
@@ -112,8 +114,12 @@ if ($action == 'buildoc') {
 
 	// New letter
 	if (empty($refletterelemntid)) {
+		
+		$ref_int = GETPOST('ref_int','alpha');
+		if(empty($ref_int)) $ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
+		
 		// Save data
-		$object_element->ref_int = GETPOST('ref_int','alpha');
+		$object_element->ref_int = $ref_int;
 		$object_element->title = GETPOST('title_instance');
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
@@ -158,7 +164,8 @@ if ($action == 'buildoc') {
 
 		$result = $object_element->create($user);
 		if ($result < 0) {
-			setEventMessage($object_element->error, 'errors');
+			if($justinformme) echo $object_element->error;
+			else setEventMessage($object_element->error, 'errors');
 		}
 
 		$object_element->fetch($result);
@@ -230,7 +237,14 @@ if ($action == 'buildoc') {
 		dol_print_error($db, $result);
 		exit();
 	} else {
-		header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
+		
+		if($justinformme) {
+			echo 1;
+		}
+		else{
+			header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
+		}
+		
 		exit();
 	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {

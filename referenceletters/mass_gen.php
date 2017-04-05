@@ -137,23 +137,21 @@ function _show_ref_letter($idletter) {
 			}
 		}
 		
-		print '<td colspan="2" align="center">';
-		print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
-		print '</td>';
+		
 	}
 	print '</table>';
 	
 }
 	
 function _list_invoice() {
-	global $conf,$db,$user,$langs,$refltrelement_type;
+	global $conf,$db,$user,$langs,$refltrelement_type,$idletter;
 	
 	//J'ai essayé, mais le copier/coller était trop dur
 	$l=new Listview($db, 'listInvoice');
 	
 	$sql="SELECT f.rowid,f.type, f.facnumber, f.datef,f.date_lim_reglement, s.nom,s.town,s.zip, '' as 'action'
 		FROM ".MAIN_DB_PREFIX."facture as f LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON (f.fk_soc = s.rowid)
-		WHERE f.entity IN (".getEntity('invoice',1).") ";
+		WHERE f.entity IN (".getEntity('invoice',1).") AND f.fk_statut = 1 ";
 	//var_dump($sql);
 	echo $l->render($sql,array(
 		
@@ -209,20 +207,84 @@ function _list_invoice() {
 
 	$('input[name=bt_generate]').click(function() {
 
-		$bar = $('<div id="progressbar"></div>').progressbar({
-		      value: 50
+		var data = { justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter?>" };
+
+		$('#ref-letter input,#ref-letter textarea').each(function(i,item) {
+			$item = $(item);
+
+			if($item.attr('type') == 'checkbox') {
+				if($item.prop('checked')) data[$item.attr('name')]= $item.val();
+				else null;
+			}
+			else{
+				data[$item.attr('name')]=$item.val();
+			}
+			
+			
+			
+		});
+		
+		var $togen = $('input[rel=invoicetogen]');
+		var nb = $togen.length;
+		var cpt = 0;
+		
+		var $bar = $('<div id="progressbar"></div>').progressbar({
+		      max : nb
+		      ,value : 0
 	    });
 
-		$div = $('<div />');
+		var $div = $('<div />');
 		$div.append($bar);
+		$div.append('<div class="info"></div>');
 		
 		$div.dialog({
-			,'title':"<?php echo $langs->trans('GenerationInProgress') ?>"
-			'modal':true
+			'title':"<?php echo $langs->transnoentities('GenerationInProgress') ?>"
+			,'modal':true
 			
 		});
 
 		
+		$togen.each(function(i,item) {
+			var $item = $(item);
+			
+			var $td = $item.closest('td');
+
+			data["id"] = $item.val();
+
+			$td.html('...');
+
+			$.ajax({
+				url:"instance.php"
+				,data:data
+				,dataType:'html'
+				,method:'post'
+			}).done(function(res) {
+
+				cpt++;
+
+				$bar.progressbar( "value", cpt );
+				$div.find('.info').html(cpt+' / '+nb);
+				
+				if(res == 1) {
+
+					$td.html('<?php echo img_picto('','on'); ?>');
+
+					if(cpt == nb){
+
+						$div.find('.info').html('<?php echo  $langs->transnoentities('AllDocumentsGenerated') ?>');
+						
+					}
+
+				}
+				else {
+					$td.html('<?php echo img_picto('','off'); ?> '+res);
+					
+				}
+
+			});
+			
+			
+		});
 		
 	});
 	
@@ -244,5 +306,6 @@ function _get_link_invoice($id) {
 	$facture = new Facture($db);
 	$facture->fetch($id); // TODO improve perf
 	
-	return $facture->getNomUrl(1,'',200,0,'',0,1);
+	return $facture->getNomUrl(1,'',200,0,'',0,1)
+		.' '.img_picto('','object_referenceletters.png@referenceletters').' <a href="'.dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$id.'&element_type=invoice">'.$langs->trans('RefLtrLetters').'</a>' ;
 }

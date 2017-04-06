@@ -102,7 +102,9 @@ class ActionsReferenceLetters
 					}
 
 				}
-				$first_value = reset($instance_letter->content_letter);
+				if(is_array($instance_letter->content_letter)) {
+					$first_value = reset($instance_letter->content_letter);
+				}
 				$actioncomm->note = $first_value['content_text'];
 				$actioncomm->datep = $now;
 				$actioncomm->datef = $now;

@@ -154,33 +154,43 @@ function _list_invoice() {
 	//J'ai essayé, mais le copier/coller était trop dur
 	$l=new Listview($db, 'listInvoice');
 	
-	$sql="SELECT f.rowid,f.type, f.facnumber, f.datef,f.date_lim_reglement, s.nom,s.town,s.zip, '' as 'action'
-		FROM ".MAIN_DB_PREFIX."facture as f LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON (f.fk_soc = s.rowid)
-		WHERE f.entity IN (".getEntity('invoice',1).") AND f.fk_statut = 1 ";
+	$sql="SELECT DISTINCT f.rowid,f.type, f.facnumber, f.datef,f.date_lim_reglement,p.datep, s.nom,s.town,s.zip,f.fk_statut, '' as 'action'
+		FROM ".MAIN_DB_PREFIX."facture as f 
+			LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON (f.fk_soc = s.rowid)
+			LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture pf ON (pf.fk_facture=f.rowid)
+			LEFT JOIN ".MAIN_DB_PREFIX."paiement p ON (p.rowid=pf.fk_paiement)
+		WHERE f.entity IN (".getEntity('invoice',1).") ";
 	//var_dump($sql);
+	$liststatus=array('0'=>$langs->trans("BillShortStatusDraft"), '1'=>$langs->trans("BillShortStatusNotPaid"), '2'=>$langs->trans("BillShortStatusPaid"), '3'=>$langs->trans("BillShortStatusCanceled"));
+	
 	echo $l->render($sql,array(
 		
 			'title'=>array(
 					'facnumber'=>$langs->trans("Ref"),
 					'datef'=>$langs->trans("DateInvoice"),
 					'date_lim_reglement'=>$langs->trans("DateDue"),
+					'datep'=>$langs->trans("DatePayment"),
 					'nom'=>$langs->trans("ThirdParty"),
 					'town'=>$langs->trans("Town"),
 					'zip'=>$langs->trans("Zip"),
+					'fk_statut'=>$langs->trans("Status"),
 					'action'=>$langs->trans("Action").' <input type="checkbox" value="1" id="check-all" checked="checked" >',
 			)
 			,'eval'=>array(
 					'facnumber'=>'_get_link_invoice(@rowid@)'
+					,'fk_statut'=>'_get_status_invoice(@rowid@)'
 					,'action'=>'_get_check(@rowid@)'
 			)
 			,'type'=>array(
 					'datef'=>'date'
 					,'date_lim_reglement'=>'date'
+					,'datep'=>'date'
 			)
 			,'search'=>array(
 					
 					'date_lim_reglement'=>array('search_type'=>'calendars')
-					
+					,'datep'=>array('search_type'=>'calendars','table'=>'p')
+					,'fk_statut'=>$liststatus
 			)
 			,'list'=>array(
 					'param_url'=>'refltrelement_type=invoice'
@@ -190,7 +200,6 @@ function _list_invoice() {
 			)
 			
 	));
-	//var_dump($l->db);
 	
 	if($refltrelement_type) {
 		
@@ -309,6 +318,14 @@ function _list_invoice() {
 function _get_check($id) {
 	
 	return '<input type="checkbox" value="'.$id.'" name="TInvoice[]" rel="invoicetogen" checked="checked" >';
+	
+}
+
+function _get_status_invoice($id) {
+	global $conf,$db,$user,$langs;
+	$facture = new Facture($db);
+	$facture->fetch($id); // TODO improve perf
+	return $facture->LibStatut($facture->paye,$facture->fk_statut,5,$facture->getSommePaiement(),$facture->type);
 	
 }
 

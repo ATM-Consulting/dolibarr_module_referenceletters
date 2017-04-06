@@ -68,8 +68,7 @@ function _show_ref_letter($idletter) {
 	$object_element = new ReferenceLettersElements($db);
 	$object_refletter = new Referenceletters($db);
 	
-	$langs_chapter = $langs->defaultlang;
-	$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
+	$result = $object_chapters->fetch_byrefltr($idletter, '');
 	
 	print '<table class="border" width="100%" id="ref-letter">';
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
@@ -106,7 +105,7 @@ function _show_ref_letter($idletter) {
 			} else {
 				print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 				print '<td  width="20%">';
-				print $langs->trans('RefLtrText');
+				print $langs->trans('RefLtrText').' ('.$langs->trans($line_chapter->lang).')';
 				print '</td>';
 				print '<td>';
 				
@@ -139,6 +138,12 @@ function _show_ref_letter($idletter) {
 		
 		
 	}
+	else {
+		
+		echo '<tr><td>'.$langs->trans('NoChapterIntoYourModel').'</td></td>';
+		
+	}
+	
 	print '</table>';
 	
 }
@@ -207,7 +212,7 @@ function _list_invoice() {
 
 	$('input[name=bt_generate]').click(function() {
 
-		var data = { justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter?>" };
+		var data = { langs_chapter:"<?php echo $langs->defaultlang; ?>", justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter?>" };
 
 		$('#ref-letter input,#ref-letter textarea').each(function(i,item) {
 			$item = $(item);
@@ -224,9 +229,10 @@ function _list_invoice() {
 			
 		});
 		
-		var $togen = $('input[rel=invoicetogen]');
+		var $togen = $('input[rel=invoicetogen]:checked');
 		var nb = $togen.length;
 		var cpt = 0;
+		var error = 0;
 		
 		var $bar = $('<div id="progressbar"></div>').progressbar({
 		      max : nb
@@ -269,18 +275,25 @@ function _list_invoice() {
 
 					$td.html('<?php echo img_picto('','on'); ?>');
 
-					if(cpt == nb){
-
-						$div.find('.info').html('<?php echo  $langs->transnoentities('AllDocumentsGenerated') ?>');
-						
-					}
-
 				}
 				else {
 					$td.html('<?php echo img_picto('','off'); ?> '+res);
+					error++;
+				}
+
+				if(cpt == nb){
+					if(error>0) {
+						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGeneratedButError')) ?>');
+					}
+					else{
+						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGenerated')) ?>');
+					}
+					
 					
 				}
 
+
+				
 			});
 			
 			

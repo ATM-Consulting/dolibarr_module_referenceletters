@@ -94,7 +94,7 @@ class ReferenceLettersElements extends CommonObject
 			// Put here code to add a control on parameters values
 		if (is_array($this->content_letter) && count($this->content_letter) > 0) {
 			$content_letter = serialize($this->content_letter);
-		} else {
+		} else if(is_string($this->content_letter)) {
 			$content_letter = trim($this->content_letter);
 		}
 		

@@ -152,16 +152,15 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	}
 
 	$classname = 'pdf_rfltr_' . $element_type;
-
 	// Charge le modele
 	if ($filefound) {
 		require_once $file;
-
+		
 		$obj = new $classname($db);
-
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
-		if ($obj->write_file($object, $instance_letter, $outputlangs) > 0) {
+		$res = $obj->write_file($object, $instance_letter, $outputlangs);
+		if ($res > 0) {
 			return 1;
 		} else {
 			setEventMessage('referenceletters_pdf_create Error: ' . $obj->error, 'errors');

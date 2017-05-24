@@ -181,6 +181,8 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$posY = $nexY;
 				$posX = $this->marge_gauche;
 
+				if(!empty($instance_letter->content_letter)) {
+				
 				foreach ( $instance_letter->content_letter as $key => $line_chapter ) {
 
 					$pdf->SetXY($posX, $posY);
@@ -298,6 +300,8 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 						}
 					}
 					$posY = $pdf->GetY();
+				}
+				
 				}
 				// Pied de page
 				$this->_pagefoot($pdf, $object, $outputlangs);

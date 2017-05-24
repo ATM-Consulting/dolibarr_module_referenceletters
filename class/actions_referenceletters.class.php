@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2016  Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,19 +33,19 @@ class ActionsReferenceLetters
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
 	 */
 	public $results = array ();
-	
+
 	/**
 	 *
 	 * @var string String displayed by executeHook() immediately after return
 	 */
 	public $resprints;
-	
+
 	/**
 	 *
 	 * @var array Errors
 	 */
 	public $errors = array ();
-	
+
 	/**
 	 * Constructor
 	 */
@@ -55,7 +55,7 @@ class ActionsReferenceLetters
 		$this->errors = array ();
 		$this->resprints = null;
 	}
-	
+
 	/**
 	 * Overloading the doActions function : replacing the parent's function with the one below
 	 *
@@ -67,7 +67,7 @@ class ActionsReferenceLetters
 	 */
 	public function afterPDFCreation($parameters, &$object, &$action, $hookmanager) {
 		global $langs, $conf, $user;
-		
+
 		$error = 0; // Error counter
 		dol_syslog("Hook '" . get_class($this) . "' for action '" . __METHOD__ . "' launched by " . __FILE__);
 		if (in_array('referencelettersinstacecard', explode(':', $parameters['context']))) {
@@ -77,7 +77,7 @@ class ActionsReferenceLetters
 				// var_dump($instance_letter);
 				$langs->load('referenceletters@referenceletters');
 				$now = dol_now();
-				
+
 				dol_include_once('/comm/action/class/actioncomm.class.php');
 				$actioncomm = new ActionComm($this->db);
 				$actioncomm->type_code = 'AC_LTR_DOC';
@@ -91,13 +91,20 @@ class ActionsReferenceLetters
 					if ($ret < 0) {
 						$this->error = $object_refletter->error;
 						$this->errors[] = $object_refletter->errors;
-						
+
 						dol_syslog(get_class($this) . $this->error, LOG_ERR);
 						return - 1;
 					}
-					$actioncomm->label = $object_refletter->title . '-' . $instance_letter->srcobject->thirdparty->name;
+					if ($instance_letter->element_type == 'thirdparty') {
+						$actioncomm->label = $object_refletter->title . '-' . $instance_letter->srcobject->nom;
+					} else {
+						$actioncomm->label = $object_refletter->title . '-' . $instance_letter->srcobject->thirdparty->name;
+					}
+
 				}
-				$first_value = reset($instance_letter->content_letter);
+				if(is_array($instance_letter->content_letter)) {
+					$first_value = reset($instance_letter->content_letter);
+				}
 				$actioncomm->note = $first_value['content_text'];
 				$actioncomm->datep = $now;
 				$actioncomm->datef = $now;
@@ -116,21 +123,21 @@ class ActionsReferenceLetters
 				$actioncomm->fk_element = $instance_letter->id;
 				$actioncomm->elementtype = 'referenceletters_' . $instance_letter->element;
 				$actioncomm->userownerid = $user->id;
-				$ret = $actioncomm->add($user); // User qui saisit l'action
+				$ret = $actioncomm->create($user); // User qui saisit l'action
 				if ($ret < 0) {
 					$error = "Failed to insert : " . $actioncomm->error . " ";
 					$this->error = $error;
 					$this->errors[] = $error;
-					
+
 					dol_syslog(get_class($this) . $this->error, LOG_ERR);
 					return - 1;
 				} else {
-					
+
 					if (! empty($conf->global->REF_LETTER_EVTCOPYFILE)) {
 						dol_include_once('/core/lib/files.lib.php');
-						
+
 						$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-						$srcdir = $conf->referenceletters->dir_output . "/propal/" . $objectref;
+						$srcdir = $conf->referenceletters->dir_output . "/".$instance_letter->element_type."/" . $objectref;
 						$srcfile = $srcdir . '/' . $objectref . ".pdf";
 						$destdir = $conf->agenda->dir_output . '/' . $ret;
 						$destfile = $destdir . '/' . $objectref . ".pdf";
@@ -140,7 +147,7 @@ class ActionsReferenceLetters
 								$error = $langs->trans('RefLtrErrorCopyFile');
 								$this->error = $error;
 								$this->errors[] = $error;
-								
+
 								dol_syslog(get_class($this) . $this->error, LOG_ERR);
 								return - 1;
 							}
@@ -148,7 +155,7 @@ class ActionsReferenceLetters
 					}
 				}
 			}
-			
+
 			// $this->results = array('myreturn' => $myvalue);
 			// $this->resprints = 'A text to show';
 			return 0; // or return 1 to replace standard code

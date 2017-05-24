@@ -22,20 +22,8 @@
 */
 
 // Load environment
-$res = 0;
-if (! $res && file_exists("../main.inc.php")) {
-	$res = @include("../main.inc.php");
-}
-if (! $res && file_exists("../../main.inc.php")) {
-	$res = @include("../../main.inc.php");
-}
-if (! $res && file_exists("../../../main.inc.php")) {
-	$res = @include("../../../main.inc.php");
-}
-if (! $res) {
-	die("Main include failed");
-}
 
+require '../config.php';
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';
 require_once '../class/html.formreferenceletters.class.php';

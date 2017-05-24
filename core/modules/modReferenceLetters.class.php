@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '1.8';
+		$this->version = '2.0';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -134,8 +134,8 @@ class modReferenceLetters extends DolibarrModules
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
-				3,
-				6
+				4,
+				0
 		);
 		$this->langfiles = array (
 				"referenceletters@referenceletters"
@@ -417,6 +417,21 @@ class modReferenceLetters extends DolibarrModules
 				'user' => 0
 		);
 
+		$r ++;
+		$this->menu[$r] = array (
+				'fk_menu' => 'fk_mainmenu=referenceletters,fk_leftmenu=refletterlist',
+				'type' => 'left',
+				'titre' => 'RefLtrListMassGen',
+				'mainmenu' => 'referenceletters',
+				'url' => '/referenceletters/referenceletters/mass_gen.php',
+				'langs' => 'referenceletters@referenceletters',
+				'position' => 104,
+				'enabled' => '$user->rights->referenceletters->write',
+				'perms' => '$user->rights->referenceletters->write',
+				'target' => '',
+				'user' => 0
+		);
+		
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:

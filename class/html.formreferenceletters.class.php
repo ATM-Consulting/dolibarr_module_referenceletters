@@ -105,7 +105,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectElementType($selected='',$htmlname='element_type',$showempty=0) {
+	public function selectElementType($selected='',$htmlname='element_type',$showempty=0, $in_array=array()) {
 		global $langs;
 
 		require_once 'referenceletters.class.php';
@@ -118,6 +118,12 @@ class FormReferenceLetters extends Form
 		foreach($refletter->element_type_list as $element_type=>$array_data) {
 			$langs->load($array_data['trans']);
 
+			if(!empty($in_array)) {
+				
+				if(!in_array($element_type, $in_array)) continue;
+				
+			}
+			
 			if ($selected==$element_type) {
 				$option_selected=' selected="selected" ';
 			}else {

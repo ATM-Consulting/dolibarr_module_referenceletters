@@ -51,6 +51,7 @@ $idletter = GETPOST('idletter', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
+$justinformme = GETPOST('justinformme');
 
 $sortfield=GETPOST('sortfield','alpha');
 $sortorder=GETPOST('sortorder','alpha');
@@ -112,24 +113,30 @@ if ($action == 'buildoc') {
 
 	// New letter
 	if (empty($refletterelemntid)) {
+		
+		$ref_int = GETPOST('ref_int','alpha');
+		if(empty($ref_int)) $ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
+		
 		// Save data
-		$object_element->ref_int = GETPOST('ref_int','alpha');
+		$object_element->ref_int = $ref_int;
 		$object_element->title = GETPOST('title_instance');
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
 
-		if (! empty($conf->global->MAIN_MULTILANGS)) {
+		
+		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter)) {
 			$langs_chapter = $langs->defaultlang;
 		}
-
+		
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0) {
-			setEventMessage($object_chapters->error, 'errors');
+			if($justinformme) echo $object_element->error;
+			else setEventMessage($object_chapters->error, 'errors');
 		}
 
 		// Use a big array into class it is serialize
@@ -153,15 +160,22 @@ if ($action == 'buildoc') {
 				);
 			}
 		}
-
+		elseif($justinformme){
+			
+			echo $langs->trans('NoContentChapterForLang', $langs_chapter);
+			exit;
+		}
+		
 		$object_element->content_letter = $content_letter;
-
+		
 		$result = $object_element->create($user);
 		if ($result < 0) {
-			setEventMessage($object_element->error, 'errors');
+			if($justinformme) echo $object_element->error;
+			else setEventMessage($object_element->error, 'errors');
 		}
-
+		
 		$object_element->fetch($result);
+		$refletterelemntid = $object_element->id;
 
 	} else {
 		// Edit letter
@@ -213,7 +227,7 @@ if ($action == 'buildoc') {
 	}
 
 	// Create document PDF
-
+	
 	// Define output language
 	$outputlangs = $langs;
 	if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -221,16 +235,23 @@ if ($action == 'buildoc') {
 		$newlang = $object->thridparty->default_lang;
 		$outputlangs->setDefaultLang($newlang);
 	}
-
+	
 	// Reload to get new records
 	$ret = $object_element->fetch($refletterelemntid);
 	$result = referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
-
+	
 	if ($result <= 0) {
 		dol_print_error($db, $result);
 		exit();
 	} else {
-		header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
+		
+		if($justinformme) {
+			echo 1;
+		}
+		else{
+			header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
+		}
+		
 		exit();
 	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {

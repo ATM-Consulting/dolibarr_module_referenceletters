@@ -268,6 +268,114 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
+					
+					// remplacement des données en tableau :
+					dol_include_once('/referenceletters/class/odf_rfltr.class.php');
+					$odfHandler = new OdfRfltr(
+							$srctemplatepath,
+							array(
+									'PATH_TO_TMP'	  => $conf->propal->dir_temp,
+									'ZIP_PROXY'		  => 'PclZipProxy',	// PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+									'DELIMITER_LEFT'  => '{',
+									'DELIMITER_RIGHT' => '}'
+							),
+							$chapter_text
+							);
+					
+					$element_array = 'lines1';
+					$listlines = $odfHandler->setSegment($element_array);
+					require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+					require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
+					$object->lines=array();
+					global $db;
+					
+					$object->{$element_array}[0] = new PropaleLigne($db);
+					$object->{$element_array}[0]->rowid = '0';
+					$object->{$element_array}[0]->line_fulldesc = 'tagada';
+					$object->{$element_array}[0]->total_ht= 25;
+					$object->{$element_array}[1] = new PropaleLigne($db);
+					$object->{$element_array}[1]->rowid = '0';
+					$object->{$element_array}[1]->line_fulldesc= 'tagadaa';
+					$object->{$element_array}[1]->total_ht= 86;
+					
+					if(strpos($chapter_text, '[!-- BEGIN') !== false) {
+						
+						foreach ($object->{$element_array} as $line) {
+							
+							$tmparray=$this->get_substitutionarray_lines($line,$outputlangs);
+							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
+							// Call the ODTSubstitutionLine hook
+							$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
+							$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+							//var_dump($tmparray);exit;
+							foreach($tmparray as $key => $val)
+							{
+								try
+								{
+									$listlines->setVars($key, $val, true, 'UTF-8');
+								}
+								catch(OdfException $e)
+								{
+								}
+								catch(SegmentException $e)
+								{
+								}
+								
+							}
+							
+							$res = $listlines->merge();
+						}
+						$res=$odfHandler->mergeSegment($listlines);
+						$chapter_text = $odfHandler->getContentXml();
+						
+					}
+					
+					$element_array = 'lines2';
+					$listlines = $odfHandler->setSegment($element_array);
+					$object->{$element_array}[0] = new PropaleLigne($db);
+					$object->{$element_array}[0]->rowid = '0';
+					$object->{$element_array}[0]->line_fulldesc = 'tagada';
+					$object->{$element_array}[0]->total_ht= 25;
+					$object->{$element_array}[1] = new PropaleLigne($db);
+					$object->{$element_array}[1]->rowid = '0';
+					$object->{$element_array}[1]->line_fulldesc= 'tagadaa';
+					$object->{$element_array}[1]->total_ht= 86;
+					
+					if(strpos($chapter_text, '[!-- BEGIN') !== false) {
+						
+						foreach ($object->{$element_array} as $line) {
+							
+							$tmparray=$this->get_substitutionarray_lines($line,$outputlangs);
+							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
+							// Call the ODTSubstitutionLine hook
+							$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
+							$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+							//var_dump($tmparray);exit;
+							foreach($tmparray as $key => $val)
+							{
+								try
+								{
+									$listlines->setVars($key, $val, true, 'UTF-8');
+								}
+								catch(OdfException $e)
+								{
+								}
+								catch(SegmentException $e)
+								{
+								}
+								
+							}
+							
+							$res = $listlines->merge();
+						}
+						$res=$odfHandler->mergeSegment($listlines);
+						$chapter_text = $odfHandler->getContentXml();
+						
+					}
+					//print_r($chapter_text);exit;
+					//var_dump('-----',$chapter_text,$res);exit;
+					
+					
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {

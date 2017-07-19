@@ -21,7 +21,7 @@
  * \ingroup referenceletters
  * \brief referenceletters for numbering referenceletters
  */
-require_once '../class/commondocgeneratorreferenceletters.class.php';
+dol_include_once('/referenceletters/class/commondocgeneratorreferenceletters.class.php');
 
 /**
  * \class ModelePDFReferenceLetters

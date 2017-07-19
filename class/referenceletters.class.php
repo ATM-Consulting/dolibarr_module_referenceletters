@@ -56,6 +56,9 @@ class ReferenceLetters extends CommonObject
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
+		
+		global $conf;
+		
 		$this->db = $db;
 		$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
@@ -140,6 +143,26 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+		
+		if(!empty($conf->agefodd->enabled)) {
+			
+			$this->element_type_list['rfltr_agefodd_convention'] = array (
+					'class' => 'agefodd_convention.class.php',
+					//'securityclass' => 'commande',
+					//'securityfeature' => '',
+					'objectclass' => 'Agefodd_convention',
+					'classpath' => dol_buildpath('/agefodd/class/agefodd_convention.class.php'),
+					'trans' => 'agefodd',
+					'title' => 'AgfConvention',
+					//'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
+					//'menuloader_function' => 'commande_prepare_head',
+					'card' => '/agefodd/session/card.php',
+					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
+			);
+			
+		}
+		
 		return 1;
 	}
 

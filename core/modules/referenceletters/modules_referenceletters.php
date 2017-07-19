@@ -48,6 +48,83 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		return $liste;
 	}
+	
+	/**
+	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
+	 */
+	function merge_array($chapter_text) {
+		
+		global $hookmanager;
+		
+		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
+		$odfHandler = new OdfRfltr(
+				$srctemplatepath,
+				array(
+						'PATH_TO_TMP'	  => $conf->propal->dir_temp,
+						'ZIP_PROXY'		  => 'PclZipProxy',	// PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+						'DELIMITER_LEFT'  => '{',
+						'DELIMITER_RIGHT' => '}'
+				),
+				$chapter_text
+				);
+		
+		// Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (participants, horaires)
+		$TElementArray = array('lines1', 'lines2');
+		
+		foreach($TElementArray as $element_array) {
+			
+			$listlines = $odfHandler->setSegment($element_array);
+			require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
+			require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
+			$object->lines=array();
+			global $db;
+			
+			$object->{$element_array}[0] = new PropaleLigne($db);
+			$object->{$element_array}[0]->rowid = '0';
+			$object->{$element_array}[0]->line_fulldesc = 'tagada';
+			$object->{$element_array}[0]->total_ht= 25;
+			$object->{$element_array}[1] = new PropaleLigne($db);
+			$object->{$element_array}[1]->rowid = '0';
+			$object->{$element_array}[1]->line_fulldesc= 'tagadaa';
+			$object->{$element_array}[1]->total_ht= 86;
+			
+			if(strpos($chapter_text, '[!-- BEGIN') !== false) {
+				
+				foreach ($object->{$element_array} as $line) {
+					
+					$tmparray=$this->get_substitutionarray_lines_agefodd($line, $outputlangs, false);
+					complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
+					// Call the ODTSubstitutionLine hook
+					$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
+					$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+					//var_dump($tmparray);exit;
+					foreach($tmparray as $key => $val)
+					{
+						try
+						{
+							$listlines->setVars($key, $val, true, 'UTF-8');
+						}
+						catch(OdfException $e)
+						{
+						}
+						catch(SegmentException $e)
+						{
+						}
+						
+					}
+					
+					$res = $listlines->merge();
+				}
+				$res=$odfHandler->mergeSegment($listlines);
+				$chapter_text = $odfHandler->getContentXml();
+				
+			}
+		}
+		//print_r($chapter_text);exit;
+		//var_dump('-----',$chapter_text,$res);exit;
+		return $chapter_text;
+		
+	}
 }
 
 /**
@@ -157,6 +234,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 		require_once $file;
 		
 		$obj = new $classname($db);
+		
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.
 		$res = $obj->write_file($object, $instance_letter, $outputlangs);

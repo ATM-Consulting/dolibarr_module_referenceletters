@@ -268,13 +268,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 					}
 					
-					/****************************************TODO à virer juste un test **************************/
-					/****************************************** remplacement des données en tableau*****************************************/
-
-					$chapter_text = $this->merge_array($chapter_text);
-					
-					/******************************************Fin remplacement des données en tableau*****************************************/
-					
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {

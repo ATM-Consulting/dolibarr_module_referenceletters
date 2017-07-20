@@ -51,12 +51,15 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	
 	/**
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
+	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (participants, horaires)
 	 */
-	function merge_array($chapter_text) {
+	function merge_array(&$object, $chapter_text, $TElementArray=array()) {
 		
 		global $hookmanager;
 		
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
+		
 		$odfHandler = new OdfRfltr(
 				$srctemplatepath,
 				array(
@@ -68,60 +71,43 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$chapter_text
 				);
 		
-		// Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (participants, horaires)
-		$TElementArray = array('lines1', 'lines2');
-		
-		foreach($TElementArray as $element_array) {
+		if(!empty($TElementArray)) {
 			
-			$listlines = $odfHandler->setSegment($element_array);
-			require_once DOL_DOCUMENT_ROOT.'/comm/propal/class/propal.class.php';
-			require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
-			$object->lines=array();
-			global $db;
-			
-			$object->{$element_array}[0] = new PropaleLigne($db);
-			$object->{$element_array}[0]->rowid = '0';
-			$object->{$element_array}[0]->line_fulldesc = 'tagada';
-			$object->{$element_array}[0]->total_ht= 25;
-			$object->{$element_array}[1] = new PropaleLigne($db);
-			$object->{$element_array}[1]->rowid = '0';
-			$object->{$element_array}[1]->line_fulldesc= 'tagadaa';
-			$object->{$element_array}[1]->total_ht= 86;
-			
-			if(strpos($chapter_text, '[!-- BEGIN') !== false) {
+			foreach($TElementArray as $element_array) {
 				
-				foreach ($object->{$element_array} as $line) {
+				if(strpos($chapter_text, $element_array) === false) continue;
+				
+				$listlines = $odfHandler->setSegment($element_array);
+				
+				if(strpos($chapter_text, '[!-- BEGIN') !== false) {
 					
-					$tmparray=$this->get_substitutionarray_lines_agefodd($line, $outputlangs, false);
-					complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
-					// Call the ODTSubstitutionLine hook
-					$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
-					$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-					//var_dump($tmparray);exit;
-					foreach($tmparray as $key => $val)
-					{
-						try
+					foreach ($object->{$element_array} as $line) {
+						
+						$tmparray=$this->get_substitutionarray_lines_agefodd($line, $outputlangs, false);
+						complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
+						// Call the ODTSubstitutionLine hook
+						$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
+						$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+						
+						foreach($tmparray as $key => $val)
 						{
-							$listlines->setVars($key, $val, true, 'UTF-8');
-						}
-						catch(OdfException $e)
-						{
-						}
-						catch(SegmentException $e)
-						{
+							try {$listlines->setVars($key, $val, true, 'UTF-8');}
+							catch(OdfException $e) {}
+							catch(SegmentException $e) {}
+							
 						}
 						
+						$res = $listlines->merge();
 					}
 					
-					$res = $listlines->merge();
+					$res=$odfHandler->mergeSegment($listlines);
+					$chapter_text = $odfHandler->getContentXml();
+					
 				}
-				$res=$odfHandler->mergeSegment($listlines);
-				$chapter_text = $odfHandler->getContentXml();
-				
 			}
+		
 		}
-		//print_r($chapter_text);exit;
-		//var_dump('-----',$chapter_text,$res);exit;
+		
 		return $chapter_text;
 		
 	}

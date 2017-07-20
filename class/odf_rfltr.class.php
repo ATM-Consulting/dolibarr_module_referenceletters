@@ -29,7 +29,7 @@ class OdfRfltr extends Odf {
 		$this->tmpdir .= ($this->tmpdir?'/':'').$md5uniqid;
 		$this->tmpfile = $this->tmpdir.'/'.$md5uniqid.'.odt';	// We keep .odt extension to allow OpenOffice usage during debug.
 		
-		$this->contentXml = &$content;
+		$this->contentXml = &strtr($content, array('&nbsp;'=>' ')); // Sinon erreur regex recherche [!-- BEGIN
 		//$this->_moveRowSegments();
 	}
 	

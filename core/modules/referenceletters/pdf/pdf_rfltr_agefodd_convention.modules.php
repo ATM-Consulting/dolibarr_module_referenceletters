@@ -266,6 +266,14 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 										}
 										$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
 									}
+
+									/*echo '<pre>';
+									 print_r($object);
+									 echo '</pre>';
+									 exit;*/
+									
+									// merge agefodd arrays
+									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'THorairesSession'));
 									
 									$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									
@@ -279,6 +287,7 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 											}
 										}
 									}
+									
 									$posY = $pdf->GetY();
 								}
 								// Pied de page

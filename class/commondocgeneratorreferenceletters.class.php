@@ -62,7 +62,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     {
     	global $conf;
     	
-    	$resarray= array(
+    	// Substitutions tableau de participants :
+    	$resarray=array();
+    	$resarray['line_poste'] = $line->poste;
+    	$resarray['line_civilite'] = $line->civilitel;
+    	$resarray['line_civilite_short'] = $line->civilite;
+    	$resarray['line_nom'] = $line->nom;
+    	$resarray['line_prenom'] = $line->prenom;
+    	
+    	/*$resarray= array(
     			'line_fulldesc'=>doc_getlinedesc($line,$outputlangs),
     			'line_product_ref'=>$line->product_ref,
     			'line_product_label'=>$line->product_label,
@@ -86,7 +94,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			'line_date_end'=>dol_print_date($line->date_end, 'day', 'tzuser'),
     			'line_date_end_locale'=>dol_print_date($line->date_end, 'day', 'tzuser', $outputlangs),
     			'line_date_end_rfc'=>dol_print_date($line->date_end, 'dayrfc', 'tzuser'),
-    	);
+    	);*/
     	
     	// Retrieve extrafields
     	$extrafieldkey=$line->element;

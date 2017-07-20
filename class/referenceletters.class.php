@@ -147,13 +147,13 @@ class ReferenceLetters extends CommonObject
 		if(!empty($conf->agefodd->enabled)) {
 			
 			$this->element_type_list['rfltr_agefodd_convention'] = array (
-					'class' => 'agefodd_convention.class.php',
+					'class' => 'agsession.class.php',
 					//'securityclass' => 'commande',
 					//'securityfeature' => '',
-					'objectclass' => 'Agefodd_convention',
-					'classpath' => dol_buildpath('/agefodd/class/agefodd_convention.class.php'),
+					'objectclass' => 'Agsession',
+					'classpath' => dol_buildpath('/agefodd/class/'),
 					'trans' => 'agefodd',
-					'title' => 'AgfConvention',
+					'title' => 'Agsession',
 					//'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
 					//'menuloader_function' => 'commande_prepare_head',
 					'card' => '/agefodd/session/card.php',
@@ -455,7 +455,7 @@ class ReferenceLetters extends CommonObject
 			if ($this->element_type == $type) {
 
 				$langs->load($item['trans']);
-
+				//var_dump($item);exit;
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 

@@ -66,11 +66,70 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 	 * @param Translate $outputlangs object
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($object, $instance_letter, $outputlangs) {
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+	function write_file($id_object, $id_model, $outputlangs) {
+		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 		
-		if (! is_object($outputlangs))
-			$outputlangs = $langs;
+		/********************************************************************************/
+		/*********************** Chargement du modèle utilisé ***************************/
+		/********************************************************************************/
+		
+		dol_include_once('/referenceletters/class/referenceletters.class.php');
+		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
+		dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
+		
+		$object_refletter = new Referenceletters($db);
+		$object_refletter->fetch($id_model);
+		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
+		$object->fetch($id_object);
+		$object->load_all_data_agefodd_session();
+		
+		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
+		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		$object_chapters = new ReferencelettersChapters($db);
+		$result = $object_chapters->fetch_byrefltr($id_model, $langs_chapter);
+		
+		$content_letter = array();
+		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
+			
+			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
+				
+				$options = array();
+				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
+					foreach ( $line_chapter->options_text as $key => $option_text ) {
+						$options[$key] = array (
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
+						);
+					}
+				}
+				
+				$content_letter[$line_chapter->id] = array (
+						'content_text' => $line_chapter->content_text,
+						'options' => $options
+				);
+			}
+		}
+		
+		// On load le modèle
+		$instance_letter = new ReferenceLettersElements($db);
+		$instance_letter->fetch($id_model);
+		$instance_letter->srcobject=$object;
+		$instance_letter->content_letter = $content_letter;
+		if(empty($object->thirdparty)) $object->fetch_thirdparty();
+		$element_type='rfltr_agefodd_convention';
+		$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type);
+		$instance_letter->title = $object_refletter->title;
+		$instance_letter->fk_element = $object->id;
+		$instance_letter->element_type = $object_refletter->element_type;
+		$instance_letter->fk_referenceletters = $idletter;
+		$instance_letter->outputref = '';
+		
+		/*********************************************************************************/
+		/*********************** Fin chargement du modèle utilisé ************************/
+		/*********************************************************************************/
+		
+		if (! is_object($outputlangs)) $outputlangs = $langs;
+		
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 			if (! empty($conf->global->MAIN_USE_FPDF))
 				$outputlangs->charset_output = 'ISO-8859-1';
@@ -81,13 +140,13 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 				
 				// Loop on each lines to detect if there is at least one image to show
 				$realpatharray = array ();
-				var_dump($conf->agefodd->dir_output);exit;
+				
 				if ($conf->agefodd->dir_output) {
-					$object->fetch_thirdparty();
 					
 					// $deja_regle = 0;
 					
 					$objectref = dol_sanitizeFileName($instance_letter->ref_int);
+					
 					$dir = $conf->agefodd->dir_output; // TODO path to agefodd documents
 					$file = $dir . '/' . $objectref . ".pdf";
 					
@@ -260,7 +319,7 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 									}
 									
 									$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
-									// var_dump($test);
+									
 									if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
 										foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
 											if (! empty($option_detail['use_content_option'])) {
@@ -444,7 +503,7 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 				$pdf->MultiCell(80, 4, $carac_emetteur, 0, 'L');
 				
 				// If CUSTOMER contact defined, we use it
-				$usecontact = false;
+				/*$usecontact = false;
 				$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 				if (count($arrayidcontact) > 0) {
 					$usecontact = true;
@@ -461,7 +520,7 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 							$carac_client_name = $outputlangs->convToOutputCharset($socname);
 				} else {
 					$carac_client_name = $outputlangs->convToOutputCharset($object->thirdparty->nom);
-				}
+				}*/
 				
 				$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 				

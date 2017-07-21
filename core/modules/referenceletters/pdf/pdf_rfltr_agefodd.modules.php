@@ -3,7 +3,7 @@
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 
-class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
+class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	
 	
 	var $db;

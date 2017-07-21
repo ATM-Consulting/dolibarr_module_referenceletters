@@ -146,20 +146,25 @@ class ReferenceLetters extends CommonObject
 		
 		if(!empty($conf->agefodd->enabled)) {
 			
+			// Convention de formation
 			$this->element_type_list['rfltr_agefodd_convention'] = array (
 					'class' => 'agsession.class.php',
-					//'securityclass' => 'commande',
-					//'securityfeature' => '',
 					'objectclass' => 'Agsession',
 					'classpath' => dol_buildpath('/agefodd/class/'),
 					'trans' => 'agefodd',
-					'title' => 'Agsession',
-					//'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
-					//'menuloader_function' => 'commande_prepare_head',
+					'title' => 'AgfConvention',
 					'card' => '/agefodd/session/card.php',
 					'substitution_method' => 'get_substitutionarray_object',
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
+			
+			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
+			$this->element_type_list['rfltr_agefodd_attestation'] = $this->element_type_list['rfltr_agefodd_convention'];
+			$this->element_type_list['rfltr_agefodd_attestation']['title'] = 'AgfSendAttestation';
+			
+			// Fiche d'évaluation (basée sur le même PDF que tous les autres documents Agefodd
+			$this->element_type_list['rfltr_agefodd_evalutation'] = $this->element_type_list['rfltr_agefodd_convention'];
+			$this->element_type_list['rfltr_agefodd_evalutation']['title'] = 'AgfFicheEval';
 			
 		}
 		

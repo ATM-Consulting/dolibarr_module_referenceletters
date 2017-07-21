@@ -282,7 +282,7 @@ class pdf_rfltr_agefodd_convention  extends ModelePDFReferenceLetters {
 									 exit;*/
 									
 									// merge agefodd arrays
-									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'THorairesSession'));
+									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'THorairesSession', 'TFormateursSession'));
 									
 									$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									

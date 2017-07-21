@@ -60,7 +60,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
      */
     function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
     {
-    	global $conf;
+    	global $db, $conf;
     	
     	// Substitutions tableau de participants :
     	$resarray=array();
@@ -77,6 +77,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_heure_debut_session'] = date('H:i:s', $line->heured);
     	$resarray['line_heure_fin_session'] = date('H:i:s', $line->heuref);
     	
+    	// Substitutions tableau des formateurs :
+    	$resarray['line_formateur_nom'] = $line->lastname;
+    	$resarray['line_formateur_prenom'] = $line->firstname;
+    	$resarray['line_formateur_mail'] = $line->email;
+    	$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
+    	
+    	
     	// Retrieve extrafields
     	$extrafieldkey=$line->element;
     	$array_key="line";
@@ -92,6 +99,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     
     function get_substitutionsarray_agefodd(&$object, $outputlangs) {
     	
+    	dol_include_once('/agefodd/class/html.formagefodd.class.php');
+    	
+    	$formAgefodd = new FormAgefodd($db);
+    	
     	$resarray=array();
     	$resarray['formation_nom'] = $object->formintitule;
     	$resarray['formation_ref'] = $object->formref;
@@ -99,6 +110,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['formation_lieu'] = $object->placecode;
     	$resarray['formation_commercial'] = $object->commercialname;
     	$resarray['formation_societe'] = $object->thirdparty->nom;
+    	$resarray['formation_commentaire'] = nl2br($object->notes);
+    	$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
     	
     	return $resarray;
     	

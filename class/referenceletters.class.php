@@ -514,8 +514,50 @@ class ReferenceLetters extends CommonObject
 					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
 			);
 		}
-
+		
+		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+		
 		return $subst_array;
+	}
+	
+	function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
+		
+		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
+		unset($subst_array['Agsession']);
+		
+		$subst_array['Sessions de formation module Agefodd'] = array(
+				'formation_nom'=>'Intitulé de la formation'
+				,'formation_ref'=>'Référence de la formation'
+				,'formation_statut'=>'Référence de la formation'
+				,'formation_lieu'=>'Lieu de la formation'
+				,'formation_commercial'=>'commercial en charge de la formation'
+				,'formation_societe'=>'Société concernée'
+		);
+		
+		// Liste de données - Participants
+		$subst_array['Participants (Liste de données Agefodd "TStagiairesSession")'] = array(
+				'line_civilite'=>'Civilité'
+				,'line_nom'=>'Nom participant'
+				,'line_prenom'=>'Prénom participant'
+				,'line_nom_societe'=>'Société du participant'
+				,'line_poste'=>'Poste occupé au sein de sa société'
+		);
+		
+		// Liste de données - Horaires
+		$subst_array['Horaires (Liste de données Agefodd "THorairesSession")'] = array(
+				'line_date_session'=>'Date de la session'
+				,'line_heure_debut_session'=>'Heure début session'
+				,'line_heure_fin_session'=>'Heure fin session'
+		);
+		
+		// Liste de données - Formateurs
+		$subst_array['Horaires (Liste de données Agefodd "TFormateursSession")'] = array(
+				'line_formateur_nom'=>'Nom du formateur'
+				,'line_formateur_prenom'=>'Prénom du formateur'
+				,'line_formateur_mail'=>'Adresse mail du formateur'
+				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
+		);
+		
 	}
 
 	/**

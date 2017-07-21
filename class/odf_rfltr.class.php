@@ -13,7 +13,7 @@ class OdfRfltr extends Odf {
 	 */
 	public function __construct($filename, $config = array(), $content='')
 	{
-		clearstatcache();
+		/*clearstatcache();
 		
 		if (! is_array($config)) {
 			throw new OdfException('Configuration data must be provided as array');
@@ -27,7 +27,7 @@ class OdfRfltr extends Odf {
 		$md5uniqid = md5(uniqid());
 		if ($this->config['PATH_TO_TMP']) $this->tmpdir = preg_replace('|[\/]$|','',$this->config['PATH_TO_TMP']);	// Remove last \ or /
 		$this->tmpdir .= ($this->tmpdir?'/':'').$md5uniqid;
-		$this->tmpfile = $this->tmpdir.'/'.$md5uniqid.'.odt';	// We keep .odt extension to allow OpenOffice usage during debug.
+		$this->tmpfile = $this->tmpdir.'/'.$md5uniqid.'.odt';*/	// We keep .odt extension to allow OpenOffice usage during debug.
 		
 		$this->contentXml = &strtr($content, array('&nbsp;'=>' ')); // Sinon erreur regex recherche [!-- BEGIN
 		//$this->_moveRowSegments();
@@ -86,6 +86,10 @@ class OdfRfltr extends Odf {
 		}
 		// $reg = "#\[!--\sBEGIN\s$segment\s--\]<\/text:p>(.*)<text:p\s.*>\[!--\sEND\s$segment\s--\]#sm";
 		$reg = "#\[!--\sBEGIN\s$segment\s--\](.*)\[!--\sEND\s$segment\s--\]#sm";
+		/*echo '<pre>';
+		print_r($this->contentXml);
+		echo '</pre>';
+		exit;*/
 		if (preg_match($reg, html_entity_decode($this->contentXml), $m) == 0) {
 			throw new OdfException("'".$segment."' segment not found in the document. The tag [!-- BEGIN xxx --] or [!-- END xxx --] is not present into content file.");
 		}

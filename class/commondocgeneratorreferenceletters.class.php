@@ -58,7 +58,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
      *	@param  Translate		$outputlangs        Lang object to use for output
      *  @return	array								Return a substitution array
      */
-    function get_substitutionarray_lines_agefodd($line,$outputlangs,$fetchoptionnals=true)
+    function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
     {
     	global $conf;
     	
@@ -69,32 +69,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_civilite_short'] = $line->civilite;
     	$resarray['line_nom'] = $line->nom;
     	$resarray['line_prenom'] = $line->prenom;
+    	$resarray['line_type'] = $line->type;
+    	$resarray['line_nom_societe'] = $line->soccode;
     	
-    	/*$resarray= array(
-    			'line_fulldesc'=>doc_getlinedesc($line,$outputlangs),
-    			'line_product_ref'=>$line->product_ref,
-    			'line_product_label'=>$line->product_label,
-    			'line_product_type'=>$line->product_type,
-    			'line_desc'=>$line->desc,
-    			'line_vatrate'=>vatrate($line->tva_tx,true,$line->info_bits),
-    			'line_up'=>price2num($line->subprice),
-    			'line_up_locale'=>price($line->subprice, 0, $outputlangs),
-    			'line_qty'=>$line->qty,
-    			'line_discount_percent'=>($line->remise_percent?$line->remise_percent.'%':''),
-    			'line_price_ht'=>price2num($line->total_ht),
-    			'line_price_ttc'=>price2num($line->total_ttc),
-    			'line_price_vat'=>price2num($line->total_tva),
-    			'line_price_ht_locale'=>price($line->total_ht, 0, $outputlangs),
-    			'line_price_ttc_locale'=>price($line->total_ttc, 0, $outputlangs),
-    			'line_price_vat_locale'=>price($line->total_tva, 0, $outputlangs),
-    			// Dates
-    			'line_date_start'=>dol_print_date($line->date_start, 'day', 'tzuser'),
-    			'line_date_start_locale'=>dol_print_date($line->date_start, 'day', 'tzuser', $outputlangs),
-    			'line_date_start_rfc'=>dol_print_date($line->date_start, 'dayrfc', 'tzuser'),
-    			'line_date_end'=>dol_print_date($line->date_end, 'day', 'tzuser'),
-    			'line_date_end_locale'=>dol_print_date($line->date_end, 'day', 'tzuser', $outputlangs),
-    			'line_date_end_rfc'=>dol_print_date($line->date_end, 'dayrfc', 'tzuser'),
-    	);*/
+    	// Substitutions tableau d'horaires
+    	$resarray['line_date_session'] = date('d/m/Y', $line->date_session);
+    	$resarray['line_heure_debut_session'] = date('H:i:s', $line->heured);
+    	$resarray['line_heure_fin_session'] = date('H:i:s', $line->heuref);
     	
     	// Retrieve extrafields
     	$extrafieldkey=$line->element;
@@ -107,6 +88,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray = $this->fill_substitutionarray_with_extrafields($line,$resarray,$extrafields,$array_key=$array_key,$outputlangs);
     	
     	return $resarray;
+    }
+    
+    function get_substitutionsarray_agefodd(&$object, $outputlangs) {
+    	
+    	$resarray=array();
+    	$resarray['formation_nom'] = $object->formintitule;
+    	$resarray['formation_ref'] = $object->formref;
+    	$resarray['formation_statut'] = $object->statuslib;
+    	$resarray['formation_lieu'] = $object->placecode;
+    	$resarray['formation_commercial'] = $object->commercialname;
+    	$resarray['formation_societe'] = $object->thirdparty->nom;
+    	
+    	return $resarray;
+    	
     }
     
 }

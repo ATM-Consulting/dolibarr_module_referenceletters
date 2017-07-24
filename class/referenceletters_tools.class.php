@@ -78,4 +78,26 @@ class RfltrTools {
 		
 	}
 	
+	static function getAgefoddModelList() {
+		
+		global $db;
+		
+		$sql = 'SELECT rowid, title, element_type
+				FROM '.MAIN_DB_PREFIX.'referenceletters
+				WHERE element_type LIKE "%agefodd%"';
+		
+		$resql = $db->query($sql);
+		if(!empty($resql)) {
+			
+			$TModels=array();
+			while($res = $db->fetch_object($resql)) {
+				
+				$TModels[$res->element_type][$res->rowid]=$res->title;
+				
+			}
+			return $TModels;
+		} else return 0;
+		
+	}
+	
 }

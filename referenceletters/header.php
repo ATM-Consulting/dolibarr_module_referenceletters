@@ -157,7 +157,6 @@ if(!empty($object->id)) {
 			$('.wysiwyg').hide();
 		}
 
-		// MAJ de l'unité dans la table llx_planif_category
 		$.ajax({
 			
 			url:"<?php echo dol_buildpath('/referenceletters/referenceletters/header.php',1) ?>"

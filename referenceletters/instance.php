@@ -44,6 +44,7 @@ require_once '../lib/referenceletters.lib.php';
 require_once '../core/modules/referenceletters/modules_referenceletters.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
@@ -59,6 +60,7 @@ $sortorder=GETPOST('sortorder','alpha');
 $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
+$object_refletter->fetch($idletter);
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
@@ -124,6 +126,10 @@ if ($action == 'buildoc') {
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
+		$object_element->header = GETPOST('header');
+		$object_element->use_custom_header = GETPOST('use_custom_header');
+		$object_element->footer = GETPOST('header');
+		$object_element->use_custom_footer= GETPOST('use_custom_header');
 
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
@@ -433,7 +439,41 @@ if (! empty($idletter)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-
+			
+			print '<tr>';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomHeader');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_refletter->use_custom_header) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;"' : '').'>';
+			print '<td>'.$langs->trans('RefLtrHeaderContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;"' : '').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_refletter->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
+			
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -452,7 +492,6 @@ if (! empty($idletter)) {
 					print '</td>';
 					print '<td>';
 
-					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 					$nbrows = ROWS_2;
 					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
 						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
@@ -592,6 +631,28 @@ if (! empty($refletterelemntid)) {
 		}
 	}
 }
+
+?>
+
+<script type="text/javascript">
+
+	$('[name*=use_custom]').click(function() {
+		
+		var is_checked = $(this).prop('checked');
+		var name_checkbox = $(this).attr('name');
+		var type_checkbox = name_checkbox.replace('use_custom_', '');
+		
+		if(is_checked) {
+			$('.wysiwyg_' + type_checkbox).show();
+		} else {
+			$('.wysiwyg_' + type_checkbox).hide();
+		}
+		
+	});
+
+</script>
+
+<?php
 
 // Page end
 llxFooter();

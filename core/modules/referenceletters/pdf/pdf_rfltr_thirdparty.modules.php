@@ -162,21 +162,18 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				
 				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 				
-				$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+				$use_custom_header = $instance_letter->use_custom_header;
+				if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+				else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
 				
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->SetTextColor(0, 0, 0);
 				
-				$tab_top = 90;
 				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
 				
-				$iniY = $tab_top + 7;
-				$curY = $tab_top + 7;
-				$nexY = $tab_top + 7;
-				
-				$posY = $nexY;
+				$posY = $pdf->getY();
 				$posX = $this->marge_gauche;
 				
 				foreach ( $instance_letter->content_letter as $key => $line_chapter ) {
@@ -195,7 +192,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 						
-						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+						if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+						else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
 						
 						$posX = $pdf->getX();
 						$posY = $pdf->getY();
@@ -484,11 +482,20 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 			
 			// Show recipient information
 			$pdf->SetFont('', '', $default_font_size - 1);
-			$pdf->SetXY($posx + 2, $posy + 4 + (dol_nboflines_bis($carac_client_name, 50) * 4));
+			$pdf->SetXY($posx + 2, $posy + 4 + (dol_nboflines_bis($carac_client_name, 50) * 4) + $hautcadre);
 			$pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
 		}
 		
+		
 		$pdf->SetTextColor(0, 0, 0);
+	}
+	
+	function _pageheadCustom(&$pdf, $object, $showadress, $outputlangs, $instance_letter) {
+		
+		$posy = $this->marge_haute;
+		$posx = $this->page_largeur - $this->marge_droite - 100;
+		$pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $outputlangs->convToOutputCharset($instance_letter->header), 0, 1);
+		
 	}
 	
 	/**

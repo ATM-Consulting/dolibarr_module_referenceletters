@@ -28,5 +28,7 @@ import_key varchar(100) NULL,
 fk_user_author	integer	NOT NULL,
 datec	datetime  NOT NULL,
 fk_user_mod integer NOT NULL,
-tms timestamp NOT NULL
+tms timestamp NOT NULL,
+header text,
+footer text
 )ENGINE=InnoDB;

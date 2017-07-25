@@ -90,15 +90,13 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 				if ($conf->agefodd->dir_output) {
 					
 					// $deja_regle = 0;
-					
+					//var_dump($file);exit;
 					//$objectref = dol_sanitizeFileName($instance_letter->ref_int);
 					
-					$dir = $conf->agefodd->dir_output; // TODO path to agefodd documents
-					$file = strtr($file, array('rfltr_agefodd_'=>'', '.pdf'=>''));
+					$dir = $conf->agefodd->dir_output;
 					
-					$file = $dir . '/' . $file. ".pdf";
-					/*var_dump($file); TODO renommer en convention ?
-					exit;*/
+					$file = $dir . '/' . $file;
+					
 					if (! file_exists($dir)) {
 						if (dol_mkdir($dir) < 0) {
 							$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);

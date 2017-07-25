@@ -115,3 +115,8 @@ AllDocumentsGenerated=Tous les documents ont été générés
 NoChapterIntoYourModel=Il n'y pas de chapitre dans votre modèle.
 AllDocumentsGeneratedButError=Des documents n'ont pu être générés. Consultez la liste pour connaître lesquels.
 NoContentChapterForLang=Pas de chapitre défini pour la langue %s
+
+RefLtrUseCustomHeader=Utiliser un entête personnalisé
+RefLtrUseCustomFooter=Utiliser un pied de page personnalisé
+RefLtrHeaderContent=Contenu de l'entête personnalisé
+RefLtrFooterContent=Contenu du pied de page personnalisé

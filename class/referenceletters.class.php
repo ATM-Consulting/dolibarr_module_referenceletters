@@ -166,6 +166,10 @@ class ReferenceLetters extends CommonObject
 			$this->element_type_list['rfltr_agefodd_evaluation'] = $this->element_type_list['rfltr_agefodd_convention'];
 			$this->element_type_list['rfltr_agefodd_evaluation']['title'] = 'AgfFicheEval';
 			
+			// Fiche de présence (feuille d'émargement) (basée sur le même PDF que tous les autres documents Agefodd
+			$this->element_type_list['rfltr_agefodd_presence'] = $this->element_type_list['rfltr_agefodd_convention'];
+			$this->element_type_list['rfltr_agefodd_presence']['title'] = 'AgfFichePresence';
+			
 		}
 		
 		return 1;

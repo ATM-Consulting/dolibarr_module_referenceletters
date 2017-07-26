@@ -107,14 +107,14 @@ if(!empty($object->id)) {
 	print '</td>';
 	print '</tr>';
 	
-	print '<tr>';
+	print '<tr style="background-color:#CEECF5;">';
 	print '<td>'.$langs->trans('RefLtrUseCustomHeader');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object->use_custom_header) ? 'checked="checked"' : '').' />';
 	print '</td>';
 	print '</tr>';
 	
-	print '<tr class="wysiwyg" '.(empty($object->use_custom_header) ? 'style="display:none;"' : '').'>';
+	print '<tr class="wysiwyg" '.(empty($object->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 	print '<td>'.$langs->trans('RefLtrHeaderContent');
 	print '</td>';
 	print '<td>';

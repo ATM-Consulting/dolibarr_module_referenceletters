@@ -126,10 +126,10 @@ if ($action == 'buildoc') {
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
-		$object_element->header = GETPOST('header');
 		$object_element->use_custom_header = GETPOST('use_custom_header');
-		$object_element->footer = GETPOST('header');
-		$object_element->use_custom_footer= GETPOST('use_custom_header');
+		$object_element->header = GETPOST('header');
+		$object_element->use_custom_footer = GETPOST('use_custom_footer');
+		$object_element->footer = GETPOST('footer');
 
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
@@ -192,6 +192,10 @@ if ($action == 'buildoc') {
 
 		$object_element->title = GETPOST('title_instance');
 		$object_element->outputref = GETPOST('outputref','int');
+		$object_element->use_custom_header = GETPOST('use_custom_header');
+		$object_element->header = GETPOST('header');
+		$object_element->use_custom_footer = GETPOST('use_custom_footer');
+		$object_element->footer = GETPOST('footer');
 
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -440,7 +444,7 @@ if (! empty($idletter)) {
 			print '</td>';
 			print '</tr>';
 			
-			print '<tr>';
+			print '<tr style="background-color:#CEECF5;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomHeader');
 			print '</td>';
@@ -448,28 +452,11 @@ if (! empty($idletter)) {
 			print '</td>';
 			print '</tr>';
 			
-			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;"' : '').'>';
+			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 			print '<td>'.$langs->trans('RefLtrHeaderContent');
 			print '</td>';
 			print '<td>';
 			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
-			$doleditor->Create();
-			print '</td>';
-			print '</tr>';
-			
-			print '<tr>';
-			print '<td>';
-			print $langs->trans('RefLtrUseCustomFooter');
-			print '</td>';
-			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
-			print '</td>';
-			print '</tr>';
-			
-			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;"' : '').'>';
-			print '<td>'.$langs->trans('RefLtrFooterContent');
-			print '</td>';
-			print '<td>';
-			$doleditor=new DolEditor('footer', $object_refletter->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
@@ -517,6 +504,25 @@ if (! empty($idletter)) {
 					print '</tr>';
 				}
 			}
+			
+			
+			
+			print '<tr style="background-color:#CEF6CE;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_refletter->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
@@ -570,6 +576,23 @@ if (! empty($refletterelemntid)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
+			
+			print '<tr style="background-color:#CEECF5;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomHeader');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_element->use_custom_header) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_header" '.(empty($object_element->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
+			print '<td>'.$langs->trans('RefLtrHeaderContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('header', $object_element->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 
 			foreach ( $object_element->content_letter as $key => $line_chapter ) {
 				if ($line_chapter['content_text'] == '@breakpage@') {
@@ -620,7 +643,25 @@ if (! empty($refletterelemntid)) {
 					print '</tr>';
 				}
 			}
-
+			
+			
+			print '<tr style="background-color:#CEF6CE;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_element->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_element->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_element->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
+			
 			print '<tr>';
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';

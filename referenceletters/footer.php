@@ -107,14 +107,14 @@ if(!empty($object->id)) {
 	print '</td>';
 	print '</tr>';
 	
-	print '<tr>';
+	print '<tr style="background-color:#CEF6CE;">';
 	print '<td>'.$langs->trans('RefLtrUseCustomFooter');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object->use_custom_footer) ? 'checked="checked"' : '').' />';
 	print '</td>';
 	print '</tr>';
 	
-	print '<tr class="wysiwyg" '.(empty($object->use_custom_footer) ? 'style="display:none;"' : '').'>';
+	print '<tr class="wysiwyg" '.(empty($object->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
 	print '<td>'.$langs->trans('RefLtrFooterContent');
 	print '</td>';
 	print '<td>';

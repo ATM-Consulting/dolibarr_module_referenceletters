@@ -163,6 +163,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 				
 				$use_custom_header = $instance_letter->use_custom_header;
+				$use_custom_footer = $instance_letter->use_custom_footer;
+				
 				if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
 				
@@ -183,7 +185,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 					$chapter_text = $line_chapter['content_text'];
 					
 					if ($chapter_text == '@breakpage@') {
-						$this->_pagefoot($pdf, $object, $outputlangs);
+						if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
 						if (method_exists($pdf, 'AliasNbPages'))
 							$pdf->AliasNbPages();
 						$pdf->AddPage();
@@ -202,7 +205,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 					}
 					
 					if ($chapter_text == '@breakpagenohead@') {
-						$this->_pagefoot($pdf, $object, $outputlangs);
+						if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
 						if (method_exists($pdf, 'AliasNbPages'))
 							$pdf->AliasNbPages();
 						$pdf->AddPage();
@@ -219,52 +223,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 						continue;
 					}
 					
-					// User substitution value
-					$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
-					}
-					
-					$tmparray = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
-					}
-					
-					$tmparray = $this->get_substitutionarray_thirdparty($object, $outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
-					}
-					
-					$tmparray = $this->get_substitutionarray_other($outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
-					}
-					
-					// Get instance letter substitution
-					$tmparray = $this->get_substitutionarray_refletter($instance_letter, $outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
-					}
+					// Remplacement des tags par les bonnes valeurs
+					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
 					
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
@@ -281,7 +241,8 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 					$posY = $pdf->GetY();
 				}
 				// Pied de page
-				$this->_pagefoot($pdf, $object, $outputlangs);
+				if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+				else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
 				if (method_exists($pdf, 'AliasNbPages'))
 					$pdf->AliasNbPages();
 				
@@ -488,14 +449,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 		
 		
 		$pdf->SetTextColor(0, 0, 0);
-	}
-	
-	function _pageheadCustom(&$pdf, $object, $showadress, $outputlangs, $instance_letter) {
-		
-		$posy = $this->marge_haute;
-		$posx = $this->page_largeur - $this->marge_droite - 100;
-		$pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $outputlangs->convToOutputCharset($instance_letter->header), 0, 1);
-		
 	}
 	
 	/**

@@ -48,6 +48,117 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		return $liste;
 	}
+	
+	function _pageheadCustom(&$pdf, $object, $showadress, $outputlangs, $instance_letter) {
+		
+		// Conversion des tags
+		$instance_letter->header = $this->setSubstitutions($object, $instance_letter, $instance_letter->header, $outputlangs);
+		
+		$posy = $this->marge_haute;
+		$posx = $this->page_largeur - $this->marge_droite - 100;
+		$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
+		$pdf->SetFont('', '', $default_font_size);
+		$pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $outputlangs->convToOutputCharset($instance_letter->header), 0, 1);
+		
+	}
+	
+	function _pagefootCustom(&$pdf, $object, $outputlangs, $hidefreetext = 0, $instance_letter) {
+		
+		// Conversion des tags
+		$instance_letter->footer = $this->setSubstitutions($object, $instance_letter, $instance_letter->footer, $outputlangs);
+		
+		$pdf->SetX($this->marge_gauche);
+		$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
+		$pdf->SetFont('', '', $default_font_size);
+		$dims=$pdf->getPageDimensions();
+		$pdf->writeHTMLCell($pdf->page_largeur - $pdf->margin_left - $pdf->margin_right, 0, $dims['lm'], $dims['hk']-16, $instance_letter->footer);
+		
+		// TODO pagination marche pas
+		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
+		else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);*/
+	}
+	
+	function setSubstitutions(&$object, &$instance_letter, $txt, $outputlangs, $type='') {
+		
+		global $user, $mysoc;
+		
+		// User substitution value
+		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+		
+		$tmparray = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+		
+		if(get_class($object) === 'Societe') $socobject = $object;
+		if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) $socobject = $object->contact;
+		else $socobject = $object->thirdparty;
+		
+		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+		
+		$tmparray = $this->get_substitutionarray_other($outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+		
+		if(get_class($object) !== 'Societe') {
+			$tmparray = $this->get_substitutionarray_object($object, $outputlangs);
+			$substitution_array = array ();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
+		
+		// Get instance letter substitution
+		$tmparray = $this->get_substitutionarray_refletter($instance_letter, $outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+		
+		if($type === 'contact') {
+			$tmparray = $this->get_substitutionarray_contact($object, $outputlangs);
+			$substitution_array = array ();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				$chapter_text = str_replace(array_keys($substitution_array), array_values($substitution_array), $chapter_text);
+			}
+		}
+		
+		return $txt;
+		
+	}
+	
 }
 
 /**

@@ -173,16 +173,11 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->SetTextColor(0, 0, 0);
 
-				$tab_top = 90;
 				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
 
-				$iniY = $tab_top + 7;
-				$curY = $tab_top + 7;
-				$nexY = $tab_top + 7;
-
-				$posY = $nexY;
+				$posY = $pdf->getY();
 				$posX = $this->marge_gauche;
 
 				foreach ( $instance_letter->content_letter as $key => $line_chapter ) {

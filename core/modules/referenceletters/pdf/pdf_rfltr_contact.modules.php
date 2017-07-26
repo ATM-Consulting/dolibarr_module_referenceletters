@@ -233,7 +233,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 					}
 					
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs, 'contact');
+					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
 
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);

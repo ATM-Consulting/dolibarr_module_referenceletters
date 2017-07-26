@@ -85,7 +85,7 @@ $formrefleter = new FormReferenceLetters($db);
 if(!empty($object->id)) {
 	
 	$head = referenceletterPrepareHead($object);
-	dol_fiche_head($head, 'header', $langs->trans('RefLtrHeader'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
+	dol_fiche_head($head, 'head', $langs->trans('RefLtrHeaderTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 	
 	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
 	

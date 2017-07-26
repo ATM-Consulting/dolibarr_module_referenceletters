@@ -120,3 +120,5 @@ RefLtrUseCustomHeader=Utiliser un entête personnalisé
 RefLtrUseCustomFooter=Utiliser un pied de page personnalisé
 RefLtrHeaderContent=Contenu de l'entête personnalisé
 RefLtrFooterContent=Contenu du pied de page personnalisé
+RefLtrHeaderTab=Entête
+RefLtrFooterTab=Pied de page

@@ -85,7 +85,7 @@ $formrefleter = new FormReferenceLetters($db);
 if(!empty($object->id)) {
 	
 	$head = referenceletterPrepareHead($object);
-	dol_fiche_head($head, 'footer', $langs->trans('RefLtrFooter'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
+	dol_fiche_head($head, 'foot', $langs->trans('RefLtrFooterTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 	
 	print '<form name="saveFooter" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
 	

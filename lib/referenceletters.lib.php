@@ -92,12 +92,21 @@ function referenceletterPrepareHead($object) {
 
 	$h = 0;
 	$head = array ();
-
+	
 	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/card.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Module103258Name");
 	$head[$h][2] = 'card';
 	$h ++;
 	
+	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/header.php", 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("RefLtrHeaderTab");
+	$head[$h][2] = 'head';
+	$h ++;
+	
+	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/footer.php", 1) . '?id=' . $object->id;
+	$head[$h][1] = $langs->trans("RefLtrFooterTab");
+	$head[$h][2] = 'foot';
+	$h ++;
 	
 	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/background.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("RefLtrBackground");

@@ -39,6 +39,7 @@ if (! $res) {
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';
 require_once '../class/referenceletterselements.class.php';
+require_once '../class/referenceletters_tools.class.php';
 require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 require_once '../core/modules/referenceletters/modules_referenceletters.php';
@@ -127,10 +128,9 @@ if ($action == 'buildoc') {
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
 		$object_element->use_custom_header = GETPOST('use_custom_header');
-		$object_element->header = GETPOST('header');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
-		$object_element->footer = GETPOST('footer');
-
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -161,7 +161,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
 						'options' => $options
 				);
 			}
@@ -189,14 +189,16 @@ if ($action == 'buildoc') {
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		}
-
+		
 		$object_element->title = GETPOST('title_instance');
 		$object_element->outputref = GETPOST('outputref','int');
 		$object_element->use_custom_header = GETPOST('use_custom_header');
-		$object_element->header = GETPOST('header');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
-		$object_element->footer = GETPOST('footer');
-
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
+		
+		
+		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
@@ -223,7 +225,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
 						'options' => $options
 				);
 			}

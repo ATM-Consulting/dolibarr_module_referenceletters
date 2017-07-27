@@ -64,6 +64,10 @@ class RfltrTools {
 		$instance_letter->element_type = $object_refletter->element_type;
 		$instance_letter->fk_referenceletters = $id_model;
 		$instance_letter->outputref = '';
+		$instance_letter->use_custom_header = $object_refletter->use_custom_header;
+		$instance_letter->use_custom_footer = $object_refletter->use_custom_footer;
+		$instance_letter->header = self::setImgLinkToUrl($object_refletter->header);
+		$instance_letter->footer = self::setImgLinkToUrl($object_refletter->footer);
 		
 		return array($instance_letter, $object);
 		

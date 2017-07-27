@@ -39,11 +39,13 @@ if (! $res) {
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';
 require_once '../class/referenceletterselements.class.php';
+require_once '../class/referenceletters_tools.class.php';
 require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 require_once '../core/modules/referenceletters/modules_referenceletters.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
@@ -59,6 +61,7 @@ $sortorder=GETPOST('sortorder','alpha');
 $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
+$object_refletter->fetch($idletter);
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
@@ -124,7 +127,10 @@ if ($action == 'buildoc') {
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref','int');
-
+		$object_element->use_custom_header = GETPOST('use_custom_header');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
+		$object_element->use_custom_footer = GETPOST('use_custom_footer');
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -155,7 +161,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
 						'options' => $options
 				);
 			}
@@ -183,10 +189,16 @@ if ($action == 'buildoc') {
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		}
-
+		
 		$object_element->title = GETPOST('title_instance');
 		$object_element->outputref = GETPOST('outputref','int');
-
+		$object_element->use_custom_header = GETPOST('use_custom_header');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
+		$object_element->use_custom_footer = GETPOST('use_custom_footer');
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
+		
+		
+		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
@@ -213,7 +225,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => GETPOST('content_text_' . $line_chapter->id),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
 						'options' => $options
 				);
 			}
@@ -433,7 +445,24 @@ if (! empty($idletter)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-
+			
+			print '<tr style="background-color:#CEECF5;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomHeader');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_refletter->use_custom_header) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
+			print '<td>'.$langs->trans('RefLtrHeaderContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
+			
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -452,7 +481,6 @@ if (! empty($idletter)) {
 					print '</td>';
 					print '<td>';
 
-					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 					$nbrows = ROWS_2;
 					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
 						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
@@ -478,6 +506,25 @@ if (! empty($idletter)) {
 					print '</tr>';
 				}
 			}
+			
+			
+			
+			print '<tr style="background-color:#CEF6CE;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_refletter->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
@@ -531,6 +578,23 @@ if (! empty($refletterelemntid)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
+			
+			print '<tr style="background-color:#CEECF5;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomHeader');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_element->use_custom_header) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_header" '.(empty($object_element->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
+			print '<td>'.$langs->trans('RefLtrHeaderContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('header', $object_element->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 
 			foreach ( $object_element->content_letter as $key => $line_chapter ) {
 				if ($line_chapter['content_text'] == '@breakpage@') {
@@ -581,7 +645,25 @@ if (! empty($refletterelemntid)) {
 					print '</tr>';
 				}
 			}
-
+			
+			
+			print '<tr style="background-color:#CEF6CE;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_element->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_element->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_element->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
+			
 			print '<tr>';
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
@@ -592,6 +674,28 @@ if (! empty($refletterelemntid)) {
 		}
 	}
 }
+
+?>
+
+<script type="text/javascript">
+
+	$('[name*=use_custom]').click(function() {
+		
+		var is_checked = $(this).prop('checked');
+		var name_checkbox = $(this).attr('name');
+		var type_checkbox = name_checkbox.replace('use_custom_', '');
+		
+		if(is_checked) {
+			$('.wysiwyg_' + type_checkbox).show();
+		} else {
+			$('.wysiwyg_' + type_checkbox).hide();
+		}
+		
+	});
+
+</script>
+
+<?php
 
 // Page end
 llxFooter();

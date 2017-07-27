@@ -115,7 +115,11 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
-		$sql .= "fk_user_mod";
+		$sql .= "fk_user_mod,";
+		$sql .= "use_custom_header,";
+		$sql .= "header,";
+		$sql .= "use_custom_footer,";
+		$sql .= "footer";
 		
 		$sql .= ") VALUES (";
 		
@@ -130,7 +134,11 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
-		$sql .= " " . $user->id;
+		$sql .= " " . $user->id . ",";
+		$sql .= " " . (int)$this->use_custom_header. ",";
+		$sql .= " " . (isset($this->header) ? "'" . $this->header . "'" : 'NULL') . ",";
+		$sql .= " " . (int)$this->use_custom_footer. ",";
+		$sql .= " " . (isset($this->footer) ? "'" . $this->footer. "'" : 'NULL');
 		
 		$sql .= ")";
 		
@@ -194,7 +202,11 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
+		$sql .= " t.use_custom_header,";
+		$sql .= " t.header,";
+		$sql .= " t.use_custom_footer,";
+		$sql .= " t.footer";
 		$sql .= " ,p.title as title_referenceletters";
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
@@ -223,6 +235,10 @@ class ReferenceLettersElements extends CommonObject
 				$this->title = $obj->title;
 				$this->outputref = $obj->outputref;
 				$this->title_referenceletters = $obj->title_referenceletters;
+				$this->use_custom_header = $obj->use_custom_header;
+				$this->header = $obj->header;
+				$this->use_custom_footer = $obj->use_custom_footer;
+				$this->footer = $obj->footer;
 			}
 			$this->db->free($resql);
 			
@@ -499,7 +515,11 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " fk_element=" . (isset($this->fk_element) ? $this->fk_element : "null") . ",";
 		$sql .= " content_letter=" . (! empty($content_letter) ? "'" . $this->db->escape($content_letter) . "'" : "null") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
-		$sql .= " fk_user_mod=" . $user->id;
+		$sql .= " fk_user_mod=" . $user->id . ",";
+		$sql .= " use_custom_header=" . (int)$this->use_custom_header . ",";
+		$sql .= " use_custom_footer=" . (int)$this->use_custom_footer. ",";
+		$sql .= " header=" . (isset($this->header) ? "'" . $this->header. "'" : "null"). ",";
+		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer . "'" : "null");
 		
 		$sql .= " WHERE rowid=" . $this->id;
 		

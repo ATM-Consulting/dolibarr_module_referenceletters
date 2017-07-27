@@ -300,7 +300,11 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
+		$sql .= " t.use_custom_header,";
+		$sql .= " t.header,";
+		$sql .= " t.use_custom_footer,";
+		$sql .= " t.footer";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE t.rowid = " . $id;
@@ -322,6 +326,10 @@ class ReferenceLetters extends CommonObject
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
+				$this->header = $obj->header;
+				$this->use_custom_header = $obj->use_custom_header;
+				$this->footer = $obj->footer;
+				$this->use_custom_footer= $obj->use_custom_footer;
 
 				$extrafields = new ExtraFields($this->db);
 				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
@@ -617,7 +625,11 @@ class ReferenceLetters extends CommonObject
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
-		$sql .= " fk_user_mod=" . $user->id;
+		$sql .= " header=" . (isset($this->header) ? "'" . $this->header . "'" : "null") . ",";
+		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer. "'" : "null") . ",";
+		$sql .= " fk_user_mod=" . $user->id . ",";
+		$sql .= " use_custom_header=" . $this->use_custom_header . ",";
+		$sql .= " use_custom_footer=" . $this->use_custom_footer;
 
 		$sql .= " WHERE rowid=" . $this->id;
 

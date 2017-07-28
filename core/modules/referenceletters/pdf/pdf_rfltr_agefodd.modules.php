@@ -66,7 +66,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	 * @param Translate $outputlangs object
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($id_object, $id_model, $outputlangs, $file) {
+	function write_file($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention='') {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 		
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');

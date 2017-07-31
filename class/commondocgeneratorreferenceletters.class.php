@@ -105,9 +105,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	
     	$resarray=array();
     	$resarray['formation_nom'] = $object->formintitule;
+    	$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
+    	$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
     	$resarray['formation_ref'] = $object->formref;
     	$resarray['formation_statut'] = $object->statuslib;
     	$resarray['formation_lieu'] = $object->placecode;
+    	$resarray['formation_duree'] = $object->duree;
     	$resarray['formation_commercial'] = $object->commercialname;
     	$resarray['formation_societe'] = $object->thirdparty->nom;
     	$resarray['formation_commentaire'] = nl2br($object->notes);

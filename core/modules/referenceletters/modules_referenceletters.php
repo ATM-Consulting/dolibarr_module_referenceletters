@@ -134,7 +134,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
 		$pdf->SetFont('', '', $default_font_size);
 		$dims=$pdf->getPageDimensions();
-		$pdf->writeHTMLCell($pdf->page_largeur - $pdf->margin_left - $pdf->margin_right, 0, $dims['lm'], $dims['hk']-16, $instance_letter->footer);
+		$pdf->writeHTMLCell($pdf->page_largeur - $pdf->margin_left - $pdf->margin_right, 0, $dims['lm'], $dims['hk']-45, $instance_letter->footer);
 		
 		// TODO pagination marche pas
 		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);

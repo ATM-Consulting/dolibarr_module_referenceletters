@@ -8,6 +8,14 @@ class RfltrTools {
 		
 	}
 
+	static function setImgLinkToUrlWithArray($Tab) {
+		
+		foreach($Tab as $id_chapter=>&$TData) {
+			$TData['content_text'] = self::setImgLinkToUrl($TData['content_text']);
+		}
+		return $Tab;
+	}
+	
 	/**
 	 * charge le modèle référence letter choisi
 	 */
@@ -55,7 +63,7 @@ class RfltrTools {
 		$instance_letter = new ReferenceLettersElements($db);
 		$instance_letter->fetch($id_model);
 		$instance_letter->srcobject=$object;
-		$instance_letter->content_letter = $content_letter;
+		$instance_letter->content_letter = self::setImgLinkToUrlWithArray($content_letter);
 		if(empty($object->thirdparty)) $object->fetch_thirdparty();
 		$element_type='rfltr_agefodd_convention';
 		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODo pour l'instant on garde le même nom de pdf que fait agefodd

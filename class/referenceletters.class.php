@@ -162,6 +162,10 @@ class ReferenceLetters extends CommonObject
 			$this->element_type_list['rfltr_agefodd_attestation'] = $this->element_type_list['rfltr_agefodd_convention'];
 			$this->element_type_list['rfltr_agefodd_attestation']['title'] = 'AgfSendAttestation';
 			
+			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
+			$this->element_type_list['rfltr_agefodd_attestation_fin_formation'] = $this->element_type_list['rfltr_agefodd_convention'];
+			$this->element_type_list['rfltr_agefodd_attestation_fin_formation']['title'] = 'AgfAttestationEndTraining';
+			
 			// Fiche d'évaluation (basée sur le même PDF que tous les autres documents Agefodd
 			$this->element_type_list['rfltr_agefodd_evaluation'] = $this->element_type_list['rfltr_agefodd_convention'];
 			$this->element_type_list['rfltr_agefodd_evaluation']['title'] = 'AgfFicheEval';

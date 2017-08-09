@@ -51,7 +51,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	
 	/**
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
-	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (participants, horaires)
+	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (lignes, participants, horaires)
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray=array()) {
 		

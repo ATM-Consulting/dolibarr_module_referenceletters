@@ -229,6 +229,9 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
+					
+					// Merge arrays
+					$chapter_text = $this->merge_array($object, $chapter_text, array('lines'));
 
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);

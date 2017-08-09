@@ -24,7 +24,6 @@
  */
 dol_include_once('/refferenceletters/core/modules/refferenceletters/modules_refferenceletters.php');
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
-dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
@@ -232,6 +231,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
 
+					// Merge arrays
+					$chapter_text = $this->merge_array($object, $chapter_text, array('lines'));
+					
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {

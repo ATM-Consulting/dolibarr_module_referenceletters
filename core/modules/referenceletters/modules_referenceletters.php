@@ -21,7 +21,7 @@
  * \ingroup referenceletters
  * \brief referenceletters for numbering referenceletters
  */
-require_once '../class/commondocgeneratorreferenceletters.class.php';
+dol_include_once('/referenceletters/class/commondocgeneratorreferenceletters.class.php');
 
 /**
  * \class ModelePDFReferenceLetters
@@ -47,6 +47,70 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$liste[] = 'referenceletters';
 
 		return $liste;
+	}
+	
+	/**
+	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
+	 * @param $TElementArray : Tableau qui va contenir les différents éléments sur lesquels on peut boucler (lignes, etc...)
+	 */
+	function merge_array(&$object, $chapter_text, $TElementArray=array()) {
+		
+		global $hookmanager;
+		
+		require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
+		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
+		if(!class_exists('Product')) dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
+		
+		$odfHandler = new OdfRfltr(
+				$srctemplatepath,
+				array(
+						'PATH_TO_TMP'	  => $conf->propal->dir_temp,
+						'ZIP_PROXY'		  => 'PclZipProxy',	// PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+						'DELIMITER_LEFT'  => '{',
+						'DELIMITER_RIGHT' => '}'
+				),
+				$chapter_text
+				);
+		
+		if(!empty($TElementArray)) {
+			
+			foreach($TElementArray as $element_array) {
+				
+				if(strpos($chapter_text, $element_array) === false) continue;
+				
+				$listlines = $odfHandler->setSegment($element_array);
+				
+				if(strpos($chapter_text, '[!-- BEGIN') !== false) {
+					
+					foreach ($object->{$element_array} as $line) {
+						
+						$tmparray=$this->get_substitutionarray_lines($line, $outputlangs);
+						complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
+						// Call the ODTSubstitutionLine hook
+						$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
+						$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
+						
+						foreach($tmparray as $key => $val)
+						{
+							try {$listlines->setVars($key, $val, true, 'UTF-8');}
+							catch(OdfException $e) {}
+							catch(SegmentException $e) {}
+							
+						}
+						
+						$res = $listlines->merge();
+					}
+					
+					$res=$odfHandler->mergeSegment($listlines);
+					$chapter_text = $odfHandler->getContentXml();
+					
+				}
+			}
+			
+		}
+		
+		return $chapter_text;
+		
 	}
 	
 	function _pageheadCustom(&$pdf, $object, $showadress, $outputlangs, $instance_letter) {

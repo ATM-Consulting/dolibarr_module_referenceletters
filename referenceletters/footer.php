@@ -79,6 +79,18 @@ $title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrFooter');
 
 llxHeader('',$title);
 
+print '<script>';
+print 'function DivStatus( tbl_){' . "\n";
+print '	var Obj = document.getElementById( tbl_);' . "\n";
+print '	if( Obj.style.display=="none"){' . "\n";
+print '		Obj.style.display ="block";' . "\n";
+print '	}' . "\n";
+print '	else{' . "\n";
+print '		Obj.style.display="none";' . "\n";
+print '	}' . "\n";
+print '}' . "\n";
+print '</script>';
+
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
 
@@ -104,6 +116,15 @@ if(!empty($object->id)) {
 	print '</td>';
 	print '<td>';
 	print $object->displayElement();
+	print '</td>';
+	print '</tr>';
+	
+	print '<td width="20%">';
+	print $langs->trans('RefLtrTag');
+	print '</td>';
+	print '<td>';
+	print '<a href="javascript:DivStatus(\'refltertags\');" title="'.$langs->trans('RefLtrDisplayTag').'" style="font-size:14px;">+</a>';
+	print $formrefleter->displaySubtitutionKey($user,$object);
 	print '</td>';
 	print '</tr>';
 	

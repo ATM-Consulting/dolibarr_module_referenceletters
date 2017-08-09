@@ -543,10 +543,12 @@ class ReferenceLetters extends CommonObject
 	
 	function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 		
+		global $langs;
+		
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		unset($subst_array['Agsession']);
 		
-		$subst_array['Sessions de formation module Agefodd'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
 				,'formation_ref'=>'Référence de la formation'
 				,'formation_statut'=>'Référence de la formation'
@@ -556,7 +558,7 @@ class ReferenceLetters extends CommonObject
 		);
 		
 		// Liste de données - Participants
-		$subst_array['Participants (Liste de données Agefodd "TStagiairesSession")'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
 				'line_civilite'=>'Civilité'
 				,'line_nom'=>'Nom participant'
 				,'line_prenom'=>'Prénom participant'
@@ -565,14 +567,14 @@ class ReferenceLetters extends CommonObject
 		);
 		
 		// Liste de données - Horaires
-		$subst_array['Horaires (Liste de données Agefodd "THorairesSession")'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
 				'line_date_session'=>'Date de la session'
 				,'line_heure_debut_session'=>'Heure début session'
 				,'line_heure_fin_session'=>'Heure fin session'
 		);
 		
 		// Liste de données - Formateurs
-		$subst_array['Horaires (Liste de données Agefodd "TFormateursSession")'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
 				'line_formateur_nom'=>'Nom du formateur'
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'

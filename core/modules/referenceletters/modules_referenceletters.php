@@ -84,7 +84,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					
 					foreach ($object->{$element_array} as $line) {
 						
-						$tmparray=$this->get_substitutionarray_lines($line, $outputlangs);
+						$tmparray=$this->get_substitutionarray_lines_agefodd($line, $outputlangs, false);
 						complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
 						// Call the ODTSubstitutionLine hook
 						$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);

@@ -23,6 +23,8 @@
  * \brief Class file to create PDF for letter's model on contract
  */
 dol_include_once('/refferenceletters/core/modules/refferenceletters/modules_refferenceletters.php');
+dol_include_once('/referenceletters/lib/referenceletters.lib.php');
+dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
@@ -104,7 +106,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 		$outputlangs->load("main");
 		$outputlangs->load("companies");
 		$outputlangs->load("referenceletters@referenceletters");
-		
+
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray = array ();
 
@@ -126,17 +128,19 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 			if (file_exists($dir)) {
 				// Create pdf instance
-				$pdf = pdf_getInstance($this->format);
+				$pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $outputlangs, $this->format);
 				$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 				$pdf->SetAutoPageBreak(1, 0);
 
-				if (class_exists('TCPDF')) {
+				/*if (class_exists('TCPDF')) {
 					$pdf->setPrintHeader(false);
 					$pdf->setPrintFooter(false);
-				}
+				}*/
+				$pdf->setPrintHeader(true);
+				$pdf->setPrintFooter(true);
 				$pdf->SetFont(pdf_getPDFFont($outputlangs));
 				// Set path to the background PDF File
 				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
@@ -164,12 +168,12 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
-				$use_custom_header = $instance_letter->use_custom_header;
+				/*$use_custom_header = $instance_letter->use_custom_header;
 				$use_custom_footer = $instance_letter->use_custom_footer;
-				
+
 				if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
-				else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
-				
+				else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);*/
+
 				$pdf->SetFont('', '', $default_font_size - 1);
 				$pdf->SetTextColor(0, 0, 0);
 
@@ -187,8 +191,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$chapter_text = $line_chapter['content_text'];
 
 					if ($chapter_text == '@breakpage@') {
-						if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
-						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
+						/*if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);*/
 						if (method_exists($pdf, 'AliasNbPages'))
 							$pdf->AliasNbPages();
 						$pdf->AddPage();
@@ -197,8 +201,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
-						if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
-						else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
+						/*if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+						else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);*/
 
 						$posX = $pdf->getX();
 						$posY = $pdf->getY();
@@ -207,8 +211,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					}
 
 					if ($chapter_text == '@breakpagenohead@') {
-						if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
-						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
+						/*if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);*/
 						if (method_exists($pdf, 'AliasNbPages'))
 							$pdf->AliasNbPages();
 						$pdf->AddPage();
@@ -227,7 +231,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
-					
+
 					$test = $pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
@@ -243,8 +247,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$posY = $pdf->GetY();
 				}
 				// Pied de page
-				if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
-				else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
+				/*if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
+				else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);*/
 				if (method_exists($pdf, 'AliasNbPages'))
 					$pdf->AliasNbPages();
 

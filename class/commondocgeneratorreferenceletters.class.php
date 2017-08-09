@@ -50,4 +50,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
     	);
     }
+    
+    function get_substitutionarray_other($outputlangs)
+    {
+    	global $conf;
+    	
+    	$outputlangs->load('main');
+    	$array_other = parent::get_substitutionarray_other($outputlangs);
+    	$array_other['current_date_fr'] = $outputlangs->trans('Day'.((int)date('w'))).' '.date('d').' '.$outputlangs->trans(date('F')).' '.date('Y');
+    	
+    	return $array_other;
+    }
+    
 }

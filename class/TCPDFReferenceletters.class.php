@@ -37,19 +37,33 @@ class TCPDFRefletters extends TCPDF
 
 	//Page header
 	public function Header() {
-		$use_custom_header = $this->model->use_custom_header;
 
+		$use_custom_header = $this->instance_letter->use_custom_header;
 
-		if(empty($use_custom_header)) $this->model->_pagehead($this, $this->ref_object, 1, $this->outputlangs, $this->instance_letter);
-		else $this->model->_pageheadCustom($this, $this->object, 1, $this->outputlangs, $this->instance_letter);
+		if(empty($use_custom_header)) $this->model->_pagehead($this->ref_object, 1, $this->outputlangs, $this->instance_letter);
+		else {
+			var_dump($this->GetY());
+			$this->model->_pageheadCustom($this->ref_object, 1, $this->outputlangs, $this->instance_letter);
+			// Conversion des tags
+			/*$this->instance_letter->header = $this->model->setSubstitutions($this->ref_object, $this->instance_letter, $this->instance_letter->header, $this->outputlangs);
+
+			$posy = $this->marge_haute;
+			$posx = $this->page_largeur - $this->marge_droite - 100;
+			$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
+			$pdf->SetFont('', '', $default_font_size);
+			$pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);*/
+			var_dump($this->GetY());
+			//$this->model->newY=$this->GetY();
+			//var_dump($this);
+		}
 	}
 
 	// Page footer
 	public function Footer() {
-		$use_custom_footer = $this->model->use_custom_footer;
+		$use_custom_footer = $this->instance_letter->use_custom_footer;
 
-		if(empty($use_custom_footer)) $this->model->_pagefoot($this, $this->ref_object, $this->outputlangs);
-		else $this->model->_pagefootCustom($this, $this->ref_object, $this->outputlangs, 0, $this->instance_letter);
+		if(empty($use_custom_footer)) $this->model->_pagefoot($this->ref_object, $this->outputlangs);
+		else $this->model->_pagefootCustom($this->ref_object, $this->outputlangs, 0, $this->instance_letter);
 	}
 
 }

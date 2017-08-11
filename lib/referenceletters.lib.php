@@ -139,7 +139,7 @@ function referenceletterPrepareHead($object) {
  * @param string $pagetype 'P' or 'l'
  * @return TCPDF PDF object
  */
-function pdf_getInstance_refletters($object, $instance_letter, $model, $outputlangs, $format = '', $metric = 'mm', $pagetype = 'P') {
+function pdf_getInstance_refletters($object, $instance_letter, &$model, $outputlangs, $format = '', $metric = 'mm', $pagetype = 'P') {
 	global $conf;
 
 	dol_include_once('/referenceletters/class/TCPDFReferenceletters.class.php');
@@ -193,10 +193,10 @@ function pdf_getInstance_refletters($object, $instance_letter, $model, $outputla
 	$pdf->outputlangs = $outputlangs;
 
 	// We need to instantiate tcpdi or fpdi object (instead of tcpdf) to use merging features. But we can disable it (this will break all merge features).
-	if (empty($conf->global->MAIN_DISABLE_TCPDI))
+	/*if (empty($conf->global->MAIN_DISABLE_TCPDI))
 		require_once TCPDI_PATH . 'tcpdi.php';
 	else if (empty($conf->global->MAIN_DISABLE_FPDI))
-		require_once FPDI_PATH . 'fpdi.php';
+		require_once FPDI_PATH . 'fpdi.php';*/
 
 	// $arrayformat=pdf_getFormat();
 	// $format=array($arrayformat['width'],$arrayformat['height']);

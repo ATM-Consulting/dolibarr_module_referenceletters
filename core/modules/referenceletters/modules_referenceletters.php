@@ -29,7 +29,8 @@ dol_include_once('/referenceletters/class/commondocgeneratorreferenceletters.cla
  */
 abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLetters
 {
-	var $error = '';
+	public $error = '';
+	public $pdf;
 
 	/**
 	 * Return list of active generation modules
@@ -48,19 +49,19 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		return $liste;
 	}
-	
+
 	/**
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
 	 * @param $TElementArray : Tableau qui va contenir les différents éléments sur lesquels on peut boucler (lignes, etc...)
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray=array()) {
-		
+
 		global $hookmanager;
-		
+
 		require_once DOL_DOCUMENT_ROOT.'/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
 		if(!class_exists('Product')) dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
-		
+
 		$odfHandler = new OdfRfltr(
 				$srctemplatepath,
 				array(
@@ -71,81 +72,81 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				),
 				$chapter_text
 				);
-		
+
 		if(!empty($TElementArray)) {
-			
+
 			foreach($TElementArray as $element_array) {
-				
+
 				if(strpos($chapter_text, $element_array) === false) continue;
-				
+
 				$listlines = $odfHandler->setSegment($element_array);
-				
+
 				if(strpos($chapter_text, '[!-- BEGIN') !== false) {
-					
+
 					foreach ($object->{$element_array} as $line) {
-						
+
 						$tmparray=$this->get_substitutionarray_lines($line, $outputlangs);
 						complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
 						// Call the ODTSubstitutionLine hook
 						$parameters=array('odfHandler'=>&$odfHandler,'file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs,'substitutionarray'=>&$tmparray,'line'=>$line);
 						$reshook=$hookmanager->executeHooks('ODTSubstitutionLine',$parameters,$this,$action);    // Note that $action and $object may have been modified by some hooks
-						
+
 						foreach($tmparray as $key => $val)
 						{
 							try {$listlines->setVars($key, $val, true, 'UTF-8');}
 							catch(OdfException $e) {}
 							catch(SegmentException $e) {}
-							
+
 						}
-						
+
 						$res = $listlines->merge();
 					}
-					
+
 					$res=$odfHandler->mergeSegment($listlines);
 					$chapter_text = $odfHandler->getContentXml();
-					
+
 				}
 			}
-			
+
 		}
-		
+
 		return $chapter_text;
-		
+
 	}
-	
-	function _pageheadCustom(&$pdf, $object, $showadress, $outputlangs, $instance_letter) {
-		
+
+	function _pageheadCustom($object, $showadress, $outputlangs, $instance_letter) {
+
 		// Conversion des tags
 		$instance_letter->header = $this->setSubstitutions($object, $instance_letter, $instance_letter->header, $outputlangs);
-		
+
 		$posy = $this->marge_haute;
 		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
-		$pdf->SetFont('', '', $default_font_size);
-		$pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $outputlangs->convToOutputCharset($instance_letter->header), 0, 1);
-		
+		$this->pdf->SetFont('', '', $default_font_size);
+		$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $outputlangs->convToOutputCharset($instance_letter->header), 0, 1);
+
 	}
-	
+
 	function _pagefootCustom(&$pdf, $object, $outputlangs, $hidefreetext = 0, $instance_letter) {
-		
+
 		// Conversion des tags
 		$instance_letter->footer = $this->setSubstitutions($object, $instance_letter, $instance_letter->footer, $outputlangs);
-		
+
 		$pdf->SetX($this->marge_gauche);
 		$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
 		$pdf->SetFont('', '', $default_font_size);
 		$dims=$pdf->getPageDimensions();
 		$pdf->writeHTMLCell($pdf->page_largeur - $pdf->margin_left - $pdf->margin_right, 0, $dims['lm'], $dims['hk']-16, $instance_letter->footer);
-		
+
 		// TODO pagination marche pas
 		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
 		else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);*/
 	}
-	
+
 	function setSubstitutions(&$object, &$instance_letter, $txt, $outputlangs) {
-		
+
 		global $user, $mysoc;
-		
+
 		// User substitution value
 		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
 		$substitution_array = array ();
@@ -155,7 +156,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-		
+
 		$tmparray = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
 		$substitution_array = array ();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -164,11 +165,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-		
+
 		if(get_class($object) === 'Societe') $socobject = $object;
 		if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) $socobject = $object->contact;
 		else $socobject = $object->thirdparty;
-		
+
 		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 		$substitution_array = array ();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -177,7 +178,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-		
+
 		$tmparray = $this->get_substitutionarray_other($outputlangs);
 		$substitution_array = array ();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -186,7 +187,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-		
+
 		if(get_class($object) !== 'Societe' && get_class($object) !== 'Contact') { // Réservé aux pièces de vente
 			$tmparray = $this->get_substitutionarray_object($object, $outputlangs);
 			$substitution_array = array ();
@@ -197,7 +198,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
 		}
-		
+
 		// Get instance letter substitution
 		$tmparray = $this->get_substitutionarray_refletter($instance_letter, $outputlangs);
 		$substitution_array = array ();
@@ -207,7 +208,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-		
+
 		if(get_class($object) === 'Contact') {
 			$tmparray = $this->get_substitutionarray_contact($object, $outputlangs);
 			$substitution_array = array ();
@@ -218,11 +219,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
 		}
-		
+
 		return $txt;
-		
+
 	}
-	
+
 }
 
 /**
@@ -330,7 +331,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	// Charge le modele
 	if ($filefound) {
 		require_once $file;
-		
+
 		$obj = new $classname($db);
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.

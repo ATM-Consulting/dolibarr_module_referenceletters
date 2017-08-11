@@ -118,4 +118,51 @@ class RfltrTools {
 		
 	}
 	
+	static function print_js_external_models($page='document') {
+		
+		?>
+		
+		<script type="text/javascript">
+	
+			$(document).ready(function() {
+				
+				// Affichage de la liste des modèles disponibles
+				$(".btn_show_external_model_list").click(function() {
+					
+					var class_to_show = '.' + $(this).attr('class_to_show');
+					var val_link = $(this).text();
+					
+					if(val_link == '+') {
+						$(class_to_show).show();
+						$(this).html('-');
+					} else if(val_link == '-') {
+						$(class_to_show).hide();
+						$(this).html('+');
+					}
+					
+				});
+	
+				// Sélection du modèle et génération du document
+				$(".id_external_model").change(function() {
+					
+					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
+					
+					<?php if($page === 'document') { ?>
+						path = path + '&socid=' + $(this).attr('socid');
+					<?php } elseif($page === 'document_by_trainee') { ?>
+ 						path = path + '&sessiontraineeid=' + $(this).attr('socid');
+					<?php } ?>
+
+					document.location.href=path;
+					
+				});
+				
+			});
+		
+		</script>
+		
+		<?php
+		
+	}
+	
 }

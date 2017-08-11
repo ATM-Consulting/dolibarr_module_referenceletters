@@ -174,6 +174,11 @@ class ReferenceLetters extends CommonObject
 			$this->element_type_list['rfltr_agefodd_presence'] = $this->element_type_list['rfltr_agefodd_convention'];
 			$this->element_type_list['rfltr_agefodd_presence']['title'] = 'AgfFichePresence';
 			
+			// Contrat formateur (basée sur le même PDF que tous les autres documents Agefodd
+			$this->element_type_list['rfltr_agefodd_contrat_trainer'] = $this->element_type_list['rfltr_agefodd_convention'];
+			$this->element_type_list['rfltr_agefodd_contrat_trainer']['title'] = 'AgfContratTrainer';			
+			
+			
 		}
 		
 		return 1;

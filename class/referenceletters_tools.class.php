@@ -119,7 +119,6 @@ class RfltrTools {
 	}
 	
 	static function print_js_external_models($page='document') {
-		
 		?>
 		
 		<script type="text/javascript">
@@ -146,12 +145,23 @@ class RfltrTools {
 				$(".id_external_model").change(function() {
 					
 					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
+					var sessiontrainerid = $(this).parent('td.trainerid').attr('trainerid');
 					
-					<?php if($page === 'document') { ?>
-						path = path + '&socid=' + $(this).attr('socid');
-					<?php } elseif($page === 'document_by_trainee') { ?>
- 						path = path + '&sessiontraineeid=' + $(this).attr('socid');
-					<?php } ?>
+					<?php
+					
+						if($page === 'document') { 
+							?>
+								if(typeof sessiontrainerid != 'undefined') {
+									path = path + '&sessiontrainerid=' + $(this).attr('socid');
+								} else {
+									path = path + '&socid=' + $(this).attr('socid');
+								}
+							<?php
+						} elseif($page === 'document_by_trainee') {
+							?>path = path + '&sessiontraineeid=' + $(this).attr('socid');<?php
+						}
+						
+					?>
 
 					document.location.href=path;
 					

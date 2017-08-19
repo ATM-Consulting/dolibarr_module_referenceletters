@@ -18,11 +18,11 @@
  */
 
 /**
- * \file refferenceletters/core/modules/refferenceletters/pdf_rfltr_thirdparty.modules.php
- * \ingroup refferenceletters
+ * \file referenceletters/core/modules/referenceletters/pdf_rfltr_thirdparty.modules.php
+ * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */
-dol_include_once('/refferenceletters/core/modules/refferenceletters/modules_refferenceletters.php');
+dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';

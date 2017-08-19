@@ -17,7 +17,7 @@
  */
 /**
  *	\file		index.php
- *	\ingroup	refferenceletters
+ *	\ingroup	referenceletters
  *	\brief		index page
  */
 

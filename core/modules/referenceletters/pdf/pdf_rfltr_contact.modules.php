@@ -18,11 +18,11 @@
  */
 
 /**
- * \file refferenceletters/core/modules/refferenceletters/pdf_rfltr_contact.modules.php
- * \ingroup refferenceletters
+ * \file referenceletters/core/modules/referenceletters/pdf_rfltr_contact.modules.php
+ * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */
-dol_include_once('/refferenceletters/core/modules/refferenceletters/modules_referenceletters.php');
+dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
@@ -168,7 +168,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 				$use_custom_header = $instance_letter->use_custom_header;
 				$use_custom_footer = $instance_letter->use_custom_footer;
-				
+
 				if(empty($use_custom_header)) $this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
 				else $this->_pageheadCustom($pdf, $object, 1, $outputlangs, $instance_letter);
 
@@ -226,7 +226,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 						continue;
 					}
-					
+
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $instance_letter, $chapter_text, $outputlangs);
 

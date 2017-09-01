@@ -88,8 +88,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	/**
 	 * Function to build pdf onto disk
 	 *
-	 * @param Object $object generate
-	 * @param Object $instance_letter generate
+	 * @param Object $object Object to generate
+	 * @param Object $instance_letter Object to generate
+	 * @param Translate $outputlangs Lang output object
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file($object, $instance_letter, $outputlangs) {
@@ -136,14 +137,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 
-				//$this->pdf->SetAutoPageBreak(1, 0);
+				// Set calculation of header and footer high line
+				// footer high
 				$height = $this->getRealHeightLine('foot');
 				$this->pdf->SetAutoPageBreak(1, $height);
 
-				/*if (class_exists('TCPDF')) {
-				 $this->pdf->setPrintHeader(false);
-				 $this->pdf->setPrintFooter(false);
-				 }*/
 				$this->pdf->setPrintHeader(true);
 				$this->pdf->setPrintFooter(true);
 
@@ -168,12 +166,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 				// Set calculation of header and footer high line
 				// Header high
-
 				$height = $this->getRealHeightLine('head');
-			//	var_dump($height);
-				//exit;
 				// Left, Top, Right
-				$this->pdf->SetMargins($this->marge_gauche, $height+20, $this->marge_droite, 1);
+				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
 
 				// New page
 				$this->pdf->AddPage('P', $this->format, true);
@@ -206,7 +201,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						if (! empty($tplidx))
 							$this->pdf->useTemplate($tplidx);
 
-						importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
+						importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 						$posX = $this->pdf->getX();
 						$posY = $this->pdf->getY();
@@ -215,18 +210,25 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					}
 
 					if ($chapter_text == '@breakpagenohead@') {
-						if (method_exists($this->pdf, 'AliasNbPages'))
+						if (method_exists($this->pdf, 'AliasNbPages')) {
 							$this->pdf->AliasNbPages();
-						$this->pdf->AddPage();
-						if (! empty($tplidx))
-							$this->pdf->useTemplate($tplidx);
+						}
 
-						importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
+						$this->pdf->setPrintHeader(false);
+
+						$this->pdf->AddPage();
+						if (! empty($tplidx)) {
+							$this->pdf->useTemplate($tplidx);
+						}
+
+						importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;
 						$this->pdf->SetXY($posX, $posY);
 						$this->pdf->SetTextColor(0, 0, 0);
+
+						$this->pdf->setPrintHeader(true);
 
 						continue;
 					}

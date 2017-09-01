@@ -65,58 +65,58 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		if (! class_exists('Product'))
 			dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
 
-		$odfHandler = new OdfRfltr($srctemplatepath,
-				array(
-						'PATH_TO_TMP' => $conf->propal->dir_temp,
-						'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
-						'DELIMITER_LEFT' => '{',
-						'DELIMITER_RIGHT' => '}'
-				), $chapter_text);
+			$odfHandler = new OdfRfltr($srctemplatepath,
+					array(
+							'PATH_TO_TMP' => $conf->propal->dir_temp,
+							'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+							'DELIMITER_LEFT' => '{',
+							'DELIMITER_RIGHT' => '}'
+					), $chapter_text);
 
-		if (! empty($TElementArray)) {
+			if (! empty($TElementArray)) {
 
-			foreach ( $TElementArray as $element_array ) {
+				foreach ( $TElementArray as $element_array ) {
 
-				if (strpos($chapter_text, $element_array) === false)
-					continue;
+					if (strpos($chapter_text, $element_array) === false)
+						continue;
 
-				$listlines = $odfHandler->setSegment($element_array);
+						$listlines = $odfHandler->setSegment($element_array);
 
-				if (strpos($chapter_text, '[!-- BEGIN') !== false) {
+						if (strpos($chapter_text, '[!-- BEGIN') !== false) {
 
-					foreach ( $object->{$element_array} as $line ) {
+							foreach ( $object->{$element_array} as $line ) {
 
-						$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs);
-						complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
-						// Call the ODTSubstitutionLine hook
-						$parameters = array(
-								'odfHandler' => &$odfHandler,
-								'file' => $file,
-								'object' => $object,
-								'outputlangs' => $this->outputlangs,
-								'substitutionarray' => &$tmparray,
-								'line' => $line
-						);
-						$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs);
+								complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
+								// Call the ODTSubstitutionLine hook
+								$parameters = array(
+										'odfHandler' => &$odfHandler,
+										'file' => $file,
+										'object' => $object,
+										'outputlangs' => $this->outputlangs,
+										'substitutionarray' => &$tmparray,
+										'line' => $line
+								);
+								$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
-						foreach ( $tmparray as $key => $val ) {
-							try {
-								$listlines->setVars($key, $val, true, 'UTF-8');
-							} catch ( OdfException $e ) {
-							} catch ( SegmentException $e ) {
+								foreach ( $tmparray as $key => $val ) {
+									try {
+										$listlines->setVars($key, $val, true, 'UTF-8');
+									} catch ( OdfException $e ) {
+									} catch ( SegmentException $e ) {
+									}
+								}
+
+								$res = $listlines->merge();
 							}
+
+							$res = $odfHandler->mergeSegment($listlines);
+							$chapter_text = $odfHandler->getContentXml();
 						}
-
-						$res = $listlines->merge();
-					}
-
-					$res = $odfHandler->mergeSegment($listlines);
-					$chapter_text = $odfHandler->getContentXml();
 				}
 			}
-		}
 
-		return $chapter_text;
+			return $chapter_text;
 	}
 	function _pageheadCustom($object, $showadress) {
 
@@ -168,62 +168,62 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (get_class($object) === 'Societe')
 			$socobject = $object;
-		if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact))
-			$socobject = $object->contact;
-		else
-			$socobject = $object->thirdparty;
+			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact))
+				$socobject = $object->contact;
+				else
+					$socobject = $object->thirdparty;
 
-		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
-		$substitution_array = array();
-		if (is_array($tmparray) && count($tmparray) > 0) {
-			foreach ( $tmparray as $key => $value ) {
-				$substitution_array['{' . $key . '}'] = $value;
-			}
-			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-		}
+					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
+					$substitution_array = array();
+					if (is_array($tmparray) && count($tmparray) > 0) {
+						foreach ( $tmparray as $key => $value ) {
+							$substitution_array['{' . $key . '}'] = $value;
+						}
+						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+					}
 
-		$tmparray = $this->get_substitutionarray_other($this->outputlangs);
-		$substitution_array = array();
-		if (is_array($tmparray) && count($tmparray) > 0) {
-			foreach ( $tmparray as $key => $value ) {
-				$substitution_array['{' . $key . '}'] = $value;
-			}
-			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-		}
+					$tmparray = $this->get_substitutionarray_other($this->outputlangs);
+					$substitution_array = array();
+					if (is_array($tmparray) && count($tmparray) > 0) {
+						foreach ( $tmparray as $key => $value ) {
+							$substitution_array['{' . $key . '}'] = $value;
+						}
+						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+					}
 
-		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact') { // Réservé aux pièces de vente
-			$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
-			$substitution_array = array();
-			if (is_array($tmparray) && count($tmparray) > 0) {
-				foreach ( $tmparray as $key => $value ) {
-					$substitution_array['{' . $key . '}'] = $value;
-				}
-				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-			}
-		}
+					if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact') { // Réservé aux pièces de vente
+						$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
+						$substitution_array = array();
+						if (is_array($tmparray) && count($tmparray) > 0) {
+							foreach ( $tmparray as $key => $value ) {
+								$substitution_array['{' . $key . '}'] = $value;
+							}
+							$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+						}
+					}
 
-		// Get instance letter substitution
-		$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $this->outputlangs);
-		$substitution_array = array();
-		if (is_array($tmparray) && count($tmparray) > 0) {
-			foreach ( $tmparray as $key => $value ) {
-				$substitution_array['{' . $key . '}'] = $value;
-			}
-			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-		}
+					// Get instance letter substitution
+					$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $this->outputlangs);
+					$substitution_array = array();
+					if (is_array($tmparray) && count($tmparray) > 0) {
+						foreach ( $tmparray as $key => $value ) {
+							$substitution_array['{' . $key . '}'] = $value;
+						}
+						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+					}
 
-		if (get_class($object) === 'Contact') {
-			$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
-			$substitution_array = array();
-			if (is_array($tmparray) && count($tmparray) > 0) {
-				foreach ( $tmparray as $key => $value ) {
-					$substitution_array['{' . $key . '}'] = $value;
-				}
-				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-			}
-		}
+					if (get_class($object) === 'Contact') {
+						$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
+						$substitution_array = array();
+						if (is_array($tmparray) && count($tmparray) > 0) {
+							foreach ( $tmparray as $key => $value ) {
+								$substitution_array['{' . $key . '}'] = $value;
+							}
+							$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+						}
+					}
 
-		return $txt;
+					return $txt;
 	}
 
 	/**
@@ -386,11 +386,11 @@ abstract class ModeleNumRefrReferenceLetters
 
 		if ($this->version == 'development')
 			return $langs->trans("VersionDevelopment");
-		if ($this->version == 'experimental')
-			return $langs->trans("VersionExperimental");
-		if ($this->version == 'dolibarr')
-			return DOL_VERSION;
-		return $langs->trans("NotAvailable");
+			if ($this->version == 'experimental')
+				return $langs->trans("VersionExperimental");
+				if ($this->version == 'dolibarr')
+					return DOL_VERSION;
+					return $langs->trans("NotAvailable");
 	}
 }
 

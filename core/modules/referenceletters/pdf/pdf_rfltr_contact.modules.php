@@ -23,6 +23,7 @@
  * \brief Class file to create PDF for letter's model on contract
  */
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
@@ -32,19 +33,19 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
  */
 class pdf_rfltr_contact extends ModelePDFReferenceLetters
 {
-	var $db;
-	var $name;
-	var $description;
-	var $type;
-	var $version = 'dolibarr';
-	var $page_largeur;
-	var $page_hauteur;
-	var $format;
-	var $marge_gauche;
-	var $marge_droite;
-	var $marge_haute;
-	var $marge_basse;
-	var $emetteur; // Objet societe qui emet
+	public $db;
+	public $name;
+	public $description;
+	public $type;
+	public $version = 'dolibarr';
+	public $page_largeur;
+	public $page_hauteur;
+	public $format;
+	public $marge_gauche;
+	public $marge_droite;
+	public $marge_haute;
+	public $marge_basse;
+	public $emetteur; // Objet societe qui emet
 
 	/**
 	 * Constructor
@@ -95,11 +96,14 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		if (! is_object($outputlangs))
-			$outputlangs = $langs;
+		$this->outputlangs=$this->outputlangs;
+		$this->instance_letter = $instance_letter;
+
+		if (! is_object($this->outputlangs))
+			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (! empty($conf->global->MAIN_USE_FPDF))
-			$outputlangs->charset_output = 'ISO-8859-1';
+			$this->outputlangs->charset_output = 'ISO-8859-1';
 
 		$outputlangs->load("main");
 		$outputlangs->load("companies");
@@ -128,41 +132,51 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 			if (file_exists($dir)) {
 				// Create pdf instance
-				$pdf = pdf_getInstance($this->format);
-				$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
+				$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
+
+				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-				$pdf->SetAutoPageBreak(1, 0);
 
-				if (class_exists('TCPDF')) {
-					$pdf->setPrintHeader(false);
-					$pdf->setPrintFooter(false);
-				}
-				$pdf->SetFont(pdf_getPDFFont($outputlangs));
+				// Set calculation of header and footer high line
+				// footer high
+				$height = $this->getRealHeightLine('foot');
+				$this->pdf->SetAutoPageBreak(1, $height);
+
+				$this->pdf->setPrintHeader(true);
+				$this->pdf->setPrintFooter(true);
+
+				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 				// Set path to the background PDF File
 				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
-					$pagecount = $pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
-					$tplidx = $pdf->importPage(1);
+					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
+					$tplidx = $this->pdf->importPage(1);
 				}
 
-				$pdf->Open();
-				$pdf->SetDrawColor(128, 128, 128);
+				$this->pdf->Open();
+				$this->pdf->SetDrawColor(128, 128, 128);
 
-				$pdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
-				$pdf->SetSubject($outputlangs->transnoentities("Module103258Name"));
-				$pdf->SetCreator("Dolibarr " . DOL_VERSION);
-				$pdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-				$pdf->SetKeyWords($outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $outputlangs->transnoentities("Module103258Name"));
-				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
-					$pdf->SetCompression(false);
+				$this->pdf->SetTitle($this->outputlangs->convToOutputCharset($object->ref));
+				$this->pdf->SetSubject($this->outputlangs->transnoentities("Module103258Name"));
+				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
+				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
+				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
+				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) {
+					$this->pdf->SetCompression(false);
+				}
 
-				$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
+				// Set calculation of header and footer high line
+				// Header high
+				$height = $this->getRealHeightLine('head');
+				// Left, Top, Right
+				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
 
 				// New page
-				$pdf->AddPage();
-				if (! empty($tplidx))
-					$pdf->useTemplate($tplidx);
+				$this->pdf->AddPage('P', $this->format, true);
+				if (! empty($tplidx)) {
+					$this->pdf->useTemplate($tplidx);
+				}
 
 				importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
@@ -211,11 +225,14 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 					if ($chapter_text == '@breakpagenohead@') {
 						if(empty($use_custom_footer)) $this->_pagefoot($pdf, $object, $outputlangs);
 						else $this->_pagefootCustom($pdf, $object, $outputlangs, 0, $instance_letter);
-						if (method_exists($pdf, 'AliasNbPages'))
-							$pdf->AliasNbPages();
-						$pdf->AddPage();
+
+				
+						if (method_exists($this->pdf, 'AliasNbPages')) {
+							$this->pdf->AliasNbPages();
+						}
+						$this->pdf->AddPage();
 						if (! empty($tplidx))
-							$pdf->useTemplate($tplidx);
+							$this->pdf->useTemplate($tplidx);
 
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
@@ -223,6 +240,9 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 						$posX = $this->marge_gauche;
 						$pdf->SetXY($posX, $posY);
 						$pdf->SetTextColor(0, 0, 0);
+
+						$this->pdf->setPrintHeader(true);
+						$this->pdf->setPrintFooter(true);
 
 						continue;
 					}

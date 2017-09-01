@@ -62,4 +62,37 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	return $array_other;
     }
     
+    /**
+     * Define array with couple subtitution key => subtitution value
+     *
+     * @param   Object	$object    	Dolibarr Object
+     * @param   Translate $outputlangs    Language object for output
+     * @param   boolean $recursive    	Want to fetch child array or child object
+     * @return	array	Array of substitution key->code
+     */
+    function get_substitutionarray_each_var_object(&$object,$outputlangs,$recursive=true,$sub_element_label='') {
+    	
+    	$array_other = array();
+    	
+    	if(!empty($object)) {
+    		
+    		foreach($object as $key => $value) {
+    			
+    			// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
+    			if(is_object($object)) {
+    				$reflection = new ReflectionProperty($object, $key);
+    				if(!$reflection->isPublic()) continue;
+    			}
+    			
+    			if (! is_array($value) && ! is_object($value)) $array_other['object_' . $sub_element_label . $key] = $value;
+    			elseif ($recursive && !empty($value)) {
+    				$sub = strtr('object_'.$sub_element_label.$key, array('object_'.$sub_element_label=>'')).'_';
+    				$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
+    			}
+    		}
+    	}
+    	
+    	return $array_other;
+    }
+    
 }

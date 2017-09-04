@@ -5,7 +5,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 	if (! $res)
 		die("Include of main fails");
-	
+
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';
 require_once '../class/html.formreferenceletters.class.php';
@@ -61,12 +61,14 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if(empty($action)) $action = 'view';
 
 if($action === 'save') {
-	
+
 	$object->footer = GETPOST('footer');
 	$object->update($user);
-	
+
 } elseif($action === 'set_custom_footer') {
 	$object->use_custom_footer = GETPOST('use_custom_footer');
+
+	//TODO Check this !
 	echo $object->update($user);
 	exit;
 }
@@ -95,12 +97,12 @@ $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
 
 if(!empty($object->id)) {
-	
+
 	$head = referenceletterPrepareHead($object);
 	dol_fiche_head($head, 'foot', $langs->trans('RefLtrFooterTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
-	
+
 	print '<form name="saveFooter" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
-	
+
 	print '<table class="border" width="100%">';
 	print '<tr>';
 	print '<td  width="20%">';
@@ -109,7 +111,7 @@ if(!empty($object->id)) {
 	print $object->title;
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td width="20%">';
 	print $langs->trans('RefLtrElement');
@@ -118,7 +120,7 @@ if(!empty($object->id)) {
 	print $object->displayElement();
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('RefLtrTag');
 	print '</td>';
@@ -127,14 +129,14 @@ if(!empty($object->id)) {
 	print $formrefleter->displaySubtitutionKey($user,$object);
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr style="background-color:#CEF6CE;">';
 	print '<td>'.$langs->trans('RefLtrUseCustomFooter');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object->use_custom_footer) ? 'checked="checked"' : '').' />';
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr class="wysiwyg" '.(empty($object->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
 	print '<td>'.$langs->trans('RefLtrFooterContent');
 	print '</td>';
@@ -143,16 +145,16 @@ if(!empty($object->id)) {
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
-	
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	
+
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields);
 	}
-	
+
 	print '</table>';
-	
+
 	print '<div class="wysiwyg" '.(empty($object->use_custom_footer) ? 'style="display:none;"' : '').'>';
 	print '<input type="hidden" name="action" value="save" />';
 	print '<center>';
@@ -160,9 +162,9 @@ if(!empty($object->id)) {
 	print '&nbsp;<input type="button" class="button" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
 	print '</center>';
 	print '</div>';
-	
+
 	print '</form>';
-	
+
 }
 
 ?>
@@ -179,16 +181,16 @@ if(!empty($object->id)) {
 		}
 
 		$.ajax({
-			
+
 			url:"<?php echo dol_buildpath('/referenceletters/referenceletters/footer.php',1) ?>"
 					,data:{
 							id:<?php echo (int)$object->id ?>
 							,action:"set_custom_footer"
 							,use_custom_footer:+is_checked
 						}
-					
+
 		});
-		
+
 	});
 
 </script>

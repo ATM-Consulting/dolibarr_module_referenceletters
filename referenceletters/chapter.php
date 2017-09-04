@@ -16,8 +16,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
- *	\file		refferenceletters/refferenceletters/chapter.php
-*	\ingroup	refferenceletters
+ *	\file		referenceletters/referenceletters/chapter.php
+*	\ingroup	referenceletters
 *	\brief		chapter pages
 */
 

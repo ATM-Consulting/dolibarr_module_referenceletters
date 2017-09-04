@@ -17,7 +17,7 @@
  */
 /**
  * \file instance.php
- * \ingroup refferenceletters
+ * \ingroup referenceletters
  * \brief intance pages
  */
 

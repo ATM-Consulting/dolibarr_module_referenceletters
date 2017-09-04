@@ -298,9 +298,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	/**
 	 * Show top header of page.
 	 *
-	 * @param PDF &$this->pdf Object PDF
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
+	 * @param object $instaance_letter instanceletters
 	 * @return void
 	 */
 	function _pagehead($object, $showaddress, $instance_letter) {
@@ -483,7 +483,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	 * Show footer of page.
 	 * Need this->emetteur object
 	 *
-	 * @param PDF &$this->pdf PDF
 	 * @param Object $object show
 	 * @param int $hidefreetext text
 	 * @return int height of bottom margin including footer text

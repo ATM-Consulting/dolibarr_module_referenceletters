@@ -7,20 +7,20 @@ dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	
 	
-	var $db;
-	var $name;
-	var $description;
-	var $type;
-	var $version = 'dolibarr';
-	var $page_largeur;
-	var $page_hauteur;
-	var $format;
-	var $marge_gauche;
-	var $marge_droite;
-	var $marge_haute;
-	var $marge_basse;
-	var $emetteur; // Objet societe qui emet
-	
+	public $db;
+	public $name;
+	public $description;
+	public $type;
+	public $version = 'dolibarr';
+	public $page_largeur;
+	public $page_hauteur;
+	public $format;
+	public $marge_gauche;
+	public $marge_droite;
+	public $marge_haute;
+	public $marge_basse;
+	public $emetteur; // Objet societe qui emet
+
 	/**
 	 * Constructor
 	 *
@@ -28,15 +28,15 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	 */
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
-		
+
 		$langs->load("main");
 		$langs->load("bills");
 		$langs->load("referenceletters@referenceletters");
-		
+
 		$this->db = $db;
 		$this->name = "referenceletter_agefodd_convention";
 		$this->description = $langs->trans('Module103258Name');
-		
+
 		// Dimension page pour format A4
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
@@ -111,15 +111,14 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						//$this->pdf = pdf_getInstance($this->format);
 						$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
 						$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
-						$heightforinfotot = 50; // Height reserved to output the info and total part
-						$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
-						$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-						$this->pdf->SetAutoPageBreak(1, 0);
-						
-						if (class_exists('TCPDF')) {
-							$this->pdf->setPrintHeader(false);
-							$this->pdf->setPrintFooter(false);
-						}
+						// Set calculation of header and footer high line
+						// footer high
+						$height = $this->getRealHeightLine('foot');
+						$this->pdf->SetAutoPageBreak(1, $height);
+
+						$this->pdf->setPrintHeader(true);
+						$this->pdf->setPrintFooter(true);
+
 						$this->pdf->SetFont(pdf_getPDFFont($outputlangs));
 						// Set path to the background PDF File
 						if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
@@ -138,21 +137,20 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
 							$this->pdf->SetCompression(false);
 							
-							$this->pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite); // Left, Top, Right
+							// Set calculation of header and footer high line
+							// Header high
+							$height = $this->getRealHeightLine('head');
+							// Left, Top, Right
+							$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
 							
 							// New page
-							$this->pdf->AddPage();
+							$this->pdf->AddPage('L');
 							if (! empty($tplidx))
 								$this->pdf->useTemplate($tplidx);
 								
 								importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
 								
-								$use_custom_header = $instance_letter->use_custom_header;
-								$use_custom_footer = $instance_letter->use_custom_footer;
-								
-								if(empty($use_custom_header)) $this->_pagehead($this->pdf, $object, 1, $outputlangs, $instance_letter);
-								else $this->_pageheadCustom($object, 1);
-								
+
 								$this->pdf->SetFont('', '', $default_font_size - 1);
 								$this->pdf->SetTextColor(0, 0, 0);
 								
@@ -170,42 +168,42 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									$chapter_text = $line_chapter['content_text'];
 									
 									if ($chapter_text == '@breakpage@') {
-										if(empty($use_custom_footer)) $this->_pagefoot($this->pdf, $object, $outputlangs);
-										else $this->_pagefootCustom($this->pdf, $object, $outputlangs, 0, $instance_letter);
 										if (method_exists($this->pdf, 'AliasNbPages'))
 											$this->pdf->AliasNbPages();
-											$this->pdf->AddPage();
-											if (! empty($tplidx))
-												$this->pdf->useTemplate($tplidx);
-												
-												importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
-												
-												if(empty($use_custom_header)) $this->_pagehead($this->pdf, $object, 1, $outputlangs, $instance_letter);
-												else $this->_pageheadCustom($object, 1);
-												
-												$posX = $this->pdf->getX();
-												$posY = $this->pdf->getY();
-												
-												continue;
+										$this->pdf->AddPage();
+										if (! empty($tplidx))
+											$this->pdf->useTemplate($tplidx);
+
+										importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
+
+										$posX = $this->pdf->getX();
+										$posY = $this->pdf->getY();
+
+										continue;
 									}
 									
 									if ($chapter_text == '@breakpagenohead@') {
-										if(empty($use_custom_footer)) $this->_pagefoot($this->pdf, $object, $outputlangs);
-										else $this->_pagefootCustom($this->pdf, $object, $outputlangs, 0, $instance_letter);
-										if (method_exists($this->pdf, 'AliasNbPages'))
+										if (method_exists($this->pdf, 'AliasNbPages')) {
 											$this->pdf->AliasNbPages();
-											$this->pdf->AddPage();
-											if (! empty($tplidx))
-												$this->pdf->useTemplate($tplidx);
-												
-												importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
-												
-												$posY = $this->marge_haute;
-												$posX = $this->marge_gauche;
-												$this->pdf->SetXY($posX, $posY);
-												$this->pdf->SetTextColor(0, 0, 0);
-												
-												continue;
+										}
+
+										$this->pdf->setPrintHeader(false);
+
+										$this->pdf->AddPage();
+										if (! empty($tplidx)) {
+											$this->pdf->useTemplate($tplidx);
+										}
+
+										importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
+
+										$posY = $this->marge_haute;
+										$posX = $this->marge_gauche;
+										$this->pdf->SetXY($posX, $posY);
+										$this->pdf->SetTextColor(0, 0, 0);
+
+										$this->pdf->setPrintHeader(true);
+
+										continue;
 									}
 									
 									// Remplacement des tags par les bonnes valeurs
@@ -229,9 +227,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									
 									$posY = $this->pdf->GetY();
 								}
-								// Pied de page
-								if(empty($use_custom_footer)) $this->_pagefoot($this->pdf, $object, $outputlangs);
-								else $this->_pagefootCustom($this->pdf, $object, $outputlangs, 0, $instance_letter);
+								
 								if (method_exists($this->pdf, 'AliasNbPages'))
 									$this->pdf->AliasNbPages();
 									
@@ -246,7 +242,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									$parameters = array (
 											'file' => $file,
 											'object' => $object,
-											'outputlangs' => $outputlangs,
+											'outputlangs' => $this->outputlangs,
 											'instance_letter' => $instance_letter
 									);
 									global $action;

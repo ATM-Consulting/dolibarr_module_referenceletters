@@ -144,7 +144,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 							$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
 							
 							// New page
-							$this->pdf->AddPage('L');
+							$this->pdf->AddPage();
 							if (! empty($tplidx))
 								$this->pdf->useTemplate($tplidx);
 								

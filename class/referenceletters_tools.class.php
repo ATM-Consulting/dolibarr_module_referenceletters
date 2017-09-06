@@ -76,6 +76,7 @@ class RfltrTools {
 		$instance_letter->use_custom_footer = $object_refletter->use_custom_footer;
 		$instance_letter->header = self::setImgLinkToUrl($object_refletter->header);
 		$instance_letter->footer = self::setImgLinkToUrl($object_refletter->footer);
+		$instance_letter->use_landscape_format= $object_refletter->use_landscape_format;
 		
 		return array($instance_letter, $object);
 		

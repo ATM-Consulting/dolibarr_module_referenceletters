@@ -273,16 +273,16 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			if (empty($use_custom_header)) {
 				$this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
-				$this->_pageheadCustom($this->ref_object, 1, $this->outputlangs);
+				$this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
 			}
 		} elseif ($type == 'foot') {
 			$use_custom_footer = $this->instance_letter->use_custom_footer;
 
 			if (empty($use_custom_footer)) {
 				// HEre standard _pagefoot method return bottom margin
-				$height = $this->_pagefoot($this->ref_object, $this->outputlangs);
+				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
-				$this->_pagefootCustom($this->ref_object, $this->outputlangs, 0);
+				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs, 0);
 			}
 		}
 

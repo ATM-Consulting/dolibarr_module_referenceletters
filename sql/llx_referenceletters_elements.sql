@@ -32,5 +32,6 @@ tms timestamp NOT NULL,
 use_custom_header integer NOT NULL DEFAULT 0,
 header text,
 use_custom_footer integer NOT NULL DEFAULT 0,
-footer text
+footer text,
+use_landscape_format integer NOT NULL DEFAULT 0
 )ENGINE=InnoDB;

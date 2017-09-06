@@ -36,8 +36,9 @@ $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 
-$refltrtitle=GETPOST('refltrtitle','alpha');
-$refltrelement_type=GETPOST('refltrelement_type','alpha');
+$refltrtitle=GETPOST('refltrtitle', 'alpha');
+$refltrelement_type=GETPOST('refltrelement_type', 'alpha');
+$refltruse_landscape_format=GETPOST('refltruse_landscape_format', 'alpha');
 
 
 // Access control
@@ -85,6 +86,7 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($action == "add") {
 	$object->title = $refltrtitle;
 	$object->element_type = $refltrelement_type;
+	$object->use_landscape_format = $refltruse_landscape_format;
 	
 	$extrafields->setOptionalsFromPost($extralabels, $object);
 
@@ -116,6 +118,16 @@ if ($action == "add") {
 	$result = $object->update($user);
 	if ($result < 0) {
 		$action = 'editrefltrtitle';
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
+} elseif($action=='setrefltruse_landscape_format' && isset($_REQUEST['modify'])) {
+	
+	$object->use_landscape_format = $refltruse_landscape_format;
+	$result = $object->update($user);
+	if ($result < 0) {
+		$action = 'editrefltruse_landscape_format';
 		setEventMessage($object->error, 'errors');
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
@@ -186,6 +198,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<input type="text" name="refltrtitle" size="20" value="' . $refltrtitle . '"/>';
 	print '</td>';
 	print '</tr>';
+	
+	print '<tr>';
+	print '<td width="20%">';
+	print $langs->trans('RefLtrUseLandscapeFormat');
+	print '</td>';
+	print '<td>';
+	print $form->selectyesno('refltruse_landscape_format', $refltruse_landscape_format, 1);
+	print '</td>';
+	print '</tr>';
 
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -242,6 +263,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '</td>';
 	print '<td>';
 	print $object->displayElement();
+	print '</td>';
+	print '</tr>';
+	
+	print '<tr>';
+	print '<td  width="20%">';
+	print $form->editfieldkey("RefLtrUseLandscapeFormat",'refltruse_landscape_format',(int)$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
+	print '</td><td>';
+	print $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
 	print '</td>';
 	print '</tr>';
 	

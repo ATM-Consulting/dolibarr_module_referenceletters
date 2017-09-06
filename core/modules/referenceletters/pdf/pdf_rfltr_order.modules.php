@@ -99,6 +99,8 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 		$this->outputlangs=$this->outputlangs;
 		$this->instance_letter = $instance_letter;
 
+		$use_landscape_format = (int)$instance_letter->use_landscape_format;
+		
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -171,7 +173,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
 
 				// New page
-				$this->pdf->AddPage('P', $this->format, true);
+				$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L', $this->format, true);
 				if (! empty($tplidx)) {
 					$this->pdf->useTemplate($tplidx);
 				}
@@ -197,7 +199,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 					if ($chapter_text == '@breakpage@') {
 						if (method_exists($this->pdf, 'AliasNbPages'))
 							$this->pdf->AliasNbPages();
-						$this->pdf->AddPage();
+						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
 						if (! empty($tplidx))
 							$this->pdf->useTemplate($tplidx);
 
@@ -216,7 +218,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 
 						$this->pdf->setPrintHeader(false);
 
-						$this->pdf->AddPage();
+						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
 						if (! empty($tplidx)) {
 							$this->pdf->useTemplate($tplidx);
 						}

@@ -131,6 +131,7 @@ if ($action == 'buildoc') {
 		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
 		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
+		$object_element->use_landscape_format = GETPOST('use_landscape_format');
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -196,7 +197,7 @@ if ($action == 'buildoc') {
 		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
 		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
-		
+		$object_element->use_landscape_format = GETPOST('use_landscape_format');
 		
 		
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -436,6 +437,15 @@ if (! empty($idletter)) {
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
 			print '</td>';
 			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrUseLandscapeFormat');
+			print '</td>';
+			print '<td>';
+			print $form->selectyesno('use_landscape_format', $object_refletter->use_landscape_format, 1);
+			print '</td>';
+			print '</tr>';
 
 			print '<tr>';
 			print '<td  width="20%">';
@@ -560,13 +570,22 @@ if (! empty($refletterelemntid)) {
 			print $object_element->ref_int;
 			print '</td>';
 			print '</tr>';
-
+			
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrTitle');
 			print '</td>';
 			print '<td>';
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr>';
+			print '<td  width="20%">';
+			print $langs->trans('RefLtrUseLandscapeFormat');
+			print '</td>';
+			print '<td>';
+			print $form->selectyesno('use_landscape_format', $object_element->use_landscape_format, 1);
 			print '</td>';
 			print '</tr>';
 

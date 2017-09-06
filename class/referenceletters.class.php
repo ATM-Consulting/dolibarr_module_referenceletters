@@ -41,6 +41,7 @@ class ReferenceLetters extends CommonObject
 	public $entity;
 	public $title;
 	public $element_type;
+	public $use_landscape_format;
 	public $status;
 	public $import_key;
 	public $fk_user_author;
@@ -222,6 +223,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
+		$sql .= "use_landscape_format,";
 		$sql .= "status,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
@@ -233,6 +235,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
+		$sql .= " " . (int)$this->use_landscape_format . ",";
 		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
@@ -313,7 +316,8 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.use_custom_header,";
 		$sql .= " t.header,";
 		$sql .= " t.use_custom_footer,";
-		$sql .= " t.footer";
+		$sql .= " t.footer,";
+		$sql .= " t.use_landscape_format";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE t.rowid = " . $id;
@@ -339,6 +343,7 @@ class ReferenceLetters extends CommonObject
 				$this->use_custom_header = $obj->use_custom_header;
 				$this->footer = $obj->footer;
 				$this->use_custom_footer= $obj->use_custom_footer;
+				$this->use_landscape_format = $obj->use_landscape_format;
 
 				$extrafields = new ExtraFields($this->db);
 				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
@@ -640,7 +645,8 @@ class ReferenceLetters extends CommonObject
 		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer. "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
 		$sql .= " use_custom_header=" . $this->use_custom_header . ",";
-		$sql .= " use_custom_footer=" . $this->use_custom_footer;
+		$sql .= " use_custom_footer=" . $this->use_custom_footer . ",";
+		$sql .= " use_landscape_format=" . (int)$this->use_landscape_format;
 
 		$sql .= " WHERE rowid=" . $this->id;
 

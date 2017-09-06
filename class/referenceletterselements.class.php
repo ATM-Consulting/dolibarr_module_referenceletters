@@ -119,7 +119,8 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= "use_custom_header,";
 		$sql .= "header,";
 		$sql .= "use_custom_footer,";
-		$sql .= "footer";
+		$sql .= "footer,";
+		$sql .= "use_landscape_format";
 		
 		$sql .= ") VALUES (";
 		
@@ -138,7 +139,8 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " " . (int)$this->use_custom_header. ",";
 		$sql .= " " . (isset($this->header) ? "'" . $this->header . "'" : 'NULL') . ",";
 		$sql .= " " . (int)$this->use_custom_footer. ",";
-		$sql .= " " . (isset($this->footer) ? "'" . $this->footer. "'" : 'NULL');
+		$sql .= " " . (isset($this->footer) ? "'" . $this->footer. "'" : 'NULL') . ",";
+		$sql .= " " . (int)$this->use_landscape_format;
 		
 		$sql .= ")";
 		
@@ -206,7 +208,8 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.use_custom_header,";
 		$sql .= " t.header,";
 		$sql .= " t.use_custom_footer,";
-		$sql .= " t.footer";
+		$sql .= " t.footer,";
+		$sql .= " t.use_landscape_format";
 		$sql .= " ,p.title as title_referenceletters";
 		
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
@@ -239,6 +242,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->header = $obj->header;
 				$this->use_custom_footer = $obj->use_custom_footer;
 				$this->footer = $obj->footer;
+				$this->use_landscape_format = $obj->use_landscape_format;
 			}
 			$this->db->free($resql);
 			
@@ -519,7 +523,8 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " use_custom_header=" . (int)$this->use_custom_header . ",";
 		$sql .= " use_custom_footer=" . (int)$this->use_custom_footer. ",";
 		$sql .= " header=" . (isset($this->header) ? "'" . $this->header. "'" : "null"). ",";
-		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer . "'" : "null");
+		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer . "'" : "null"). ",";
+		$sql .= " use_landscape_format=" . (int)$this->use_landscape_format;
 		
 		$sql .= " WHERE rowid=" . $this->id;
 		

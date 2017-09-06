@@ -71,6 +71,7 @@ RefLtrLetters=Courrier
 RefLtrCreate=Nouveau modèle de courrier
 RefLtrTitle=Titre
 RefLtrElement=Type d'objet pour le courrier
+RefLtrUseLandscapeFormat=Utiliser le format paysage
 RefLtrDelete=Supprimer le modèle de courrier
 RefLtrConfirmDelete=Êtes-vous sûr(e) de supprimer le modèle de courrier ?
 RefLtrDeleteChapter=Supprimer un chapitre

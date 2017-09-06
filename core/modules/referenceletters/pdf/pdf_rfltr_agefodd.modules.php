@@ -64,7 +64,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	 *
 	 * @param Object $object generate
 	 * @param Object $instance_letter generate
-	 * @param Translate $outputlangs object
+	 * @param Translate $this->outputlangs object
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention='', $socid='') {
@@ -80,11 +80,11 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 			if (! empty($conf->global->MAIN_USE_FPDF))
-				$outputlangs->charset_output = 'ISO-8859-1';
+				$this->outputlangs->charset_output = 'ISO-8859-1';
 				
-				$outputlangs->load("main");
-				$outputlangs->load("companies");
-				$outputlangs->load("referenceletters@referenceletters");
+				$this->outputlangs->load("main");
+				$this->outputlangs->load("companies");
+				$this->outputlangs->load("referenceletters@referenceletters");
 				
 				// Loop on each lines to detect if there is at least one image to show
 				$realpatharray = array ();
@@ -110,7 +110,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						// Create pdf instance
 						//$this->pdf = pdf_getInstance($this->format);
 						$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
-						$default_font_size = pdf_getPDFFontSize($outputlangs); // Must be after pdf_getInstance
+						$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 						// Set calculation of header and footer high line
 						// footer high
 						$height = $this->getRealHeightLine('foot');
@@ -119,7 +119,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						$this->pdf->setPrintHeader(true);
 						$this->pdf->setPrintFooter(true);
 
-						$this->pdf->SetFont(pdf_getPDFFont($outputlangs));
+						$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 						// Set path to the background PDF File
 						if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
 							$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
@@ -129,11 +129,11 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						$this->pdf->Open();
 						$this->pdf->SetDrawColor(128, 128, 128);
 						
-						$this->pdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
-						$this->pdf->SetSubject($outputlangs->transnoentities("Module103258Name"));
+						$this->pdf->SetTitle($this->outputlangs->convToOutputCharset($object->ref));
+						$this->pdf->SetSubject($this->outputlangs->transnoentities("Module103258Name"));
 						$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
-						$this->pdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-						$this->pdf->SetKeyWords($outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $outputlangs->transnoentities("Module103258Name"));
+						$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
+						$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
 						if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
 							$this->pdf->SetCompression(false);
 							
@@ -148,7 +148,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 							if (! empty($tplidx))
 								$this->pdf->useTemplate($tplidx);
 								
-								importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
+								importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
 								
 
 								$this->pdf->SetFont('', '', $default_font_size - 1);
@@ -174,7 +174,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 										if (! empty($tplidx))
 											$this->pdf->useTemplate($tplidx);
 
-											importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
+											importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
 
 										$posX = $this->pdf->getX();
 										$posY = $this->pdf->getY();
@@ -194,7 +194,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 											$this->pdf->useTemplate($tplidx);
 										}
 
-										importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
+										importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
 
 										$posY = $this->marge_haute;
 										$posX = $this->marge_gauche;
@@ -212,7 +212,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									// merge agefodd arrays
 									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'THorairesSession', 'TFormateursSession'));
 									
-									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									
 									if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
 										foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
@@ -220,7 +220,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 												$posY = $this->pdf->GetY();
 												$this->pdf->SetXY($posX, $posY);
 												
-												$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
+												$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
 											}
 										}
 									}
@@ -271,20 +271,20 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	 * @param PDF &$this->pdf Object PDF
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
-	 * @param Translate $outputlangs for output
+	 * @param Translate $this->outputlangs for output
 	 * @return void
 	 */
-	function _pagehead(&$pdf, $object, $showaddress, $outputlangs, $instance_letter) {
+	function _pagehead($object, $showaddress, $instance_letter) {
 		global $conf, $langs;
 		
-		$outputlangs->load("main");
-		$outputlangs->load("bills");
-		$outputlangs->load("agefodd@agefodd");
-		$outputlangs->load("companies");
+		$this->outputlangs->load("main");
+		$this->outputlangs->load("bills");
+		$this->outputlangs->load("propal");
+		$this->outputlangs->load("companies");
 		
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		$default_font_size = pdf_getPDFFontSize($this->outputlangs);
 		
-		pdf_pagehead($this->pdf, $outputlangs, $this->page_hauteur);
+		pdf_pagehead($this->pdf, $this->outputlangs, $this->page_hauteur);
 		
 		$this->pdf->SetTextColor(0, 0, 60);
 		$this->pdf->SetFont('', 'B', $default_font_size + 3);
@@ -303,19 +303,19 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 			} else {
 				$this->pdf->SetTextColor(200, 0, 0);
 				$this->pdf->SetFont('', 'B', $default_font_size - 2);
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 			}
 		} else {
 			$text = $this->emetteur->name;
-			$this->pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
+			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 		
 		if (! empty($instance_letter->outputref)) {
 			$this->pdf->SetFont('', 'B', $default_font_size + 3);
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$title = $outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
+			$title = $this->outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
 			$this->pdf->MultiCell(100, 4, $title, '', 'R');
 			$posy += 5;
 		}
@@ -324,13 +324,13 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetTextColor(0, 0, 60);
-		$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref), '', 'R');
+		$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("Ref") . " : " . $this->outputlangs->convToOutputCharset($object->ref), '', 'R');
 		
 		if (! empty($instance_letter->outputref)) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("RefLtrRef") . " : " . $this->outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
 		}
 		
 		$posy += 1;
@@ -340,20 +340,20 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("RefCustomer") . " : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("RefCustomer") . " : " . $this->outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 		
 		if ($object->thirdparty->code_client) {
 			$posy += 4;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode") . " : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("CustomerCode") . " : " . $this->outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 		
 		$posy += 2;
 		
 		// Show list of linked objects
-		// $posy = pdf_writeLinkedObjects($this->pdf, $object, $outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
+		// $posy = pdf_writeLinkedObjects($this->pdf, $object, $this->outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
 		
 		if ($showaddress) {
 			// Sender properties
@@ -363,10 +363,10 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 			 if (count($arrayidcontact) > 0)
 			 {
 			 $object->fetch_user($arrayidcontact[0]);
-			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$this->outputlangs->transnoentities("Name").": ".$this->outputlangs->convToOutputCharset($object->user->getFullName($this->outputlangs))."\n";
 			 }*/
 			
-			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty);
+			$carac_emetteur .= pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty);
 			
 			// Show sender
 			$posy = 42;
@@ -379,7 +379,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 				$this->pdf->SetTextColor(0, 0, 0);
 				$this->pdf->SetFont('', '', $default_font_size - 2);
 				$this->pdf->SetXY($posx, $posy - 5);
-				$this->pdf->MultiCell(66, 5, $outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
+				$this->pdf->MultiCell(66, 5, $this->outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
 				$this->pdf->SetXY($posx, $posy);
 				$this->pdf->SetFillColor(230, 230, 230);
 				$this->pdf->MultiCell(82, $hautcadre, "", 0, 'R', 1);
@@ -388,7 +388,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 				// Show sender name
 				$this->pdf->SetXY($posx + 2, $posy + 3);
 				$this->pdf->SetFont('', 'B', $default_font_size);
-				$this->pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+				$this->pdf->MultiCell(80, 4, $this->outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 				$posy = $this->pdf->getY();
 				
 				// Show sender information
@@ -411,12 +411,12 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						$socname = $object->contact->socname;
 						else
 							$socname = $object->thirdparty->nom;
-							$carac_client_name = $outputlangs->convToOutputCharset($socname);
+							$carac_client_name = $this->outputlangs->convToOutputCharset($socname);
 				} else {
-					$carac_client_name = $outputlangs->convToOutputCharset($object->thirdparty->nom);
+					$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 				}*/
 				
-				$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
+				$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 				
 				// Show recipient
 				$widthrecbox = 100;
@@ -431,7 +431,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						$this->pdf->SetTextColor(0, 0, 0);
 						$this->pdf->SetFont('', '', $default_font_size - 2);
 						$this->pdf->SetXY($posx + 2, $posy - 5);
-						$this->pdf->MultiCell($widthrecbox, 5, $outputlangs->transnoentities("BillTo") . ":", 0, 'L');
+						$this->pdf->MultiCell($widthrecbox, 5, $this->outputlangs->transnoentities("BillTo") . ":", 0, 'L');
 						$this->pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
 						
 						// Show recipient name
@@ -454,13 +454,13 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 	 *
 	 * @param PDF &$this->pdf PDF
 	 * @param Object $object show
-	 * @param Translate $outputlangs for output
+	 * @param Translate $this->outputlangs for output
 	 * @param int $hidefreetext text
 	 * @return int height of bottom margin including footer text
 	 */
-	function _pagefoot(&$pdf, $object, $outputlangs, $hidefreetext = 0) {
+	function _pagefoot($object, $hidefreetext = 0) {
 		$this->pdf->SetX($this->marge_gauche);
-		return pdf_pagefoot($this->pdf, $outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
+		return pdf_pagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}
 	
 }

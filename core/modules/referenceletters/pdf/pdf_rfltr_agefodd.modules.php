@@ -174,7 +174,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 										if (! empty($tplidx))
 											$this->pdf->useTemplate($tplidx);
 
-										importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
+											importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
 										$posX = $this->pdf->getX();
 										$posY = $this->pdf->getY();
@@ -194,7 +194,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 											$this->pdf->useTemplate($tplidx);
 										}
 
-										importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
+										importImageBackground($this->pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
 										$posY = $this->marge_haute;
 										$posX = $this->marge_gauche;

@@ -270,7 +270,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<td  width="20%">';
 	print $form->editfieldkey("RefLtrUseLandscapeFormat",'refltruse_landscape_format',(int)$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
 	print '</td><td>';
-	print $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',(int)$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
+	print $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
 	print '</td>';
 	print '</tr>';
 	

@@ -82,7 +82,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_nom'] = $line->nom;
     	$resarray['line_prenom'] = $line->prenom;
     	$resarray['line_type'] = $line->type;
-    	$resarray['line_nom_societe'] = $line->soccode;
+    	$resarray['line_code_societe'] = $line->soccode;
+    	$resarray['line_nom_societe'] = $line->socname;
     	
     	// Substitutions tableau d'horaires
     	$resarray['line_date_session'] = date('d/m/Y', $line->date_session);

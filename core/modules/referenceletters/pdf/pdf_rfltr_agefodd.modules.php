@@ -73,7 +73,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		
 		// Chargement du modèle utilisé
-		list($instance_letter, $object) = RfltrTools::load_object_refletter($id_object, $id_model, $socid);
+		list($instance_letter, $object) = RfltrTools::load_object_refletter($id_object, $id_model, $socid, $obj_agefodd_convention);
 		$this->instance_letter = $instance_letter;
 		
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
@@ -212,7 +212,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									$chapter_text = $this->setSubstitutions($object, $chapter_text);
 									
 									// merge agefodd arrays
-									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'THorairesSession', 'TFormateursSession'));
+									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'TStagiairesSessionSoc', 'TStagiairesSessionSocMore', 'TStagiairesSessionConvention', 'THorairesSession',  'TFormateursSession'));
 									
 									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									

@@ -155,7 +155,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     				if(!$reflection->isPublic()) continue;
     			}
     			
-    			if (! is_array($value) && ! is_object($value)) $array_other['object_' . $sub_element_label . $key] = $value;
+    			if (! is_array($value) && ! is_object($value)) {
+    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false) $value = price($value, 2);
+    				$array_other['object_' . $sub_element_label . $key] = $value;
+    			}
     			elseif ($recursive && !empty($value)) {
     				$sub = strtr('object_'.$sub_element_label.$key, array('object_'.$sub_element_label=>'')).'_';
     				$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));

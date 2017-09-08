@@ -19,7 +19,7 @@ class RfltrTools {
 	/**
 	 * charge le modèle référence letter choisi
 	 */
-	static function load_object_refletter($id_object, $id_model, $socid='') {
+	static function load_object_refletter($id_object, $id_model, $socid='', $obj_agefodd_convention='') {
 		
 		global $db, $conf;
 		
@@ -30,7 +30,7 @@ class RfltrTools {
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
 		
-		$object = self::load_agefodd_object($id_object, $object_refletter, $socid);
+		$object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj_agefodd_convention);
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
 		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
@@ -85,13 +85,13 @@ class RfltrTools {
 	/**
 	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
 	 */
-	static function load_agefodd_object($id_object, &$object_refletter, $socid='') {
+	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='') {
 		
 		global $db;
 		
 		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
 		$object->fetch($id_object);
-		$object->load_all_data_agefodd_session($object_refletter, $socid);
+		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention);
 		
 		return $object;
 		

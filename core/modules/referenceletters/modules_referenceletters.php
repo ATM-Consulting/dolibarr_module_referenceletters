@@ -76,7 +76,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 				foreach ( $TElementArray as $element_array ) {
 
-					if (strpos($chapter_text, $element_array) === false)
+					if (strpos($chapter_text, $element_array.' ') === false)
 						continue;
 
 						$listlines = $odfHandler->setSegment($element_array);

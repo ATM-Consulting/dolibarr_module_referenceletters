@@ -159,26 +159,37 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 			
-			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_attestation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_attestation']['title'] = 'AgfSendAttestation';
 			
-			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_attestation_fin_formation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_attestation_fin_formation']['title'] = 'AgfAttestationEndTraining';
+			$Tab = array(
+			    'fiche_pedago'=>'AgfFichePedagogique'
+			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
+			    ,'conseils'=>'AgfConseilsPratique'
+			    ,'fiche_presence'=>'AgfFichePresence'
+			    ,'fiche_presence_direct'=>'AgfFichePresenceDirect'
+			    ,'fiche_presence_empty'=>'AgfFichePresenceEmpty'
+			    ,'fiche_presence_trainee'=>'AgfFichePresenceTrainee'
+			    ,'fiche_presence_trainee_direct'=>'AgfFichePresenceTraineeDirect'
+			    ,'fiche_presence_landscape'=>'AgfFichePresenceTraineeLandscape'
+			    ,'fiche_evaluation'=>'AgfFicheEval'
+			    ,'fiche_remise_eval'=>'AgfRemiseEval'
+			    ,'attestationendtraining_empty'=>'AgfAttestationEndTrainingEmpty'
+			    ,'chevalet'=>'AgfChevalet'
+			    ,'convocation'=>'AgfPDFConvocation'
+			    ,'attestationendtraining'=>'AgfAttestationEndTraining'
+			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
+			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
+			    ,'attestation'=>'AgfSendAttestation'
+			    ,'certificateA4'=>'AgfPDFCertificateA4'
+			    ,'certificatecard'=>'AgfPDFCertificateCard'
+			    ,'contrat_presta'=>'AgfContratPrestation'
+			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
+			    ,'contrat_trainer'=>'AgfContratTrainer'
+			);
 			
-			// Fiche d'évaluation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_evaluation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_evaluation']['title'] = 'AgfFicheEval';
-			
-			// Fiche de présence (feuille d'émargement) (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_presence'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_presence']['title'] = 'AgfFichePresence';
-			
-			// Contrat formateur (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_contrat_trainer'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_contrat_trainer']['title'] = 'AgfContratTrainer';			
-			
+			foreach ($Tab as $key => $val){
+			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
+			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
 			
 		}
 		

@@ -146,13 +146,13 @@ class RfltrTools {
 				$(".id_external_model").change(function() {
 					
 					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
-					var sessiontrainerid = $(this).parent('td.trainerid').attr('trainerid');
+					var sessiontrainerid = $(this).parent().parent().parent().find('.liste_titre a').attr('name');
 					
 					<?php
 					
 						if($page === 'document') { 
 							?>
-								if(typeof sessiontrainerid != 'undefined') {
+								if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
 									path = path + '&sessiontrainerid=' + $(this).attr('socid');
 								} else {
 									path = path + '&socid=' + $(this).attr('socid');

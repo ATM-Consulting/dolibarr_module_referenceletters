@@ -143,7 +143,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 							// Header high
 							$height = $this->getRealHeightLine('head');
 							// Left, Top, Right
-							$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
+							$this->pdf->SetMargins($this->marge_gauche, $height, $this->marge_droite, 1);
 							
 							// New page
 							$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');

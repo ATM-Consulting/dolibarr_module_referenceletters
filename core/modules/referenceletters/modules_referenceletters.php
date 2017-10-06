@@ -271,7 +271,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$use_custom_header = $this->instance_letter->use_custom_header;
 
 			if (empty($use_custom_header)) {
-				$this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->pdf->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
 				$this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
 			}
@@ -280,7 +280,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			if (empty($use_custom_footer)) {
 				// HEre standard _pagefoot method return bottom margin
-				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
+				$height = $this->pdf->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
 				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs, 0);
 			}

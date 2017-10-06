@@ -130,15 +130,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['formation_commentaire'] = nl2br($object->notes);
     	$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
     	$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
+    	$resarray['formation_prix'] = price($object->sell_price);
     	if(! empty($object->fk_formation_catalogue)) {
     	    
     	    dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
     	    
     	    $catalogue = new Agefodd($db);
     	    $catalogue->fetch($object->fk_formation_catalogue);
-    	    $resarray['formation_but'] = $catalogue->but;
-    	    $resarray['formation_methode'] = $catalogue->methode;
-    	    $resarray['formation_type_stagiaire'] = $catalogue->public;
+    	    $resarray['formation_but'] = strip_tags($catalogue->but);
+    	    $resarray['formation_methode'] = strip_tags($catalogue->methode);
+    	    $resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
+    	    $resarray['formation_sanction'] = strip_tags($catalogue->sanction);
+    	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
+    	    $resarray['formation_programme'] = $catalogue->programme;
     	}
     	
     	return $resarray;

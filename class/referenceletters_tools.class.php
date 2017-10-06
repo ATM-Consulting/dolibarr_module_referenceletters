@@ -155,7 +155,13 @@ class RfltrTools {
 								if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
 									path = path + '&sessiontrainerid=' + $(this).attr('socid');
 								} else {
-									path = path + '&socid=' + $(this).attr('socid');
+									if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
+										addresse = $(this).prev().prev().attr('href');
+										idform = addresse.substr(addresse.indexOf('idform=')+7);
+										path = path + '&idform=' + idform;
+									} else {
+										path = path + '&socid=' + $(this).attr('socid');
+									}
 								}
 							<?php
 						} elseif($page === 'document_by_trainee') {

@@ -577,10 +577,14 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
 				,'formation_ref'=>'Référence de la formation'
-				,'formation_statut'=>'Référence de la formation'
+				,'formation_statut'=>'Statut de la formation'
 				,'formation_lieu'=>'Lieu de la formation'
 				,'formation_commercial'=>'commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'
+		        ,'formation_but'=>'But de la formation'
+		        ,'formation_methode'=>'Methode de formation'
+		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
+		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
 		);
 		
 		// Liste de données - Participants

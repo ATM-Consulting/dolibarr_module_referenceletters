@@ -111,6 +111,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     }
     
     function get_substitutionsarray_agefodd(&$object, $outputlangs) {
+        global $db;
     	
     	dol_include_once('/agefodd/class/html.formagefodd.class.php');
     	
@@ -128,14 +129,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['formation_societe'] = $object->thirdparty->nom;
     	$resarray['formation_commentaire'] = nl2br($object->notes);
     	$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
-    	/*if(! empty($object->fk_formation_catalogue)) {
+    	$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
+    	if(! empty($object->fk_formation_catalogue)) {
     	    
     	    dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
     	    
     	    $catalogue = new Agefodd($db);
-    	    $catalogue->fetch((int) $object->fk_formation_catalogue);    	    
+    	    $catalogue->fetch($object->fk_formation_catalogue);
     	    $resarray['formation_but'] = $catalogue->but;
-    	}*/
+    	    $resarray['formation_methode'] = $catalogue->methode;
+    	    $resarray['formation_type_stagiaire'] = $catalogue->public;
+    	}
     	
     	return $resarray;
     	

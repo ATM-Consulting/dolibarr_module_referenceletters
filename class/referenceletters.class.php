@@ -615,6 +615,13 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
 		
+		$subst_array['Stagiaire (pour les documents par participants)'] = array(
+		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
+		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
+		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
+		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
+		);
+		
 	}
 
 	/**

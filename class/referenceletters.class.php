@@ -185,6 +185,9 @@ class ReferenceLetters extends CommonObject
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
 			    ,'courrier'=>'RefLtrLetters'
+			    ,'convocation_trainee'=>'Convocation Stagiaire'
+			    ,'attestation_trainee'=>'Attestation stagiaire'
+			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
 			);
 			
 			foreach ($Tab as $key => $val){

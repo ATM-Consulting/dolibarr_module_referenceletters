@@ -448,6 +448,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		}
 		
 		$this->pdf->SetTextColor(0, 0, 0);
+		return $this->pdf->GetY()+40;
 	}
 	
 	/**

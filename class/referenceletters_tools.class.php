@@ -133,10 +133,12 @@ class RfltrTools {
 					var val_link = $(this).text();
 					
 					if(val_link == '+') {
-						$(class_to_show).show();
+						// $(class_to_show).show();
+						$(this).parent().find('#id_external_model').show();
 						$(this).html('-');
 					} else if(val_link == '-') {
-						$(class_to_show).hide();
+						// $(class_to_show).hide();
+						$(this).parent().find('#id_external_model').hide();
 						$(this).html('+');
 					}
 					
@@ -156,9 +158,18 @@ class RfltrTools {
 									path = path + '&sessiontrainerid=' + $(this).attr('socid');
 								} else {
 									if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
-										addresse = $(this).prev().prev().attr('href');
-										idform = addresse.substr(addresse.indexOf('idform=')+7);
+										adresse = $(this).prev().prev().attr('href');
+										idform = adresse.substr(adresse.indexOf('idform=')+7);
 										path = path + '&idform=' + idform;
+									} else if($(this).attr('model') == 'courrier'){
+										adresse = $(this).prev().prev().attr('href');
+										cour = adresse.substr(adresse.indexOf('&cour=')+6);
+										if(cour.indexOf('&') !== -1){
+											courrier = cour.substr(0, cour.indexOf('&'));
+										} else {
+											courrier = cour.substr(0);
+										}
+										path = path + '&cour=' + courrier + '&socid=' + $(this).attr('socid');
 									} else {
 										path = path + '&socid=' + $(this).attr('socid');
 									}

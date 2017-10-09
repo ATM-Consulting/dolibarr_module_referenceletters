@@ -184,6 +184,7 @@ class ReferenceLetters extends CommonObject
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
+			    ,'courrier'=>'RefLtrLetters'
 			);
 			
 			foreach ($Tab as $key => $val){

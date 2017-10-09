@@ -220,7 +220,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 				}
 			}
-
+			
 			if(get_class($object) === 'Agsession') {
 				$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
 				$substitution_array = array ();

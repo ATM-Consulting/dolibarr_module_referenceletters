@@ -50,7 +50,7 @@ $scandir = GETPOST('scandir', 'alpha');
 /*
  * Actions
  */
-
+//if(!empty($_POST)) var_dump($_POST); exit;
 if ($action == 'updateMask') {
 	$maskconstrefleter = GETPOST('maskconstrefletter', 'alpha');
 	$maskrefletter = GETPOST('maskrefletter', 'alpha');
@@ -69,8 +69,8 @@ if ($action == 'updateMask') {
 	dolibarr_set_const($db, "REF_LETTER_ADDON", $value, 'chaine', 0, '', $conf->entity);
 } else if ($action == 'setvar') {
 	dolibarr_set_const($db, "REF_LETTER_TYPEEVENTNAME", GETPOST('REF_LETTER_TYPEEVENTNAME', 'alpha'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, "REF_LETTER_PREDEF_HEADER", GETPOST('REF_LETTER_PREDEF_HEADER', 'alpha'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, "REF_LETTER_PREDEF_FOOTER", GETPOST('REF_LETTER_PREDEF_FOOTER', 'alpha'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_HEADER", GETPOST('REF_LETTER_PREDEF_HEADER'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_FOOTER", GETPOST('REF_LETTER_PREDEF_FOOTER'), 'chaine', 0, '', $conf->entity);
 }
 
 /*
@@ -328,14 +328,14 @@ if ($conf->use_javascript_ajax) {
 }
 print '</td>';
 print '<td align="center">';
-// print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER"), 1, 'help');
+print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER"), 1, 'help');
 print '</td>';
 print '</tr>';
 
 if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
    
     print '<tr class="impair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrHeaderContent').' <br><br>';
-    $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', $conf->global->REF_LETTER_PREDEF_HEADER, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', $conf->global->REF_LETTER_PREDEF_HEADER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
     print '</td><td align="center">';
     print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
@@ -343,13 +343,12 @@ if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
     print '</tr>';
 
     print '<tr class="pair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrFooterContent') . '<br><br>';
-    $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', $conf->global->REF_LETTER_PREDEF_FOOTER, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', $conf->global->REF_LETTER_PREDEF_FOOTER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
     print '</td><td align="center">';
     print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
     print '</td>';
     print '</tr>';
-    
 }
 
 

@@ -69,6 +69,10 @@ if($action === 'save') {
 	$object->use_custom_header = GETPOST('use_custom_header');
 	echo $object->update($user);
 	exit;
+} elseif($action === 'predefheader'){
+    $object->use_custom_header = true;
+    $object->header = $conf->global->REF_LETTER_PREDEF_HEADER;
+    $object->update($user);
 }
 
 /*
@@ -132,6 +136,9 @@ if(!empty($object->id)) {
 	print '<td>'.$langs->trans('RefLtrUseCustomHeader');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object->use_custom_header) ? 'checked="checked"' : '').' />';
+	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)){
+	    print '&nbsp;&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&action=predefheader" class="button">' . $langs->trans('Fill') . '</a>';
+	}
 	print '</td>';
 	print '</tr>';
 	

@@ -50,6 +50,8 @@ RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement crée
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de courrier  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modéle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du courrier dans l'entête du document PDF
+RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
+RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de courriers
 
 #
 # Page À propos

@@ -246,46 +246,35 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	}
 	
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
-	print $linkback;
 	
-	print '<table class="border" width="100%">';
-	print '<tr>';
-	print '<td  width="20%">';
-	print $form->editfieldkey("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
-	print '</td><td>';
+	print '<div style="vertical-align: middle">';
+	print '<div class="pagination"><ul>';
+	print '<li class="noborder litext">'.$linkback.'</li>';
+	print '</ul></div>';
+	print '<div class="inline-block floatleft valignmiddle refid refidpadding">';
 	print $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
-	print '</td>';
-	print '</tr>';
-	
-	print '<tr>';
-	print '<td width="20%">';
-	print $langs->trans('RefLtrElement');
-	print '</td>';
-	print '<td>';
-	print $object->displayElement();
-	print '</td>';
-	print '</tr>';
-	
-	print '<tr>';
-	print '<td  width="20%">';
-	print $form->editfieldkey("RefLtrUseLandscapeFormat",'refltruse_landscape_format',(int)$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
-	print '</td><td>';
-	print $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
-	print '</td>';
-	print '</tr>';
+	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	print '<div class="refidno">';
+	print $langs->trans('RefLtrElement') . ' : ' . $object->displayElement() . '<br>';
+	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
+	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<bt>';
 	
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 	
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
-		print $object->showOptionals($extrafields);
+	    print $object->showOptionals($extrafields);
 	}
-
-	print '</table>';
+	
+	print '</div>';
+	print '</div>';
+	print '</div>';
 	
 	print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
+		    print '<div class="underbanner clearboth"></div>';
 			if ($line_chapter->content_text=='@breakpage@') {
 				print '<table class="border" width="100%">';
 				print '<tr><td style="text-align:center;font-weight:bold">';
@@ -369,14 +358,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		}
 	}
 	
-	print '<div class="tabsAction">';
-	print '<div class="inline-block divButAction">';
-	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
-	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
-	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
-	print "</div>\n";
-	print '</div>';
-	
 	print "</div>\n";
 	
 	/*
@@ -385,6 +366,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<div class="tabsAction">';
 	// Delete
 	if ($user->rights->referenceletters->write) {
+	    print '<div class="inline-block divButAction">';
+	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
+	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
+	    print "</div><br>";
 		//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";
 		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone">' . $langs->trans("Clone") . "</a></div>\n";
 	} else {

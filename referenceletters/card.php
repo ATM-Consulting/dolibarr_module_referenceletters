@@ -247,7 +247,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
 	
-	print '<div style="vertical-align: middle">';
+	print '<div style="vertical-align: middle; margin-bottom: 10px">';
 	print '<div class="pagination"><ul>';
 	print '<li class="noborder litext">'.$linkback.'</li>';
 	print '</ul></div>';
@@ -270,27 +270,30 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '</div>';
 	print '</div>';
 	print '</div>';
-	
-	print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
+
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
+	    
+	    print '<div class="underbanner clearboth"></div>';
+	    print '<table class="border" width="100%">';
+	    print '<tr class="liste_titre"><td>'. img_picto('',dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 'class="valignmiddle" id="pictotitle"', 1) . ' ' . $langs->trans("RefLtrChapters");
+	    print '</td></tr>';
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
-		    print '<div class="underbanner clearboth"></div>';
 			if ($line_chapter->content_text=='@breakpage@') {
-				print '<table class="border" width="100%">';
+				print '<tr class="oddeven"><td><table class="border" width="100%">';
 				print '<tr><td style="text-align:center;font-weight:bold">';
 				print $langs->trans('RefLtrPageBreak');
 				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 				print '</td></tr>';
-				print '</table>';
+				print '</table></td></tr>';
 			} elseif ($line_chapter->content_text=='@breakpagenohead@') {
-				print '<table class="border" width="100%">';
+				print '<tr class="oddeven"><td><table class="border" width="100%">';
 				print '<tr><td style="text-align:center;font-weight:bold">';
 				print $langs->trans('RefLtrAddPageBreakWithoutHeader');
 				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 				print '</td></tr>';
-				print '</table>';
+				print '</table></td><tr>';
 			} else {
-				print '<table class="border" width="100%">';
+				print '<tr class="oddeven"><td><table class="border" width="100%">';
 				
 				if ($user->rights->referenceletters->write) {
 					print '<tr><td rowspan="6" width="20px">';
@@ -353,9 +356,10 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '</td>';
 				print '</tr>';
 				
-				print '</table>';
+				print '</table></td></tr>';
 			}
 		}
+		print '</table>';
 	}
 	
 	print "</div>\n";

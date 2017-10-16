@@ -214,53 +214,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									
 									// merge agefodd arrays
 									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'TStagiairesSessionSoc', 'TStagiairesSessionSocMore', 'TStagiairesSessionConvention', 'THorairesSession',  'TFormateursSession'));
-									
-									// correction de problème de font-size
-									if (preg_match('/font-size:/', $chapter_text)) {
-									    $position = 0;
-									    while(strpos($chapter_text, 'font-size:', $position)){
-									        $position = strpos($chapter_text, 'font-size:', $position) + 10;
-									        $len = 1 + strpos($chapter_text, '>', strripos(substr($chapter_text, 0, $position), '<')) - strripos(substr($chapter_text, 0, $position), '<');
-									        $span = substr($chapter_text, strripos(substr($chapter_text, 0, $position), '<'), $len);
-									        $px = strpos($chapter_text, 'px', $position) - $position;
-									        $hauteur = substr($chapter_text, $position, $px);
-									        $tagOpen = strripos(substr($chapter_text, 0, $position), '<');
-									        $firsttag = $tagOpen;
-									        
-									        if (!empty($firsttag)){
-									            $i = 0;
-									            
-									            //while (strripos(substr($chapter_text, strripos(substr($chapter_text, 0, $firsttag), '<'), $firsttag), '><')){
-									            // ---------------------
-									            // TODO autre hypothèse : remoter au dernier td ou br ou li avant le tag d'ouverture...
-									            // ---------------------
-									            while (strripos(substr($chapter_text, 0, $firsttag), '>') == $firsttag -1){
-    									            $firsttag = strripos(substr($chapter_text, 0, $firsttag), '<');
-    									            var_dump($firsttag, strripos(substr($chapter_text, 0, $firsttag), '><'), substr($chapter_text, $firsttag));
-    									            $i++;
-    									        }
-    									        
-
-									        }
-									        
-									        
-									        //var_dump($chapter_text);
-									        $fermeture = strpos(substr($chapter_text, $position), '</span>')+7;
-									        $position += $fermeture;
-									        while (strpos(substr($chapter_text, $position), '</') === 0){
-									            $position += strpos(substr($chapter_text, $position), '>')+1;
-									        }
-									        $next = strpos(substr($chapter_text, $position), '<');
-									        if ($next < 3) {
-									            $next = strpos(substr($chapter_text, $position+3), '<') + 3;
-									        }
-									        // correction de hauteur de ligne
-									        $chapter_text = substr($chapter_text, 0, $position) . '<span style="line-height:'.$hauteur.'px">'.substr($chapter_text, $position, $next).'</span>' . substr($chapter_text, $position+$next);
-									        //var_dump(substr($chapter_text, $position), $next);
-									    }
-									}
-									exit;
-									
+																		
 									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									
 									if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {

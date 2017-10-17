@@ -229,7 +229,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									        while (strpos($strong, '<span style=', $i) !== false) {
 									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
 									            $style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
-									            if(strpos($strong, '<span style="', $i) === 0){
+									            if(empty(strpos($strong, '<span style="', $i))){
 									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;
 									                $strong = substr($strong, strpos($strong, '>', $o) +1, $l); 
 									            } else {

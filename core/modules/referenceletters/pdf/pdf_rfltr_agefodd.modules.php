@@ -227,13 +227,21 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									        $style = 'font-weight:bold;';
 									        $i =0;
 									        while (strpos($strong, '<span style=', $i) !== false) {
-									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
+									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) +1 - strpos($strong, '<span style="', $i);
 									            $style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
+									            if(strpos($strong, '<span style="', $i) === 0){
+									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;
+									                $strong = substr($strong, strpos($strong, '>', $o) +1, $l); 
+									            } else {
+									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;
+									                $strong = substr($strong, 0, strpos($strong, '<span')) . substr($strong, strpos($strong, '>')+1, $l) . substr($strong, strripos($strong, '</span>') + 7);
+									            }
 									            $i += $len;
 									        }
-									        $chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="'.$style.'">' . substr($chapter_text, $position + 8, $endStrong - $position -8) . '</span>' . substr($chapter_text, $endStrong + 9);
+									        $chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="'.$style.'">' . $strong . '</span>' . substr($chapter_text, $endStrong + 9);
 									        $position = $endStrong;
 									    }
+									    
 									}
 									
 									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);

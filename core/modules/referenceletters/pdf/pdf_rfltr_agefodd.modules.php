@@ -227,7 +227,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									        $style = 'font-weight:bold;';
 									        $i =0;
 									        while (strpos($strong, '<span style=', $i) !== false) {
-									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) +1 - strpos($strong, '<span style="', $i);
+									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
 									            $style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
 									            if(strpos($strong, '<span style="', $i) === 0){
 									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;

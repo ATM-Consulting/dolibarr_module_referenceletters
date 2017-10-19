@@ -29,6 +29,7 @@ if (! $res)
 		                                           
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 require_once "../lib/referenceletters.lib.php";
 require_once "../class/referenceletters.class.php";
 // Translations
@@ -68,6 +69,8 @@ if ($action == 'updateMask') {
 	dolibarr_set_const($db, "REF_LETTER_ADDON", $value, 'chaine', 0, '', $conf->entity);
 } else if ($action == 'setvar') {
 	dolibarr_set_const($db, "REF_LETTER_TYPEEVENTNAME", GETPOST('REF_LETTER_TYPEEVENTNAME', 'alpha'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_HEADER", GETPOST('REF_LETTER_PREDEF_HEADER'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_FOOTER", GETPOST('REF_LETTER_PREDEF_FOOTER'), 'chaine', 0, '', $conf->entity);
 }
 
 /*
@@ -88,6 +91,8 @@ if ($conf->use_javascript_ajax) {
 	print ' <script type="text/javascript">';
 	print 'window.fnDisplayFileCopyOption=function() {$( ".ifeventyes" ).show();};' . "\n";
 	print 'window.fnHideFileCopyOption=function() {$( ".ifeventyes" ).hide();};' . "\n";
+	print 'window.fnDisplayHeaderOption=function() {$( ".ifheadandfootyes" ).show();};' . "\n";
+	print 'window.fnHideHeaderOption=function() {$( ".ifheadandfootyes" ).hide();};' . "\n";
 	print ' </script>';
 }
 
@@ -289,6 +294,63 @@ print '<td align="center">';
 // print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_TYPEEVENTNAME"), 1, 'help');
 print '</td>';
 print '</tr>';
+
+print '<tr class="pair"><td>' . $langs->trans("RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    $input_array = array (
+        'alert' => array (
+            'set' => array (
+                'content' => $langs->trans('RefLtrConfirmChangeState'),
+                'title' => $langs->trans('RefLtrConfirmChangeState'),
+                'method' => 'fnDisplayHeaderOption',
+                'yesButton' => $langs->trans('Yes'),
+                'noButton' => $langs->trans('No')
+            ),
+            'del' => array (
+                'content' => $langs->trans('RefLtrConfirmChangeState'),
+                'title' => $langs->trans('RefLtrConfirmChangeState'),
+                'method' => 'fnHideHeaderOption',
+                'yesButton' => $langs->trans('Yes'),
+                'noButton' => $langs->trans('No')
+            )
+        )
+    );
+    
+    print ajax_constantonoff('REF_LETTER_PREDEF_HEADER_AND_FOOTER', $input_array);
+    
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("REF_LETTER_PREDEF_HEADER_AND_FOOTER", $arrval, $conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER);
+}
+print '</td>';
+print '<td align="center">';
+print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER"), 1, 'help');
+print '</td>';
+print '</tr>';
+
+if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
+    
+    print '<tr class="impair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrHeaderContent').' <br><br>';
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', $conf->global->REF_LETTER_PREDEF_HEADER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor->Create();
+    print '</td><td align="center">';
+    print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
+    print '</td>';
+    print '</tr>';
+    
+    print '<tr class="pair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrFooterContent') . '<br><br>';
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', $conf->global->REF_LETTER_PREDEF_FOOTER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor->Create();
+    print '</td><td align="center">';
+    print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
+    print '</td>';
+    print '</tr>';
+}
+
 
 print "</table><br>\n";
 if (! $conf->use_javascript_ajax) {

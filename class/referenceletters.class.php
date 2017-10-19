@@ -178,29 +178,34 @@ class ReferenceLetters extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-
+		
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
 		$sql .= "use_landscape_format,";
+		$sql .= "use_custom_header,header,use_custom_footer,footer,";
 		$sql .= "status,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-
+		
 		$sql .= ") VALUES (";
-
+		
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
 		$sql .= " " . (int)$this->use_landscape_format . ",";
+		$sql .= " " . (int)$this->use_custom_header . ",";
+		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
+		$sql .= " " . (int)$this->use_custom_footer . ",";
+		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
 		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-
+		
 		$sql .= ")";
 
 		$this->db->begin();

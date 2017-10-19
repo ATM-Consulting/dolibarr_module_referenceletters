@@ -234,7 +234,7 @@ class ReferenceLetters extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-
+		
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
@@ -245,9 +245,9 @@ class ReferenceLetters extends CommonObject
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-
+		
 		$sql .= ") VALUES (";
-
+		
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
@@ -261,7 +261,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-
+		
 		$sql .= ")";
 
 		$this->db->begin();

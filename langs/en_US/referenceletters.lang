@@ -50,6 +50,8 @@ RefLtrREF_LETTER_TYPEEVENTNAME=Label of created event
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<New letter template  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
+RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Use a custom model of header and footer
+RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Define a custom model of header and footer to use for your letters
 
 #
 # About page

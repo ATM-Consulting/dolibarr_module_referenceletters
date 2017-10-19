@@ -136,7 +136,7 @@ if(!empty($object->id)) {
 	print '<td>'.$langs->trans('RefLtrUseCustomHeader');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object->use_custom_header) ? 'checked="checked"' : '').' />';
-	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)){
+	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER) && !empty($conf->global->REF_LETTER_PREDEF_HEADER)){
 	    print '&nbsp;&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&action=predefheader" class="button">' . $langs->trans('Fill') . '</a>';
 	}
 	print '</td>';

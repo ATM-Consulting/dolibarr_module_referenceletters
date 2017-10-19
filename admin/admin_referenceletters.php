@@ -50,7 +50,7 @@ $scandir = GETPOST('scandir', 'alpha');
 /*
  * Actions
  */
-//if(!empty($_POST)) var_dump($_POST); exit;
+
 if ($action == 'updateMask') {
 	$maskconstrefleter = GETPOST('maskconstrefletter', 'alpha');
 	$maskrefletter = GETPOST('maskrefletter', 'alpha');
@@ -333,7 +333,7 @@ print '</td>';
 print '</tr>';
 
 if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
-   
+    
     print '<tr class="impair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrHeaderContent').' <br><br>';
     $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', $conf->global->REF_LETTER_PREDEF_HEADER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
@@ -341,7 +341,7 @@ if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
     print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
     print '</td>';
     print '</tr>';
-
+    
     print '<tr class="pair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrFooterContent') . '<br><br>';
     $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', $conf->global->REF_LETTER_PREDEF_FOOTER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
@@ -350,7 +350,6 @@ if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
     print '</td>';
     print '</tr>';
 }
-
 
 
 print "</table><br>\n";

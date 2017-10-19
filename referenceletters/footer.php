@@ -138,7 +138,7 @@ if(!empty($object->id)) {
 	print '<td>'.$langs->trans('RefLtrUseCustomFooter');
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object->use_custom_footer) ? 'checked="checked"' : '').' />';
-	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)){
+	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER) && !empty($conf->global->REF_LETTER_PREDEF_FOOTER)){
 	    print '&nbsp;&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&action=predeffooter" class="button">' . $langs->trans('Fill') . '</a>';
 	}
 	print '</td>';

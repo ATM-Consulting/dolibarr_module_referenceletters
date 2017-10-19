@@ -53,6 +53,7 @@ RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du courrier da
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de courriers
 
+
 #
 # Page À propos
 #
@@ -125,8 +126,3 @@ RefLtrHeaderContent=Contenu de l'entête personnalisé
 RefLtrFooterContent=Contenu du pied de page personnalisé
 RefLtrHeaderTab=Entête
 RefLtrFooterTab=Pied de page
-
-RefLtrSubstAgefodd=Sessions de formation module Agefodd
-RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession")
-RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
-RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")

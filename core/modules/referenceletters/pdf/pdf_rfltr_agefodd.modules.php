@@ -116,7 +116,8 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						// Set calculation of header and footer high line
 						// footer high
 						$height = $this->getRealHeightLine('foot');
-						$this->pdf->SetAutoPageBreak(1, $height);
+
+						$this->pdf->SetAutoPageBreak(1, $height+25);
 
 						$this->pdf->setPrintHeader(true);
 						$this->pdf->setPrintFooter(true);
@@ -143,7 +144,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 							// Header high
 							$height = $this->getRealHeightLine('head');
 							// Left, Top, Right
-							$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
+							$this->pdf->SetMargins($this->marge_gauche, $height, $this->marge_droite, 1);
 							
 							// New page
 							$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
@@ -213,6 +214,35 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 									
 									// merge agefodd arrays
 									$chapter_text = $this->merge_array($object, $chapter_text, array('TStagiairesSession', 'TStagiairesSessionSoc', 'TStagiairesSessionSocMore', 'TStagiairesSessionConvention', 'THorairesSession',  'TFormateursSession'));
+									
+									// correction de problème de décalage de texte
+									if (preg_match('/<strong>/', $chapter_text)) {
+									    $position = 0;
+									    
+									    while (preg_match('/<strong>/', substr($chapter_text, $position))){
+									        $position = strpos($chapter_text, '<strong>', $position);
+									        $startStrong = $position;
+									        $endStrong = strpos($chapter_text, '</strong>', $position);
+									        $strong = substr($chapter_text, $startStrong + 8, $endStrong - $position - 8);
+									        $style = 'font-weight:bold;';
+									        $i =0;
+									        while (strpos($strong, '<span style=', $i) !== false) {
+									            $len = strpos(substr($strong,strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
+									            $style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
+									            if(empty(strpos($strong, '<span style="', $i))){
+									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;
+									                $strong = substr($strong, strpos($strong, '>', $o) +1, $l); 
+									            } else {
+									                $l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) -1;
+									                $strong = substr($strong, 0, strpos($strong, '<span')) . substr($strong, strpos($strong, '>')+1, $l) . substr($strong, strripos($strong, '</span>') + 7);
+									            }
+									            $i += $len;
+									        }
+									        $chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="'.$style.'">' . $strong . '</span>' . substr($chapter_text, $endStrong + 9);
+									        $position = $endStrong;
+									    }
+									    
+									}
 									
 									$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 									
@@ -448,6 +478,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		}
 		
 		$this->pdf->SetTextColor(0, 0, 0);
+		return $this->pdf->GetY()+40;
 	}
 	
 	/**

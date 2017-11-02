@@ -127,6 +127,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
+		$end_y = $this->pdf->GetY();
+		$height = $end_y - $posy;
+		
+		return $height;
 	}
 	function _pagefootCustom($object, $hidefreetext = 0) {
 
@@ -137,8 +141,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-		$this->pdf->writeHTMLCell($this->pdf->page_largeur - $this->pdf->margin_left - $this->pdf->margin_right, 0, $dims['lm'], $dims['hk'] - 45 /*TODO ici la taille du pied de page est fixe, l'idéal serait qu'elle soit éditable ou automatique*/, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
-
+		$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - 45 /*TODO ici la taille du pied de page est fixe, l'idéal serait qu'elle soit éditable ou automatique*/, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		// TODO pagination marche pas
 		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
 		 else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);*/
@@ -220,7 +223,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 				}
 			}
-
+			
 			if(get_class($object) === 'Agsession') {
 				$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
 				$substitution_array = array ();
@@ -271,9 +274,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$use_custom_header = $this->instance_letter->use_custom_header;
 
 			if (empty($use_custom_header)) {
-				$this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
-				$this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
 			}
 		} elseif ($type == 'foot') {
 			$use_custom_footer = $this->instance_letter->use_custom_footer;
@@ -282,7 +285,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				// HEre standard _pagefoot method return bottom margin
 				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
-				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs, 0);
+				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs);
 			}
 		}
 
@@ -328,6 +331,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// exit;
 		return $height;
 	}
+	
 }
 
 /**

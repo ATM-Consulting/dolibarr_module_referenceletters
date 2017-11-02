@@ -129,8 +129,11 @@ class FormReferenceLetters extends Form
 			}else {
 				$option_selected='';
 			}
+			
+			$module = '';
+			if(strpos($element_type, 'rfltr_agefodd_') !== false) $module = $langs->trans('Module103000Name') . ' - ';
 
-			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
+			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $module . $langs->trans($array_data['title']) . '</option>';
 		}
 
 		$select_elemnt .= '</select>';

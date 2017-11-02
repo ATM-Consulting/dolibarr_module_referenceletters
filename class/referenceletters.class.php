@@ -159,26 +159,41 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 			
-			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_attestation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_attestation']['title'] = 'AgfSendAttestation';
 			
-			// Attestation de formation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_attestation_fin_formation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_attestation_fin_formation']['title'] = 'AgfAttestationEndTraining';
+			$Tab = array(
+			    'fiche_pedago'=>'AgfFichePedagogique'
+			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
+			    ,'conseils'=>'AgfConseilsPratique'
+			    ,'fiche_presence'=>'AgfFichePresence'
+			    ,'fiche_presence_direct'=>'AgfFichePresenceDirect'
+			    ,'fiche_presence_empty'=>'AgfFichePresenceEmpty'
+			    ,'fiche_presence_trainee'=>'AgfFichePresenceTrainee'
+			    ,'fiche_presence_trainee_direct'=>'AgfFichePresenceTraineeDirect'
+			    ,'fiche_presence_landscape'=>'AgfFichePresenceTraineeLandscape'
+			    ,'fiche_evaluation'=>'AgfFicheEval'
+			    ,'fiche_remise_eval'=>'AgfRemiseEval'
+			    ,'attestationendtraining_empty'=>'AgfAttestationEndTrainingEmpty'
+			    ,'chevalet'=>'AgfChevalet'
+			    ,'convocation'=>'AgfPDFConvocation'
+			    ,'attestationendtraining'=>'AgfAttestationEndTraining'
+			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
+			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
+			    ,'attestation'=>'AgfSendAttestation'
+			    ,'certificateA4'=>'AgfPDFCertificateA4'
+			    ,'certificatecard'=>'AgfPDFCertificateCard'
+			    ,'contrat_presta'=>'AgfContratPrestation'
+			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
+			    ,'contrat_trainer'=>'AgfContratTrainer'
+			    ,'courrier'=>'RefLtrLetters'
+			    ,'convocation_trainee'=>'Convocation Stagiaire'
+			    ,'attestation_trainee'=>'Attestation stagiaire'
+			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			);
 			
-			// Fiche d'évaluation (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_evaluation'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_evaluation']['title'] = 'AgfFicheEval';
-			
-			// Fiche de présence (feuille d'émargement) (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_presence'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_presence']['title'] = 'AgfFichePresence';
-			
-			// Contrat formateur (basée sur le même PDF que tous les autres documents Agefodd
-			$this->element_type_list['rfltr_agefodd_contrat_trainer'] = $this->element_type_list['rfltr_agefodd_convention'];
-			$this->element_type_list['rfltr_agefodd_contrat_trainer']['title'] = 'AgfContratTrainer';			
-			
+			foreach ($Tab as $key => $val){
+			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
+			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
 			
 		}
 		
@@ -219,29 +234,34 @@ class ReferenceLetters extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-
+		
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
 		$sql .= "use_landscape_format,";
+		$sql .= "use_custom_header,header,use_custom_footer,footer,";
 		$sql .= "status,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-
+		
 		$sql .= ") VALUES (";
-
+		
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
 		$sql .= " " . (int)$this->use_landscape_format . ",";
+		$sql .= " " . (int)$this->use_custom_header . ",";
+		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
+		$sql .= " " . (int)$this->use_custom_footer . ",";
+		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
 		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-
+		
 		$sql .= ")";
 
 		$this->db->begin();
@@ -561,10 +581,14 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
 				,'formation_ref'=>'Référence de la formation'
-				,'formation_statut'=>'Référence de la formation'
+				,'formation_statut'=>'Statut de la formation'
 				,'formation_lieu'=>'Lieu de la formation'
 				,'formation_commercial'=>'commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'
+		        ,'formation_but'=>'But de la formation'
+		        ,'formation_methode'=>'Methode de formation'
+		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
+		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
 		);
 		
 		// Liste de données - Participants
@@ -589,6 +613,13 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
+		);
+		
+		$subst_array['Stagiaire (pour les documents par participants)'] = array(
+		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
+		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
+		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
+		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
 		);
 		
 	}
@@ -793,6 +824,7 @@ class ReferenceLetters extends CommonObject
 		// Load source object
 		$object->fetch($fromid);
 		$object->title = $object->title . ' (Clone)';
+		
 		$clonedrefletterid = $object->create($user);
 
 		// Other options

@@ -618,7 +618,10 @@ class modReferenceLetters extends DolibarrModules
 		$sql = array ();
 
 		$result = $this->load_tables();
-
+		
+		define('INC_FROM_DOLIBARR', true);
+		dol_include_once('/referenceletters/script/create-maj-base.php');
+		
 		return $this->_init($sql, $options);
 	}
 

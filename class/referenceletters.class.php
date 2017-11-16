@@ -263,7 +263,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	function fetch($id, $title='') {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -284,7 +284,9 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.use_landscape_format";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
-		$sql .= " WHERE t.rowid = " . $id;
+		$sql .= " WHERE 1 ";
+		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
+		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
 
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -314,10 +316,10 @@ class ReferenceLetters extends CommonObject
 				if (count($extralabels) > 0) {
 					$this->fetch_optionals($this->id, $extralabels);
 				}
+				$this->db->free($resql);
+				
+				return 1;
 			}
-			$this->db->free($resql);
-
-			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);

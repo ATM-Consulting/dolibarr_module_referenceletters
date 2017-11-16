@@ -61,17 +61,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	if(!empty($object)) {
     		
     		// TVA
-    		$TDetailTVA = $this->get_detail_tva($object, $outputlangs);
+    		$TDetailTVA = self::get_detail_tva($object, $outputlangs);
     		if(!empty($TDetailTVA)) {
 	    		$array_other['tva_detail_titres'] = implode('<br />', $TDetailTVA['TTitres']);
 	    		$array_other['tva_detail_montants'] = implode('<br />', $TDetailTVA['TValues']);
     		}
     		
+    		// Liste paiements
     		if(get_class($object) === 'Facture') {
-	    		// Liste paiements
+	    		
     			$array_other['deja_paye']=$array_other['somme_avoirs']=price(0, 0, $outputlangs);
     			$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
-	    		$array_other['liste_paiements'] = $this->get_liste_reglements($object, $outputlangs);
+	    		$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
 	    		if(!empty($array_other['liste_paiements'])) {
 	    			
 	    			$deja_regle= $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
@@ -90,12 +91,35 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	    		
     		}
     		
+    		// Linked objects
+			$array_other['objets_lies'] = self::getLinkedObjects($object, $outputlangs);
+    		
     	}
     	//var_dump($array_other);exit;
     	return $array_other;
     }
     
-    function get_detail_tva(&$object, &$outputlangs) {
+    static function getLinkedObjects(&$object, &$outputlangs) {
+    	
+    	require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+    	$linkedobjects = pdf_getLinkedObjects($object,$outputlangs);
+    	if (! empty($linkedobjects))
+    	{
+    		$TRefToShow=array();
+    		foreach($linkedobjects as $linkedobject)
+    		{
+    			$reftoshow = $linkedobject["ref_title"].' : '.$linkedobject["ref_value"];
+    			if (! empty($linkedobject["date_value"])) $reftoshow .= ' / '.$linkedobject["date_value"];
+    			$TRefToShow[] = $reftoshow;
+    		}
+    	}
+    	
+    	if(empty($TRefToShow)) return '';
+    	else return implode('<br />', $TRefToShow);
+    	
+    }
+    
+    static function get_detail_tva(&$object, &$outputlangs) {
     	
     	global $conf;
     	
@@ -138,7 +162,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	return array('TTitres'=>array_keys($TTva), 'TValues'=>$TTva);
     }
     
-    function get_liste_reglements(&$object, &$outputlangs) {
+    static function get_liste_reglements(&$object, &$outputlangs) {
     	
     	global $db, $conf;
     	
@@ -177,14 +201,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$sql.= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = ".$object->id;
     	$sql.= " ORDER BY p.datep";
     	
-    	$resql=$this->db->query($sql);
+    	$resql=$db->query($sql);
     	if ($resql)
     	{
     		$sign=1;
     		if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
-    		while ($row = $this->db->fetch_object($resql)) {
+    		while ($row = $db->fetch_object($resql)) {
     			
-    			$date = dol_print_date($this->db->jdate($row->date),'day',false,$outputlangs,true);
+    			$date = dol_print_date($db->jdate($row->date),'day',false,$outputlangs,true);
     			$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
     			$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
     			$num = $row->num;

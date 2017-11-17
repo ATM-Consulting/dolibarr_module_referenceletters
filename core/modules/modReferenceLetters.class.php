@@ -82,6 +82,11 @@ class modReferenceLetters extends DolibarrModules
 				'models' => 1,
 				'hooks' => array (
 						'pdfgeneration'
+						,'formfile'
+						,'propalcard'
+						,'ordercard'
+						,'invoicecard'
+						,'contractcard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory

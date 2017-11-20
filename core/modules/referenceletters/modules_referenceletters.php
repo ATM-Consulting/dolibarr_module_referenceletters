@@ -464,7 +464,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
  * @param object $this->outputlangs
  * @param int $id
  */
-function importImageBackground(&$pdf, $outputlangs, $id) {
+function importImageBackground(&$pdf, $id) {
 	global $conf;
 	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
 

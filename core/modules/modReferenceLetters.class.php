@@ -82,6 +82,11 @@ class modReferenceLetters extends DolibarrModules
 				'models' => 1,
 				'hooks' => array (
 						'pdfgeneration'
+						,'formfile'
+						,'propalcard'
+						,'ordercard'
+						,'invoicecard'
+						,'contractcard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory
@@ -618,7 +623,10 @@ class modReferenceLetters extends DolibarrModules
 		$sql = array ();
 
 		$result = $this->load_tables();
-
+		
+		define('INC_FROM_DOLIBARR', true);
+		dol_include_once('/referenceletters/script/create-maj-base.php');
+		
 		return $this->_init($sql, $options);
 	}
 

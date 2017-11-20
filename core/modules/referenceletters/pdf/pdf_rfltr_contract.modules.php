@@ -138,8 +138,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-				$pdf->SetAutoPageBreak(1, 0);
-
+				
 				// Set calculation of header and footer high line
 				// footer high
 				$height = $this->getRealHeightLine('foot');

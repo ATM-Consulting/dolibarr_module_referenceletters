@@ -177,12 +177,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
-					$substitution_array['{' . $key . '}'] = $value;
+					$substitution_array['{cust_' . $key . '}'] = $value;
 				}
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
 
-			$tmparray = $this->get_substitutionarray_other($this->outputlangs);
+			$tmparray = $this->get_substitutionarray_other($this->outputlangs, $object);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -461,7 +461,6 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 /**
  *
  * @param object $pdf
- * @param object $this->outputlangs
  * @param int $id
  */
 function importImageBackground(&$pdf, $id) {

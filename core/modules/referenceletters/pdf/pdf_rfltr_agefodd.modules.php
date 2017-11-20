@@ -73,7 +73,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		
 		// Chargement du modèle utilisé
-		list($instance_letter, $object) = RfltrTools::load_object_refletter($id_object, $id_model, $socid, $obj_agefodd_convention);
+		list($instance_letter, $object) = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid);
 		$this->instance_letter = $instance_letter;
 		
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
@@ -151,7 +151,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 							if (! empty($tplidx))
 								$this->pdf->useTemplate($tplidx);
 								
-								importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
+								importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 								
 
 								$this->pdf->SetFont('', '', $default_font_size - 1);
@@ -177,7 +177,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 										if (! empty($tplidx))
 											$this->pdf->useTemplate($tplidx);
 
-											importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
+											importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 										$posX = $this->pdf->getX();
 										$posY = $this->pdf->getY();
@@ -197,7 +197,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 											$this->pdf->useTemplate($tplidx);
 										}
 
-										importImageBackground($this->pdf, $this->outputlangs, $instance_letter->fk_referenceletters);
+										importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 										$posY = $this->marge_haute;
 										$posX = $this->marge_gauche;

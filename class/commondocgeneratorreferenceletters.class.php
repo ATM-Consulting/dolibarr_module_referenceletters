@@ -281,7 +281,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray = $this->fill_substitutionarray_with_extrafields($line,$resarray,$extrafields,$array_key=$array_key,$outputlangs);
     	
 	// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
-    	$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+    	if(get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne') $resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 	// Spé pour les contrats
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');

@@ -105,7 +105,8 @@ class RfltrTools {
 		
 		$sql = 'SELECT rowid, title, element_type
 				FROM '.MAIN_DB_PREFIX.'referenceletters
-				WHERE element_type LIKE "%agefodd%"';
+				WHERE element_type LIKE "%agefodd%"
+				AND entity IN (' . getEntity('referenceletters') . ")";
 		
 		$resql = $db->query($sql);
 		if(!empty($resql)) {

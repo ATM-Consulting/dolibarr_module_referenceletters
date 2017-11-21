@@ -287,7 +287,8 @@ class ReferenceLetters extends CommonObject
 		$sql .= " WHERE 1 ";
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
 		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
-
+		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
+		
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {

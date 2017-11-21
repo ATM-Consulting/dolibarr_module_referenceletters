@@ -228,7 +228,7 @@ class ActionsReferenceLetters
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
 		
-		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'"';
+		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ')';
 		$resql = $db->query($sql);
 		while($res = $db->fetch_object($resql)) $TModelsID[] = array('id'=>$res->rowid, 'title'=>$res->title);
 		

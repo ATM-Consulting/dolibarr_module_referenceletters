@@ -141,7 +141,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-		$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - 45 /*TODO ici la taille du pied de page est fixe, l'idéal serait qu'elle soit éditable ou automatique*/, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		
+		$emplacement_pdp = $dims['hk'] - 45; // Avant
+		// A défaut de mieux... Apparemment impossible de définir la bonne hauteur du pied de page si on balance directement du html
+		if(get_class($object) === 'Agsession') $emplacement_pdp = 251;
+		else $emplacement_pdp = 282;
+		
+		$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $emplacement_pdp /*TODO ici la taille du pied de page est fixe, l'idéal serait qu'elle soit éditable ou automatique*/, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		// TODO pagination marche pas
 		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
 		 else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);*/

@@ -243,7 +243,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'lines'
 					));
-
+					
+					$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
 					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {

@@ -268,7 +268,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			}
     			
     			if (! is_array($value) && ! is_object($value)) {
-    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false) $value = price($value);
+    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false) $value = price($value);
     				$array_other['object_' . $sub_element_label . $key] = $value;
     			}
     			elseif ($recursive && !empty($value)) {

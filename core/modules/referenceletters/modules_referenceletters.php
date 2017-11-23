@@ -290,7 +290,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
 				$bottom_margin=$this->pdf->getMargins()['bottom'];
-				$this->_pagefootCustom($this->pdf->ref_object,'test');
+				$this->_pagefootCustom($this->pdf->ref_object, 'custom');
 			}
 		}
 

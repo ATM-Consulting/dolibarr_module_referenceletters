@@ -140,7 +140,6 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 				// Set calculation of header and footer high line
 				// footer high
 				$height = $this->getRealHeightLine('foot');
-				$height = 23; // FIXME, possibilité de calculer ça dynamiquement ???
 				$this->pdf->SetAutoPageBreak(1, $height);
 
 				$this->pdf->setPrintHeader(true);

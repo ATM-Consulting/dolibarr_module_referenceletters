@@ -118,7 +118,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			return $chapter_text;
 	}
-	function _pageheadCustom($object, $showadress) {
+	function _pageheadCustom($object) {
 
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
@@ -129,7 +129,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$this->pdf->SetFont('', '', $default_font_size);
 		$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
 	}
-	function _pagefootCustom($object, $hidefreetext = 0) {
+	function _pagefootCustom($object,$typeprint='') {
 
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
@@ -138,7 +138,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-		$this->pdf->writeHTMLCell($this->pdf->page_largeur - $this->pdf->margin_left - $this->pdf->margin_right, 0, $dims['lm'], $dims['hk'] - 16, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		
+		if (!empty($typeprint)) {
+			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		} else {
+			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk']-$this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		}
 
 		// TODO pagination marche pas
 		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
@@ -256,6 +261,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$start_page = $this->pdf->getPage();
 
 		$height = 0;
+		$bottom_margin=0;
 
 		// print content
 		if ($type == 'head') {
@@ -273,7 +279,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				// HEre standard _pagefoot method return bottom margin
 				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
-				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs, 0);
+				$bottom_margin=$this->pdf->getMargins()['bottom'];
+				$this->_pagefootCustom($this->pdf->ref_object, 'custom');
 			}
 		}
 
@@ -315,7 +322,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
 		// print '$heightfinnal='.$height.'<br>';
-
+		
+		if (!empty($bottom_margin)) {
+			if (get_class($this->pdf->ref_object) === 'Agsession') $height-=($bottom_margin/2);
+			$this->pdf->mybottommargin=$height;
+		}
+		
 		// exit;
 		return $height;
 	}

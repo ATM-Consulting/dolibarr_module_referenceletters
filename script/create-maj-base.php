@@ -60,8 +60,11 @@ if($rfltr->fetch('', $title) <= 0) {
 	</tbody>
 </table>';
 	$rfltr->use_custom_header = 1;
-	$rfltr->footer = '<div style="text-align:center"><span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
-NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span></div>';
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 	
@@ -219,8 +222,11 @@ if($rfltr->fetch('', $title) <= 0) {
 	</tbody>
 </table>';
 	$rfltr->use_custom_header = 1;
-	$rfltr->footer = '<div style="text-align:center"><span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
-NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span></div>';
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 	
@@ -384,8 +390,11 @@ if($rfltr->fetch('', $title) <= 0) {
 	</tbody>
 </table>';
 	$rfltr->use_custom_header = 1;
-	$rfltr->footer = '<div style="text-align:center"><span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
-NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span></div>';
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 	
@@ -518,8 +527,11 @@ if($rfltr->fetch('', $title) <= 0) {
 	</tbody>
 </table>';
 	$rfltr->use_custom_header = 1;
-	$rfltr->footer = '<div style="text-align:center"><span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
-NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span></div>';
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 	

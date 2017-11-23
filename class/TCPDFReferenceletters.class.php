@@ -44,7 +44,7 @@ class TCPDFRefletters extends TCPDF
 			$this->model->_pagehead($this->ref_object, 1, $this->model->outputlangs);
 		}
 		else {
-			$this->model->_pageheadCustom($this->ref_object, 1, $this->model->outputlangs);
+			$this->model->_pageheadCustom($this->ref_object);
 		}
 	}
 
@@ -56,7 +56,7 @@ class TCPDFRefletters extends TCPDF
 			$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
 		}
 		else {
-			$this->model->_pagefootCustom($this->ref_object, $this->model->outputlangs, 0);
+			$this->model->_pagefootCustom($this->ref_object);
 		}
 	}
 

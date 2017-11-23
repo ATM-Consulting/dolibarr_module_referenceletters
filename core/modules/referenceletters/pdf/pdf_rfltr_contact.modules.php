@@ -144,7 +144,6 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 				// Set calculation of header and footer high line
 				// footer high
 				$height = $this->getRealHeightLine('foot');
-				$height = 23; // FIXME, possibilité de calculer ça dynamiquement ???
 				$this->pdf->SetAutoPageBreak(1, $height);
 
 				$this->pdf->setPrintHeader(true);
@@ -257,8 +256,6 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 					$posY = $this->pdf->GetY();
 				}
 				// Pied de page
-				/*if(empty($use_custom_footer)) $this->_pagefoot($this->pdf, $object, $this->outputlangs);
-				 else $this->_pagefootCustom($this->pdf, $object, $this->outputlangs, 0, $instance_letter);*/
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

@@ -117,7 +117,7 @@ class pdf_rfltr_agefodd  extends ModelePDFReferenceLetters {
 						// footer high
 						$height = $this->getRealHeightLine('foot');
 
-						$this->pdf->SetAutoPageBreak(1, $height+25);
+						$this->pdf->SetAutoPageBreak(1, $height);
 
 						$this->pdf->setPrintHeader(true);
 						$this->pdf->setPrintFooter(true);

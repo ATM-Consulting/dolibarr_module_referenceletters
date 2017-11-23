@@ -117,7 +117,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			return $chapter_text;
 	}
-	function _pageheadCustom($object, $showadress) {
+	function _pageheadCustom($object) {
 
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
@@ -132,7 +132,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		
 		return $height;
 	}
-	function _pagefootCustom($object, $hidefreetext = 0) {
+	function _pagefootCustom($object,$typeprint='') {
 
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
@@ -141,17 +141,15 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-		
-		$emplacement_pdp = $dims['hk'] - 45; // Avant
-		// A défaut de mieux... Apparemment impossible de définir la bonne hauteur du pied de page si on balance directement du html
-		if(get_class($object) === 'Agsession') $emplacement_pdp = 251;
-		else $emplacement_pdp = 282;
-		
-		$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $emplacement_pdp /*TODO ici la taille du pied de page est fixe, l'idéal serait qu'elle soit éditable ou automatique*/, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
-		// TODO pagination marche pas
-		/*if (empty($conf->global->MAIN_USE_FPDF)) $pdf->MultiCell(13, 2, $pdf->PageNo().'/'.$pdf->getAliasNbPages(), 0, 'R', 0);
-		 else $pdf->MultiCell(13, 2, $pdf->PageNo().'/{nb}', 0, 'R', 0);*/
+
+		if (!empty($typeprint)) {
+			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		} else {
+			//var_dump($this->pdf->mybottommargin);
+			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk']-$this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		}
 	}
+
 	function setSubstitutions(&$object, $txt) {
 		global $user, $mysoc;
 
@@ -198,7 +196,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 
 			if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'Agsession' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters'/*TODO je sais pas pourquoi à un moment on se trouve dans ce dernier cas*/) { // Réservé aux pièces de vente
-				var_dump(get_class($object));
 				$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
 				$substitution_array = array();
 				if (is_array($tmparray) && count($tmparray) > 0) {
@@ -274,6 +271,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$start_page = $this->pdf->getPage();
 
 		$height = 0;
+		$bottom_margin=0;
 
 		// print content
 		if ($type == 'head') {
@@ -291,13 +289,17 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				// HEre standard _pagefoot method return bottom margin
 				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
-				$this->_pagefootCustom($this->pdf->ref_object, $this->outputlangs);
+				$bottom_margin=$this->pdf->getMargins()['bottom'];
+				$this->_pagefootCustom($this->pdf->ref_object,'test');
 			}
 		}
 
 		if (empty($height)) {
 			// get the new Y
+			
 			$end_y = $this->pdf->GetY();
+			//var_dump(array($start_y,$end_y,$bottom_margin));
+		//	exit;
 			$end_page = $this->pdf->getPage() - 1;
 			// calculate height
 			// print '$end_y='.$end_y.'<br>';
@@ -332,9 +334,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
-		// print '$heightfinnal='.$height.'<br>';
-
-		// exit;
+		
+		if (!empty($bottom_margin)) {
+			if (get_class($this->pdf->ref_object) === 'Agsession') $height-=($bottom_margin/2);
+			$this->pdf->mybottommargin=$height;
+		}
+		//print '$heightfinnal='.$height.'<br>';
+		//exit;
 		return $height;
 	}
 	

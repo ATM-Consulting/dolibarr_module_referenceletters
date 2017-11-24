@@ -135,3 +135,8 @@ RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TSta
 RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
 RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")
 RefLtrSubstAgefoddStagiaire=Stagiaire (pour les documents par participants)
+
+#
+# Tags lignes
+#
+RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)

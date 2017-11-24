@@ -126,3 +126,8 @@ RefLtrHeaderContent=Contenu de l'entête personnalisé
 RefLtrFooterContent=Contenu du pied de page personnalisé
 RefLtrHeaderTab=Entête
 RefLtrFooterTab=Pied de page
+
+#
+# Tags lignes
+#
+RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)

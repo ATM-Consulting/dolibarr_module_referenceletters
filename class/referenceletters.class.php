@@ -513,9 +513,48 @@ class ReferenceLetters extends CommonObject
 			);
 		}
 
+		$this->completeSubstitution($subst_array);
+		
 		return $subst_array;
 	}
 
+	function completeSubstitution(&$subst_array) {
+		
+		global $langs;
+		
+		$subst_array[$langs->trans('RefLtrLines')] = array(
+				'line_fulldesc'=>'Description complète',
+				'line_product_ref'=>'Référence produit',
+				'line_product_label'=>'Libellé produit',
+				'line_product_type'=>'Type produit',
+				'line_desc'=>'Description',
+				'line_vatrate'=>'Taux de TVA',
+				'line_up'=>'Prix unitaire (format numérique)',
+				'line_up_locale'=>'Prix unitaire (format prix)',
+				'line_qty'=>'Qté ligne',
+				'line_discount_percent'=>'Remise ligne',
+				'line_price_ht'=>'Total HT ligne (format numérique)',
+				'line_price_ttc'=>'Total TTC ligne (format numérique)',
+				'line_price_vat'=>'Montant TVA (format numérique)',
+				'line_price_ht_locale'=>'Total HT ligne (format prix)',
+				'line_price_ttc_locale'=>'Total TTC ligne (format prix)',
+				'line_price_vat_locale'=>'Montant TVA (format prix)',
+				// Dates
+				'line_date_start'=>'Date début service',
+				'line_date_start_locale'=>'Date début service format 1',
+				'line_date_start_rfc'=>'Date début service format 2',
+				'line_date_end'=>'Date fin service',
+				'line_date_end_locale'=>'Date fin service format 1',
+				'line_date_end_rfc'=>'Date fin service format 2',
+		);
+		
+		// Réservé aux lignes de contrats
+		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
+		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
+		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
+		
+	}
+	
 	/**
 	 * return translated label of element linked
 	 *

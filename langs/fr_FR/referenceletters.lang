@@ -126,3 +126,12 @@ RefLtrHeaderContent=Contenu de l'entête personnalisé
 RefLtrFooterContent=Contenu du pied de page personnalisé
 RefLtrHeaderTab=Entête
 RefLtrFooterTab=Pied de page
+
+#
+# Substitutions Agefodd
+#
+RefLtrSubstAgefodd=Sessions de formation module Agefodd
+RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession")
+RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
+RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")
+RefLtrSubstAgefoddStagiaire=Stagiaire (pour les documents par participants)

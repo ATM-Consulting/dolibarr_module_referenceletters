@@ -639,3 +639,134 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	}
 	
 }
+
+/************* Document exemple Agefodd **************/
+$title = 'EDITION_PERSO_AGEFODD_EXEMPLE';
+if($rfltr->fetch('', $title) <= 0) {
+	
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type = 'rfltr_agefodd_fiche_presence';
+	$rfltr->status = 1;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '<div style="text-align:center"><br />
+<span style="font-size:10px"><strong>ENTETE<br />
+PERSONNALISE</strong></span><br />
+&nbsp;</div>';
+	$rfltr->footer = '<div style="text-align:center"><em>PIED DE PAGE PERSONNALISE</em><br />
+<br />
+<br />
+<br />
+&nbsp;</div>';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_landscape_format = 0;
+	
+	$id_rfltr = $rfltr->create($user);
+	
+	// Instanciation du contenu
+	if(!empty($id_rfltr)) {
+		
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Contenu';
+		$chapter->content_text = 'Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
+Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
+Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}</strong><br />
+Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
+<br />
+Tiers convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />
+<br />
+<strong>{objvar_object_document_societe_name}<br />
+{objvar_object_document_societe_address}<br />
+{objvar_object_document_societe_zip}&nbsp;{objvar_object_document_societe_town}<br />
+Repr&eacute;sent&eacute; par&nbsp;{objvar_object_signataire_intra}/{objvar_object_signataire_inter}</strong><br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
+Liste horaires :<br />
+<br />
+[!-- BEGIN THorairesSession --]Le&nbsp;<strong>{line_date_session} </strong>:<br />
+- D&eacute;but&nbsp;<strong>{line_heure_debut_session}</strong>&nbsp;<br />
+- Fin&nbsp;<strong>{line_heure_fin_session}</strong><br />
+[!-- END THorairesSession --]<br />
+<br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
+Tableau des participants :<br />
+&nbsp;<br />
+&nbsp;
+<table border="1" cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><span style="font-size:11px">Nom - Pr&eacute;nom</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Structure</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Fonction</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Type financement</span><span style="font-size:11px">[!-- BEGIN&nbsp;TStagiairesSession --]</span></td>
+		</tr>
+		<tr>
+			<td style="text-align:center"><br />
+			<strong><span style="font-size:11px">{line_civilite} {line_nom}&nbsp;{line_prenom}</span></strong><br />
+			&nbsp;</td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_nom_societe} ({line_code_societe})</span></strong></td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_poste}</span></strong></td>
+			<td style="text-align:center"><strong>{line_type}</strong><span style="font-size:11px">[!-- END&nbsp;TStagiairesSession --]</span></td>
+		</tr>
+	</tbody>
+</table>
+<br />
+<br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
+Tableau des participants au sein d&#39;une convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />
+&nbsp;<br />
+&nbsp;
+<table border="1" cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><span style="font-size:11px">Nom - Pr&eacute;nom</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Structure</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Fonction</span></td>
+			<td style="text-align:center">Type financement[!-- BEGIN TStagiairesSessionConvention --]</td>
+		</tr>
+		<tr>
+			<td style="text-align:center"><br />
+			<strong><span style="font-size:11px">{line_civilite} {line_nom}&nbsp;{line_prenom}</span></strong><br />
+			&nbsp;</td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_nom_societe} ({line_code_societe})</span></strong></td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_poste}</span></strong></td>
+			<td style="text-align:center"><strong>{line_type}</strong>[!-- END TStagiairesSessionConvention --]</td>
+		</tr>
+	</tbody>
+</table>
+<br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
+Liste des formateurs :<br />
+<br />
+[!-- BEGIN TFormateursSession --] Nom : <strong>{line_formateur_nom}, </strong>pr&eacute;nom : <strong>{line_formateur_prenom}</strong>, statut : <strong>{line_formateur_statut}</strong><br />
+[!-- END TFormateursSession --]<br />
+<br />
+D&eacute;tail par formateur<span style="color:#FF0000"> (disponible uniquement sur contrat formateur)</span> :<br />
+<br />
+<strong>{objvar_object_formateur_session_name}&nbsp;{objvar_object_formateur_session_firstname}<br />
+{objvar_object_formateur_session_address}<br />
+{objvar_object_formateur_session_zip}&nbsp;{objvar_object_formateur_session_town}</strong><br />
+Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />
+<br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
+Autres :<br />
+<br />
+Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong>';
+		
+		$chapter->create($user);
+		
+	}
+	
+}

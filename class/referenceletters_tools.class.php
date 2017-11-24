@@ -31,7 +31,7 @@ class RfltrTools {
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
 		
-		if(get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' ) $object = &$obj;
+		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' )) $object = &$obj;
 		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj);
 		
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;

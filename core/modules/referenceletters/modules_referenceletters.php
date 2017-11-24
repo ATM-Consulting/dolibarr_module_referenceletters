@@ -82,33 +82,36 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$listlines = $odfHandler->setSegment($element_array);
 
 						if (strpos($chapter_text, '[!-- BEGIN') !== false) {
-
-							foreach ( $object->{$element_array} as $line ) {
-
-								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
-								complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
-								// Call the ODTSubstitutionLine hook
-								$parameters = array(
-										'odfHandler' => &$odfHandler,
-										'file' => $file,
-										'object' => $object,
-										'outputlangs' => $this->outputlangs,
-										'substitutionarray' => &$tmparray,
-										'line' => $line
-								);
-								$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-								foreach ( $tmparray as $key => $val ) {
-									try {
-										$listlines->setVars($key, $val, true, 'UTF-8');
-									} catch ( OdfException $e ) {
-									} catch ( SegmentException $e ) {
+							
+							if(!empty($object->{$element_array})) {
+								
+								foreach ( $object->{$element_array} as $line ) {
+	
+									$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
+									complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
+									// Call the ODTSubstitutionLine hook
+									$parameters = array(
+											'odfHandler' => &$odfHandler,
+											'file' => $file,
+											'object' => $object,
+											'outputlangs' => $this->outputlangs,
+											'substitutionarray' => &$tmparray,
+											'line' => $line
+									);
+									$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+	
+									foreach ( $tmparray as $key => $val ) {
+										try {
+											$listlines->setVars($key, $val, true, 'UTF-8');
+										} catch ( OdfException $e ) {
+										} catch ( SegmentException $e ) {
+										}
 									}
+	
+									$res = $listlines->merge();
 								}
 
-								$res = $listlines->merge();
 							}
-
 							$res = $odfHandler->mergeSegment($listlines);
 							$chapter_text = $odfHandler->getContentXml();
 						}
@@ -239,6 +242,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 
 			$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
+			/*echo '<pre>';
+			print_r($tmparray);exit;*/
 			$substitution_array = array ();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {

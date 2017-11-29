@@ -57,10 +57,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (lignes, participants, horaires)
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray = array()) {
-		global $hookmanager;
-
+		global $hookmanager,$conf;
+		
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
+		if($conf->subtotal->enabled)dol_include_once('/subtotal/class/subtotal.class.php');
 		if (! class_exists('Product'))
 			dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
 
@@ -96,10 +97,23 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'object' => $object,
 											'outputlangs' => $this->outputlangs,
 											'substitutionarray' => &$tmparray,
-											'line' => $line
+											'line' => $line,
+											'context' => $object->element.'card'
 									);
-									$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-	
+										$action = "builddoc";
+										$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+										if($conf->subtotal->enabled){
+											if(TSubtotal::isModSubtotalLine($line)){
+												$tmparray['line_up_locale']='';
+												$tmparray['line_price_ht_locale']='';
+											}
+											if(TSubtotal::isSubtotal($line)){
+												$tmparray['line_price_ht_locale']=price($tmparray['line_price_ht'],0);
+								
+									
+											}
+										}
+										$oldline = $listlines->xml;
 									foreach ( $tmparray as $key => $val ) {
 										try {
 											$listlines->setVars($key, $val, true, 'UTF-8');
@@ -108,7 +122,20 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 										}
 									}
 	
+									if($conf->subtotal->enabled){
+										if(TSubtotal::isTitle($line)){
+											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><u>{line_fulldesc}</u></strong>'));
+										
+										}else if(TSubtotal::isSubtotal($line)){
+											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('<tr'=>'<tr bgcolor="#D3D3D3" align="right" '));
+											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><i>{line_fulldesc}</i></strong>'));
+											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_price_ht_locale}'=>'<strong>{line_price_ht_locale}</strong>'));
+											//var_dump($listlines->xml);exit;
+										}
+									}
 									$res = $listlines->merge();
+
+									$listlines->xml=$listlines->savxml=$oldline;
 								}
 
 							}

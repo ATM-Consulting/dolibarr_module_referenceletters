@@ -157,8 +157,8 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 			<td style="background-color:#f5f5f5; text-align:right; width:20%">{tva_detail_montants}</td>
 		</tr>
 		<tr>
-			<td style="background-color:#cccccc; width:20%">Total TTC</td>
-			<td style="background-color:#cccccc; text-align:right; width:20%">{objvar_object_total_ttc}</td>
+			<td style="background-color:#e6e6e6; width:20%">Total TTC</td>
+			<td style="background-color:#e6e6e6; text-align:right; width:20%">{objvar_object_total_ttc}</td>
 		</tr>
 	</tbody>
 </table>

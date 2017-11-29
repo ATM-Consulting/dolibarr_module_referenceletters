@@ -131,7 +131,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 										$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><u>{line_fulldesc}</u></strong>'));
 										
 									}else if(TSubtotal::isSubtotal($line)){
-										$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('<tr'=>'<tr bgcolor="#D3D3D3" align="right" '));
+										$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('<tr'=>'<tr bgcolor="#E6E6E6" align="right" '));
 										$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><i>{line_fulldesc}</i></strong>'));
 										$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_price_ht_locale}'=>'<strong>{line_price_ht_locale}</strong>'));
 										//var_dump($listlines->xml);exit;

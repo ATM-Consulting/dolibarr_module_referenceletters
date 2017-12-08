@@ -50,58 +50,58 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
     	);
     }
-    
+
     function get_substitutionarray_other($outputlangs, $object='')
     {
     	global $conf;
-    	
+
     	$outputlangs->load('main');
-    	
+
     	$array_other = parent::get_substitutionarray_other($outputlangs);
     	$array_other['current_date_fr'] = $outputlangs->trans('Day'.((int)date('w'))).' '.date('d').' '.$outputlangs->trans(date('F')).' '.date('Y');
     	if(!empty($object)) {
-    		
+
     		// TVA
     		$TDetailTVA = self::get_detail_tva($object, $outputlangs);
     		if(!empty($TDetailTVA)) {
 	    		$array_other['tva_detail_titres'] = implode('<br />', $TDetailTVA['TTitres']);
 	    		$array_other['tva_detail_montants'] = implode('<br />', $TDetailTVA['TValues']);
     		}
-    		
+
     		// Liste paiements
     		if(get_class($object) === 'Facture') {
-	    		
+
     			$array_other['deja_paye']=$array_other['somme_avoirs']=price(0, 0, $outputlangs);
     			$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
 	    		$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
 	    		if(!empty($array_other['liste_paiements'])) {
-	    			
+
 	    			$deja_regle= $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
 	    			$creditnoteamount = $object->getSumCreditNotesUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
 	    			$depositsamount = $object->getSumDepositsUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-	    			
+
 	    			// Already paid + Deposits
 	    			$array_other['deja_paye'] = price($deja_regle + $depositsamount, 0, $outputlangs);
 	    			// Credit note
 	    			$array_other['somme_avoirs'] = price($creditnoteamount, 0, $outputlangs);
 	    		}
-	    		
+
 	    		// Reste à payer
 	    		$resteapayer = price2num($total_ttc - $deja_regle - $creditnoteamount - $depositsamount, 'MT');
 	    		$array_other['reste_a_payer'] = price($resteapayer, 0, $outputlangs);
-	    		
+
     		}
-    		
+
     		// Linked objects
 			$array_other['objets_lies'] = self::getLinkedObjects($object, $outputlangs);
-    		
+
     	}
     	//var_dump($array_other);exit;
     	return $array_other;
     }
 
     static function getLinkedObjects(&$object, &$outputlangs) {
-    	
+
     	require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
     	$linkedobjects = pdf_getLinkedObjects($object,$outputlangs);
     	if (! empty($linkedobjects))
@@ -114,26 +114,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			$TRefToShow[] = $reftoshow;
     		}
     	}
-    	
+
     	if(empty($TRefToShow)) return '';
     	else return implode('<br />', $TRefToShow);
-    	
+
     }
-    
+
     static function get_detail_tva(&$object, &$outputlangs) {
-    	
+
     	global $conf;
-    	
+
     	if(!is_array($object->lines)) return 0;
-    	
+
     	$TTva = array();
-    	
+
     	$sign=1;
     	if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
-    	
+
     	foreach($object->lines as &$line) {
     		$vatrate=$line->tva_tx;
-    		
+
     		// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
     		if(get_class($object) === 'Facture') {
 	    		$prev_progress = $line->get_prev_progress($object->id);
@@ -149,26 +149,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne=$line->multicurrency_total_tva;
     			else $tvaligne=$line->total_tva;
     		}
-    		
+
     		if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
-    		
+
     		if($tvaligne != 0) $TTva['Total TVA '.round($vatrate, 2).'%'] += $tvaligne;
-    		
+
     	}
-    	
+
     	// formatage sortie
     	foreach($TTva as $k=>&$v) $v = price($v);
-    	
+
     	// Retour fonction
     	return array('TTitres'=>array_keys($TTva), 'TValues'=>$TTva);
     }
-    
+
     static function get_liste_reglements(&$object, &$outputlangs) {
-    	
+
     	global $db, $conf;
-    	
+
     	$TPayments = array();
-    	
+
     	// Loop on each deposits and credit notes included
     	$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
     	$sql.= " re.description, re.fk_facture_source,";
@@ -182,18 +182,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		while ($obj = $db->fetch_object($resql))
     		{
     			$invoice->fetch($obj->fk_facture_source);
-    			
+
     			if ($obj->type == 2) $text=$outputlangs->trans("CreditNote");
     			elseif ($obj->type == 3) $text=$outputlangs->trans("Deposit");
     			else $text=$outputlangs->trans("UnknownType");
-    			
+
     			$date = dol_print_date($obj->datef,'day',false,$outputlangs,true);
     			$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
     			$invoice_ref = $invoice->ref;
     			$TPayments[] = array($date, $amount, $text, $invoice->ref);
     		}
     	}
-    	
+
     	// Loop on each payment
     	$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num, pf.amount as amount, pf.multicurrency_amount,";
     	$sql.= " cp.code";
@@ -202,23 +202,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	if((float)DOL_VERSION > 6) $sql.= " AND cp.entity = ".getEntity('c_paiement'); // cp.entity apparaît en 7.0
     	$sql.= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = ".$object->id;
     	$sql.= " ORDER BY p.datep";
-    	
+
     	$resql=$db->query($sql);
     	if ($resql)
     	{
     		$sign=1;
     		if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
     		while ($row = $db->fetch_object($resql)) {
-    			
+
     			$date = dol_print_date($db->jdate($row->date),'day',false,$outputlangs,true);
     			$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
     			$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
     			$num = $row->num;
-    			
+
     			$TPayments[] = array($date, $amount, $oper, $num);
     		}
     	}
-    	
+
     	if(!empty($TPayments)) {
     		$res = '<font size="6">'.$outputlangs->trans('PaymentsAlreadyDone').'<hr />';
     		$res.= '<table style="font-weight:bold;"><tr><td>'.$outputlangs->trans('Payment')
@@ -233,7 +233,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		}
     		return $res.'</font>';
     	} else return '';
-    	
+
     }
 
     /**
@@ -246,7 +246,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
     {
     	global $db, $conf;
-    	
+
     	// Substitutions tableau de participants :
     	$resarray=array();
     	$resarray['line_poste'] = $line->poste;
@@ -255,21 +255,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_nom'] = $line->nom;
     	$resarray['line_prenom'] = $line->prenom;
     	$resarray['line_type'] = $line->type;
+    	$resarray['line_birthday'] = dol_print_date($line->date_birth);
     	$resarray['line_code_societe'] = $line->soccode;
     	$resarray['line_nom_societe'] = $line->socname;
-    	
+
     	// Substitutions tableau d'horaires
-    	$resarray['line_date_session'] = date('d/m/Y', $line->date_session);
-    	$resarray['line_heure_debut_session'] = date('H:i:s', $line->heured);
-    	$resarray['line_heure_fin_session'] = date('H:i:s', $line->heuref);
-    	
+    	$resarray['line_date_session'] = dol_print_date($line->date_session);
+    	$resarray['line_heure_debut_session'] = dol_print_date($line->heured,'hour');
+    	$resarray['line_heure_fin_session'] = dol_print_date($line->heuref,'hour');
+
     	// Substitutions tableau des formateurs :
     	$resarray['line_formateur_nom'] = $line->lastname;
     	$resarray['line_formateur_prenom'] = $line->firstname;
     	$resarray['line_formateur_mail'] = $line->email;
     	$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
-    	
-    	
+
+
     	// Retrieve extrafields
     	$extrafieldkey=$line->element;
     	$array_key="line";
@@ -277,9 +278,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$extrafields = new ExtraFields($this->db);
     	$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey,true);
     	if ($fetchoptionnals) $line->fetch_optionals($line->rowid,$extralabels);
-    	
+
     	$resarray = $this->fill_substitutionarray_with_extrafields($line,$resarray,$extrafields,$array_key=$array_key,$outputlangs);
-    	
+
 	// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
     	if(get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne') $resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 	// Spé pour les contrats
@@ -289,14 +290,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     	return $resarray;
     }
-    
+
     function get_substitutionsarray_agefodd(&$object, $outputlangs) {
         global $db;
-    	
+
     	dol_include_once('/agefodd/class/html.formagefodd.class.php');
-    	
+
     	$formAgefodd = new FormAgefodd($db);
-    	
+
     	$resarray=array();
     	$resarray['formation_nom'] = $object->formintitule;
     	$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
@@ -312,9 +313,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
     	$resarray['formation_prix'] = price($object->sell_price);
     	if(! empty($object->fk_formation_catalogue)) {
-    	    
+
     	    dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-    	    
+
     	    $catalogue = new Agefodd($db);
     	    $catalogue->fetch($object->fk_formation_catalogue);
     	    $resarray['formation_but'] = strip_tags($catalogue->but);
@@ -324,9 +325,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
     	    $resarray['formation_programme'] = $catalogue->programme;
     	}
-    	
+
     	return $resarray;
-    	
+
     }
 
     /**
@@ -338,19 +339,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
      * @return	array	Array of substitution key->code
      */
     function get_substitutionarray_each_var_object(&$object,$outputlangs,$recursive=true,$sub_element_label='') {
-    	
+
     	$array_other = array();
-    	
+
     	if(!empty($object)) {
-    		
+
     		foreach($object as $key => $value) {
-    			
+
     			// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
     			if(is_object($object)) {
     				$reflection = new ReflectionProperty($object, $key);
     				if(!$reflection->isPublic()) continue;
     			}
-    			
+
     			if (! is_array($value) && ! is_object($value)) {
 				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false) $value = price($value);
     				$array_other['object_' . $sub_element_label . $key] = $value;
@@ -361,9 +362,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			}
     		}
     	}
-    	
+
     	return $array_other;
     }
 
-    
+
 }

@@ -24,11 +24,12 @@
  */
 
 require_once TCPDF_PATH.'tcpdf.php';
+require_once TCPDI_PATH.'tcpdi.php';
 
 /**
  * Class ActionsReferenceLetters
  */
-class TCPDFRefletters extends TCPDF
+class TCPDFRefletters extends TCPDI
 {
 	public $ref_object;
 	public $instance_letter;

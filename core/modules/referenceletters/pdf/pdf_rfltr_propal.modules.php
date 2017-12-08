@@ -179,8 +179,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$this->pdf->useTemplate($tplidx);
 				}
 
-				importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
-
+			
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
 
@@ -204,7 +203,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						if (! empty($tplidx))
 							$this->pdf->useTemplate($tplidx);
 
-						importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 						$posX = $this->pdf->getX();
 						$posY = $this->pdf->getY();
@@ -224,7 +222,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 							$this->pdf->useTemplate($tplidx);
 						}
 
-						importImageBackground($this->pdf, $instance_letter->fk_referenceletters);
 
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;
@@ -246,7 +243,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					
 					$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
 					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
-					// var_dump($test);
 					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
 						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
 							if (! empty($option_detail['use_content_option'])) {

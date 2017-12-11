@@ -525,7 +525,7 @@ function importImageBackground(&$pdf, $id) {
 				if ($count > 0) {
 					$tplIdx = $pdf->importPage(1);
 					if ($tplIdx !== false) {
-						$pdf->useTemplate($tplIdx);
+							$pdf->useTemplate($tplIdx);
 					} else {
 						setEventMessages(null, array(
 								$filedetail['fullname'] . ' cannot be added to current doc, probably Protected PDF'

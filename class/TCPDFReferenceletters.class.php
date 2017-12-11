@@ -25,7 +25,6 @@
 
 require_once TCPDF_PATH.'tcpdf.php';
 require_once TCPDI_PATH.'tcpdi.php';
-
 /**
  * Class ActionsReferenceLetters
  */
@@ -38,6 +37,9 @@ class TCPDFRefletters extends TCPDI
 
 	//Page header
 	public function Header() {
+		
+		
+		importImageBackground($this, $this->instance_letter->fk_referenceletters);
 
 		$use_custom_header = $this->instance_letter->use_custom_header;
 

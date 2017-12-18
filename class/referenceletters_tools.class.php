@@ -152,7 +152,7 @@ class RfltrTools {
 					
 					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
 					// On récupère l'attribut name du lien présent 2 tr avant celle sur laquelle on se trouve
-					var sessiontrainerid = $(this).parent().parent().prev('tr').prev('tr').find('a').attr('name');
+					var sessiontrainerid = $(this).parent().parent().parent().first().find('a').attr('name');
 					
 					<?php
 					

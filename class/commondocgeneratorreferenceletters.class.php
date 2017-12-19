@@ -325,7 +325,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
     	    $resarray['formation_programme'] = $catalogue->programme;
     	}
-
+    	
     	return $resarray;
 
     }

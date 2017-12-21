@@ -256,6 +256,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_prenom'] = $line->prenom;
     	$resarray['line_type'] = $line->type;
     	$resarray['line_birthday'] = dol_print_date($line->date_birth);
+    	$resarray['line_birthplace'] = $line->place_birth;
     	$resarray['line_code_societe'] = $line->soccode;
     	$resarray['line_nom_societe'] = $line->socname;
 
@@ -325,7 +326,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
     	    $resarray['formation_programme'] = $catalogue->programme;
     	}
-    	
+
     	return $resarray;
 
     }

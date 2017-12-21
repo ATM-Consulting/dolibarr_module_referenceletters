@@ -34,7 +34,7 @@ $rfltr = new ReferenceLetters($db);
 $title = 'EDITION_PERSO_PROPOSITION';
 
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'propal';
@@ -67,12 +67,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -183,11 +183,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
@@ -196,7 +196,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 /************************************/
 $title = 'EDITION_PERSO_FACTURE';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'invoice';
@@ -229,12 +229,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -355,18 +355,18 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
 /************* Commande **************/
 $title = 'EDITION_PERSO_COMMANDE';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type ='order';
@@ -397,12 +397,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -492,18 +492,18 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
 /************* Contrat **************/
 $title = 'EDITION_PERSO_CONTRAT';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'contract';
@@ -534,12 +534,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -633,17 +633,17 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 /************* Document exemple Agefodd **************/
 $title = 'EDITION_PERSO_AGEFODD_EXEMPLE';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'rfltr_agefodd_fiche_presence';
@@ -663,12 +663,12 @@ PERSONNALISE</strong></span><br />
 &nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -707,6 +707,8 @@ Tableau des participants :<br />
 			<td style="text-align:center"><span style="font-size:11px">Nom - Pr&eacute;nom</span></td>
 			<td style="text-align:center"><span style="font-size:11px">Structure</span></td>
 			<td style="text-align:center"><span style="font-size:11px">Fonction</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Date de naissance</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Lieu de naissance</span></td>
 			<td style="text-align:center"><span style="font-size:11px">Type financement</span><span style="font-size:11px">[!-- BEGIN&nbsp;TStagiairesSession --]</span></td>
 		</tr>
 		<tr>
@@ -715,6 +717,8 @@ Tableau des participants :<br />
 			&nbsp;</td>
 			<td style="text-align:center"><strong><span style="font-size:11px">{line_nom_societe} ({line_code_societe})</span></strong></td>
 			<td style="text-align:center"><strong><span style="font-size:11px">{line_poste}</span></strong></td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_birthday}</span></strong></td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_birthplace}</span></strong></td>
 			<td style="text-align:center"><strong>{line_type}</strong><span style="font-size:11px">[!-- END&nbsp;TStagiairesSession --]</span></td>
 		</tr>
 	</tbody>
@@ -764,9 +768,9 @@ Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />
 Autres :<br />
 <br />
 Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }

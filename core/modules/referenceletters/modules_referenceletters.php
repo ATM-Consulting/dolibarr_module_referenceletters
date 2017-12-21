@@ -58,7 +58,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray = array()) {
 		global $hookmanager,$conf;
-		
+
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
 		if($conf->subtotal->enabled)dol_include_once('/subtotal/class/subtotal.class.php');
@@ -83,11 +83,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$listlines = $odfHandler->setSegment($element_array);
 
 						if (strpos($chapter_text, '[!-- BEGIN') !== false) {
-							
+
 							if(!empty($object->{$element_array})) {
-								
+
 								foreach ( $object->{$element_array} as $line ) {
-	
+
 									$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
 									complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
 									// Call the ODTSubstitutionLine hook
@@ -109,8 +109,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											}
 											if(TSubtotal::isSubtotal($line)){
 												$tmparray['line_price_ht_locale']=price($tmparray['line_price_ht'],0);
-								
-									
+
+
 											}
 										}
 										$oldline = $listlines->xml;
@@ -121,11 +121,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 										} catch ( SegmentException $e ) {
 										}
 									}
-	
+
 									if($conf->subtotal->enabled){
 										if(TSubtotal::isTitle($line)){
 											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><u>{line_fulldesc}</u></strong>'));
-										
+
 										}else if(TSubtotal::isSubtotal($line)){
 											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('<tr'=>'<tr bgcolor="#E6E6E6" align="right" '));
 											$listlines->xml=$listlines->savxml=strtr($listlines->xml,array('{line_fulldesc}'=>'<strong><i>{line_fulldesc}</i></strong>'));
@@ -159,7 +159,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
 		$end_y = $this->pdf->GetY();
 		$height = $end_y - $posy;
-		
+
 		return $height;
 	}
 	function _pagefootCustom($object,$typeprint='') {
@@ -245,7 +245,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				}
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
-			
+
 			if (get_class($object) === 'Contact') {
 				$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
 				$substitution_array = array();
@@ -256,7 +256,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 				}
 			}
-			
+
 			if(get_class($object) === 'Agsession') {
 				$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
 				$substitution_array = array ();
@@ -328,7 +328,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (empty($height)) {
 			// get the new Y
-			
+
 			$end_y = $this->pdf->GetY();
 			//var_dump(array($start_y,$end_y,$bottom_margin));
 		//	exit;
@@ -366,7 +366,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
-		
+
 		if (!empty($bottom_margin)) {
 			if (get_class($this->pdf->ref_object) === 'Agsession') $height-=($bottom_margin/2);
 			$this->pdf->mybottommargin=$height;
@@ -375,7 +375,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		//exit;
 		return $height;
 	}
-	
+
 }
 
 /**

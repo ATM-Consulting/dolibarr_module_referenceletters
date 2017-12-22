@@ -579,7 +579,6 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 		
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
-		echo '<pre>'; print_r($subst_array);
 		unset($subst_array['Agsession']);
 		
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';

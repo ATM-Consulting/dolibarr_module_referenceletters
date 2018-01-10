@@ -57,9 +57,9 @@ class ReferenceLetters extends CommonObject
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
-		
+
 		global $conf;
-		
+
 		$this->db = $db;
 		$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
@@ -144,9 +144,9 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
-		
+
 		if(!empty($conf->agefodd->enabled)) {
-			
+
 			// Convention de formation
 			$this->element_type_list['rfltr_agefodd_convention'] = array (
 					'class' => 'agsession.class.php',
@@ -158,8 +158,8 @@ class ReferenceLetters extends CommonObject
 					'substitution_method' => 'get_substitutionarray_object',
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
-			
-			
+
+
 			$Tab = array(
 			    'fiche_pedago'=>'AgfFichePedagogique'
 			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
@@ -189,14 +189,14 @@ class ReferenceLetters extends CommonObject
 			    ,'attestation_trainee'=>'Attestation stagiaire'
 			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
 			);
-			
+
 			foreach ($Tab as $key => $val){
 			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
 			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
 			}
-			
+
 		}
-		
+
 		return 1;
 	}
 
@@ -234,7 +234,7 @@ class ReferenceLetters extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-		
+
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
@@ -245,9 +245,9 @@ class ReferenceLetters extends CommonObject
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-		
+
 		$sql .= ") VALUES (";
-		
+
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
@@ -261,7 +261,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-		
+
 		$sql .= ")";
 
 		$this->db->begin();
@@ -344,7 +344,7 @@ class ReferenceLetters extends CommonObject
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
 		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
-		
+
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -374,7 +374,7 @@ class ReferenceLetters extends CommonObject
 					$this->fetch_optionals($this->id, $extralabels);
 				}
 				$this->db->free($resql);
-				
+
 				return 1;
 			}
 		} else {
@@ -568,22 +568,22 @@ class ReferenceLetters extends CommonObject
 					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
 			);
 		}
-		
+
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
-		
+
 		return $subst_array;
 	}
-	
+
 	function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
-		
+
 		global $langs;
-		
+
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		unset($subst_array['Agsession']);
-		
+
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
-		
+
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
 				,'formation_ref'=>'Référence de la formation'
@@ -599,7 +599,7 @@ class ReferenceLetters extends CommonObject
 		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
 		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
 		);
-		
+
 		// Liste de données - Participants
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
 				'line_civilite'=>'Civilité'
@@ -607,15 +607,21 @@ class ReferenceLetters extends CommonObject
 				,'line_prenom'=>'Prénom participant'
 				,'line_nom_societe'=>'Société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
+				,'line_mail' => 'Email du participant'
+				,'line_siret' => 'SIRET de la société du participant'
+				,'line_birthday' => 'Date de naissance du participant'
+				,'line_birthplace'=>'Lieu de naissance du participant'
+				,'line_code_societe'=> 'Code de la société du participant'
+				,'line_nom_societe'=> 'Nom du client du participant'
 		);
-		
+
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
 				'line_date_session'=>'Date de la session'
 				,'line_heure_debut_session'=>'Heure début session'
 				,'line_heure_fin_session'=>'Heure fin session'
 		);
-		
+
 		// Liste de données - Formateurs
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
 				'line_formateur_nom'=>'Nom du formateur'
@@ -623,14 +629,14 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_mail'=>'Adresse mail du formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
-		
+
 		$subst_array['RefLtrSubstAgefoddStagiaire'] = array(
 		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
 		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
 		);
-		
+
 		// Tags des lignes
 		$subst_array[$langs->trans('RefLtrLines')] = array(
 				'line_fulldesc'=>'Description complète',
@@ -657,7 +663,7 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_locale'=>'Date fin service format 1',
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
-		
+
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
@@ -865,7 +871,7 @@ class ReferenceLetters extends CommonObject
 		// Load source object
 		$object->fetch($fromid);
 		$object->title = $object->title . ' (Clone)';
-		
+
 		$clonedrefletterid = $object->create($user);
 
 		// Other options

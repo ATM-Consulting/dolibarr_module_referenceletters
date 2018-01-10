@@ -709,7 +709,7 @@ Tableau des participants :<br />
 			<td style="text-align:center"><span style="font-size:11px">Fonction</span></td>
 			<td style="text-align:center"><span style="font-size:11px">Date de naissance</span></td>
 			<td style="text-align:center"><span style="font-size:11px">Lieu de naissance</span></td>
-			<td style="text-align:center"><span style="font-size:11px">Type financement</span><span style="font-size:11px">[!-- BEGIN&nbsp;TStagiairesSession --]</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Type financement</span>[!-- BEGIN TStagiairesSession --]</td>
 		</tr>
 		<tr>
 			<td style="text-align:center"><br />
@@ -719,7 +719,7 @@ Tableau des participants :<br />
 			<td style="text-align:center"><strong><span style="font-size:11px">{line_poste}</span></strong></td>
 			<td style="text-align:center"><strong><span style="font-size:11px">{line_birthday}</span></strong></td>
 			<td style="text-align:center"><strong><span style="font-size:11px">{line_birthplace}</span></strong></td>
-			<td style="text-align:center"><strong>{line_type}</strong><span style="font-size:11px">[!-- END&nbsp;TStagiairesSession --]</span></td>
+			<td style="text-align:center"><strong>{line_type}</strong>[!-- END TStagiairesSession --]</td>
 		</tr>
 	</tbody>
 </table>

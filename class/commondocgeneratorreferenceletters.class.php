@@ -256,6 +256,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['line_prenom'] = $line->prenom;
     	$resarray['line_type'] = $line->type;
     	$resarray['line_birthday'] = dol_print_date($line->date_birth);
+    	$resarray['line_mail'] = $line->mail;
+    	$resarray['line_siret'] = $line->thirdparty->idprof2;
     	$resarray['line_birthplace'] = $line->place_birth;
     	$resarray['line_code_societe'] = $line->soccode;
     	$resarray['line_nom_societe'] = $line->socname;

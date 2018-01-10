@@ -678,7 +678,10 @@ PERSONNALISE</strong></span><br />
 		$chapter->title = 'Contenu';
 		$chapter->content_text = 'Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
-Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}</strong><br />
+Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}<br />
+Commentaire Lieu : [objvar_object_lieu_acces_site}</strong><br />
+Instruction d\'acces au lieu : {objvar_object_lieu_acces_site}</strong><br />
+Horaire du lieu : {objvar_object_lieu_timeschedule}</strong><br />
 Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
 <br />
 Tiers convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />

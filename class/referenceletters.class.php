@@ -598,6 +598,13 @@ class ReferenceLetters extends CommonObject
 		        ,'formation_methode'=>'Methode de formation'
 		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
 		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
+		        ,'objvar_object_lieu_ref_interne'=>'Référence/nom du lieu de formation'
+		        ,'objvar_object_lieu_adresse'=>'Adresse du lieu de formation'
+		        ,'objvar_object_lieu_cp'=>'Code postal du lieu de formation'
+		        ,'objvar_object_lieu_ville'=>'Ville du lieu de formation'
+		        ,'objvar_object_lieu_acces_site'=>'Instruction d\'accès au lieu lieu de formation'
+		        ,'objvar_object_lieu_timeschedule'=>'Hioraire du lieu de formation'
+		        ,'objvar_object_lieu_notes'=>'Commentaire du lieu de formation'
 		);
 
 		// Liste de données - Participants

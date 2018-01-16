@@ -23,7 +23,7 @@
 Module103258Name = Modèles de courriers
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Desc = Gére des modèles de courrier
+Module103258Desc = Gère des modèles de courrier
 
 #
 # Permissions
@@ -43,10 +43,10 @@ RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Alle
 RefLtrSimpleNumRefModelDesc=Renvoie le numéro sous la forme LTR-yymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
 RefLtrREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
 RefLtrHelpREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
-RefLtrREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
+RefLtrREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement créé
 RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
 RefLtrConfirmChangeState=Etes-vous sûr de changer cette option ?
-RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement crée
+RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement créé
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de courrier  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modéle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du courrier dans l'entête du document PDF

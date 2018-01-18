@@ -605,6 +605,7 @@ class ReferenceLetters extends CommonObject
 		        ,'objvar_object_lieu_acces_site'=>'Instruction d\'accès au lieu lieu de formation'
 		        ,'objvar_object_lieu_timeschedule'=>'Hioraire du lieu de formation'
 		        ,'objvar_object_lieu_notes'=>'Commentaire du lieu de formation'
+				,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules'
 		);
 
 		// Liste de données - Participants

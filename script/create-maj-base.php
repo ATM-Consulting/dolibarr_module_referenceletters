@@ -759,6 +759,8 @@ Liste des formateurs :<br />
 [!-- BEGIN TFormateursSession --] Nom : <strong>{line_formateur_nom}, </strong>pr&eacute;nom : <strong>{line_formateur_prenom}</strong>, statut : <strong>{line_formateur_statut}</strong><br />
 [!-- END TFormateursSession --]<br />
 <br />
+ou en une ligne : {objvar_object_trainer_text}
+<br />
 D&eacute;tail par formateur<span style="color:#FF0000"> (disponible uniquement sur contrat formateur)</span> :<br />
 <br />
 <strong>{objvar_object_formateur_session_name}&nbsp;{objvar_object_formateur_session_firstname}<br />

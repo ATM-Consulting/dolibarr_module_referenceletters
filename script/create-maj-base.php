@@ -686,6 +686,10 @@ Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
 <br />
 Tiers convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />
 <br />
+Montant HT convention : {objvar_object_conv_amount_ht}
+Montant TVA convention : {objvar_object_conv_amount_tva}
+Montant TTC convention : {objvar_object_conv_amount_ttc}
+<br />
 <strong>{objvar_object_document_societe_name}<br />
 {objvar_object_document_societe_address}<br />
 {objvar_object_document_societe_zip}&nbsp;{objvar_object_document_societe_town}<br />

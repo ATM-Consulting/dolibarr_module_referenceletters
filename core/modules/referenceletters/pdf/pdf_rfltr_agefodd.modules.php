@@ -260,6 +260,27 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$posY = $this->pdf->GetY();
 				}
 
+
+				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+					$agfTraining = new Agefodd($db);
+					$agfTraining->fetch($object->fk_formation_catalogue);
+					$agfTraining->generatePDAByLink();
+					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $object->fk_formation_catalogue . '.pdf';
+					if (is_file($infile)) {
+						$count = $this->pdf->setSourceFile($infile);
+						// import all page
+						for($p = 1; $p <= $count; $p ++) {
+							// New page
+							$this->pdf->setPrintHeader(false);
+							$this->pdf->setPrintFooter(false);
+							$this->pdf->AddPage();
+
+							$tplIdx = $this->pdf->importPage($p);
+							$this->pdf->useTemplate($tplIdx, 0, 0, $this->page_largeur);
+						}
+					}
+				}
+
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

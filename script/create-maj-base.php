@@ -776,7 +776,9 @@ Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />
 <br />
 Autres :<br />
 <br />
-Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong>';
+Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong>
+Numero de déclaration : <strong>{objvar_object_AGF_ORGANISME_NUM}</strong>
+Prefecture : <strong>{objvar_object_AGF_ORGANISME_PREF}</strong>';
 
 		$chapter->create($user);
 

@@ -75,6 +75,9 @@ if (array_key_exists($search_status,$object->TStatus)) {
 	$filter['t.status'] = $search_status;
 	$option .= '&search_status=' . $search_status;
 }
+else {
+	$search_status=-1;
+}
 if ($page == - 1) {
 	$page = 0;
 }

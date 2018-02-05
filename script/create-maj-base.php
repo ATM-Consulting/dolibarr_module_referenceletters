@@ -34,11 +34,11 @@ $rfltr = new ReferenceLetters($db);
 $title = 'EDITION_PERSO_PROPOSITION';
 
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'propal';
-	$rfltr->status = 1;
+	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
 	$rfltr->fk_user_mod = $obj->fk_user_mod;
@@ -67,12 +67,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -183,11 +183,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
@@ -196,11 +196,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 /************************************/
 $title = 'EDITION_PERSO_FACTURE';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'invoice';
-	$rfltr->status = 1;
+	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
 	$rfltr->fk_user_mod = $obj->fk_user_mod;
@@ -229,12 +229,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -355,22 +355,22 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
 /************* Commande **************/
 $title = 'EDITION_PERSO_COMMANDE';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type ='order';
-	$rfltr->status = 1;
+	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
 	$rfltr->fk_user_mod = $obj->fk_user_mod;
@@ -397,12 +397,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -492,22 +492,22 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }
 
 
 /************* Contrat **************/
 $title = 'EDITION_PERSO_CONTRAT';
 if($rfltr->fetch('', $title) <= 0) {
-	
+
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
 	$rfltr->element_type = 'contract';
-	$rfltr->status = 1;
+	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
 	$rfltr->fk_user_mod = $obj->fk_user_mod;
@@ -534,12 +534,12 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 ';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
-	
+
 	$id_rfltr = $rfltr->create($user);
-	
+
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
-		
+
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
@@ -633,9 +633,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		
+
 		$chapter->create($user);
-		
+
 	}
-	
+
 }

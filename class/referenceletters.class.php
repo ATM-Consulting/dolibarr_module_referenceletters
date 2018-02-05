@@ -50,6 +50,16 @@ class ReferenceLetters extends CommonObject
 	public $tms = '';
 	public $element_type_list = array ();
 	public $lines = array ();
+	public $TStatus=array();
+
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
 
 	/**
 	 * Constructor
@@ -141,6 +151,9 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+
+		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
+		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 		return 1;
 	}
 
@@ -178,7 +191,7 @@ class ReferenceLetters extends CommonObject
 
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
-		
+
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
@@ -189,9 +202,9 @@ class ReferenceLetters extends CommonObject
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
 		$sql .= "fk_user_mod";
-		
+
 		$sql .= ") VALUES (";
-		
+
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
@@ -205,7 +218,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id;
-		
+
 		$sql .= ")";
 
 		$this->db->begin();
@@ -288,7 +301,7 @@ class ReferenceLetters extends CommonObject
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
 		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
-		
+
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -318,7 +331,7 @@ class ReferenceLetters extends CommonObject
 					$this->fetch_optionals($this->id, $extralabels);
 				}
 				$this->db->free($resql);
-				
+
 				return 1;
 			}
 		} else {
@@ -361,7 +374,9 @@ class ReferenceLetters extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
-				} else {
+				}if ($key == 't.status') {
+					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
+				}else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
@@ -514,14 +529,14 @@ class ReferenceLetters extends CommonObject
 		}
 
 		$this->completeSubstitution($subst_array);
-		
+
 		return $subst_array;
 	}
 
 	function completeSubstitution(&$subst_array) {
-		
+
 		global $langs;
-		
+
 		$subst_array[$langs->trans('RefLtrLines')] = array(
 				'line_fulldesc'=>'Description complète',
 				'line_product_ref'=>'Référence produit',
@@ -547,14 +562,14 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_locale'=>'Date fin service format 1',
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
-		
+
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
-		
+
 	}
-	
+
 	/**
 	 * return translated label of element linked
 	 *

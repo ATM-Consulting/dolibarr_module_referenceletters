@@ -64,6 +64,9 @@ ReferenceLettersAboutPage = Brief Vorlagen Über Seite
 ReferenceLettersList=Liste Brief Vorlagen
 ReferenceLettersNew=Neue Brief Vorlage
 RefLtrLetters=Briefe
+RefLtrLettersActiveListbox=Les %s dernier(s) modèle(s) de document(s) disponible(s)
+RefLtrLettersUnactiveListbox=Les %s dernier(s) modèle(s) de document(s) désactivé(s)
+RefLtrExistingLetters=Les %s dernier(s) document(s) existant(s)
 
 #
 # Pages
@@ -107,3 +110,8 @@ RefLtrBackground=Hintergrund
 RefLtrBackgroundHelp=Nur PDF Dateien können für Hintergründe verwendet werden. URLs funktionieren nicht. <BR> Nur Seiten mit manuellem Seitenumbruch verwenden den Hintergrund. 
 RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt)
 RefLtrTitleModel=Brief Titel
+
+RefLtrActive = Activer
+RefLtrAvailable = Disponible
+RefLtrUnvailable = Désactivé
+RefLtrUnactive = Désactiver

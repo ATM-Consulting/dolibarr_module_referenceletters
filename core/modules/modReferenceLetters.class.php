@@ -303,6 +303,8 @@ class modReferenceLetters extends DolibarrModules
 		$this->boxes[$r][1] = "box_referenceletter_models@referenceletters";
 		$r ++;
 		$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
+		$r ++;
+		$this->boxes[$r][1] = "box_referenceletter_models_archive@referenceletters";
 		// $r ++;
 		/*
 		 $this->boxes[$r][1] = "myboxb.php";
@@ -436,7 +438,7 @@ class modReferenceLetters extends DolibarrModules
 				'target' => '',
 				'user' => 0
 		);
-		
+
 		// Add here entries to declare new menus
 		//
 		// Example to declare a new Top Menu entry and its Left menu entry:
@@ -623,10 +625,10 @@ class modReferenceLetters extends DolibarrModules
 		$sql = array ();
 
 		$result = $this->load_tables();
-		
+
 		define('INC_FROM_DOLIBARR', true);
 		dol_include_once('/referenceletters/script/create-maj-base.php');
-		
+
 		return $this->_init($sql, $options);
 	}
 

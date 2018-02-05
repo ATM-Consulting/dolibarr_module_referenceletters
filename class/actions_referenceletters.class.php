@@ -161,79 +161,79 @@ class ActionsReferenceLetters
 			return 0; // or return 1 to replace standard code
 		}
 	}
-	
+
 	function doActions($parameters, &$object, &$action, $hookmanager) {
-		
+
 		global $db, $conf, $user, $langs;
-		
+
 		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard'))) {
-			
+
 			if($action === 'builddoc') {
-				
+
 				$model = GETPOST('model');
-				
+
 				// Récupération de l'id du modèle
 				if(strpos($model, 'rfltr_') !== false) {
-					
+
 					dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 					dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-					
+
 					// Récupération l'id du modèle sélectionné
 					$id_model = (int)explode('rfltr_', $model)[1];
-					
+
 					// Création et chargement d'une nouvelle instance de modèle
 					$instance_rfltr = RfltrTools::load_object_refletter($id_object, $id_model, $object)[0];
 					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 					$instance_rfltr->create($user);
-					
+
 					// Création du PDF
 					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $langs, $instance_rfltr->element_type);
-					
+
 					if($result > 0) {
-						
+
 						// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
 						$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
 						$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
 						$file = $dir . '/' . $objectref . ".pdf";
-						
+
 						$objectref = dol_sanitizeFileName($object->ref);
 						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output . '/' . $objectref;
 						$file_dest = $dir_dest . '/' . $objectref . '.pdf';
-						
+
 						copy($file, $file_dest);
-						
+
 						// Header sur la même page pour annuler le traitement standard de génération de PDF
 						$field_id = 'id';
 						if(get_class($object) === 'Facture') $field_id = 'facid';
 						header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
-						
+
 					}
-					
+
 				}
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	function formBuilddocOptions($parameters, &$object, &$action, $hookmanager) {
-		
+
 		global $db;
-		
+
 		/***** Permet d'afficher les modèles disponibles dans la liste de génération de la fiche de chaque élément *****/
-		
+
 		// 1 - On récupère les modèles disponibles pour ce type de document
 		$element = $object->element;
 		if($element === 'facture') $element = 'invoice';
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
-		
-		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ')';
+
+		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ' AND status=1)';
 		$resql = $db->query($sql);
 		while($res = $db->fetch_object($resql)) $TModelsID[] = array('id'=>$res->rowid, 'title'=>$res->title);
-		
+
 		if(empty($TModelsID)) return 0;
-		
+
 		// 2 - On ajoute les données au selectmodels
 		?>
 		<script>
@@ -250,5 +250,5 @@ class ActionsReferenceLetters
 		</script>
 		<?php
 	}
-	
+
 }

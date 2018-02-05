@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Plantillas de correos
+Module103258Name = Plantillas de correos - Agefodd
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Gestionar las plantillas de correo
@@ -64,6 +64,9 @@ ReferenceLettersAboutPage = Pagina acerca de Plantillas de correos
 RefLtrList=Lista de plantillas de correos
 RefLtrNew=Nueva plantilla de correo
 RefLtrLetters=Correo
+RefLtrLettersActiveListbox=Les %s dernier(s) modèle(s) de document(s) disponible(s)
+RefLtrLettersUnactiveListbox=Les %s dernier(s) modèle(s) de document(s) désactivé(s)
+RefLtrExistingLetters=Les %s dernier(s) document(s) existant(s)
 
 #
 # Pages
@@ -105,3 +108,8 @@ RefLtrBackground=Background image
 RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore. <BR> Only page with "manual" break page will use background image
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
 RefLtrTitleModel=Letter title
+
+RefLtrActive = Activer
+RefLtrAvailable = Disponible
+RefLtrUnvailable = Désactivé
+RefLtrUnactive = Désactiver

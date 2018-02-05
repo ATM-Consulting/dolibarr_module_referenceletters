@@ -46,7 +46,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 		global $langs;
 		$langs->load("boxes");
 
-		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name");
+		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrExistingLetters",10);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 		dol_include_once("/referenceletters/class/referenceletterselements.class.php");
 		dol_include_once("/referenceletters/class/referenceletters.class.php");
 
-		$text = $langs->trans("Module103258Name", $max);
+		$text = $langs->trans("RefLtrExistingLetters", $max);
 		$this->info_box_head = array (
 				'text' => $text,
 				'limit' => dol_strlen($text)

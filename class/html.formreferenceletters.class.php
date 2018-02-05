@@ -119,11 +119,11 @@ class FormReferenceLetters extends Form
 			$langs->load($array_data['trans']);
 
 			if(!empty($in_array)) {
-				
+
 				if(!in_array($element_type, $in_array)) continue;
-				
+
 			}
-			
+
 			if ($selected==$element_type) {
 				$option_selected=' selected="selected" ';
 			}else {
@@ -134,6 +134,41 @@ class FormReferenceLetters extends Form
 			if(strpos($element_type, 'rfltr_agefodd_') !== false) $module = $langs->trans('Module103000Name') . ' - ';
 
 			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $module . $langs->trans($array_data['title']) . '</option>';
+		}
+
+		$select_elemnt .= '</select>';
+		return $select_elemnt;
+	}
+
+	/**
+	 * Return a Select Element
+	 *
+	 * @param strint $selected
+	 * @param string $htmlname
+	 * @return select HTML
+	 */
+	public function selectStatus($selected='',$htmlname='element_type',$showempty=1) {
+		global $langs;
+
+		$status_array=array();
+
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
+		if (!empty($showempty)) {
+			$status_array[-1]='';
+		}
+		require_once 'referenceletters.class.php';
+		$refletter = new Referenceletters($this->db);
+
+		$status_array+=$refletter->TStatus;
+
+		foreach($status_array as $key=>$val) {
+			if ($selected==$key) {
+				$option_selected=' selected="selected" ';
+			}else {
+				$option_selected='';
+			}
+
+			$select_elemnt .= '<option value="' . $key . '" '.$option_selected.'>' . $langs->trans($val) . '</option>';
 		}
 
 		$select_elemnt .= '</select>';

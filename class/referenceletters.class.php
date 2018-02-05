@@ -50,6 +50,16 @@ class ReferenceLetters extends CommonObject
 	public $tms = '';
 	public $element_type_list = array ();
 	public $lines = array ();
+	public $TStatus=array();
+
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
 
 	/**
 	 * Constructor
@@ -144,6 +154,9 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+
+		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
+		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 
 		if(!empty($conf->agefodd->enabled)) {
 
@@ -417,6 +430,8 @@ class ReferenceLetters extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
+				}if ($key == 't.status') {
+					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}

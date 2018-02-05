@@ -158,6 +158,19 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+}elseif ($action == "changestatus") {
+
+	if (empty($object->status)) {
+		$object->status=ReferenceLetters::STATUS_VALIDATED;
+	} else {
+		$object->status=ReferenceLetters::STATUS_DRAFT;
+	}
+	$result = $object->update($user);
+	if ($result < 0) {
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 }
 
 /*
@@ -246,6 +259,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	}
 	
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
+	print $linkback;
 	
 	print '<div style="vertical-align: middle; margin-bottom: 10px">';
 	print '<div class="pagination"><ul>';
@@ -381,6 +395,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Edit") . "</font></div>";
 	}
 	
+	// Activ/Unactiv
+	if ($user->rights->referenceletters->write) {
+		if (empty($object->status)) {
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrActive") . "</a></div>\n";
+		} else {
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrUnactive") . "</a></div>\n";
+		}
+	}
+
 	// Delete
 	if ($user->rights->referenceletters->delete) {
 		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete">' . $langs->trans("Delete") . "</a></div>\n";

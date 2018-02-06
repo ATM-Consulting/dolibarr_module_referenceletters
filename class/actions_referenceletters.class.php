@@ -198,9 +198,13 @@ class ActionsReferenceLetters
 
 						$objectref = dol_sanitizeFileName($object->ref);
 						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output . '/' . $objectref;
+						if (! file_exists($dir_dest))
+						{
+							dol_mkdir($dir_dest);
+						}
 						$file_dest = $dir_dest . '/' . $objectref . '.pdf';
 
-						copy($file, $file_dest);
+						dol_copy($file, $file_dest);
 
 						// Header sur la même page pour annuler le traitement standard de génération de PDF
 						$field_id = 'id';

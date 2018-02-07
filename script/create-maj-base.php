@@ -773,6 +773,29 @@ Tableau des participants au sein d&#39;une convention <span style="color:#FF0000
 	</tbody>
 </table>
 <br />
+<br />
+Tableau des participants au sein d&#39;une convention <span style="color:#ff0000">(disponible uniquement sur PDF &nbsp;d&#39;une soci&eacute;te)</span> :<br />
+&nbsp;<br />
+&nbsp;
+<table border="1" cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><span style="font-size:11px">Nom - Pr&eacute;nom</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Structure</span></td>
+			<td style="text-align:center"><span style="font-size:11px">Fonction</span></td>
+			<td style="text-align:center">Type financement[!-- BEGIN TStagiairesSessionSoc --]</td>
+		</tr>
+		<tr>
+			<td style="text-align:center"><br />
+			<strong><span style="font-size:11px">{line_civilite} {line_nom}&nbsp;{line_prenom}</span></strong><br />
+			&nbsp;</td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_nom_societe} ({line_code_societe})</span></strong></td>
+			<td style="text-align:center"><strong><span style="font-size:11px">{line_poste}</span></strong></td>
+			<td style="text-align:center"><strong>{line_type}</strong>[!-- END TStagiairesSessionSoc --]</td>
+		</tr>
+	</tbody>
+</table>
+<br />
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
 Liste des formateurs :<br />
@@ -797,6 +820,28 @@ Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}
 Numero de déclaration : <strong>{objvar_object_AGF_ORGANISME_NUM}</strong>
 Prefecture : <strong>{objvar_object_AGF_ORGANISME_PREF}</strong>';
 
+		$chapter->create($user);
+		
+		unset($chapter);
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Saut de page dans une boucle';
+		$chapter->content_text = 'Tableau des participants au sein d&#39;une convention (disponible uniquement sur PDF convention) :<br />
+&nbsp;<br />
+Saut de page dans une boucle (ex: un stagiaire par page)<br />
+<br />
+[!-- BEGIN TStagiairesSession --]<br />
+<strong>{line_civilite} {line_nom}&nbsp;{line_prenom}<br />
+<br />
+{line_nom_societe} ({line_code_societe})</strong><br />
+<br />
+@breakpage@<br />
+[!-- END TStagiairesSession --]';
+		
 		$chapter->create($user);
 
 	}

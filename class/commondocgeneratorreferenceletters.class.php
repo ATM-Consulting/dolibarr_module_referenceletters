@@ -307,7 +307,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
     	$resarray['formation_ref'] = $object->formref;
     	$resarray['formation_statut'] = $object->statuslib;
-    	$resarray['formation_lieu'] = $object->placecode;
     	$resarray['formation_duree'] = $object->duree;
     	$resarray['formation_commercial'] = $object->commercialname;
     	$resarray['formation_societe'] = $object->thirdparty->nom;
@@ -327,6 +326,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	    $resarray['formation_sanction'] = strip_tags($catalogue->sanction);
     	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
     	    $resarray['formation_programme'] = $catalogue->programme;
+    	    $resarray['formation_documents'] = $catalogue->note1;
+    	    $resarray['formation_equipements'] = $catalogue->note2;
+    	}
+    	
+    	if(!empty($object->placeid)) {
+    	    dol_include_once('/agefodd/class/agefodd_place.class.php');
+    	    $agf_place= new Agefodd_place($db);
+    	    $agf_place->fetch($object->placeid);
+    	    
+    	    $resarray['formation_lieu'] = $object->placecode;
+    	    $resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
+    	    $resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
+    	    $resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+    	    $resarray['formation_lieu_acces'] = $agf_place->acces_site;
+    	    $resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
+    	    $resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
+    	    $resarray['formation_lieu_divers'] = $agf_place->note1;
     	}
 
     	return $resarray;

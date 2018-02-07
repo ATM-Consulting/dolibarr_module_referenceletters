@@ -244,20 +244,24 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 						}
 					}
 
-					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
-
-					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
-						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
-							if (! empty($option_detail['use_content_option'])) {
-								$posY = $this->pdf->GetY();
-								$this->pdf->SetXY($posX, $posY);
-
-								$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
-							}
-						}
+					$test_array = explode('@breakpage@', $chapter_text);
+					foreach ($test_array as $chapter_text){
+    					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+    
+    					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
+    						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
+    							if (! empty($option_detail['use_content_option'])) {
+    								$posY = $this->pdf->GetY();
+    								$this->pdf->SetXY($posX, $posY);
+    
+    								$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
+    							}
+    						}
+    					}
+                        
+    					$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
+    					
 					}
-
-					$posY = $this->pdf->GetY();
 				}
 
 
@@ -281,6 +285,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 				}
 
+				$this->pdf->deletePage($this->pdf->getPage());
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

@@ -696,6 +696,23 @@ Montant TTC convention : {objvar_object_conv_amount_ttc}
 Repr&eacute;sent&eacute; par&nbsp;{objvar_object_signataire_intra}/{objvar_object_signataire_inter}</strong><br />
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
+Lieu de la session<br />
+<br />
+{formation_lieu}<br />
+{formation_lieu_adresse}<br />
+{formation_lieu_cp}<br />
+{formation_lieu_ville}<br />
+<br />
+infos d&#39;acc&egrave;s : {formation_lieu_acces}<br />
+<br />
+Horaires du lieu : {formation_lieu_horaires}<br />
+<br />
+Notes :&nbsp;{formation_lieu_notes}<br />
+<br />
+Infos diverses :&nbsp;{formation_lieu_divers}<br />
+<br />
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<br />
 Liste horaires :<br />
 <br />
 [!-- BEGIN THorairesSession --]Le&nbsp;<strong>{line_date_session} </strong>:<br />

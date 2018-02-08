@@ -285,7 +285,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 				}
 
-				$this->pdf->deletePage($this->pdf->getPage());
+				if(count($test_array) > 1) $this->pdf->deletePage($this->pdf->getPage());
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

@@ -50,6 +50,28 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
     	);
     }
+    
+    function get_substitutionarray_object($object,$outputlangs,$array_key='object')
+    {
+        global $db;
+        $resarray = parent::get_substitutionarray_object($object,$outputlangs,$array_key);
+        if ($object->element == 'facture') {
+            dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+            $agf_se = new Agefodd_session_element($db);
+            $agf_se->fetch_element_by_id($object->id, 'invoice');
+            
+            if(count($agf_se->lines)>1){
+                $TSessions = array();
+                foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
+                $resarray['object_references'] = implode(', ', $TSessions);
+            } elseif(!empty($agf_se->lines)) {
+                $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
+            }
+            
+        }
+        
+        return $resarray;
+    }
 
     function get_substitutionarray_other($outputlangs, $object='')
     {

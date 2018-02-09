@@ -66,7 +66,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                 $resarray['object_references'] = implode(', ', $TSessions);
             } elseif(!empty($agf_se->lines)) {
                 $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
-            }
+            } else $resarray['object_references'] = '';
             
         }
         

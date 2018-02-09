@@ -182,7 +182,7 @@ class ActionsReferenceLetters
 					$id_model = (int)explode('rfltr_', $model)[1];
 
 					// Création et chargement d'une nouvelle instance de modèle
-					$instance_rfltr = RfltrTools::load_object_refletter($id_object, $id_model, $object)[0];
+					$instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object)[0];
 					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 					$instance_rfltr->create($user);
 
@@ -232,7 +232,7 @@ class ActionsReferenceLetters
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
 
-		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ' AND status=1)';
+		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ') AND status=1';
 		$resql = $db->query($sql);
 		while($res = $db->fetch_object($resql)) $TModelsID[] = array('id'=>$res->rowid, 'title'=>$res->title);
 

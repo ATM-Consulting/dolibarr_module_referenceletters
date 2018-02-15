@@ -623,6 +623,9 @@ class ReferenceLetters extends CommonObject
 		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
 		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
 		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules'
+		        ,'objvar_object_id'=>'Id de la session'
+		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
+		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
 		);
 
 		// Liste de données - Participants

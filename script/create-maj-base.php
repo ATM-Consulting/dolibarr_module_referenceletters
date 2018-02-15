@@ -676,10 +676,11 @@ PERSONNALISE</strong></span><br />
 		$chapter->sort_order = 1;
 		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
 		$chapter->title = 'Contenu';
-		$chapter->content_text = 'Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
+		$chapter->content_text = 'Id Session : <strong>{objvar_object_id}</strong><br />
+Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
 Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}<br />
-Commentaire Lieu : [objvar_object_lieu_acces_site}</strong><br />
+Commentaire Lieu : {objvar_object_lieu_acces_site}</strong><br />
 Instruction d\'acces au lieu : {objvar_object_lieu_acces_site}</strong><br />
 Horaire du lieu : {objvar_object_lieu_timeschedule}</strong><br />
 Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
@@ -719,6 +720,8 @@ Liste horaires :<br />
 - D&eacute;but&nbsp;<strong>{line_heure_debut_session}</strong>&nbsp;<br />
 - Fin&nbsp;<strong>{line_heure_fin_session}</strong><br />
 [!-- END THorairesSession --]<br />
+<br />
+Horaire session en texte : <strong>{objvar_object_dthour_text}</strong>
 <br />
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
@@ -803,7 +806,9 @@ Liste des formateurs :<br />
 [!-- BEGIN TFormateursSession --] Nom : <strong>{line_formateur_nom}, </strong>pr&eacute;nom : <strong>{line_formateur_prenom}</strong>, statut : <strong>{line_formateur_statut}</strong><br />
 [!-- END TFormateursSession --]<br />
 <br />
-ou en une ligne : {objvar_object_trainer_text}
+ou en une ligne : <strong>{objvar_object_trainer_text}</strong>
+<br />
+Cout formateur (cout/nb de creneaux): <strong>{objvar_object_trainer_day_cost}</strong>
 <br />
 D&eacute;tail par formateur<span style="color:#FF0000"> (disponible uniquement sur contrat formateur)</span> :<br />
 <br />
@@ -821,7 +826,7 @@ Numero de déclaration : <strong>{objvar_object_AGF_ORGANISME_NUM}</strong>
 Prefecture : <strong>{objvar_object_AGF_ORGANISME_PREF}</strong>';
 
 		$chapter->create($user);
-		
+
 		unset($chapter);
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -841,7 +846,7 @@ Saut de page dans une boucle (ex: un stagiaire par page)<br />
 <br />
 @breakpage@<br />
 [!-- END TStagiairesSession --]';
-		
+
 		$chapter->create($user);
 
 	}

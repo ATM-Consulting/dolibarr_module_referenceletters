@@ -50,7 +50,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
     	);
     }
-    
+
     function get_substitutionarray_object($object,$outputlangs,$array_key='object')
     {
         global $db;
@@ -59,7 +59,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             dol_include_once('/agefodd/class/agefodd_session_element.class.php');
             $agf_se = new Agefodd_session_element($db);
             $agf_se->fetch_element_by_id($object->id, 'invoice');
-            
+
             if(count($agf_se->lines)>1){
                 $TSessions = array();
                 foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
@@ -67,9 +67,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             } elseif(!empty($agf_se->lines)) {
                 $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
             } else $resarray['object_references'] = '';
-            
+
         }
-        
+
         return $resarray;
     }
 
@@ -351,12 +351,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	    $resarray['formation_documents'] = $catalogue->note1;
     	    $resarray['formation_equipements'] = $catalogue->note2;
     	}
-    	
+
     	if(!empty($object->placeid)) {
     	    dol_include_once('/agefodd/class/agefodd_place.class.php');
     	    $agf_place= new Agefodd_place($db);
     	    $agf_place->fetch($object->placeid);
-    	    
+
     	    $resarray['formation_lieu'] = $object->placecode;
     	    $resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
     	    $resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
@@ -394,7 +394,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			}
 
     			if (! is_array($value) && ! is_object($value)) {
-				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false) $value = price($value);
+    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key!=='id') $value = price($value);
     				$array_other['object_' . $sub_element_label . $key] = $value;
     			}
     			elseif ($recursive && !empty($value)) {

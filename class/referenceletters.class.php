@@ -605,6 +605,7 @@ class ReferenceLetters extends CommonObject
 				,'formation_statut'=>'Statut de la formation'
 		        ,'formation_date_debut' => 'Date de début de la formation'
 		        ,'formation_date_fin' => 'Date de fin de la formation'
+				,'objvar_object_date_text'=>'Date de la session'
 		        ,'formation_duree' => 'Durée de la formation'
 				,'formation_commercial'=>'commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'

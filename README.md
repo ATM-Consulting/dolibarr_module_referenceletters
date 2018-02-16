@@ -23,14 +23,14 @@ INSTAL FROM GIT (into "custom" directory)
 DOCUMENTATION
 ---------------
 
-	http://www.open-concept.pro/images/doc/
+	http://wiki.atm-consulting.fr/index.php/DocEdit_pour_Agefodd/Documentation_utilisateur
+	http://wiki.atm-consulting.fr/index.php/DocEdit/Documentation_utilisateur
 	
 
 DOLISTORE
 ---------------
 
-	https://www.dolistore.com/fr/modules/658-Mod--le-de-courrier-pour-cr--er-vos-PDF-3-7---4-0.html
-	https://www.dolistore.com/en/modules/658-Template-letters-to-create-PDF-3-7---4-0.html
+	https://www.dolistore.com/fr/recherche?controller=search&orderby=position&orderway=desc&search_query=DocEdit&submit_search=
 
 
 DOLIBARR WIKI PAGE

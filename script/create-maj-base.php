@@ -679,7 +679,7 @@ PERSONNALISE</strong></span><br />
 		$chapter->content_text = 'Id Session : <strong>{objvar_object_id}</strong><br />
 Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
-Autre format de date: <strong>{objvar_object_date_text}</strong>
+Autre format de date: <strong>{objvar_object_date_text}</strong><br />
 Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}<br />
 Commentaire Lieu : {objvar_object_lieu_acces_site}</strong><br />
 Instruction d\'acces au lieu : {objvar_object_lieu_acces_site}</strong><br />

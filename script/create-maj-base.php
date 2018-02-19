@@ -680,10 +680,10 @@ PERSONNALISE</strong></span><br />
 Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
 Autre format de date: <strong>{objvar_object_date_text}</strong><br />
-Lieu :&nbsp;<strong>{objvar_object_lieu_ref_interne} -&nbsp;{objvar_object_lieu_adresse}&nbsp;{objvar_object_lieu_cp}&nbsp;{objvar_object_lieu_ville}<br />
-Commentaire Lieu : {objvar_object_lieu_acces_site}</strong><br />
-Instruction d\'acces au lieu : {objvar_object_lieu_acces_site}</strong><br />
-Horaire du lieu : {objvar_object_lieu_timeschedule}</strong><br />
+Lieu :&nbsp;<strong>{formation_lieu} -&nbsp;{formation_lieu_adresse}&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}<br />
+Commentaire Lieu : {formation_lieu_notes}</strong><br />
+Instruction d\'acces au lieu : {formation_lieu_acces}</strong><br />
+Horaire du lieu : {formation_lieu_horaires}</strong><br />
 Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
 <br />
 Tiers convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />

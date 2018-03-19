@@ -197,7 +197,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 						importImageBackground($pdf, $outputlangs, $instance_letter->fk_referenceletters);
 
-						$this->_pagehead($pdf, $object, 1, $outputlangs, $instance_letter);
+						$this->_pagehead($pdf, $object, 0, $outputlangs, $instance_letter);
 
 						$posX = $pdf->getX();
 						$posY = $pdf->getY();

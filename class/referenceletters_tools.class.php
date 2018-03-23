@@ -20,7 +20,7 @@ class RfltrTools {
 	 * @param $obj peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
 	 * charge le modèle référence letter choisi
 	 */
-	static function load_object_refletter($id_object, $id_model, $obj='', $socid='') {
+	static function load_object_refletter($id_object, $id_model, $obj='', $socid='', $lang_id='') {
 
 		global $db, $conf;
 
@@ -34,8 +34,13 @@ class RfltrTools {
 		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' )) $object = &$obj;
 		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj);
 
-		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
-		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		
+		if (!empty($lang_id)) $langs_chapter = $lang_id;
+		else {
+			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
+			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		}
+		
 		$object_chapters = new ReferencelettersChapters($db);
 		$result = $object_chapters->fetch_byrefltr($id_model, $langs_chapter);
 

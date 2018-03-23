@@ -182,7 +182,7 @@ class ActionsReferenceLetters
 					$id_model = (int)explode('rfltr_', $model)[1];
 
 					// Création et chargement d'une nouvelle instance de modèle
-					$instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object)[0];
+					$instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'))[0];
 					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 					$instance_rfltr->create($user);
 

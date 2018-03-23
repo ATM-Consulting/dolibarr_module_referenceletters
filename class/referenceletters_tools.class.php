@@ -19,7 +19,7 @@ class RfltrTools {
 	/**
 	 * charge le modèle référence letter choisi
 	 */
-	static function load_object_refletter($id_object, $id_model, &$object) {
+	static function load_object_refletter($id_object, $id_model, &$object, $lang_id='') {
 		
 		global $db, $conf;
 		
@@ -32,8 +32,12 @@ class RfltrTools {
 		
 		if(empty($object->thirdparty)) $object->fetch_thirdparty();
 		
-		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
-		if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		if (!empty($lang_id)) $langs_chapter = $lang_id;
+		else {
+			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
+			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
+		}
+		
 		$object_chapters = new ReferencelettersChapters($db);
 		$result = $object_chapters->fetch_byrefltr($id_model, $langs_chapter);
 		

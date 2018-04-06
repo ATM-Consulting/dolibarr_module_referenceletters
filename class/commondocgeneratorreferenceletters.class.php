@@ -69,6 +69,32 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             } else $resarray['object_references'] = '';
 
         }
+        // contact emetteur
+        $arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
+        $resarray[$array_key.'_contactsale'] = '';
+        if (count($arrayidcontact) > 0)
+        {
+            foreach ($arrayidcontact as $idsale){
+                $object->fetch_user($idsale);
+                $resarray[$array_key.'_contactsale'] .= ($resarray[$array_key.'_contactsale'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+                
+            }
+        }
+        
+        unset($arrayidcontact);
+        // contact tiers
+        if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
+        else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
+        
+        $resarray['cust_contactclient'] = '';
+        if (count($arrayidcontact) > 0)
+        {
+            foreach ($arrayidcontact as $id){
+                $object->fetch_contact($id);
+                $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
+            }
+        }
+        //var_dump($arrayidcontact, $resarray[$array_key.'_contactsale'], $resarray[$array_key.'_contactclient'], $object); exit;
 
         return $resarray;
     }
@@ -267,8 +293,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
      */
     function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
     {
-    	global $db, $conf;
-
+    	global $db, $conf, $langs;
+    	
     	// Substitutions tableau de participants :
     	$resarray=array();
     	$resarray['line_poste'] = $line->poste;
@@ -308,10 +334,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
     	if(get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne') $resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+    	$resarray['line_unit'] = $langs->trans($line->getLabelOfUnit('short'));
 	// Spé pour les contrats
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
     	$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+    	
 
     	return $resarray;
     }

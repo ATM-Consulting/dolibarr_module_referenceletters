@@ -334,7 +334,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
     	if(get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne') $resarray = parent::get_substitutionarray_lines($line, $outputlangs);
-    	$resarray['line_unit'] = $langs->trans($line->getLabelOfUnit('short'));
+    	$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '' ;
 	// Spé pour les contrats
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');

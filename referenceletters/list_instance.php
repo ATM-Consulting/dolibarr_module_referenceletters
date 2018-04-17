@@ -49,6 +49,11 @@ $search_ref_int = GETPOST("search_ref_int");
 $search_element_type = GETPOST("search_element_type");
 $search_title = GETPOST("search_title");
 $search_company = GETPOST("search_company");
+$search_ref = GETPOST("search_ref");
+
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
+
+if ($limit > 0 && $limit != $conf->liste_limit) $options.='&limit='.$limit;
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_ref_int = '';
@@ -72,12 +77,16 @@ if (! empty($search_company)) {
 	$filter['search_company'] = $search_company;
 	$options .= '&amp;search_company=' . $search_company;
 }
+if (! empty($search_ref)) {
+	$filter['search_ref'] = $search_ref;
+	$options .= '&amp;search_ref=' . $search_ref;
+}
 
 if ($page == - 1) {
 	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+$offset = $limit* $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -106,13 +115,12 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield, 0, 0, $filter);
 }
 
-$num = $object->fetchAll($sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$num = $object->fetchAll($sortorder, $sortfield, $limit, $offset, $filter);
 
 if ($num != - 1) {
-	
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-	
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	
+	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, '', $num, $nbtotalofrecords,'title_generic.png',0, '', '', $limit);
 	
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
@@ -144,7 +152,7 @@ if ($num != - 1) {
 	print '<input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10">';
 	print '</td>';
 	
-	print '<td></td>';
+	print '<td><input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="10"></td>';
 	
 	print '<td>';
 	print '<input type="text" class="flat" name="search_company" value="' . $search_company . '" size="10">';
@@ -190,15 +198,18 @@ if ($num != - 1) {
 		print '<td>' . $line->title . '</a></td>';
 		
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
-		} else {
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->getNomUrl() . '</a></td>';
+		} else if($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Contact'){
+			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->getNomUrl() . '</a></td>';
+		}else {
+			
 			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->ref . '</a></td>';
 		}
 		
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' .$object_src->getNomUrl() . '</a></td>';
 		} else {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->name . '</a></td>';
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->getNomUrl() . '</a></td>';
 		}
 		
 		print '<td>' . dol_print_date($line->datec) . '</a></td>';

@@ -504,7 +504,6 @@ class ReferenceLetters extends CommonObject
 					if (! empty($testObj->thirdparty->id)) {
 						
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
-						
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}

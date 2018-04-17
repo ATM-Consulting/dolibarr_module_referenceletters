@@ -206,13 +206,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Societe')
+			
 			$socobject = $object;
-			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact))
-				$socobject = $object->contact;
-				else
-					$socobject = $object->thirdparty;
+			
 
-					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
+					$tmparray = $this->get_substitutionarray_thirdparty($object, $this->outputlangs);
 					$substitution_array = array();
 					if (is_array($tmparray) && count($tmparray) > 0) {
 						foreach ( $tmparray as $key => $value ) {

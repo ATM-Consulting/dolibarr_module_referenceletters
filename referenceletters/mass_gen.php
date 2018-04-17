@@ -6,7 +6,8 @@
 	require_once '../class/html.formreferenceletters.class.php';
 	require_once '../class/referenceletterselements.class.php';
 	
-	
+	require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+
 	require_once '../lib/referenceletters.lib.php';
 	dol_include_once('/compta/facture/class/facture.class.php');
 	
@@ -22,8 +23,6 @@
 	echo '<form name="addreferenceletters" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 	echo '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	echo '<input type="hidden" name="action" value="choice">';
-	
-	echo '<table class="border" width="100%">';
 	
 	echo '<tr>';
 	echo '<td class="fieldrequired"  width="20%">';
@@ -69,7 +68,7 @@ function _show_ref_letter($idletter) {
 	$object_chapters = new ReferencelettersChapters($db);
 	$object_element = new ReferenceLettersElements($db);
 	$object_refletter = new Referenceletters($db);
-	
+	$object_refletter->fetch($idletter);
 	$result = $object_chapters->fetch_byrefltr($idletter, '');
 	
 	print '<table class="border" width="100%" id="ref-letter">';
@@ -92,6 +91,23 @@ function _show_ref_letter($idletter) {
 		print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 		print '</td>';
 		print '</tr>';
+		
+			print '<tr style="background-color:#CEECF5;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomHeader');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_refletter->use_custom_header) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
+			print '<td>'.$langs->trans('RefLtrHeaderContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 		
 		foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 			if ($line_chapter->content_text == '@breakpage@') {
@@ -138,7 +154,22 @@ function _show_ref_letter($idletter) {
 			}
 		}
 		
-		
+		print '<tr style="background-color:#CEF6CE;">';
+			print '<td>';
+			print $langs->trans('RefLtrUseCustomFooter');
+			print '</td>';
+			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
+			print '</td>';
+			print '</tr>';
+			
+			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
+			print '<td>'.$langs->trans('RefLtrFooterContent');
+			print '</td>';
+			print '<td>';
+			$doleditor=new DolEditor('footer', $object_refletter->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor->Create();
+			print '</td>';
+			print '</tr>';
 	}
 	else {
 		
@@ -239,7 +270,7 @@ function _list_invoice() {
 			
 			
 		});
-		
+		console.log(data);
 		var $togen = $('input[rel=invoicetogen]:checked');
 		var nb = $togen.length;
 		var cpt = 0;
@@ -1026,8 +1057,8 @@ function _list_thirdparty()
 	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 	print '<input type="hidden" name="page" value="'.$page.'">';
-
-	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);
+	//var_dump($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);exit;
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);
 
 	$langs->load("other");
 	$textprofid = array();
@@ -1771,10 +1802,19 @@ function _list_thirdparty()
 
 	print "</table>";
 	print "</div>";
-
+if($refltrelement_type) {
+		
+		echo '<div class="tabsAction">';
+		echo '<input type="button" class="butAction" name="bt_generate" value="'.$langs->trans('Generate').'"> ';
+		
+		echo '</div>';
+		
+	}
 	print '</form>';
 
 	$db->close();
+	
+	
 
 
 	/*
@@ -1783,4 +1823,117 @@ function _list_thirdparty()
 	 * From thirdparty/list.php
 	 * 
 	 */
+	
+	?>
+	<script type="text/javascript">
+		
+		$('[name*=use_custom]').click(function() {
+		
+		var is_checked = $(this).prop('checked');
+		var name_checkbox = $(this).attr('name');
+		var type_checkbox = name_checkbox.replace('use_custom_', '');
+		
+		if(is_checked) {
+			$('.wysiwyg_' + type_checkbox).show();
+		} else {
+			$('.wysiwyg_' + type_checkbox).hide();
+		}
+		
+	});
+		
+	$('input[name=bt_generate]').click(function() {
+
+		var data = { langs_chapter:"<?php echo $langs->defaultlang; ?>", justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter?>" };
+
+		$('#ref-letter input,#ref-letter textarea').each(function(i,item) {
+			$item = $(item);
+
+			if($item.attr('type') == 'checkbox') {
+				if($item.prop('checked')) data[$item.attr('name')]= $item.val();
+				else null;
+			}
+			else{
+				if ($item.is("textarea")) data[$item.attr('name')]=CKEDITOR.instances[$item.attr('name')].getData();
+				else data[$item.attr('name')]=$item.val();
+				
+			}
+			
+			
+		});
+		
+		var $togen = $('.checkforselect:checked');
+		var nb = $togen.length;
+		var cpt = 0;
+		var error = 0;
+	
+		var $bar = $('<div id="progressbar"></div>').progressbar({
+		      max : nb
+		      ,value : 0
+	    });
+
+		var $div = $('<div />');
+		$div.append($bar);
+		$div.append('<div class="info"></div>');
+		
+		$div.dialog({
+			'title':"<?php echo $langs->transnoentities('GenerationInProgress') ?>"
+			,'modal':true
+			
+		});
+
+		
+		$togen.each(function(i,item) {
+			var $item = $(item);
+			
+			var $td = $item.closest('td');
+
+			data["id"] = $item.val();
+
+			$td.html('...');
+			console.log(data);
+
+			$.ajax({
+				url:"instance.php"
+				,data:data
+				,dataType:'html'
+				,method:'post'
+			}).done(function(res) {
+
+				cpt++;
+
+				$bar.progressbar( "value", cpt );
+				$div.find('.info').html(cpt+' / '+nb);
+				
+				if(res == 1) {
+
+					$td.html('<?php echo img_picto('','on'); ?>');
+
+				}
+				else {
+					$td.html('<?php echo img_picto('','off'); ?> '+res);
+					error++;
+				}
+
+				if(cpt == nb){
+					if(error>0) {
+						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGeneratedButError')) ?>');
+					}
+					else{
+						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGenerated')) ?>');
+					}
+					
+					
+				}
+
+
+				
+			});
+			
+			
+		});
+		
+	});
+	
+	</script>
+	<?php 
 }

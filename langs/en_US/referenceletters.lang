@@ -20,26 +20,26 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Letter template
+Module103258Name = DocEdit
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Desc = Manage Reference Letters (models of letter to send)
+Module103258Desc = Manage DocEdit (document template to send)
 
 #
 # Permissions
 #
-Permission1032581=See letters templates
-Permission1032582=Modify letters templates
-Permission1032583=Delete letters templates
-Permission1032584=Use letters templates
+Permission1032581=See document templates
+Permission1032582=Modify document templates
+Permission1032583=Delete document templates
+Permission1032584=Use document templates
 
 #
 # Admin page
 #
-ReferenceLettersSetup = letters templates setup
+ReferenceLettersSetup = document templates setup
 ReferenceLettersSettings = Settings
-ReferenceLettersSetupPage = letters templates setup page
-RefLtrNothingToSet = This module has no particular settings. Go to the main menu tab "letters templates".
+ReferenceLettersSetupPage = document templates setup page
+RefLtrNothingToSet = This module has no particular settings. Go to the main menu tab "document templates".
 RefLtrSimpleNumRefModelDesc=Return reference like LTR-yymm-nnnn where yy is the year, mm the month and nnnn a sequancial counter without reset
 RefLtrREF_LETTER_CREATEEVENT=Create calendar event on letters creation
 RefLtrHelpREF_LETTER_CREATEEVENT=Create calendar event on letters creation
@@ -50,20 +50,25 @@ RefLtrREF_LETTER_TYPEEVENTNAME=Label of created event
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<New letter template  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
+RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Use a custom model of header and footer
+RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Define a custom model of header and footer to use for your letters
 
 #
 # About page
 #
 About = About
-ReferenceLettersAbout = About Letter template
-ReferenceLettersAboutPage = Letter template about page
+ReferenceLettersAbout = About DocEdit
+ReferenceLettersAboutPage = DocEdit about page
 
 #
 # Menu
 #
-ReferenceLettersList=List of Letter templates
-ReferenceLettersNew=New letter template
-RefLtrLetters=Letters
+ReferenceLettersList=List of document templates
+ReferenceLettersNew=New document template
+RefLtrLetters=Documents
+RefLtrLettersActiveListbox=%s last created template available
+RefLtrLettersUnactiveListbox=Les %s dernier(s) modèle(s) de document(s) désactivé(s)
+RefLtrExistingLetters=Les %s dernier(s) document(s) existant(s)
 
 #
 # Pages
@@ -71,16 +76,16 @@ RefLtrLetters=Letters
 RefLtrCreate=New letter template
 RefLtrTitle=Title
 RefLtrElement=Type of element
-RefLtrDelete=Delete Letter template
+RefLtrDelete=Delete document templates
 RefLtrConfirmDelete=Are you sure to delete this letter template ?
 RefLtrDeleteChapter=Delete chapter
 RefLtrConfirmDeleteChapter=Are you sure to delete this chapter ?
 RefLtrChapters=Chapters
 RefLtrNewChaters=New chapter
-RefLtrNew=New Letter template
+RefLtrNew=New document templates
 RefLtrOptionHelp=Each line will be outputted as a new checkbox line on the document
 RefLtrBackToRefLtr=Back to letter template
-RefLtrList=Letters templates list
+RefLtrList=Socuments templates list
 RefLtrLangue=Language
 RefLtrPosition=Order number
 RefLtrOption=Options list
@@ -89,8 +94,8 @@ RefLtrNoModelReadyForThisObject=The letter template is not ready for %s
 RefLtrSelectModel=Select template
 RefLtrCreateDoc=Create Document
 RefLtrRef=Letter Ref.
-RefLtrExistingLetters=Existing Letters
-RefLtrNewLetters=New letter
+RefLtrExistingLetters=Existing documents
+RefLtrNewLetters=New document
 RefLtrConfirmDeleteLetter=Are you sure to delete this letter ?
 RefLtrDeleteLetter=Delete letter
 RefLtrDatec=Creation date
@@ -100,13 +105,13 @@ RefLtrNoneExists=%s not found (probaly no element yet), can't display exemple da
 RefLtrAddPageBreak=Add page break
 RefLtrPageBreak=Page break
 RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)
-RefLtrListInstance=Letter list
+RefLtrListInstance=Document template list
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Error during copying letter PDF into event 
 RefLtrBackground=Background image
 RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore. <BR> Only page with "manual" break page will use background image
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
-RefLtrTitleModel=Letter title
+RefLtrTitleModel=Document template title
 
 RefLtrListMassGen=Mass Generation
 RefLtrSelectModelToGen=Model to use
@@ -114,3 +119,8 @@ GenerationInProgress=Generation in progress
 AllDocumentsGenerated=All documents were generated
 NoChapterIntoYourModel=There is no chapter in your model
 AllDocumentsGeneratedButError=Documents generation is finish but there is somes errors
+
+RefLtrActive = Activer
+RefLtrAvailable = Disponible
+RefLtrUnvailable = Désactivé
+RefLtrUnactive = Désactiver

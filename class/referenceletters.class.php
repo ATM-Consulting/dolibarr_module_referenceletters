@@ -41,6 +41,7 @@ class ReferenceLetters extends CommonObject
 	public $entity;
 	public $title;
 	public $element_type;
+	public $use_landscape_format;
 	public $status;
 	public $import_key;
 	public $fk_user_author;
@@ -49,6 +50,16 @@ class ReferenceLetters extends CommonObject
 	public $tms = '';
 	public $element_type_list = array ();
 	public $lines = array ();
+	public $TStatus=array();
+
+	/**
+	 * Draft status
+	 */
+	const STATUS_DRAFT = 0;
+	/**
+	 * Validated status
+	 */
+	const STATUS_VALIDATED = 1;
 
 	/**
 	 * Constructor
@@ -140,6 +151,9 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+
+		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
+		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 		return 1;
 	}
 
@@ -181,6 +195,8 @@ class ReferenceLetters extends CommonObject
 		$sql .= "entity,";
 		$sql .= "title,";
 		$sql .= "element_type,";
+		$sql .= "use_landscape_format,";
+		$sql .= "use_custom_header,header,use_custom_footer,footer,";
 		$sql .= "status,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
@@ -192,6 +208,11 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
+		$sql .= " " . (int)$this->use_landscape_format . ",";
+		$sql .= " " . (int)$this->use_custom_header . ",";
+		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
+		$sql .= " " . (int)$this->use_custom_footer . ",";
+		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
 		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
@@ -255,7 +276,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	function fetch($id, $title='') {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -268,10 +289,18 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
 		$sql .= " t.fk_user_mod,";
-		$sql .= " t.tms";
+		$sql .= " t.tms,";
+		$sql .= " t.use_custom_header,";
+		$sql .= " t.header,";
+		$sql .= " t.use_custom_footer,";
+		$sql .= " t.footer,";
+		$sql .= " t.use_landscape_format";
 
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
-		$sql .= " WHERE t.rowid = " . $id;
+		$sql .= " WHERE 1 ";
+		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
+		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
+		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
@@ -290,16 +319,21 @@ class ReferenceLetters extends CommonObject
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
+				$this->header = $obj->header;
+				$this->use_custom_header = $obj->use_custom_header;
+				$this->footer = $obj->footer;
+				$this->use_custom_footer= $obj->use_custom_footer;
+				$this->use_landscape_format = $obj->use_landscape_format;
 
 				$extrafields = new ExtraFields($this->db);
 				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
 				if (count($extralabels) > 0) {
 					$this->fetch_optionals($this->id, $extralabels);
 				}
-			}
-			$this->db->free($resql);
+				$this->db->free($resql);
 
-			return 1;
+				return 1;
+			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
@@ -340,7 +374,9 @@ class ReferenceLetters extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
-				} else {
+				}if ($key == 't.status') {
+					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
+				}else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
@@ -492,7 +528,46 @@ class ReferenceLetters extends CommonObject
 			);
 		}
 
+		$this->completeSubstitution($subst_array);
+
 		return $subst_array;
+	}
+
+	function completeSubstitution(&$subst_array) {
+
+		global $langs;
+
+		$subst_array[$langs->trans('RefLtrLines')] = array(
+				'line_fulldesc'=>'Description complète',
+				'line_product_ref'=>'Référence produit',
+				'line_product_label'=>'Libellé produit',
+				'line_product_type'=>'Type produit',
+				'line_desc'=>'Description',
+				'line_vatrate'=>'Taux de TVA',
+				'line_up'=>'Prix unitaire (format numérique)',
+				'line_up_locale'=>'Prix unitaire (format prix)',
+				'line_qty'=>'Qté ligne',
+				'line_discount_percent'=>'Remise ligne',
+				'line_price_ht'=>'Total HT ligne (format numérique)',
+				'line_price_ttc'=>'Total TTC ligne (format numérique)',
+				'line_price_vat'=>'Montant TVA (format numérique)',
+				'line_price_ht_locale'=>'Total HT ligne (format prix)',
+				'line_price_ttc_locale'=>'Total TTC ligne (format prix)',
+				'line_price_vat_locale'=>'Montant TVA (format prix)',
+				// Dates
+				'line_date_start'=>'Date début service',
+				'line_date_start_locale'=>'Date début service format 1',
+				'line_date_start_rfc'=>'Date début service format 2',
+				'line_date_end'=>'Date fin service',
+				'line_date_end_locale'=>'Date fin service format 1',
+				'line_date_end_rfc'=>'Date fin service format 2',
+		);
+
+		// Réservé aux lignes de contrats
+		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
+		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
+		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
+
 	}
 
 	/**
@@ -543,7 +618,12 @@ class ReferenceLetters extends CommonObject
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
-		$sql .= " fk_user_mod=" . $user->id;
+		$sql .= " header=" . (isset($this->header) ? "'" . $this->header . "'" : "null") . ",";
+		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer. "'" : "null") . ",";
+		$sql .= " fk_user_mod=" . $user->id . ",";
+		$sql .= " use_custom_header=" . $this->use_custom_header . ",";
+		$sql .= " use_custom_footer=" . $this->use_custom_footer . ",";
+		$sql .= " use_landscape_format=" . (int)$this->use_landscape_format;
 
 		$sql .= " WHERE rowid=" . $this->id;
 

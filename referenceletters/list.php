@@ -48,21 +48,36 @@ $page = GETPOST('page', 'int');
 // Search criteria
 $search_title = GETPOST("search_title");
 $search_element_type = GETPOST("search_element_type");
+$search_status = GETPOST("search_status",'int');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_title = '';
 	$search_element_type = '';
+	$search_status=-1;
 }
 
+$form = new Form($db);
+$object = new Referenceletters($db);
+$formrefleter = new FormReferenceLetters($db);
+
 $filter = array();
+$option='';
 if (! empty($search_title)) {
 	$filter['t.title'] = $search_title;
+	$option .= '&search_title=' . $search_title;
 }
 if (! empty($search_element_type)) {
 	$filter['t.element_type'] = $search_element_type;
+	$option .= '&search_element_type=' . $search_element_type;
 }
-
+if (array_key_exists($search_status,$object->TStatus)) {
+	$filter['t.status'] = $search_status;
+	$option .= '&search_status=' . $search_status;
+}
+else {
+	$search_status=-1;
+}
 if ($page == - 1) {
 	$page = 0;
 }
@@ -70,10 +85,6 @@ if ($page == - 1) {
 $offset = $conf->liste_limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
-
-$form = new Form($db);
-$object = new Referenceletters($db);
-$formrefleter = new FormReferenceLetters($db);
 
 if (empty($sortorder))
 	$sortorder = "ASC";
@@ -94,81 +105,74 @@ $resql = $object->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset,
 
 if ($resql != - 1) {
 	$num = $resql;
-	
-	if (! empty($search_title))
-		$option .= '&search_title=' . $search_title;
-	if (! empty($search_element_type))
-		$option .= '&search_element_type=' . $search_element_type;
-	
+
 	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
-	
+
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
-	
+
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
 	if (! empty($sortorder))
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
-	
-	/*$moreforfilter = $langs->trans('Period') . '(' . $langs->trans("AgfDateDebut") . ')' . ': ';
-	$moreforfilter .= $langs->trans('Month') . ':<input class="flat" type="text" size="4" name="search_month" value="' . $search_month . '">';
-	$moreforfilter .= $langs->trans('Year') . ':' . $formother->selectyear($search_year ? $search_year : - 1, 'search_year', 1, 20, 5);
-	
-	if ($moreforfilter) {
-		print '<div class="liste_titre">';
-		print $moreforfilter;
-		print '</div>';
-	}*/
-	
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVEUR['PHP_SELF'], "t.status", "", $option, '', $sortfield, $sortorder);
 	print '<td align="center"></td>';
-	
+
 	print "</tr>\n";
-	
+
 	print '<tr class="liste_titre">';
-	
+
 	print '<td><input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10"></td>';
-	
+
 	print '<td>';
 	print $formrefleter->selectElementType($search_element_type, 'search_element_type',1);
 	print '</td>';
-	
+
+	print '<td>';
+	print $formrefleter->selectStatus($search_status, 'search_status',1);
+	print '</td>';
+
 	// edit button
 	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</td>';
-	
+
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var = true;
-	
+
 	foreach ($object->lines as $line) {
-		
+
 		// Affichage tableau des lead
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		
+
 		// Title
 		print '<td><a href="card.php?id=' . $line->id . '">' . $line->title . '</a></td>';
-		
+
 		//Element
-		print '<td><a href="card.php?id=' . $line->id . '">' . $object->displayElementElement(0,$line->element_type) . '</a></td>';
-	
+		print '<td>' . $object->displayElementElement(0,$line->element_type) . '</td>';
+
+		//Status
+		print '<td>' . $langs->trans($object->TStatus[$line->status]) . '</td>';
+
 		print '<td align="center"><a href="card.php?id=' . $line->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a></td>';
-		
+
 		print "</tr>\n";
-		
+
 	}
-	
+
 	print "</table>";
-	
+
 } else {
 	setEventMessage($object->error, 'errors');
 }

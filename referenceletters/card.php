@@ -17,7 +17,7 @@
 */
 /**
  *	\file		index.php
-*	\ingroup	refferenceletters
+*	\ingroup	referenceletters
 *	\brief		index page
 */
 
@@ -36,8 +36,9 @@ $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 
-$refltrtitle=GETPOST('refltrtitle','alpha');
-$refltrelement_type=GETPOST('refltrelement_type','alpha');
+$refltrtitle=GETPOST('refltrtitle', 'alpha');
+$refltrelement_type=GETPOST('refltrelement_type', 'alpha');
+$refltruse_landscape_format=GETPOST('refltruse_landscape_format', 'alpha');
 
 
 // Access control
@@ -85,7 +86,8 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($action == "add") {
 	$object->title = $refltrtitle;
 	$object->element_type = $refltrelement_type;
-	
+	$object->use_landscape_format = $refltruse_landscape_format;
+
 	$extrafields->setOptionalsFromPost($extralabels, $object);
 
 	$result = $object->create($user);
@@ -103,7 +105,7 @@ if ($action == "add") {
 		header('Location:' . dol_buildpath('/referenceletters/referenceletters/list.php', 1));
 	}
 } elseif ($action == "clone") {
-	
+
 	$object_clone = new ReferenceLetters($db);
 	$result = $object_clone->createFromClone($object->id);
 	if ($result < 0) {
@@ -116,6 +118,16 @@ if ($action == "add") {
 	$result = $object->update($user);
 	if ($result < 0) {
 		$action = 'editrefltrtitle';
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
+} elseif($action=='setrefltruse_landscape_format' && isset($_REQUEST['modify'])) {
+
+	$object->use_landscape_format = $refltruse_landscape_format;
+	$result = $object->update($user);
+	if ($result < 0) {
+		$action = 'editrefltruse_landscape_format';
 		setEventMessage($object->error, 'errors');
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
@@ -146,6 +158,19 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+}elseif ($action == "changestatus") {
+
+	if (empty($object->status)) {
+		$object->status=ReferenceLetters::STATUS_VALIDATED;
+	} else {
+		$object->status=ReferenceLetters::STATUS_DRAFT;
+	}
+	$result = $object->update($user);
+	if ($result < 0) {
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 }
 
 /*
@@ -168,7 +193,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<input type="hidden" name="action" value="add">';
 
 	print '<table class="border" width="100%">';
-	
+
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrElement');
@@ -177,13 +202,22 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type');
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrTitle');
 	print '</td>';
 	print '<td>';
 	print '<input type="text" name="refltrtitle" size="20" value="' . $refltrtitle . '"/>';
+	print '</td>';
+	print '</tr>';
+
+	print '<tr>';
+	print '<td width="20%">';
+	print $langs->trans('RefLtrUseLandscapeFormat');
+	print '</td>';
+	print '<td>';
+	print $form->selectyesno('refltruse_landscape_format', $refltruse_landscape_format, 1);
 	print '</td>';
 	print '</tr>';
 
@@ -203,19 +237,19 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	print '</form>';
 } else {
-	
+
 	/*
 	 * Show object in view mode
 	*/
 	$head = referenceletterPrepareHead($object);
 	dol_fiche_head($head, 'card', $langs->trans('Module103258Name'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
-	
+
 	// Confirm form
 	$formconfirm = '';
 	if ($action == 'delete') {
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'confirm_delete', '', 0, 1);
 	}
-	
+
 	if (empty($formconfirm)) {
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -223,10 +257,10 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	if (!empty($formconfirm)) {
 		print $formconfirm;
 	}
-	
+
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
 	print $linkback;
-	
+
 	print '<table class="border" width="100%">';
 	print '<tr>';
 	print '<td  width="20%">';
@@ -235,7 +269,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td width="20%">';
 	print $langs->trans('RefLtrElement');
@@ -244,16 +278,24 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $object->displayElement();
 	print '</td>';
 	print '</tr>';
-	
+
+	print '<tr>';
+	print '<td  width="20%">';
+	print $form->editfieldkey("RefLtrUseLandscapeFormat",'refltruse_landscape_format',(int)$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
+	print '</td><td>';
+	print $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No'));
+	print '</td>';
+	print '</tr>';
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	
+
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields);
 	}
 
 	print '</table>';
-	
+
 	print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
@@ -273,14 +315,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '</table>';
 			} else {
 				print '<table class="border" width="100%">';
-				
+
 				if ($user->rights->referenceletters->write) {
 					print '<tr><td rowspan="6" width="20px">';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 					print '</td></tr>';
 				}
-				
+
 				if (! empty($conf->global->MAIN_MULTILANGS))
 				{
 					print '<tr>';
@@ -294,7 +336,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 					print '</td>';
 					print '</tr>';
 				}
-				
+
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrTitle');
@@ -303,7 +345,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print $line_chapter->title;
 				print '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrText');
@@ -312,7 +354,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print $line_chapter->content_text;
 				print '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
 				print '<td  width="20%">';
 				print $langs->trans('RefLtrOption');
@@ -325,7 +367,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				}
 				print '</td>';
 				print '</tr>';
-				
+
 				print '<tr>';
 				print '<td width="20%">';
 				print $langs->trans('RefLtrReadOnly');
@@ -334,12 +376,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				print '<input type="checkbox" name="refltrreadonly" size="20" disabled="disabled" '.(!empty($line_chapter->readonly)?'checked="checked"':'').' value="1"/>';
 				print '</td>';
 				print '</tr>';
-				
+
 				print '</table>';
 			}
 		}
 	}
-	
+
 	print '<div class="tabsAction">';
 	print '<div class="inline-block divButAction">';
 	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
@@ -347,21 +389,30 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 	print "</div>\n";
 	print '</div>';
-	
+
 	print "</div>\n";
-	
+
 	/*
 	 * Barre d'actions
 	*/
 	print '<div class="tabsAction">';
-	// Delete
+	// Clone
 	if ($user->rights->referenceletters->write) {
 		//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";
 		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone">' . $langs->trans("Clone") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Edit") . "</font></div>";
 	}
-	
+
+	// Activ/Unactiv
+	if ($user->rights->referenceletters->write) {
+		if (empty($object->status)) {
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrActive") . "</a></div>\n";
+		} else {
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrUnactive") . "</a></div>\n";
+		}
+	}
+
 	// Delete
 	if ($user->rights->referenceletters->delete) {
 		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete">' . $langs->trans("Delete") . "</a></div>\n";
@@ -369,7 +420,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
 	}
 	print '</div>';
-	
+
 }
 
 

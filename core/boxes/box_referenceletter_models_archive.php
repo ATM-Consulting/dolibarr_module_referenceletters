@@ -27,7 +27,7 @@ include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
 /**
  * Class to manage the box
  */
-class box_referenceletter_models extends ModeleBoxes {
+class box_referenceletter_models_archive extends ModeleBoxes {
 	var $boxcode = "referenceletter_models";
 	var $boximg = "referenceletters@referenceletters";
 	var $boxlabel;
@@ -46,7 +46,7 @@ class box_referenceletter_models extends ModeleBoxes {
 		global $langs;
 		$langs->load("boxes");
 
-		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrLettersActiveListbox",15);
+		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrLettersUnactiveListbox",15);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class box_referenceletter_models extends ModeleBoxes {
 
 		dol_include_once("/referenceletters/class/referenceletters.class.php");
 
-		$text = $langs->trans("RefLtrLettersActiveListbox", $max);
+		$text = $langs->trans("RefLtrLettersUnactiveListbox", $max);
 		$this->info_box_head = array (
 				'text' => $text,
 				'limit' => dol_strlen($text)
@@ -70,7 +70,7 @@ class box_referenceletter_models extends ModeleBoxes {
 
 
 		$object=new ReferenceLetters($db);
-		$result = $object->fetch_all('ASC','t.datec',5,0,array('t.status'=>1));
+		$result = $object->fetch_all('ASC','t.datec',5,0,array('t.status'=>0));
 		if ($result<0) {
 			setEventMessage($object->error,'errors');
 		}

@@ -17,7 +17,7 @@
  */
 /**
  *	\file		index.php
- *	\ingroup	refferenceletters
+ *	\ingroup	referenceletters
  *	\brief		index page
  */
 
@@ -37,6 +37,7 @@ if (! $res) {
 }
 
 dol_include_once('/referenceletters/core/boxes/box_referenceletter_models.php');
+dol_include_once('/referenceletters/core/boxes/box_referenceletter_models_archive.php');
 dol_include_once('/referenceletters/core/boxes/box_referenceletter_elements.php');
 
 // Access control
@@ -64,6 +65,11 @@ $box->loadBox();
 $box->showBox();
 
 $box = new box_referenceletter_elements($db);
+
+$box->loadBox();
+$box->showBox();
+
+$box = new box_referenceletter_models_archive($db);
 
 $box->loadBox();
 $box->showBox();

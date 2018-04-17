@@ -67,7 +67,7 @@ echo $langs->trans("ReferenceLettersAboutPage");
 
 
 print '<BR><BR><BR><BR>--------------------------------';
-print '<BR><a href="http://www.open-concept.pro/images/doc/Mod%C3%A8les%20de%20courriers%20-%20Guide%20utilisateur.pdf" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR><a href="http://wiki.atm-consulting.fr/index.php/DocEdit/Documentation_utilisateur" target="_blanck">Lien Documentation Utilisateur Français</a>';
 print '<BR><a href="http://www.open-concept.pro/images/doc/Letters%20Templates%20-%20User%20guide.pdf" target="_blanck">Link english user guide</a>';
 print '<BR><a href="http://www.open-concept.pro/images/doc/Plantillas%20de%20correos%20-%20Guia%20del%20usuario.pdf" target="_blanck">Link spanish Guía del usuario</a>';
 print '<BR>';

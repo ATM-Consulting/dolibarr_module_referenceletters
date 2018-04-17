@@ -20,79 +20,86 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Modèles de courriers
+Module103258Name = DocEdit
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Desc = Gére des modèles de courrier
+Module103258Desc = Gère des modèles de document
 
 #
 # Permissions
 #
-Permission1032581=Voir les modèles de courrier
-Permission1032582=Modifier les modèles de courrier
-Permission1032583=Supprimer les modèles de courrier
-Permission1032584=Utiliser les modèles de courrier
+Permission1032581=Voir les modèles de document
+Permission1032582=Modifier les modèles de document
+Permission1032583=Supprimer les modèles de document
+Permission1032584=Utiliser les modèles de document
 
 #
 # Page d'administration
 #
-ReferenceLettersSetup = Configuration du module Modèle de courrier
+ReferenceLettersSetup = Configuration du module DocEdit
 ReferenceLettersSettings = Réglages
-ReferenceLettersSetupPage = Page de réglage de Modèle de courrier
-RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module Modèle de courrier.
+ReferenceLettersSetupPage = Page de réglage de DocEdit
+RefLtrNothingToSet = Il n'y a pas de paramétrage spécifique à ce module. Aller dans le module DocEdit.
 RefLtrSimpleNumRefModelDesc=Renvoie le numéro sous la forme LTR-yymm-nnnn où yy est l'année, mm le mois et nnnn un compteur séquentiel sans rupture et sans remise à 0
-RefLtrREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
-RefLtrHelpREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un courrier
-RefLtrREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
-RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le courrier PDF dans les fichiers joints de l'évenement crée
+RefLtrREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un modèle de document
+RefLtrHelpREF_LETTER_CREATEEVENT=Crée un evenement dans l'agenda lors de la création d'un document
+RefLtrREF_LETTER_EVTCOPYFILE=Copie le document PDF dans les fichiers joints de l'évenement créé
+RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le document PDF dans les fichiers joints de l'évenement crée
 RefLtrConfirmChangeState=Etes-vous sûr de changer cette option ?
-RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement crée
-RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de courrier  {ref_int}>
-RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modéle} - {nom du client}>
-RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du courrier dans l'entête du document PDF
+RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement créé
+RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de document  {ref_int}>
+RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
+RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
+RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
+RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
+
 
 #
 # Page À propos
 #
 About = À propos
-ReferenceLettersAbout = À propos de Modèles de courriers
-ReferenceLettersAboutPage = Page à propos de Modèles de courriers
+ReferenceLettersAbout = À propos de DocEdit
+ReferenceLettersAboutPage = Page à propos de DocEdit
 
 #
 # Menu
 #
-RefLtrList=Liste des modèles de courrier
-RefLtrNew=Nouveau modèle de courrier
-RefLtrLetters=Courrier
+RefLtrList=Liste des modèles de document
+RefLtrNew=Nouveau modèle de document
+RefLtrLetters=Modèle de document
+RefLtrLettersActiveListbox=Les %s dernier(s) modèle(s) de document(s) disponible(s)
+RefLtrLettersUnactiveListbox=Les %s dernier(s) modèle(s) de document(s) désactivé(s)
+RefLtrExistingLetters=Les %s dernier(s) document(s) existant(s)
 
 #
 # Pages
 #
-RefLtrCreate=Nouveau modèle de courrier
+RefLtrCreate=Nouveau modèle de document
 RefLtrTitle=Titre
-RefLtrElement=Type d'objet pour le courrier
-RefLtrDelete=Supprimer le modèle de courrier
-RefLtrConfirmDelete=Êtes-vous sûr(e) de supprimer le modèle de courrier ?
+RefLtrElement=Type d'objet pour le modèle de document
+RefLtrUseLandscapeFormat=Utiliser le format paysage
+RefLtrDelete=Supprimer le modèle de document
+RefLtrConfirmDelete=Êtes-vous sûr(e) de supprimer le modèle de document ?
 RefLtrDeleteChapter=Supprimer un chapitre
 RefLtrConfirmDeleteChapter=Êtes-vous sûr(e) de supprimer le chapitre ?
 RefLtrChapters=Chapitres
 RefLtrNewChaters=Nouveau chapitre
-RefLtrNew=Nouveau modèle de courrier
+RefLtrNew=Nouveau modèle de document
 RefLtrOptionHelp=Chaque ligne produira un alinéa sur le documents
-RefLtrBackToRefLtr=Retour au modèle de courrier
-RefLtrList=Liste des modèles de courrier
+RefLtrBackToRefLtr=Retour au modèle de document
+RefLtrList=Liste des modèles de document
 RefLtrLangue=Langue
 RefLtrPosition=Numéro d'ordre
 RefLtrOption=Liste des options
 RefLtrText=Texte
-RefLtrNoModelReadyForThisObject=Le module modèle de courrier n'est pas encore utilisable pour %s
+RefLtrNoModelReadyForThisObject=Le module DocEdit n'est pas encore utilisable pour %s
 RefLtrSelectModel=Sélectionner le modèle
-RefLtrCreateDoc=Créer la lettre
+RefLtrCreateDoc=Créer le document
 RefLtrRef=Courrier Ref.
-RefLtrExistingLetters=Lettres existantes
-RefLtrNewLetters=Nouveau courrier
-RefLtrConfirmDeleteLetter=Êtes-vous sûr(e) de supprimer ce courrier ?
-RefLtrDeleteLetter=Supprimer un courrier
+RefLtrExistingLetters=Documents existants
+RefLtrNewLetters=Nouveau document
+RefLtrConfirmDeleteLetter=Êtes-vous sûr(e) de supprimer ce document ?
+RefLtrDeleteLetter=Supprimer un document
 RefLtrDatec=Date de création
 RefLtrTag=Tag
 RefLtrDisplayTag=Afficher les tags
@@ -100,13 +107,13 @@ RefLtrNoneExists=Aucun(e) %s existe, impossible d'afficher un exemple
 RefLtrAddPageBreak=Ajouter un saut de page
 RefLtrPageBreak=Saut de page
 RefLtrAddPageBreakWithoutHeader=Saut de page (sans répéter l'entête sur la page suivante)
-RefLtrListInstance=Liste des courriers
+RefLtrListInstance=Liste des documents
 RefLtrDoc=Document
-RefLtrErrorCopyFile=Erreur durant la copie du document PDF de la lettre sur l'événement de l'agenda
+RefLtrErrorCopyFile=Erreur durant la copie du document PDF du document sur l'événement de l'agenda
 RefLtrBackground=Image de fond
-RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des courriers généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
-RefLtrReadOnly=Lecture seule (invisible lors de la création de la lettre)
-RefLtrTitleModel=Titre modèle de courrier
+RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
+RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
+RefLtrTitleModel=Titre modèle de document
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer
@@ -115,3 +122,20 @@ AllDocumentsGenerated=Tous les documents ont été générés
 NoChapterIntoYourModel=Il n'y pas de chapitre dans votre modèle.
 AllDocumentsGeneratedButError=Des documents n'ont pu être générés. Consultez la liste pour connaître lesquels.
 NoContentChapterForLang=Pas de chapitre défini pour la langue %s
+
+RefLtrUseCustomHeader=Utiliser un entête personnalisé
+RefLtrUseCustomFooter=Utiliser un pied de page personnalisé
+RefLtrHeaderContent=Contenu de l'entête personnalisé
+RefLtrFooterContent=Contenu du pied de page personnalisé
+RefLtrHeaderTab=Entête
+RefLtrFooterTab=Pied de page
+
+RefLtrActive = Activer
+RefLtrAvailable = Disponible
+RefLtrUnvailable = Désactivé
+RefLtrUnactive = Désactiver
+
+#
+# Tags lignes
+#
+RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)

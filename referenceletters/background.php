@@ -17,8 +17,8 @@
  */
 
 /**
- * \file /refferenceletters/refferenceletters/background.php
- * \ingroup refferenceletters
+ * \file /referenceletters/referenceletters/background.php
+ * \ingroup referenceletters
  */
 
 $res = @include ("../../main.inc.php"); // For root directory

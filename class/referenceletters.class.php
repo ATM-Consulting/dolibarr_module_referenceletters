@@ -487,22 +487,36 @@ class ReferenceLetters extends CommonObject
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-					$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+				
 					$array_second_thirdparty_object = array ();
+					
+					if($testObj->element == 'societe'){
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
+						
+						foreach ( $array_first_thirdparty_object as $key => $value ) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
+						}
+						$subst_array[$langs->trans($item['title'])] =  $array_second_thirdparty_object;
+					}else {
+						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+					}
+					
 					if (! empty($testObj->thirdparty->id)) {
+						
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
+						
 					}
-					// var_dump($array_second_thirdparty_object);
+					
+
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
 					$subst_array[$langs->trans($item['title'])] = array (
 							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
-
 				//TODO : add line replacement
 			}
 		}

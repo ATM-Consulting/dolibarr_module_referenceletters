@@ -256,8 +256,6 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 					$posY = $this->pdf->GetY();
 				}
 				// Pied de page
-				/*if(empty($use_custom_footer)) $this->_pagefoot($this->pdf, $object, $this->outputlangs);
-				 else $this->_pagefootCustom($this->pdf, $object, $this->outputlangs, 0, $instance_letter);*/
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

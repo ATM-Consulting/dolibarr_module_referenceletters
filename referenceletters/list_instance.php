@@ -116,7 +116,6 @@ if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 }
 
 $num = $object->fetchAll($sortorder, $sortfield, $limit, $offset, $filter);
-
 if ($num != - 1) {
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 	

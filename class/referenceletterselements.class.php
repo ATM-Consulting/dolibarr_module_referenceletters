@@ -382,19 +382,21 @@ class ReferenceLettersElements extends CommonObject
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
 		
-		if (! empty($limit)) {
-			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
-		}
+		
+		
+		
 		
 		dol_syslog(get_class($this) . "::fetchAll sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
+			
 			if ($num > 0) {
 				$this->lines = array ();
-				
+				$num=0;
 				while ( $obj = $this->db->fetch_object($resql) ) {
 					
+					$addline = true;
 					//Search for company need to be calculated
 					if (array_key_exists('search_company', $filter) && ! empty($filter['search_company'])) {
 						
@@ -418,7 +420,8 @@ class ReferenceLettersElements extends CommonObject
 							}
 						}
 						
-						if ($this->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
+						if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
+							
 							if (strpos(mb_strtoupper($object_src->name,'UTF-8'), mb_strtoupper($filter['search_company'],'UTF-8')) !== false) {
 								$addline = true;
 							}
@@ -458,6 +461,7 @@ class ReferenceLettersElements extends CommonObject
 					}
 					
 					if ($addline) {
+						$num++;
 						$line = new ReferenceLettersElementsLine();
 						
 						$line->id = $obj->rowid;
@@ -482,11 +486,17 @@ class ReferenceLettersElements extends CommonObject
 				}
 			}
 			
+			$this->lines=array_splice($this->lines, $offset,$limit);
+				
+				
+			
+			
 			$this->db->free($resql);
 			
 			if (! empty($error)) {
 				return - 1;
 			}
+			
 			
 			return $num;
 		} else {

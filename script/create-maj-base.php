@@ -23,7 +23,9 @@ if(!defined('DB_HOST')) {
 dol_include_once('/referenceletters/class/referenceletters.class.php');
 dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
 
-global $db;
+global $db,$langs;
+
+$langs->load('referenceletters@referenceletters');
 
 $rfltr = new ReferenceLetters($db);
 
@@ -31,7 +33,7 @@ $rfltr = new ReferenceLetters($db);
 /************* Propal **************/
 /***********************************/
 
-$title = 'EDITION_PERSO_PROPOSITION';
+$title = $langs->trans('RefLtrPropal');
 
 if($rfltr->fetch('', $title) <= 0) {
 
@@ -194,7 +196,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 /************************************/
 /************* Facture **************/
 /************************************/
-$title = 'EDITION_PERSO_FACTURE';
+$title = $langs->trans('RefLtrInvoice');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -364,7 +366,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 
 
 /************* Commande **************/
-$title = 'EDITION_PERSO_COMMANDE';
+$title = $langs->trans('RefLtrOrder');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -501,7 +503,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 
 
 /************* Contrat **************/
-$title = 'EDITION_PERSO_CONTRAT';
+$title = $langs->trans('RefLtrContract');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;

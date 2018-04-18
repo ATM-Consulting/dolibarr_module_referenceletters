@@ -19,7 +19,7 @@ class RfltrTools {
 	/**
 	 * charge le modèle référence letter choisi
 	 */
-	static function load_object_refletter($id_object, $id_model, &$object, $lang_id='') {
+	static function load_object_refletter($id_object, $id_model, &$object, $socid='', $lang_id='') {
 		
 		global $db, $conf;
 		

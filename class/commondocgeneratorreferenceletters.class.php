@@ -77,15 +77,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             foreach ($arrayidcontact as $idsale){
                 $object->fetch_user($idsale);
                 $resarray[$array_key.'_contactsale'] .= ($resarray[$array_key.'_contactsale'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
-                
+
             }
         }
-        
+
         unset($arrayidcontact);
         // contact tiers
         if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
         else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
-        
+
         $resarray['cust_contactclient'] = '';
         if (count($arrayidcontact) > 0)
         {
@@ -201,7 +201,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
 
 			$TTva['Total TVA '.round($vatrate, 2).'%'] += $tvaligne;
-
     	}
 
     	// formatage sortie
@@ -285,7 +284,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     }
 
     function get_substitutionarray_lines($line, $outputlangs) {
-    	
+
     	$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
@@ -293,7 +292,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	//var_dump($line);exit;
     	return $resarray;
     }
-    
+
     /**
      *	Define array with couple substitution key => substitution value
      *
@@ -304,7 +303,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
     {
     	global $db, $conf, $langs;
-    	
+
     	// Substitutions tableau de participants :
     	$resarray=array();
     	$resarray['line_poste'] = $line->poste;
@@ -349,7 +348,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
     	$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
-    	
+
 
     	return $resarray;
     }
@@ -444,6 +443,5 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     	return $array_other;
     }
-
-
 }
+

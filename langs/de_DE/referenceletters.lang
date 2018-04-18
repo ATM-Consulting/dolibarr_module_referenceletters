@@ -51,6 +51,13 @@ RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PDF ein
 
+#Models
+RefLtrPropal=Sample template of PROPOSAL
+RefLtrInvoice=Sample template of INVOICE
+RefLtrOrder=Sample template of ORDER
+RefLtrContract=Sample template of CONTRACT
+RefLtrAgefodd=Sample template of Training Module
+
 #
 # About page
 #

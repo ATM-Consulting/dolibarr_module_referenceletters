@@ -382,7 +382,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	 * Barre d'actions
 	*/
 	print '<div class="tabsAction">';
-	// Delete
 	if ($user->rights->referenceletters->write) {
 	    print '<div class="inline-block divButAction">';
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';

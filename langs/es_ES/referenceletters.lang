@@ -51,6 +51,14 @@ RefLtrREF_LETTER_TYPEEVENTNAME_normal=<New letter template  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
 
+#Models
+RefLtrPropal=Sample template of PROPOSAL
+RefLtrInvoice=Sample template of INVOICE
+RefLtrOrder=Sample template of ORDER
+RefLtrContract=Sample template of CONTRACT
+RefLtrAgefodd=Sample template of Training Module
+
+
 #
 # Page À propos
 #

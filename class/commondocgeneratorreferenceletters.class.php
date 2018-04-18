@@ -51,6 +51,54 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	);
     }
 
+    function get_substitutionarray_object($object,$outputlangs,$array_key='object')
+    {
+        global $db;
+        $resarray = parent::get_substitutionarray_object($object,$outputlangs,$array_key);
+        if ($object->element == 'facture') {
+            dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+            $agf_se = new Agefodd_session_element($db);
+            $agf_se->fetch_element_by_id($object->id, 'invoice');
+
+            if(count($agf_se->lines)>1){
+                $TSessions = array();
+                foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
+                $resarray['object_references'] = implode(', ', $TSessions);
+            } elseif(!empty($agf_se->lines)) {
+                $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
+            } else $resarray['object_references'] = '';
+
+        }
+        // contact emetteur
+        $arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
+        $resarray[$array_key.'_contactsale'] = '';
+        if (count($arrayidcontact) > 0)
+        {
+            foreach ($arrayidcontact as $idsale){
+                $object->fetch_user($idsale);
+                $resarray[$array_key.'_contactsale'] .= ($resarray[$array_key.'_contactsale'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+                
+            }
+        }
+        
+        unset($arrayidcontact);
+        // contact tiers
+        if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
+        else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
+        
+        $resarray['cust_contactclient'] = '';
+        if (count($arrayidcontact) > 0)
+        {
+            foreach ($arrayidcontact as $id){
+                $object->fetch_contact($id);
+                $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
+            }
+        }
+        //var_dump($arrayidcontact, $resarray[$array_key.'_contactsale'], $resarray[$array_key.'_contactclient'], $object); exit;
+
+        return $resarray;
+    }
+
     function get_substitutionarray_other($outputlangs, $object='')
     {
     	global $conf;
@@ -268,7 +316,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     			}
 
     			if (! is_array($value) && ! is_object($value)) {
-				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false) $value = price($value);
+    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key!=='id') $value = price($value);
     				$array_other['object_' . $sub_element_label . $key] = $value;
     			}
     			elseif ($recursive && !empty($value)) {

@@ -1,7 +1,7 @@
 <?php
 
 require_once DOL_DOCUMENT_ROOT . '/includes/odtphp/odf.php';
-
+require_once DOL_DOCUMENT_ROOT . '/includes/odtphp/zip/PclZipProxy.php';
 class OdfRfltr extends Odf {
 	
 	/**

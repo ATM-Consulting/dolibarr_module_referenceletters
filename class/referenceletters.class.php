@@ -67,6 +67,9 @@ class ReferenceLetters extends CommonObject
 	 * @param DoliDb $db handler
 	 */
 	function __construct($db) {
+
+		global $conf;
+
 		$this->db = $db;
 		$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
@@ -468,7 +471,7 @@ class ReferenceLetters extends CommonObject
 			if ($this->element_type == $type) {
 
 				$langs->load($item['trans']);
-
+				//var_dump($item);exit;
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 

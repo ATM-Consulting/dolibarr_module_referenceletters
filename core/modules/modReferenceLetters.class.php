@@ -78,6 +78,10 @@ class modReferenceLetters extends DolibarrModules
 		                                                    // for default path (eg: /referenceletters/core/xxxxx) (0=disable, 1=enable)
 		                                                    // for specific path of parts (eg: /referenceletters/core/modules/barcode)
 		                                                    // for specific css file (eg: /referenceletters/css/referenceletters.css.php)
+
+		$this->editor_name = 'ATM-Consulting';
+		$this->editor_url = 'https://www.atm-consulting.fr';
+
 		$this->module_parts = array (
 				'models' => 1,
 				'hooks' => array (

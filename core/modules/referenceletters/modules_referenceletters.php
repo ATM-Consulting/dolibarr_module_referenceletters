@@ -255,7 +255,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
-		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters') { // Réservé aux pièces de vente
+		// Réservé aux pièces de vente
+		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters') {
 			$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {

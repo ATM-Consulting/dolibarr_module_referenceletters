@@ -59,6 +59,7 @@ RefLtrInvoice=Exemple de modèle de FACTURE
 RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
 RefLtrAgefodd=Exemple de modèle pour le module Formation
+RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
 
 #
 # Page À propos

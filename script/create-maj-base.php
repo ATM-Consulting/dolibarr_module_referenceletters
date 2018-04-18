@@ -1,41 +1,48 @@
 <?php
+if (is_file('../main.inc.php'))
+	$dir = '../';
+else if (is_file('../../../main.inc.php'))
+	$dir = '../../../';
+else
+	$dir = '../../';
 
-if(is_file('../main.inc.php'))$dir = '../';
-else  if(is_file('../../../main.inc.php'))$dir = '../../../';
-else $dir = '../../';
-
-if(!defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
-	include($dir."master.inc.php");
-}
-elseif(!defined('INC_FROM_DOLIBARR')) {
-	include($dir."main.inc.php");
+if (! defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
+	include ($dir . "master.inc.php");
+} elseif (! defined('INC_FROM_DOLIBARR')) {
+	include ($dir . "main.inc.php");
 } else {
 	global $dolibarr_main_db_host, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass;
 }
-if(!defined('DB_HOST')) {
-	define('DB_HOST',$dolibarr_main_db_host);
-	define('DB_NAME',$dolibarr_main_db_name);
-	define('DB_USER',$dolibarr_main_db_user);
-	define('DB_PASS',$dolibarr_main_db_pass);
-	define('DB_DRIVER',$dolibarr_main_db_type);
+if (! defined('DB_HOST')) {
+	define('DB_HOST', $dolibarr_main_db_host);
+	define('DB_NAME', $dolibarr_main_db_name);
+	define('DB_USER', $dolibarr_main_db_user);
+	define('DB_PASS', $dolibarr_main_db_pass);
+	define('DB_DRIVER', $dolibarr_main_db_type);
 }
 
 dol_include_once('/referenceletters/class/referenceletters.class.php');
 dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
 
-global $db,$langs;
+global $db, $langs;
 
 $langs->load('referenceletters@referenceletters');
 
 $rfltr = new ReferenceLetters($db);
 
-/***********************************/
-/************* Propal **************/
-/***********************************/
+/**
+ * ********************************
+ */
+/**
+ * *********** Propal *************
+ */
+/**
+ * ********************************
+ */
 
 $title = $langs->trans('RefLtrPropal');
 
-if($rfltr->fetch('', $title) <= 0) {
+if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -73,7 +80,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -187,17 +194,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>';
 
 		$chapter->create($user);
-
 	}
-
 }
 
-
-/************************************/
-/************* Facture **************/
-/************************************/
+/**
+ * *********************************
+ */
+/**
+ * *********** Facture *************
+ */
+/**
+ * *********************************
+ */
 $title = $langs->trans('RefLtrInvoice');
-if($rfltr->fetch('', $title) <= 0) {
+if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -235,7 +245,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -359,19 +369,18 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>';
 
 		$chapter->create($user);
-
 	}
-
 }
 
-
-/************* Commande **************/
+/**
+ * *********** Commande *************
+ */
 $title = $langs->trans('RefLtrOrder');
-if($rfltr->fetch('', $title) <= 0) {
+if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
-	$rfltr->element_type ='order';
+	$rfltr->element_type = 'order';
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
@@ -403,7 +412,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -496,15 +505,14 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>';
 
 		$chapter->create($user);
-
 	}
-
 }
 
-
-/************* Contrat **************/
+/**
+ * *********** Contrat *************
+ */
 $title = $langs->trans('RefLtrContract');
-if($rfltr->fetch('', $title) <= 0) {
+if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -540,7 +548,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -637,14 +645,14 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>';
 
 		$chapter->create($user);
-
 	}
-
 }
 
-/************* Document exemple Agefodd **************/
+/**
+ * *********** Document exemple Agefodd *************
+ */
 $title = $langs->trans('RefLtrAgefodd');
-if($rfltr->fetch('', $title) <= 0) {
+if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -669,7 +677,7 @@ PERSONNALISE</strong></span><br />
 	$id_rfltr = $rfltr->create($user);
 
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -851,7 +859,209 @@ Saut de page dans une boucle (ex: un stagiaire par page)<br />
 [!-- END TStagiairesSession --]';
 
 		$chapter->create($user);
-
 	}
+}
 
+/**
+ * *********** Document exemple Agefodd *************
+ */
+$title = $langs->trans('RefLtrAgefoddConvention');
+if ($rfltr->fetch('', $title) <= 0) {
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type = 'rfltr_agefodd_convention';
+	$rfltr->status = 0;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="width:25%"></td>
+			<td style="text-align:center; width:50%"><span style="font-size:14px"><strong>CONVENTION DE FORMATION<br />
+			PROFESSIONNELLE CONTINUE</strong></span></td>
+			<td style="width:25%"></td>
+		</tr>
+	</tbody>
+</table>
+';
+	$rfltr->footer = '<div style="text-align:center"><span style="font-size:8px"><strong>{mycompany_name}</strong><br />
+{mycompany_address} -&nbsp;{mycompany_zip}&nbsp;{mycompany_town} - <u>T&eacute;l. :</u>&nbsp;{myuser_phone}&nbsp;- <u>Fax :</u>&nbsp;{myuser_fax}<br />
+<strong>email :&nbsp;{mycompany_email}&nbsp;- Site :&nbsp;{mycompany_web}</strong><br />
+{mycompany_juridicalstatus}&nbsp;- Siret :&nbsp;{mycompany_idprof1} - APE :&nbsp;{mycompany_idprof3}</span><br />
+<br />
+<br />
+<br />
+&nbsp;</div>
+';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_custom_header = 1;
+	$rfltr->use_landscape_format = 0;
+
+	$id_rfltr = $rfltr->create($user);
+
+	// Instanciation du contenu
+	if (! empty($id_rfltr)) {
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Page titre';
+		$chapter->content_text = '&nbsp;
+<div style="text-align:center"><br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<span style="color:#3498db"><span style="font-size:18px">{formation_nom}<br />
+Du {formation_date_debut} au&nbsp;{formation_date_fin}</span></span><br />
+<br />
+<br />
+<span style="color:#3498db"><span style="font-size:18px">{objvar_object_document_societe_name}<br />
+{objvar_object_document_societe_address}<br />
+{objvar_object_document_societe_zip} {objvar_object_document_societe_town}<br />
+Repr&eacute;sent&eacute;e par {objvar_object_signataire_intra}</span></span></div>';
+		$chapter->create($user);
+
+		unset($chapter);
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = '1ère page (articles 1, 2, 3 et 4)';
+		$chapter->content_text = '<br />
+<br />
+<br />
+<span style="font-size:11px"><strong>Entre les soussign&eacute;s :</strong><br />
+<br />
+La soci&eacute;t&eacute;&nbsp;{mycompany_name}, dont le si&egrave;ge social se situe au&nbsp;{mycompany_address},&nbsp;{mycompany_zip}&nbsp;{mycompany_town} et en cours&nbsp;et en cours d&#39;enregistrement comme organisme de formation aupr&egrave;s de la pr&eacute;fecture Ci-apr&egrave;s d&eacute;nomm&eacute;e &laquo; l&#39;organisme &raquo; d&#39;une part,<br />
+<br />
+<strong>Et</strong><br />
+<br />
+La soci&eacute;t&eacute;&nbsp;{objvar_object_document_societe_name}, situ&eacute;e au&nbsp;{objvar_object_document_societe_address},&nbsp;{objvar_object_document_societe_zip}&nbsp;{objvar_object_document_societe_town}, repr&eacute;sent&eacute;e par&nbsp;{objvar_object_signataire_intra} d&ucirc;ment habilit&eacute;(e) &agrave; ce faire.<br />
+<br />
+Ci-apr&egrave;s d&eacute;nomm&eacute;e &laquo; le client &raquo; d&#39;autre part,<br />
+<strong>Est conclue la convention suivante, en application des dispositions du Livre III &ndash; VI&deg; du Code du Travail portant sur l&#39;organisation de la formation professionnelle continue dans le cadre de l&#39;&eacute;ducation permanente :<br />
+<br />
+Article 1 - Objet</strong><br />
+La convention a pour objet la r&eacute;alisation d&#39;une prestation de formation par l&#39;organisme aupr&egrave;s de collaborateurs du client.<br />
+<br />
+<strong>Article 2 - D&eacute;tails du stage</strong><br />
+L&#39;organisme accomplit l&#39;action de formation suivante : Formation : &laquo; {formation_nom} &raquo;<br />
+Objectifs :<br />
+- D&eacute;veloppement de comp&eacute;tences<br />
+Type d&#39;action de formation : Actions d&rsquo;adaptation au poste de travail, li&eacute;es &agrave; l&#39;&eacute;volution ou au maintien dans l&rsquo;emploi ou de d&eacute;veloppement des comp&eacute;tences des salari&eacute;s.<br />
+Date: le {formation_date_debut} Dur&eacute;e : {formation_duree} heures, r&eacute;parties de la fa&ccedil;on suivante :<br />
+[!-- BEGIN THorairesSession --]Le {line_date_session} ({line_heure_debut_session} / {line_heure_fin_session})<br />
+[!-- END THorairesSession --]Evaluation et sanction : Feuilles d&rsquo;&eacute;margement par demi-journ&eacute;e; Evaluation des acquis par questions / r&eacute;ponses et mises en situation; Acquisition de connaissances donnant lieu &agrave; la d&eacute;livrance d&#39;une attestation de formation.<br />
+Nombre de Participants :&nbsp;{formation_nb_stagiaire}<br />
+Lieu : {formation_lieu} {formation_lieu_adresse},&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}<br />
+<br />
+<strong>Article 3 - Programme et m&eacute;thode</strong><br />
+Cf. annexe 1 (Programme de formation)<br />
+<br />
+<strong>Article 4 - Effectif form&eacute;</strong><br />
+L&#39;organisme formera les participants :<br />
+[!-- BEGIN TStagiairesSession --]- {line_nom}&nbsp;{line_prenom}<br />
+[!-- END TStagiairesSession --]</span>';
+		$chapter->create($user);
+
+		unset($chapter);
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = '2nde page (articles 5, 6, 7 et 8)';
+		$chapter->content_text = '<br />
+<br />
+<br />
+<br />
+<strong>Article 5 - Dispositions financi&egrave;res</strong><br />
+L&#39;organisme d&eacute;clare &ecirc;tre assujetti &agrave; la TVA au sens de l&#39;article 261-4-4&deg;-a du CGI et des articles L.900-2 et R.950-4 du code du travail. En contrepartie de cette action de formation, le client devra s&#39;acquitter des sommes suivantes :<br />
+<br />
+<br />
+&nbsp;
+<table border="1" cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="background-color:#dddddd; text-align:center">D&eacute;signation</td>
+			<td style="background-color:#dddddd; text-align:center">Qt&eacute;</td>
+			<td style="background-color:#dddddd; text-align:center">TVA</td>
+			<td style="background-color:#dddddd; text-align:center">Total HT</td>
+			<td style="background-color:#dddddd; text-align:center">Total TTC</td>
+		</tr>
+		<tr>
+			<td style="text-align:center">Formation journ&eacute;e<br />
+			formation chez client (dur&eacute;e 7h)</td>
+			<td style="text-align:center">1</td>
+			<td style="text-align:center">{objvar_object_conv_tva_tx}%</td>
+			<td style="text-align:center">{objvar_object_conv_amount_ht}</td>
+			<td style="text-align:center">{objvar_object_conv_amount_ttc}</td>
+		</tr>
+	</tbody>
+</table>
+<br />
+<br />
+<br />
+<strong>Article 6 - Conditions de r&egrave;glement</strong><br />
+La facture correspondant &agrave; la somme indiqu&eacute;e ci-dessus sera adress&eacute;e, service fait, par l&#39;organisme au client qui en r&eacute;glera le montant sur le compte de l&#39;organisme.<br />
+<br />
+<strong>Article 7 - D&eacute;dit ou abandon</strong><br />
+En application de l&#39;article L 6354-1 du code du travail, il est convenu entre les signataires de la pr&eacute;sente convention, que faute de r&eacute;alisation totale ou partielle de la prestation de formation, l&#39;organisme de formation remboursera au cocontractant les sommes qu&#39;il aura ind&ucirc;ment per&ccedil;ues de ce fait. C&#39;est-&agrave;-dire les sommes qui ne correspondront pas &agrave; la r&eacute;alisation de la prestation de formation.<br />
+La non r&eacute;alisation totale de l&#39;action due &agrave; la carence du prestataire ou au renoncement &agrave; la prestation par l&#39;acheteur ne donnera pas lieu &agrave; une facturation au titre de la formation professionnelle continue.<br />
+La r&eacute;alisation partielle de la prestation de formation, imputable ou non &agrave; l&#39;organisme de formation ou &agrave; son client, ne donnera lieu qu&#39;&agrave; facturation, au titre de la formation professionnelle continue, des sommes correspondantes &agrave; la r&eacute;alisation effective de la prestation.<br />
+En cas de d&eacute;dit par le client &agrave; moins de 5 jours francs, avant le d&eacute;but de l&#39;action mentionn&eacute;e &agrave; l&#39;Article 1, ou d&#39;abandon en cours de formation par un ou plusieurs participants, l&#39;organisme retiendra sur le co&ucirc;t total, les sommes qu&#39;il aura r&eacute;ellement d&eacute;pens&eacute;es ou engag&eacute;es pour la r&eacute;alisation de la dite action, conform&eacute;ment aux dispositions de l&#39;Article L 920-9 du Code du Travail.<br />
+<br />
+<strong>Article 8 - Litiges et comp&eacute;tence d&#39;attribution</strong><br />
+En cas de litige entre les deux parties, celles-ci s&#39;engagent &agrave; rechercher pr&eacute;alablement une solution amiable.En cas d&#39;&eacute;chec d&#39;une solution n&eacute;goci&eacute;e, les parties conviennent express&eacute;ment d&#39;attribuer la comp&eacute;tence exclusive aux tribunaux de la pr&eacute;fecture dont d&eacute;pend Valence.<br />
+<br />
+Signatures<br />
+Fait &agrave; Valence, le {current_date_fr}, en 2 exemplaires originaux, dont un remis ce jour au client.<br />
+Ce document comporte trois (3) pages.<br />
+<br />
+<br />
+<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td style="text-align:center"><strong>Pour l&#39;Organisme de formation</strong><br />
+			{mycompany_name}<br />
+			Repr&eacute;sent&eacute;e par&nbsp;{mycompany_managers} (*)</td>
+			<td style="text-align:center"><strong>Pour le client</strong><br />
+			{objvar_object_signataire_intra} (*)</td>
+		</tr>
+	</tbody>
+</table>
+<br />
+<br />
+&nbsp;
+<div style="text-align:center"><span style="font-size:8px">(*) Faire pr&eacute;c&eacute;der la signature de la mention &laquo; lu et approuv&eacute; &raquo; apr&egrave;s avoir paraph&eacute; chaque page de la pr&eacute;sente convention.</span></div>
+
+<div style="text-align:center">&nbsp;</div>';
+		$chapter->create($user);
+	}
 }

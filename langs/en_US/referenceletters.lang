@@ -59,6 +59,7 @@ RefLtrInvoice=Sample template of INVOICE
 RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrAgefodd=Sample template of Training Module
+RefLtrAgefoddConvention=Sample template of training contract
 
 #
 # About page

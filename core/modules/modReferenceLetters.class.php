@@ -91,6 +91,7 @@ class modReferenceLetters extends DolibarrModules
 						,'ordercard'
 						,'invoicecard'
 						,'contractcard'
+						,'supplier_proposalcard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory
@@ -122,6 +123,7 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/propal',
 				'/referenceletters/invoice',
 				'/referenceletters/order',
+				'/referenceletters/supplier_proposal',
 				'/referenceletters/referenceletters',
 		);
 
@@ -233,7 +235,8 @@ class modReferenceLetters extends DolibarrModules
 				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
 				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
-				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order'
+				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
+				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal'
 		);
 
 		// where objecttype can be

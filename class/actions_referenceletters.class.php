@@ -166,7 +166,7 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard'))) {
+		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard'))) {
 
 			if($action === 'builddoc') {
 
@@ -203,6 +203,7 @@ class ActionsReferenceLetters
 							dol_mkdir($dir_dest);
 						}
 						$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+						$test=$conf->{strtolower(get_class($object))}->dir_output;
 
 						dol_copy($file, $file_dest);
 

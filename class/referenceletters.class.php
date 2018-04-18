@@ -168,6 +168,20 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+		$this->element_type_list['supplier_proposal'] = array (
+				'class' => 'supplier_proposal.class.php',
+				'securityclass' => 'supplier_proposal',
+				'securityfeature' => '',
+				'objectclass' => 'SupplierProposal',
+				'classpath' => DOL_DOCUMENT_ROOT . '/supplier_proposal/class/',
+				'trans' => 'supplier_proposal',
+				'title' => 'CommRequests',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/supplier_proposal.lib.php',
+				'menuloader_function' => 'supplier_proposal_prepare_head',
+				'card' => '/supplier_proposal/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';

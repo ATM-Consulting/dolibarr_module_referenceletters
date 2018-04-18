@@ -100,7 +100,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
-		
+
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -182,7 +182,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
-				
+
 				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
@@ -232,10 +232,10 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 						continue;
 					}
-					
+
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
-					
+
 					// Merge arrays
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'lines'

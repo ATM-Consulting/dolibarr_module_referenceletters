@@ -58,6 +58,7 @@ RefLtrPropal=Exemple de modèle de PROPOSITION
 RefLtrInvoice=Exemple de modèle de FACTURE
 RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
+RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
 
 #
 # Page À propos

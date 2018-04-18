@@ -33,7 +33,7 @@ $rfltr = new ReferenceLetters($db);
 /************* Propal **************/
 /***********************************/
 
-$title = $langs->trans('RefLtrPropal');
+$title = $langs->transnoentities('RefLtrPropal');
 
 if($rfltr->fetch('', $title) <= 0) {
 
@@ -196,7 +196,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 /************************************/
 /************* Facture **************/
 /************************************/
-$title = $langs->trans('RefLtrInvoice');
+$title = $langs->transnoentities('RefLtrInvoice');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -217,7 +217,7 @@ if($rfltr->fetch('', $title) <= 0) {
 			<td style="text-align:right"><strong>Facture<br />
 			R&eacute;f. :&nbsp;{object_ref}</strong><br />
 			Date facturation :&nbsp;{object_date}<br />
-			Date &eacute;ch&eacute;ance :&nbsp;{object_date_limit}<br />
+			Date &eacute;ch&eacute;ance :&nbsp;{object_date_delivery_planed}<br />
 			Code client :&nbsp;{cust_company_customercode}<br />
 			{objets_lies}</td>
 		</tr>
@@ -366,7 +366,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 
 
 /************* Commande **************/
-$title = $langs->trans('RefLtrOrder');
+$title = $langs->transnoentities('RefLtrOrder');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -503,7 +503,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 
 
 /************* Contrat **************/
-$title = $langs->trans('RefLtrContract');
+$title = $langs->transnoentities('RefLtrContract');
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -632,6 +632,128 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 				</tbody>
 			</table>
 			</td>
+		</tr>
+	</tbody>
+</table>';
+
+		$chapter->create($user);
+	}
+}
+
+/************* price request **************/
+$title = $langs->transnoentities('RefLtrSupplierProposals');
+if($rfltr->fetch('', $title) <= 0) {
+
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type = 'supplier_proposal';
+	$rfltr->status = 0;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '&nbsp;<br />
+<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>MON LOGO ENTREPRISE</td>
+			<td style="text-align:right"><strong>Demande de prix<br />
+			R&eacute;f. :&nbsp;{object_ref}</strong><br />
+			Code fournisseur : :&nbsp;{cust_company_customercode}<br />
+			{objets_lies}</td>
+		</tr>
+	</tbody>
+</table>';
+	$rfltr->use_custom_header = 1;
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_landscape_format = 0;
+
+	$id_rfltr = $rfltr->create($user);
+
+	// Instanciation du contenu
+	if(!empty($id_rfltr)) {
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Contenu';
+		$chapter->content_text = '<table cellpadding="1" cellspacing="1" style="width:550px">
+	<tbody>
+		<tr>
+			<td style="width:50%">Emetteur :<br />
+			&nbsp;
+			<table cellpadding="1" cellspacing="1" style="width:242px">
+				<tbody>
+					<tr>
+						<td style="background-color:#e6e6e6; height:121px"><br />
+						<strong>{mycompany_name}</strong><br />
+						{mycompany_address}<br />
+						{mycompany_zip}&nbsp;{mycompany_town}<br />
+						<br />
+						T&eacute;l. : {mycompany_phone} - Fax :&nbsp;{mycompany_fax}<br />
+						Email : {mycompany_email}<br />
+						Web :&nbsp;{mycompany_web}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+			<td style="width:50%">Adress&eacute; &agrave; :<br />
+			&nbsp;
+			<table border="1" style="width:245px">
+				<tbody>
+					<tr>
+						<td style="height:121px"><br />
+						<strong>{cust_company_name}</strong><br />
+						{cust_company_address}<br />
+						{cust_company_zip}&nbsp;{cust_company_town}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+
+<table border="1" style="cellpadding:1; cellspacing:1; width:530px">
+	<tbody>
+		<tr>
+			<td style="width:50%">D&eacute;signation</td>
+			<td style="width:10%">TVA</td>
+			<td style="width:10%">P.U. HT</td>
+			<td style="width:10%">Qt&eacute;</td>
+			<td style="width:10%">Total HT[!-- BEGIN lines --]</td>
+		</tr>
+		<tr>
+			<td>{line_fulldesc}</td>
+			<td style="text-align:right"></td>
+			<td style="text-align:right"></td>
+			<td style="text-align:right">{line_qty}</td>
+			<td style="text-align:right">[!-- END lines --]</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td rowspan="3" style="width:60%"><strong>Date pr&egrave;vue de livraison</strong> : {object_date_livraison}<br />
+			<strong>Mode de r&egrave;glement</strong> : {objvar_object_mode_reglement}</td>
 		</tr>
 	</tbody>
 </table>';

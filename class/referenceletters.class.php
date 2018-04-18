@@ -151,6 +151,20 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+		$this->element_type_list['supplier_order'] = array (
+				'class' => 'fournisseur.commande.class.php',
+				'securityclass' => 'commande_fournisseur',
+				'securityfeature' => 'commande',
+				'objectclass' => 'CommandeFournisseur',
+				'classpath' => DOL_DOCUMENT_ROOT . '/fourn/class/',
+				'trans' => 'orders',
+				'title' => 'SupplierOrder',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php',
+				'menuloader_function' => 'ordersupplier_prepare_head',
+				'card' => '/fourn/commande/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';

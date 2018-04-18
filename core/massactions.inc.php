@@ -72,7 +72,7 @@ if (GETPOST('removAll', 'alpha'))
 		$filetodelete = $listofnames[$key];
 		$result = dol_delete_file($pathtodelete, 1); // Delete uploded Files
 		$langs->load("other");
-		setEventMessages($langs->trans("FileWasRemoved", $filetodelete), null, 'mesgs');
+	//	setEventMessages($langs->trans("FileWasRemoved", $filetodelete), null, 'mesgs');
 
 		$formmail->remove_attached_files($key); // Update Session
 	}
@@ -194,7 +194,7 @@ if ($massaction == 'presend')
 	$formmail->substit = $substitutionarray;
 
 	// Tableau des parametres complementaires du post
-	$formmail->param['action'] = 'send';
+	$formmail->param['action'] = $action;
 	$formmail->param['models'] = $modelmail;
 	$formmail->param['models_id'] = GETPOST('modelmailselected', 'int');
 	$formmail->param['id'] = join(',', $arrayofselected);

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-if (($action == 'send' ) && !$_POST['addfile'] && !$_POST['removAll'] && !$_POST['removedfile'] && !$_POST['cancel'] && !$_POST['modelselected'])
+if (($action == 'send' || !empty($_REQUEST['sendmail']) ) && !$_POST['addfile'] && !$_POST['removAll'] && !$_POST['removedfile'] && !$_POST['cancel'] && !$_POST['modelselected'])
 {
 	if (empty($trackid))
 		$trackid = GETPOST('trackid', 'aZ09');
@@ -14,7 +14,6 @@ if (($action == 'send' ) && !$_POST['addfile'] && !$_POST['removAll'] && !$_POST
 	$subject = '';
 	$actionmsg = '';
 	$actionmsg2 = '';
-
 	if (!empty($conf->dolimail->enabled))
 		$langs->load("dolimail@dolimail");
 	$langs->load('mails');

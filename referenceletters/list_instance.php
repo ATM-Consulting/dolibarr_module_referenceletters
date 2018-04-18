@@ -128,19 +128,21 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield, 0, 0, $filter);
 }
-
+if(!empty($limit) && (float)$page > $nbtotalofrecords/$limit){
+	$offset=0;
+	$page='0';
+}
 $num = $object->fetchAll($sortorder, $sortfield, $limit, $offset, $filter);
 
 $arrayofmassactions =  array(
 	'presend'=>$langs->trans("SendByMail"),
 //    'builddoc'=>$langs->trans("PDFMerge"),
 );
-$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
+if($massaction != 'presend')$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
+else $massactionbutton='';
 if (GETPOST('cancel','alpha')) { $action='list'; $massaction=''; }
 if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
 
-	
-	
 
 
 if ($num != - 1) {
@@ -194,7 +196,7 @@ if ($num != - 1) {
 	print '</th>';
 	
 	print '<th></th>';
-		if ($massactionbutton) $selectedfields=$form->showCheckAddButtons('checkforselect', 1);
+	$selectedfields=$form->showCheckAddButtons('checkforselect', 1);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 	
 

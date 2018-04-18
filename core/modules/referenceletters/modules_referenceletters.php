@@ -148,16 +148,20 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 							$listlines->xml = $listlines->savxml = $oldline;
 						}
-
-						$res = $odfHandler->mergeSegment($listlines);
-						$chapter_text = $odfHandler->getContentXml();
 					}
+					$res = $odfHandler->mergeSegment($listlines);
+					$chapter_text = $odfHandler->getContentXml();
 				}
 			}
-
-			return $chapter_text;
 		}
+
+		return $chapter_text;
 	}
+	/**
+	 *
+	 * @param unknown $object
+	 * @return number
+	 */
 	function _pageheadCustom($object) {
 
 		// Conversion des tags
@@ -173,6 +177,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		return $height;
 	}
+
+	/**
+	 *
+	 * @param unknown $object
+	 * @param string $typeprint
+	 */
 	function _pagefootCustom($object, $typeprint = '') {
 
 		// Conversion des tags
@@ -189,6 +199,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - $this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		}
 	}
+
+	/**
+	 *
+	 * @param unknown $object
+	 * @param unknown $txt
+	 * @return mixed
+	 */
 	function setSubstitutions(&$object, $txt) {
 		global $user, $mysoc;
 

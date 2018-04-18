@@ -33,6 +33,8 @@ require_once '../class/html.formreferenceletters.class.php';
 require_once '../class/referenceletterselements.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+dol_include_once('/contact/class/contact.class.php');
+dol_include_once('/societe/class/societe.class.php');
 
 // Security check
 if (! $user->rights->referenceletters->read)
@@ -115,7 +117,7 @@ if (empty($sortfield)) {
 
 
 $title = $langs->trans('RefLtrListInstance');
-
+include '../core/sendAll.inc.php';
 llxHeader('', $title);
 
 

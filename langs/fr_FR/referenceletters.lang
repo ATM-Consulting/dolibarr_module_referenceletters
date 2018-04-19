@@ -52,12 +52,15 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
+RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard 
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION
 RefLtrInvoice=Exemple de modèle de FACTURE
 RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
+RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
+RefLtrSupplierOrders=Exemple de modèle de COMMANDE FOURNISSEUR
 
 #
 # Page À propos
@@ -139,6 +142,8 @@ RefLtrActive = Activer
 RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
+
+RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier générer, il reste dispobile dans les documents.
 
 #
 # Tags lignes

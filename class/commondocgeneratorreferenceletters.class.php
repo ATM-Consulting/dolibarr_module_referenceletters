@@ -37,13 +37,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     /**
      *
-     * @param unknown $referenceletters
-     * @param unknown $outputlangs
+     * @param stdClass $referenceletters
+     * @param stdClass $outputlangs
      * @return NULL[]
      */
     function get_substitutionarray_refletter($referenceletters,$outputlangs)
     {
-
     	return array(
     			'referenceletters_title'=>$referenceletters->title,
     			'referenceletters_ref_int'=>$referenceletters->ref_int,
@@ -51,23 +50,31 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	);
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     * @see CommonDocGenerator::get_substitutionarray_object()
+     */
     function get_substitutionarray_object($object,$outputlangs,$array_key='object')
     {
         global $db;
         $resarray = parent::get_substitutionarray_object($object,$outputlangs,$array_key);
         if ($object->element == 'facture') {
             dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-            $agf_se = new Agefodd_session_element($db);
-            $agf_se->fetch_element_by_id($object->id, 'invoice');
+            if (class_exists('Agefodd_session_element')) {
+            	$agf_se = new Agefodd_session_element($db);
+            	$agf_se->fetch_element_by_id($object->id, 'invoice');
 
-            if(count($agf_se->lines)>1){
-                $TSessions = array();
-                foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
-                $resarray['object_references'] = implode(', ', $TSessions);
-            } elseif(!empty($agf_se->lines)) {
-                $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
-            } else $resarray['object_references'] = '';
-
+	            if(count($agf_se->lines)>1){
+	                $TSessions = array();
+	                foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
+	                $resarray['object_references'] = implode(', ', $TSessions);
+	            } elseif(!empty($agf_se->lines)) {
+	                $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
+	            } else $resarray['object_references'] = '';
+            } else  {
+            	$resarray['object_references'] = '';
+            }
         }
         // contact emetteur
         $arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
@@ -77,15 +84,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             foreach ($arrayidcontact as $idsale){
                 $object->fetch_user($idsale);
                 $resarray[$array_key.'_contactsale'] .= ($resarray[$array_key.'_contactsale'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
-                
+
             }
         }
-        
+
         unset($arrayidcontact);
         // contact tiers
         if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
         else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
-        
+
         $resarray['cust_contactclient'] = '';
         if (count($arrayidcontact) > 0)
         {
@@ -99,6 +106,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         return $resarray;
     }
 
+    /**
+     *
+     * {@inheritDoc}
+     * @see CommonDocGenerator::get_substitutionarray_other()
+     */
     function get_substitutionarray_other($outputlangs, $object='')
     {
     	global $conf;
@@ -147,6 +159,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	return $array_other;
     }
 
+	/**
+	 *
+	 * @param stdClass $object
+	 * @param stdClass $outputlangs
+	 * @return string
+	 */
     static function getLinkedObjects(&$object, &$outputlangs) {
 
     	require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
@@ -167,6 +185,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     }
 
+    /**
+     *
+     * @param stdClass $object
+     * @param stdClass $outputlangs
+     * @return number|array[]|number[][]
+     */
     static function get_detail_tva(&$object, &$outputlangs) {
 
     	global $conf;
@@ -179,28 +203,30 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
 
     	foreach($object->lines as &$line) {
-    		$vatrate=$line->tva_tx;
+    		//Do not calc VAT on text or subtotal line
+    		if ($line->product_type != 9) {
+    			$vatrate=$line->tva_tx;
 
-    		// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
-    		if(get_class($object) === 'Facture') {
-	    		$prev_progress = $line->get_prev_progress($object->id);
-	    		if ($prev_progress > 0 && !empty($line->situation_percent)) // Compute progress from previous situation
-	    		{
-	    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
-	    			else $tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
+	    		// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
+	    		if(get_class($object) === 'Facture') {
+		    		$prev_progress = $line->get_prev_progress($object->id);
+		    		if ($prev_progress > 0 && !empty($line->situation_percent)) // Compute progress from previous situation
+		    		{
+		    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
+		    			else $tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
+		    		} else {
+		    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne= $sign * $line->multicurrency_total_tva;
+		    			else $tvaligne= $sign * $line->total_tva;
+		    		}
 	    		} else {
-	    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne= $sign * $line->multicurrency_total_tva;
-	    			else $tvaligne= $sign * $line->total_tva;
+	    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne=$line->multicurrency_total_tva;
+	    			else $tvaligne=$line->total_tva;
 	    		}
-    		} else {
-    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne=$line->multicurrency_total_tva;
-    			else $tvaligne=$line->total_tva;
+
+	    		if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
+
+	    		$TTva['Total TVA '.round($vatrate, 2).'%'] += $tvaligne;
     		}
-
-    		if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
-
-    		$TTva['Total TVA '.round($vatrate, 2).'%'] += $tvaligne;
-
     	}
 
     	// formatage sortie
@@ -210,6 +236,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     	return array('TTitres'=>array_keys($TTva), 'TValues'=>$TTva);
     }
 
+    /**
+     *
+     * @param stdClass $object
+     * @param  stdClass $outputlangs
+     * @return number|array[]|number[][]
+     */
     static function get_liste_reglements(&$object, &$outputlangs) {
 
     	global $db, $conf;
@@ -283,13 +315,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     }
 
+    /**
+     *
+     * @param stdClass $object
+     * @param  stdClass $outputlangs
+     * @return number|array[]|number[][]
+     */
     function get_substitutionarray_lines($line, $outputlangs) {
 
     	$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
     	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
     	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
     	$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
-    	//var_dump($line);exit;
     	return $resarray;
     }
 

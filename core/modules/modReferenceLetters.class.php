@@ -91,6 +91,8 @@ class modReferenceLetters extends DolibarrModules
 						,'ordercard'
 						,'invoicecard'
 						,'contractcard'
+						,'supplier_proposalcard'
+						,'ordersuppliercard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory
@@ -122,6 +124,8 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/propal',
 				'/referenceletters/invoice',
 				'/referenceletters/order',
+				'/referenceletters/supplier_proposal',
+				'/referenceletters/order_supplier',
 				'/referenceletters/referenceletters',
 		);
 
@@ -233,7 +237,9 @@ class modReferenceLetters extends DolibarrModules
 				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
 				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
 				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
-				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order'
+				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
+				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal',
+				'supplier_order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order_supplier'
 		);
 
 		// where objecttype can be
@@ -631,6 +637,7 @@ class modReferenceLetters extends DolibarrModules
 		$result = $this->load_tables();
 
 		define('INC_FROM_DOLIBARR', true);
+		$reinstalltemplate=false;
 		dol_include_once('/referenceletters/script/create-maj-base.php');
 
 		return $this->_init($sql, $options);

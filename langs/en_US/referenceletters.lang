@@ -52,12 +52,15 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Use a custom model of header and footer
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Define a custom model of header and footer to use for your letters
+RefLtrReInstallTemplate=Replace sample template by default template
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
 RefLtrInvoice=Sample template of INVOICE
 RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
+RefLtrSupplierProposals=Sample template of PRICE REQUEST
+RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
 
 #
 # About page
@@ -130,3 +133,5 @@ RefLtrActive = Activer
 RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
+
+RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.

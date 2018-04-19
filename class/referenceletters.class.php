@@ -83,7 +83,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -153,6 +153,36 @@ class ReferenceLetters extends CommonObject
 				'card' => 'commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
+		$this->element_type_list['order_supplier'] = array (
+				'class' => 'fournisseur.commande.class.php',
+				'securityclass' => 'fournisseur',
+				'securityfeature' => 'commande_fournisseur',
+				'objectclass' => 'CommandeFournisseur',
+				'classpath' => DOL_DOCUMENT_ROOT . '/fourn/class/',
+				'trans' => 'orders',
+				'title' => 'SupplierOrder',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php',
+				'menuloader_function' => 'ordersupplier_prepare_head',
+				'card' => '/fourn/commande/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/'
+		);
+		$this->element_type_list['supplier_proposal'] = array (
+				'class' => 'supplier_proposal.class.php',
+				'securityclass' => 'supplier_proposal',
+				'securityfeature' => '',
+				'objectclass' => 'SupplierProposal',
+				'classpath' => DOL_DOCUMENT_ROOT . '/supplier_proposal/class/',
+				'trans' => 'supplier_proposal',
+				'title' => 'CommRequests',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/supplier_proposal.lib.php',
+				'menuloader_function' => 'supplier_proposal_prepare_head',
+				'card' => '/supplier_proposal/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';

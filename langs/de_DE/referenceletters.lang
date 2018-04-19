@@ -50,12 +50,15 @@ RefLtrREF_LETTER_TYPEEVENTNAME=Name des erstellten Termins
 RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PDF ein
+RefLtrReInstallTemplate=Replace sample template by default template
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
 RefLtrInvoice=Sample template of INVOICE
 RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
+RefLtrSupplierProposals=Sample template of PRICE REQUEST
+RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
 
 #
 # About page
@@ -121,3 +124,5 @@ RefLtrActive = Activer
 RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
+
+RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.

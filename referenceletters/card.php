@@ -29,9 +29,6 @@ require_once '../class/referenceletterschapters.class.php';
 require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 
-
-
-
 $action = GETPOST('action', 'alpha');
 $id = GETPOST('id', 'int');
 $confirm = GETPOST('confirm', 'alpha');
@@ -273,14 +270,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
 	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
 	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<bt>';
-	
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	
+
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields);
 	}
-	
+
 	print '</div>';
 	print '</div>';
 	print '</div>';

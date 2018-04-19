@@ -83,7 +83,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -154,10 +154,10 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
-		$this->element_type_list['supplier_order'] = array (
+		$this->element_type_list['order_supplier'] = array (
 				'class' => 'fournisseur.commande.class.php',
-				'securityclass' => 'commande_fournisseur',
-				'securityfeature' => 'commande',
+				'securityclass' => 'fournisseur',
+				'securityfeature' => 'commande_fournisseur',
 				'objectclass' => 'CommandeFournisseur',
 				'classpath' => DOL_DOCUMENT_ROOT . '/fourn/class/',
 				'trans' => 'orders',
@@ -166,7 +166,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'ordersupplier_prepare_head',
 				'card' => '/fourn/commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/'
 		);
 		$this->element_type_list['supplier_proposal'] = array (
 				'class' => 'supplier_proposal.class.php',
@@ -180,7 +181,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'supplier_proposal_prepare_head',
 				'card' => '/supplier_proposal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';

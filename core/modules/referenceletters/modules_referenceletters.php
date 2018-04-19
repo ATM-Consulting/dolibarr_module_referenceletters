@@ -159,7 +159,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	}
 	/**
 	 *
-	 * @param unknown $object
+	 * @param stdClass $object
 	 * @return number
 	 */
 	function _pageheadCustom($object) {
@@ -180,7 +180,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 	/**
 	 *
-	 * @param unknown $object
+	 * @param stdClass $object
 	 * @param string $typeprint
 	 */
 	function _pagefootCustom($object, $typeprint = '') {
@@ -202,11 +202,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 	/**
 	 *
-	 * @param unknown $object
-	 * @param unknown $txt
+	 * @param stdClass $object
+	 * @param string $txt
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt) {
+	function setSubstitutions(&$object, $txt='') {
 		global $user, $mysoc;
 
 		// User substitution value

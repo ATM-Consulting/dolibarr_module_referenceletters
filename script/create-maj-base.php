@@ -23,18 +23,25 @@ if(!defined('DB_HOST')) {
 dol_include_once('/referenceletters/class/referenceletters.class.php');
 dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
 
-global $db,$langs;
+global $db,$langs,$reinstalltemplate;
 
 $langs->load('referenceletters@referenceletters');
 
 $rfltr = new ReferenceLetters($db);
+
 
 /***********************************/
 /************* Propal **************/
 /***********************************/
 
 $title = $langs->transnoentities('RefLtrPropal');
-
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -92,6 +99,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="background-color:#e6e6e6; height:121px"><br />
 						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
 						{mycompany_address}<br />
 						{mycompany_zip}&nbsp;{mycompany_town}<br />
 						<br />
@@ -109,6 +117,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -185,11 +194,8 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-
 		$chapter->create($user);
-
 	}
-
 }
 
 
@@ -197,6 +203,13 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 /************* Facture **************/
 /************************************/
 $title = $langs->transnoentities('RefLtrInvoice');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -227,8 +240,7 @@ if($rfltr->fetch('', $title) <= 0) {
 	$rfltr->footer = '<div style="text-align:center"><br />
 <span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
 NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
-&nbsp;</div>
-';
+&nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 
@@ -254,6 +266,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="background-color:#e6e6e6; height:121px"><br />
 						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
 						{mycompany_address}<br />
 						{mycompany_zip}&nbsp;{mycompany_town}<br />
 						<br />
@@ -271,6 +284,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -357,16 +371,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-
 		$chapter->create($user);
-
 	}
-
 }
 
 
 /************* Commande **************/
 $title = $langs->transnoentities('RefLtrOrder');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -395,8 +413,7 @@ if($rfltr->fetch('', $title) <= 0) {
 	$rfltr->footer = '<div style="text-align:center"><br />
 <span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
 NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
-&nbsp;</div>
-';
+&nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 
@@ -422,6 +439,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="background-color:#e6e6e6; height:121px"><br />
 						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
 						{mycompany_address}<br />
 						{mycompany_zip}&nbsp;{mycompany_town}<br />
 						<br />
@@ -439,6 +457,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -494,16 +513,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-
 		$chapter->create($user);
-
 	}
-
 }
 
 
 /************* Contrat **************/
 $title = $langs->transnoentities('RefLtrContract');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -532,8 +555,7 @@ if($rfltr->fetch('', $title) <= 0) {
 	$rfltr->footer = '<div style="text-align:center"><br />
 <span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
 NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
-&nbsp;</div>
-';
+&nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 
@@ -559,6 +581,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="background-color:#e6e6e6; height:121px"><br />
 						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
 						{mycompany_address}<br />
 						{mycompany_zip}&nbsp;{mycompany_town}<br />
 						<br />
@@ -576,6 +599,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -635,13 +659,19 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-
 		$chapter->create($user);
 	}
 }
 
 /************* price request **************/
 $title = $langs->transnoentities('RefLtrSupplierProposals');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
 if($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
@@ -661,7 +691,7 @@ if($rfltr->fetch('', $title) <= 0) {
 			<td>MON LOGO ENTREPRISE</td>
 			<td style="text-align:right"><strong>Demande de prix<br />
 			R&eacute;f. :&nbsp;{object_ref}</strong><br />
-			Code fournisseur : :&nbsp;{cust_company_customercode}<br />
+			Code fournisseur : :&nbsp;{cust_company_suppliercode}<br />
 			{objets_lies}</td>
 		</tr>
 	</tbody>
@@ -670,8 +700,7 @@ if($rfltr->fetch('', $title) <= 0) {
 	$rfltr->footer = '<div style="text-align:center"><br />
 <span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
 NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
-&nbsp;</div>
-';
+&nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
 	$rfltr->use_landscape_format = 0;
 
@@ -697,6 +726,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="background-color:#e6e6e6; height:121px"><br />
 						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
 						{mycompany_address}<br />
 						{mycompany_zip}&nbsp;{mycompany_town}<br />
 						<br />
@@ -714,6 +744,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 					<tr>
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -757,9 +788,149 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-
 		$chapter->create($user);
-
 	}
+}
 
+/************** Supplier order **************/
+$title = $langs->transnoentities('RefLtrSupplierOrders');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
+if($rfltr->fetch('', $title) <= 0) {
+
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type ='order_supplier';
+	$rfltr->status = 0;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '&nbsp;<br />
+<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>MON LOGO ENTREPRISE</td>
+			<td style="text-align:right"><strong>Commande fournisseur {object_ref}<br />
+			R&eacute;f. :&nbsp;{objvar_object_ref_supplier}</strong><br />
+			Date pr&egrave;vue de livraison :&nbsp;{object_date_delivery_planed}<br />
+			Code fournisseur : :&nbsp;{cust_company_suppliercode}<br />
+			{objets_lies}</td>
+		</tr>
+	</tbody>
+</table>';
+	$rfltr->use_custom_header = 1;
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>
+';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_landscape_format = 0;
+
+	$id_rfltr = $rfltr->create($user);
+
+	// Instanciation du contenu
+	if(!empty($id_rfltr)) {
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Contenu';
+		$chapter->content_text = '<table cellpadding="1" cellspacing="1" style="width:550px">
+	<tbody>
+		<tr>
+			<td style="width:50%">Emetteur :<br />
+			&nbsp;
+			<table cellpadding="1" cellspacing="1" style="width:242px">
+				<tbody>
+					<tr>
+						<td style="background-color:#e6e6e6; height:121px"><br />
+						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
+						{mycompany_address}<br />
+						{mycompany_zip}&nbsp;{mycompany_town}<br />
+						<br />
+						T&eacute;l. : {mycompany_phone} - Fax :&nbsp;{mycompany_fax}<br />
+						Email : {mycompany_email}<br />
+						Web :&nbsp;{mycompany_web}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+			<td style="width:50%">Adress&eacute; &agrave; :<br />
+			&nbsp;
+			<table border="1" style="width:245px">
+				<tbody>
+					<tr>
+						<td style="height:121px"><br />
+						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
+						{cust_company_address}<br />
+						{cust_company_zip}&nbsp;{cust_company_town}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+
+<table border="1" style="cellpadding:1; cellspacing:1; width:530px">
+	<tbody>
+		<tr>
+			<td style="width:50%">D&eacute;signation</td>
+			<td style="width:10%">TVA</td>
+			<td style="width:10%">P.U. HT</td>
+			<td style="width:10%">Qt&eacute;</td>
+			<td style="width:10%">R&eacute;duc.</td>
+			<td style="width:10%">Total HT[!-- BEGIN lines --]</td>
+		</tr>
+		<tr>
+			<td>{line_fulldesc}</td>
+			<td style="text-align:right">{line_vatrate}</td>
+			<td style="text-align:right">{line_up_locale}</td>
+			<td style="text-align:right">{line_qty}</td>
+			<td style="text-align:right">{line_discount_percent}</td>
+			<td style="text-align:right">{line_price_ht_locale}[!-- END lines --]</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td rowspan="3" style="width:60%"><strong>Conditions de r&egrave;glement</strong> : {object_payment_term}<br />
+			<strong>Mode de r&egrave;glement</strong> : {object_payment_mode}</td>
+			<td style="width:20%">Total HT</td>
+			<td style="text-align:right; width:20%">{objvar_object_total_ht}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#f5f5f5; width:20%">{tva_detail_titres}</td>
+			<td style="background-color:#f5f5f5; text-align:right; width:20%">{tva_detail_montants}</td>
+		</tr>
+		<tr>
+			<td style="background-color:#e6e6e6; width:20%">Total TTC</td>
+			<td style="background-color:#e6e6e6; text-align:right; width:20%">{objvar_object_total_ttc}</td>
+		</tr>
+	</tbody>
+</table>';
+		$chapter->create($user);
+	}
 }

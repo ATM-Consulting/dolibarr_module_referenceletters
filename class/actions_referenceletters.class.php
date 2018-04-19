@@ -166,7 +166,7 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard'))) {
+		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard'))) {
 
 			if($action === 'builddoc') {
 
@@ -197,15 +197,27 @@ class ActionsReferenceLetters
 						$file = $dir . '/' . $objectref . ".pdf";
 
 						$objectref = dol_sanitizeFileName($object->ref);
-						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output . '/' . $objectref;
-						if (! file_exists($dir_dest))
-						{
-							dol_mkdir($dir_dest);
+						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output;
+						if (empty($dir_dest)) {
+							dol_include_once('/referenceletters/class/referenceletters.class.php');
+							$refstatic = new ReferenceLetters($this->db);
+							if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
+								$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
+							}
 						}
-						$file_dest = $dir_dest . '/' . $objectref . '.pdf';
-						$test=$conf->{strtolower(get_class($object))}->dir_output;
+						if (empty($dir_dest)) {
+							setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
+						} else {
+							$dir_dest .= '/' . $objectref;
+							if (! file_exists($dir_dest))
+							{
+								dol_mkdir($dir_dest);
+							}
+							$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+							$test=$conf->{strtolower(get_class($object))}->dir_output;
 
-						dol_copy($file, $file_dest);
+							dol_copy($file, $file_dest);
+						}
 
 						// Header sur la même page pour annuler le traitement standard de génération de PDF
 						$field_id = 'id';

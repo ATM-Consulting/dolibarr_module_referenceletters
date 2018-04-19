@@ -83,7 +83,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'contract_prepare_head',
 				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -153,6 +153,36 @@ class ReferenceLetters extends CommonObject
 				'card' => 'commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
+		$this->element_type_list['order_supplier'] = array (
+				'class' => 'fournisseur.commande.class.php',
+				'securityclass' => 'fournisseur',
+				'securityfeature' => 'commande_fournisseur',
+				'objectclass' => 'CommandeFournisseur',
+				'classpath' => DOL_DOCUMENT_ROOT . '/fourn/class/',
+				'trans' => 'orders',
+				'title' => 'SupplierOrder',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fourn.lib.php',
+				'menuloader_function' => 'ordersupplier_prepare_head',
+				'card' => '/fourn/commande/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/'
+		);
+		$this->element_type_list['supplier_proposal'] = array (
+				'class' => 'supplier_proposal.class.php',
+				'securityclass' => 'supplier_proposal',
+				'securityfeature' => '',
+				'objectclass' => 'SupplierProposal',
+				'classpath' => DOL_DOCUMENT_ROOT . '/supplier_proposal/class/',
+				'trans' => 'supplier_proposal',
+				'title' => 'CommRequests',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/supplier_proposal.lib.php',
+				'menuloader_function' => 'supplier_proposal_prepare_head',
+				'card' => '/supplier_proposal/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
@@ -543,22 +573,36 @@ class ReferenceLetters extends CommonObject
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-					$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+				
 					$array_second_thirdparty_object = array ();
+					
+					if($testObj->element == 'societe'){
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
+						
+						foreach ( $array_first_thirdparty_object as $key => $value ) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
+						}
+						$subst_array[$langs->trans($item['title'])] =  $array_second_thirdparty_object;
+					}else {
+						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+					}
+					
 					if (! empty($testObj->thirdparty->id)) {
+						
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
+						
 					}
-					// var_dump($array_second_thirdparty_object);
+					
+
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
 					$subst_array[$langs->trans($item['title'])] = array (
 							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
-
 				//TODO : add line replacement
 			}
 		}

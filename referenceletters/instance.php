@@ -174,7 +174,7 @@ if ($action == 'buildoc') {
 		}
 		
 		$object_element->content_letter = $content_letter;
-		
+
 		$result = $object_element->create($user);
 		if ($result < 0) {
 			if($justinformme) echo $object_element->error;

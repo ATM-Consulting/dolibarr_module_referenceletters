@@ -69,7 +69,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
 		}
 
-		$odfHandler = new OdfRfltr($srctemplatepath, array(
+		$odfHandler = new OdfRfltr($srctemplatepath,
+			array(
 				'PATH_TO_TMP' => $conf->propal->dir_temp,
 				'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
 				'DELIMITER_LEFT' => '{',
@@ -157,7 +158,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	}
 	/**
 	 *
-	 * @param unknown $object
+	 * @param stdClass $object
 	 * @return number
 	 */
 	function _pageheadCustom($object) {
@@ -178,7 +179,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 	/**
 	 *
-	 * @param unknown $object
+	 * @param stdClass $object
 	 * @param string $typeprint
 	 */
 	function _pagefootCustom($object, $typeprint = '') {
@@ -200,11 +201,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 	/**
 	 *
-	 * @param unknown $object
-	 * @param unknown $txt
+	 * @param stdClass $object
+	 * @param string $txt
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt) {
+	function setSubstitutions(&$object, $txt='') {
 		global $user, $mysoc;
 
 		// User substitution value

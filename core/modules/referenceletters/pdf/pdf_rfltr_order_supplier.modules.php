@@ -31,21 +31,21 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_invoice extends ModelePDFReferenceLetters
+class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 {
-	public $db;
-	public $name;
-	public $description;
-	public $type;
-	public $version = 'dolibarr';
-	public $page_largeur;
-	public $page_hauteur;
-	public $format;
-	public $marge_gauche;
-	public $marge_droite;
-	public $marge_haute;
-	public $marge_basse;
-	public $emetteur; // Objet societe qui emet
+	var $db;
+	var $name;
+	var $description;
+	var $type;
+	var $version = 'dolibarr';
+	var $page_largeur;
+	var $page_hauteur;
+	var $format;
+	var $marge_gauche;
+	var $marge_droite;
+	var $marge_haute;
+	var $marge_basse;
+	var $emetteur; // Objet societe qui emet
 
 	/**
 	 * Constructor
@@ -60,7 +60,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "referenceletter_invoice";
+		$this->name = "referenceletter_order";
 		$this->description = $langs->trans('Module103258Name');
 
 		// Dimension page pour format A4
@@ -120,7 +120,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/invoice/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/order_supplier/" . $objectref;
 			$file = $dir . '/' . $objectref . ".pdf";
 
 			if (! file_exists($dir)) {
@@ -138,7 +138,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-
 
 				// Set calculation of header and footer high line
 				// footer high
@@ -297,7 +296,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 	/**
 	 * Show top header of page.
 	 *
-	 * @param Object $object to show
+	 * @param Object $object Object to show
 	 * @param int $showaddress 0=no, 1=yes
 	 * @param object $instaance_letter instanceletters
 	 * @return void

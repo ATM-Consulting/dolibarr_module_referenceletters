@@ -18,430 +18,481 @@
  */
 
 /**
- *	    \file       class/commondocgeneratorreferenceletter.class.php
- *		\ingroup    referenceletter
- *		\brief      File of parent class for documents generators
+ * \file class/commondocgeneratorreferenceletter.class.php
+ * \ingroup referenceletter
+ * \brief File of parent class for documents generators
  */
-
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php");
 
 /**
- *	\class      CommonDocGenerator
- *	\brief      Parent class for documents generators
+ * \class CommonDocGenerator
+ * \brief Parent class for documents generators
  */
 class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 {
-	var $error='';
+	var $error = '';
 	var $db;
 
-    /**
-     *
-     * @param unknown $referenceletters
-     * @param unknown $outputlangs
-     * @return NULL[]
-     */
-    function get_substitutionarray_refletter($referenceletters,$outputlangs)
-    {
+	/**
+	 *
+	 * @param stdClass $referenceletters
+	 * @param stdClass $outputlangs
+	 * @return NULL[]
+	 */
+	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
+		return array(
+				'referenceletters_title' => $referenceletters->title,
+				'referenceletters_ref_int' => $referenceletters->ref_int,
+				'referenceletters_title_referenceletters' => $referenceletters->title_referenceletters
+		);
+	}
 
-    	return array(
-    			'referenceletters_title'=>$referenceletters->title,
-    			'referenceletters_ref_int'=>$referenceletters->ref_int,
-    			'referenceletters_title_referenceletters'=>$referenceletters->title_referenceletters,
-    	);
-    }
+	/**
+	 *
+	 * {@inheritdoc}
+	 * @see CommonDocGenerator::get_substitutionarray_object()
+	 */
+	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object') {
+		global $db;
+		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
+		if ($object->element == 'facture') {
+			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
+			if (class_exists('Agefodd_session_element')) {
+				$agf_se = new Agefodd_session_element($db);
+				$agf_se->fetch_element_by_id($object->id, 'invoice');
 
-    function get_substitutionarray_object($object,$outputlangs,$array_key='object')
-    {
-        global $db;
-        $resarray = parent::get_substitutionarray_object($object,$outputlangs,$array_key);
-        if ($object->element == 'facture') {
-            dol_include_once('/agefodd/class/agefodd_session_element.class.php');
-            $agf_se = new Agefodd_session_element($db);
-            $agf_se->fetch_element_by_id($object->id, 'invoice');
+				if (count($agf_se->lines) > 1) {
+					$TSessions = array();
+					foreach ( $agf_se->lines as $line )
+						$TSessions[] = $line->fk_session_agefodd;
+					$resarray['object_references'] = implode(', ', $TSessions);
+				} elseif (! empty($agf_se->lines)) {
+					$resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
+				} else
+					$resarray['object_references'] = '';
+			} else {
+				$resarray['object_references'] = '';
+			}
+		}
+		// contact emetteur
+		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
+		$resarray[$array_key . '_contactsale'] = '';
+		if (count($arrayidcontact) > 0) {
+			foreach ( $arrayidcontact as $idsale ) {
+				$object->fetch_user($idsale);
+				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs)) . "\n";
+			}
+		}
 
-            if(count($agf_se->lines)>1){
-                $TSessions = array();
-                foreach ($agf_se->lines as $line) $TSessions[] = $line->fk_session_agefodd;
-                $resarray['object_references'] = implode(', ', $TSessions);
-            } elseif(!empty($agf_se->lines)) {
-                $resarray['object_references'] = $agf_se->lines[0]->fk_session_agefodd;
-            } else $resarray['object_references'] = '';
+		unset($arrayidcontact);
+		// contact tiers
+		if ($object instanceof Facture)
+			$arrayidcontact = $object->getIdContact('external', 'BILLING');
+		else
+			$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 
-        }
-        // contact emetteur
-        $arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
-        $resarray[$array_key.'_contactsale'] = '';
-        if (count($arrayidcontact) > 0)
-        {
-            foreach ($arrayidcontact as $idsale){
-                $object->fetch_user($idsale);
-                $resarray[$array_key.'_contactsale'] .= ($resarray[$array_key.'_contactsale'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+		$resarray['cust_contactclient'] = '';
+		if (count($arrayidcontact) > 0) {
+			foreach ( $arrayidcontact as $id ) {
+				$object->fetch_contact($id);
+				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+			}
+		}
+		// var_dump($arrayidcontact, $resarray[$array_key.'_contactsale'], $resarray[$array_key.'_contactclient'], $object); exit;
 
-            }
-        }
+		return $resarray;
+	}
 
-        unset($arrayidcontact);
-        // contact tiers
-        if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
-        else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
+	/**
+	 *
+	 * {@inheritdoc}
+	 * @see CommonDocGenerator::get_substitutionarray_other()
+	 */
+	function get_substitutionarray_other($outputlangs, $object = '') {
+		global $conf;
 
-        $resarray['cust_contactclient'] = '';
-        if (count($arrayidcontact) > 0)
-        {
-            foreach ($arrayidcontact as $id){
-                $object->fetch_contact($id);
-                $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
-            }
-        }
-        //var_dump($arrayidcontact, $resarray[$array_key.'_contactsale'], $resarray[$array_key.'_contactclient'], $object); exit;
+		$outputlangs->load('main');
 
-        return $resarray;
-    }
+		$array_other = parent::get_substitutionarray_other($outputlangs);
+		$array_other['current_date_fr'] = $outputlangs->trans('Day' . (( int ) date('w'))) . ' ' . date('d') . ' ' . $outputlangs->trans(date('F')) . ' ' . date('Y');
+		if (! empty($object)) {
 
-    function get_substitutionarray_other($outputlangs, $object='')
-    {
-    	global $conf;
+			// TVA
+			$TDetailTVA = self::get_detail_tva($object, $outputlangs);
+			if (! empty($TDetailTVA)) {
+				$array_other['tva_detail_titres'] = implode('<br />', $TDetailTVA['TTitres']);
+				$array_other['tva_detail_montants'] = implode('<br />', $TDetailTVA['TValues']);
+			}
 
-    	$outputlangs->load('main');
+			// Liste paiements
+			if (get_class($object) === 'Facture') {
 
-    	$array_other = parent::get_substitutionarray_other($outputlangs);
-    	$array_other['current_date_fr'] = $outputlangs->trans('Day'.((int)date('w'))).' '.date('d').' '.$outputlangs->trans(date('F')).' '.date('Y');
-    	if(!empty($object)) {
+				$array_other['deja_paye'] = $array_other['somme_avoirs'] = price(0, 0, $outputlangs);
+				$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
+				$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
+				if (! empty($array_other['liste_paiements'])) {
 
-    		// TVA
-    		$TDetailTVA = self::get_detail_tva($object, $outputlangs);
-    		if(!empty($TDetailTVA)) {
-	    		$array_other['tva_detail_titres'] = implode('<br />', $TDetailTVA['TTitres']);
-	    		$array_other['tva_detail_montants'] = implode('<br />', $TDetailTVA['TValues']);
-    		}
+					$deja_regle = $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
+					$creditnoteamount = $object->getSumCreditNotesUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
+					$depositsamount = $object->getSumDepositsUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
 
-    		// Liste paiements
-    		if(get_class($object) === 'Facture') {
+					// Already paid + Deposits
+					$array_other['deja_paye'] = price($deja_regle + $depositsamount, 0, $outputlangs);
+					// Credit note
+					$array_other['somme_avoirs'] = price($creditnoteamount, 0, $outputlangs);
+				}
 
-    			$array_other['deja_paye']=$array_other['somme_avoirs']=price(0, 0, $outputlangs);
-    			$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
-	    		$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
-	    		if(!empty($array_other['liste_paiements'])) {
+				// Reste à payer
+				$resteapayer = price2num($total_ttc - $deja_regle - $creditnoteamount - $depositsamount, 'MT');
+				$array_other['reste_a_payer'] = price($resteapayer, 0, $outputlangs);
+			}
 
-	    			$deja_regle= $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-	    			$creditnoteamount = $object->getSumCreditNotesUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-	    			$depositsamount = $object->getSumDepositsUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-
-	    			// Already paid + Deposits
-	    			$array_other['deja_paye'] = price($deja_regle + $depositsamount, 0, $outputlangs);
-	    			// Credit note
-	    			$array_other['somme_avoirs'] = price($creditnoteamount, 0, $outputlangs);
-	    		}
-
-	    		// Reste à payer
-	    		$resteapayer = price2num($total_ttc - $deja_regle - $creditnoteamount - $depositsamount, 'MT');
-	    		$array_other['reste_a_payer'] = price($resteapayer, 0, $outputlangs);
-
-    		}
-
-    		// Linked objects
+			// Linked objects
 			$array_other['objets_lies'] = self::getLinkedObjects($object, $outputlangs);
+		}
+		// var_dump($array_other);exit;
+		return $array_other;
+	}
 
-    	}
-    	//var_dump($array_other);exit;
-    	return $array_other;
-    }
+	/**
+	 *
+	 * @param stdClass $object
+	 * @param stdClass $outputlangs
+	 * @return string
+	 */
+	static function getLinkedObjects(&$object, &$outputlangs) {
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+		$linkedobjects = pdf_getLinkedObjects($object, $outputlangs);
+		if (! empty($linkedobjects)) {
+			$TRefToShow = array();
+			foreach ( $linkedobjects as $linkedobject ) {
+				$reftoshow = $linkedobject["ref_title"] . ' : ' . $linkedobject["ref_value"];
+				if (! empty($linkedobject["date_value"]))
+					$reftoshow .= ' / ' . $linkedobject["date_value"];
+				$TRefToShow[] = $reftoshow;
+			}
+		}
 
-    static function getLinkedObjects(&$object, &$outputlangs) {
+		if (empty($TRefToShow))
+			return '';
+		else
+			return implode('<br />', $TRefToShow);
+	}
 
-    	require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
-    	$linkedobjects = pdf_getLinkedObjects($object,$outputlangs);
-    	if (! empty($linkedobjects))
-    	{
-    		$TRefToShow=array();
-    		foreach($linkedobjects as $linkedobject)
-    		{
-    			$reftoshow = $linkedobject["ref_title"].' : '.$linkedobject["ref_value"];
-    			if (! empty($linkedobject["date_value"])) $reftoshow .= ' / '.$linkedobject["date_value"];
-    			$TRefToShow[] = $reftoshow;
-    		}
-    	}
+	/**
+	 *
+	 * @param stdClass $object
+	 * @param stdClass $outputlangs
+	 * @return number|array[]|number[][]
+	 */
+	static function get_detail_tva(&$object, &$outputlangs) {
+		global $conf;
 
-    	if(empty($TRefToShow)) return '';
-    	else return implode('<br />', $TRefToShow);
+		if (! is_array($object->lines))
+			return 0;
 
-    }
+		$TTva = array();
 
-    static function get_detail_tva(&$object, &$outputlangs) {
+		$sign = 1;
+		if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+			$sign = - 1;
 
-    	global $conf;
+		foreach ( $object->lines as &$line ) {
+			// Do not calc VAT on text or subtotal line
+			if ($line->product_type != 9) {
+				$vatrate = $line->tva_tx;
 
-    	if(!is_array($object->lines)) return 0;
+				// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
+				if (get_class($object) === 'Facture') {
+					$prev_progress = $line->get_prev_progress($object->id);
+					if ($prev_progress > 0 && ! empty($line->situation_percent)) // Compute progress from previous situation
+					{
+						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+							$tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
+						else
+							$tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
+					} else {
+						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+							$tvaligne = $sign * $line->multicurrency_total_tva;
+						else
+							$tvaligne = $sign * $line->total_tva;
+					}
+				} else {
+					if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+						$tvaligne = $line->multicurrency_total_tva;
+					else
+						$tvaligne = $line->total_tva;
+				}
 
-    	$TTva = array();
+				if ($object->remise_percent)
+					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
 
-    	$sign=1;
-    	if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
+				$TTva['Total TVA ' . round($vatrate, 2) . '%'] += $tvaligne;
+			}
+		}
 
-    	foreach($object->lines as &$line) {
-    		$vatrate=$line->tva_tx;
+		// formatage sortie
+		foreach ( $TTva as $k => &$v )
+			$v = price($v);
 
-    		// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
-    		if(get_class($object) === 'Facture') {
-	    		$prev_progress = $line->get_prev_progress($object->id);
-	    		if ($prev_progress > 0 && !empty($line->situation_percent)) // Compute progress from previous situation
-	    		{
-	    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
-	    			else $tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
-	    		} else {
-	    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne= $sign * $line->multicurrency_total_tva;
-	    			else $tvaligne= $sign * $line->total_tva;
-	    		}
-    		} else {
-    			if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) $tvaligne=$line->multicurrency_total_tva;
-    			else $tvaligne=$line->total_tva;
-    		}
+		// Retour fonction
+		return array(
+				'TTitres' => array_keys($TTva),
+				'TValues' => $TTva
+		);
+	}
 
-    		if ($object->remise_percent) $tvaligne-=($tvaligne*$object->remise_percent)/100;
+	/**
+	 *
+	 * @param stdClass $object
+	 * @param stdClass $outputlangs
+	 * @return number|array[]|number[][]
+	 */
+	static function get_liste_reglements(&$object, &$outputlangs) {
+		global $db, $conf;
 
-			$TTva['Total TVA '.round($vatrate, 2).'%'] += $tvaligne;
-    	}
+		$TPayments = array();
 
-    	// formatage sortie
-    	foreach($TTva as $k=>&$v) $v = price($v);
+		// Loop on each deposits and credit notes included
+		$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
+		$sql .= " re.description, re.fk_facture_source,";
+		$sql .= " f.type, f.datef";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "societe_remise_except as re, " . MAIN_DB_PREFIX . "facture as f";
+		$sql .= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = " . $object->id;
+		$resql = $db->query($sql);
+		if ($resql) {
+			$invoice = new Facture($db);
+			while ( $obj = $db->fetch_object($resql) ) {
+				$invoice->fetch($obj->fk_facture_source);
 
-    	// Retour fonction
-    	return array('TTitres'=>array_keys($TTva), 'TValues'=>$TTva);
-    }
+				if ($obj->type == 2)
+					$text = $outputlangs->trans("CreditNote");
+				elseif ($obj->type == 3)
+					$text = $outputlangs->trans("Deposit");
+				else
+					$text = $outputlangs->trans("UnknownType");
 
-    static function get_liste_reglements(&$object, &$outputlangs) {
+				$date = dol_print_date($obj->datef, 'day', false, $outputlangs, true);
+				$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
+				$invoice_ref = $invoice->ref;
+				$TPayments[] = array(
+						$date,
+						$amount,
+						$text,
+						$invoice->ref
+				);
+			}
+		}
 
-    	global $db, $conf;
+		// Loop on each payment
+		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num, pf.amount as amount, pf.multicurrency_amount,";
+		$sql .= " cp.code";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf, " . MAIN_DB_PREFIX . "paiement as p";
+		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as cp ON p.fk_paiement = cp.id ";
+		if (( float ) DOL_VERSION > 6)
+			$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity apparaît en 7.0
+		$sql .= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = " . $object->id;
+		$sql .= " ORDER BY p.datep";
 
-    	$TPayments = array();
+		$resql = $db->query($sql);
+		if ($resql) {
+			$sign = 1;
+			if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+				$sign = - 1;
+			while ( $row = $db->fetch_object($resql) ) {
 
-    	// Loop on each deposits and credit notes included
-    	$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
-    	$sql.= " re.description, re.fk_facture_source,";
-    	$sql.= " f.type, f.datef";
-    	$sql.= " FROM ".MAIN_DB_PREFIX ."societe_remise_except as re, ".MAIN_DB_PREFIX ."facture as f";
-    	$sql.= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = ".$object->id;
-    	$resql=$db->query($sql);
-    	if ($resql)
-    	{
-    		$invoice=new Facture($db);
-    		while ($obj = $db->fetch_object($resql))
-    		{
-    			$invoice->fetch($obj->fk_facture_source);
+				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
+				$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
+				$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
+				$num = $row->num;
 
-    			if ($obj->type == 2) $text=$outputlangs->trans("CreditNote");
-    			elseif ($obj->type == 3) $text=$outputlangs->trans("Deposit");
-    			else $text=$outputlangs->trans("UnknownType");
+				$TPayments[] = array(
+						$date,
+						$amount,
+						$oper,
+						$num
+				);
+			}
+		}
 
-    			$date = dol_print_date($obj->datef,'day',false,$outputlangs,true);
-    			$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
-    			$invoice_ref = $invoice->ref;
-    			$TPayments[] = array($date, $amount, $text, $invoice->ref);
-    		}
-    	}
+		if (! empty($TPayments)) {
+			$res = '<font size="6">' . $outputlangs->trans('PaymentsAlreadyDone') . '<hr />';
+			$res .= '<table style="font-weight:bold;"><tr><td>' . $outputlangs->trans('Payment') . '</td><td>' . $outputlangs->trans('Amount') . '</td><td>' . $outputlangs->trans('Type') . '</td><td>' . $outputlangs->trans('Num') . '</td></tr></table><hr />';
+			foreach ( $TPayments as $k => $v ) {
+				$res .= '<table><tr>';
+				foreach ( $v as $val )
+					$res .= '<td>' . $val . '</td>';
+				$res .= '</tr></table>';
+				$res .= '<hr />';
+			}
+			return $res . '</font>';
+		} else
+			return '';
+	}
 
-    	// Loop on each payment
-    	$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num, pf.amount as amount, pf.multicurrency_amount,";
-    	$sql.= " cp.code";
-    	$sql.= " FROM ".MAIN_DB_PREFIX."paiement_facture as pf, ".MAIN_DB_PREFIX."paiement as p";
-    	$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."c_paiement as cp ON p.fk_paiement = cp.id ";
-    	if((float)DOL_VERSION > 6) $sql.= " AND cp.entity = ".getEntity('c_paiement'); // cp.entity apparaît en 7.0
-    	$sql.= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = ".$object->id;
-    	$sql.= " ORDER BY p.datep";
+	/**
+	 *
+	 * @param stdClass $object
+	 * @param stdClass $outputlangs
+	 * @return number|array[]|number[][]
+	 */
+	function get_substitutionarray_lines($line, $outputlangs) {
+		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
+		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
+		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		return $resarray;
+	}
 
-    	$resql=$db->query($sql);
-    	if ($resql)
-    	{
-    		$sign=1;
-    		if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE)) $sign=-1;
-    		while ($row = $db->fetch_object($resql)) {
+	/**
+	 * Define array with couple substitution key => substitution value
+	 *
+	 * @param array $line Array of lines
+	 * @param Translate $outputlangs Lang object to use for output
+	 * @return array Return a substitution array
+	 */
+	function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
+		global $db, $conf, $langs;
 
-    			$date = dol_print_date($db->jdate($row->date),'day',false,$outputlangs,true);
-    			$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
-    			$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
-    			$num = $row->num;
+		// Substitutions tableau de participants :
+		$resarray = array();
+		$resarray['line_poste'] = $line->poste;
+		$resarray['line_civilite'] = $line->civilitel;
+		$resarray['line_civilite_short'] = $line->civilite;
+		$resarray['line_nom'] = $line->nom;
+		$resarray['line_prenom'] = $line->prenom;
+		$resarray['line_type'] = $line->type;
+		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_mail'] = $line->mail;
+		$resarray['line_siret'] = $line->thirdparty->idprof2;
+		$resarray['line_birthplace'] = $line->place_birth;
+		$resarray['line_code_societe'] = $line->soccode;
+		$resarray['line_nom_societe'] = $line->socname;
 
-    			$TPayments[] = array($date, $amount, $oper, $num);
-    		}
-    	}
+		// Substitutions tableau d'horaires
+		$resarray['line_date_session'] = dol_print_date($line->date_session);
+		$resarray['line_heure_debut_session'] = dol_print_date($line->heured, 'hour');
+		$resarray['line_heure_fin_session'] = dol_print_date($line->heuref, 'hour');
 
-    	if(!empty($TPayments)) {
-    		$res = '<font size="6">'.$outputlangs->trans('PaymentsAlreadyDone').'<hr />';
-    		$res.= '<table style="font-weight:bold;"><tr><td>'.$outputlangs->trans('Payment')
-    					.'</td><td>'.$outputlangs->trans('Amount')
-    					.'</td><td>'.$outputlangs->trans('Type')
-    					.'</td><td>'.$outputlangs->trans('Num').'</td></tr></table><hr />';
-    		foreach($TPayments as $k=>$v) {
-    			$res.= '<table><tr>';
-    			foreach($v as $val) $res.= '<td>'.$val.'</td>';
-    			$res.= '</tr></table>';
-    			$res.= '<hr />';
-    		}
-    		return $res.'</font>';
-    	} else return '';
+		// Substitutions tableau des formateurs :
+		$resarray['line_formateur_nom'] = $line->lastname;
+		$resarray['line_formateur_prenom'] = $line->firstname;
+		$resarray['line_formateur_mail'] = $line->email;
+		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
-    }
+		// Retrieve extrafields
+		$extrafieldkey = $line->element;
+		$array_key = "line";
+		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+		$extrafields = new ExtraFields($this->db);
+		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
+		if ($fetchoptionnals)
+			$line->fetch_optionals($line->rowid, $extralabels);
 
-    function get_substitutionarray_lines($line, $outputlangs) {
+		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key = $array_key, $outputlangs);
 
-    	$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
-    	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-    	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-    	$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
-    	//var_dump($line);exit;
-    	return $resarray;
-    }
+		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
+		if (get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne')
+			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
+		// Spé pour les contrats
+		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
+		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
+		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
 
-    /**
-     *	Define array with couple substitution key => substitution value
-     *
-     *	@param  array			$line				Array of lines
-     *	@param  Translate		$outputlangs        Lang object to use for output
-     *  @return	array								Return a substitution array
-     */
-    function get_substitutionarray_lines_agefodd(&$line,$outputlangs,$fetchoptionnals=true)
-    {
-    	global $db, $conf, $langs;
+		return $resarray;
+	}
+	function get_substitutionsarray_agefodd(&$object, $outputlangs) {
+		global $db;
 
-    	// Substitutions tableau de participants :
-    	$resarray=array();
-    	$resarray['line_poste'] = $line->poste;
-    	$resarray['line_civilite'] = $line->civilitel;
-    	$resarray['line_civilite_short'] = $line->civilite;
-    	$resarray['line_nom'] = $line->nom;
-    	$resarray['line_prenom'] = $line->prenom;
-    	$resarray['line_type'] = $line->type;
-    	$resarray['line_birthday'] = dol_print_date($line->date_birth);
-    	$resarray['line_mail'] = $line->mail;
-    	$resarray['line_siret'] = $line->thirdparty->idprof2;
-    	$resarray['line_birthplace'] = $line->place_birth;
-    	$resarray['line_code_societe'] = $line->soccode;
-    	$resarray['line_nom_societe'] = $line->socname;
+		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
-    	// Substitutions tableau d'horaires
-    	$resarray['line_date_session'] = dol_print_date($line->date_session);
-    	$resarray['line_heure_debut_session'] = dol_print_date($line->heured,'hour');
-    	$resarray['line_heure_fin_session'] = dol_print_date($line->heuref,'hour');
+		$formAgefodd = new FormAgefodd($db);
 
-    	// Substitutions tableau des formateurs :
-    	$resarray['line_formateur_nom'] = $line->lastname;
-    	$resarray['line_formateur_prenom'] = $line->firstname;
-    	$resarray['line_formateur_mail'] = $line->email;
-    	$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
+		$resarray = array();
+		$resarray['formation_nom'] = $object->formintitule;
+		$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
+		$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
+		$resarray['formation_ref'] = $object->formref;
+		$resarray['formation_statut'] = $object->statuslib;
+		$resarray['formation_duree'] = $object->duree;
+		$resarray['formation_commercial'] = $object->commercialname;
+		$resarray['formation_societe'] = $object->thirdparty->nom;
+		$resarray['formation_commentaire'] = nl2br($object->notes);
+		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
+		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
+		$resarray['formation_prix'] = price($object->sell_price);
+		if (! empty($object->fk_formation_catalogue)) {
 
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-    	// Retrieve extrafields
-    	$extrafieldkey=$line->element;
-    	$array_key="line";
-    	require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
-    	$extrafields = new ExtraFields($this->db);
-    	$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey,true);
-    	if ($fetchoptionnals) $line->fetch_optionals($line->rowid,$extralabels);
+			$catalogue = new Agefodd($db);
+			$catalogue->fetch($object->fk_formation_catalogue);
+			$resarray['formation_but'] = strip_tags($catalogue->but);
+			$resarray['formation_methode'] = strip_tags($catalogue->methode);
+			$resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
+			$resarray['formation_sanction'] = strip_tags($catalogue->sanction);
+			$resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
+			$resarray['formation_programme'] = $catalogue->programme;
+			$resarray['formation_documents'] = $catalogue->note1;
+			$resarray['formation_equipements'] = $catalogue->note2;
+		}
 
-    	$resarray = $this->fill_substitutionarray_with_extrafields($line,$resarray,$extrafields,$array_key=$array_key,$outputlangs);
+		if (! empty($object->placeid)) {
+			dol_include_once('/agefodd/class/agefodd_place.class.php');
+			$agf_place = new Agefodd_place($db);
+			$agf_place->fetch($object->placeid);
 
-	// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
-    	if(get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne') $resarray = parent::get_substitutionarray_lines($line, $outputlangs);
-    	$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '' ;
-	// Spé pour les contrats
-    	$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-    	$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-    	$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+			$resarray['formation_lieu'] = $object->placecode;
+			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
+			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
+			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+			$resarray['formation_lieu_acces'] = $agf_place->acces_site;
+			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
+			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
+			$resarray['formation_lieu_divers'] = $agf_place->note1;
+		}
 
+		return $resarray;
+	}
 
-    	return $resarray;
-    }
+	/**
+	 * Define array with couple subtitution key => subtitution value
+	 *
+	 * @param Object $object Dolibarr Object
+	 * @param Translate $outputlangs Language object for output
+	 * @param boolean $recursive Want to fetch child array or child object
+	 * @return array Array of substitution key->code
+	 */
+	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '') {
+		$array_other = array();
 
-    function get_substitutionsarray_agefodd(&$object, $outputlangs) {
-        global $db;
+		if (! empty($object)) {
 
-    	dol_include_once('/agefodd/class/html.formagefodd.class.php');
+			foreach ( $object as $key => $value ) {
 
-    	$formAgefodd = new FormAgefodd($db);
+				// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
+				if (is_object($object)) {
+					$reflection = new ReflectionProperty($object, $key);
+					if (! $reflection->isPublic())
+						continue;
+				}
 
-    	$resarray=array();
-    	$resarray['formation_nom'] = $object->formintitule;
-    	$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
-    	$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
-    	$resarray['formation_ref'] = $object->formref;
-    	$resarray['formation_statut'] = $object->statuslib;
-    	$resarray['formation_duree'] = $object->duree;
-    	$resarray['formation_commercial'] = $object->commercialname;
-    	$resarray['formation_societe'] = $object->thirdparty->nom;
-    	$resarray['formation_commentaire'] = nl2br($object->notes);
-    	$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
-    	$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
-    	$resarray['formation_prix'] = price($object->sell_price);
-    	if(! empty($object->fk_formation_catalogue)) {
+				if (! is_array($value) && ! is_object($value)) {
+					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
+						$value = price($value);
+					$array_other['object_' . $sub_element_label . $key] = $value;
+				} elseif ($recursive && ! empty($value)) {
+					$sub = strtr('object_' . $sub_element_label . $key, array(
+							'object_' . $sub_element_label => ''
+					)) . '_';
+					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
+				}
+			}
+		}
 
-    	    dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-
-    	    $catalogue = new Agefodd($db);
-    	    $catalogue->fetch($object->fk_formation_catalogue);
-    	    $resarray['formation_but'] = strip_tags($catalogue->but);
-    	    $resarray['formation_methode'] = strip_tags($catalogue->methode);
-    	    $resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
-    	    $resarray['formation_sanction'] = strip_tags($catalogue->sanction);
-    	    $resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
-    	    $resarray['formation_programme'] = $catalogue->programme;
-    	    $resarray['formation_documents'] = $catalogue->note1;
-    	    $resarray['formation_equipements'] = $catalogue->note2;
-    	}
-
-    	if(!empty($object->placeid)) {
-    	    dol_include_once('/agefodd/class/agefodd_place.class.php');
-    	    $agf_place= new Agefodd_place($db);
-    	    $agf_place->fetch($object->placeid);
-
-    	    $resarray['formation_lieu'] = $object->placecode;
-    	    $resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-    	    $resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-    	    $resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
-    	    $resarray['formation_lieu_acces'] = $agf_place->acces_site;
-    	    $resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-    	    $resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-    	    $resarray['formation_lieu_divers'] = $agf_place->note1;
-    	}
-
-    	return $resarray;
-
-    }
-
-    /**
-     * Define array with couple subtitution key => subtitution value
-     *
-     * @param   Object	$object    	Dolibarr Object
-     * @param   Translate $outputlangs    Language object for output
-     * @param   boolean $recursive    	Want to fetch child array or child object
-     * @return	array	Array of substitution key->code
-     */
-    function get_substitutionarray_each_var_object(&$object,$outputlangs,$recursive=true,$sub_element_label='') {
-
-    	$array_other = array();
-
-    	if(!empty($object)) {
-
-    		foreach($object as $key => $value) {
-
-    			// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
-    			if(is_object($object)) {
-    				$reflection = new ReflectionProperty($object, $key);
-    				if(!$reflection->isPublic()) continue;
-    			}
-
-    			if (! is_array($value) && ! is_object($value)) {
-    				if(is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key!=='id') $value = price($value);
-    				$array_other['object_' . $sub_element_label . $key] = $value;
-    			}
-    			elseif ($recursive && !empty($value)) {
-    				$sub = strtr('object_'.$sub_element_label.$key, array('object_'.$sub_element_label=>'')).'_';
-    				$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
-    			}
-    		}
-    	}
-
-    	return $array_other;
-    }
+		return $array_other;
+	}
 }
 

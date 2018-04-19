@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_invoice extends ModelePDFReferenceLetters
+class pdf_rfltr_supplier_proposal extends ModelePDFReferenceLetters
 {
 	public $db;
 	public $name;
@@ -50,7 +50,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 	/**
 	 * Constructor
 	 *
-	 * @param DoliDB $db Database handler
+	 * @param DoliDB $db handler
 	 */
 	function __construct($db) {
 		global $conf, $langs, $mysoc;
@@ -60,7 +60,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "referenceletter_invoice";
+		$this->name = "referenceletter_supplier_proposal";
 		$this->description = $langs->trans('Module103258Name');
 
 		// Dimension page pour format A4
@@ -68,7 +68,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
 		$this->page_hauteur = $formatarray['height'];
-		$this->format = array (
+		$this->format = array(
 				$this->page_largeur,
 				$this->page_hauteur
 		);
@@ -103,7 +103,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
-			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
+		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (! empty($conf->global->MAIN_USE_FPDF))
 			$this->outputlangs->charset_output = 'ISO-8859-1';
 
@@ -112,7 +112,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$this->outputlangs->load("referenceletters@referenceletters");
 
 		// Loop on each lines to detect if there is at least one image to show
-		$realpatharray = array ();
+		$realpatharray = array();
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
@@ -120,7 +120,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/invoice/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/supplier_proposal/" . $objectref;
 			$file = $dir . '/' . $objectref . ".pdf";
 
 			if (! file_exists($dir)) {
@@ -138,7 +138,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-
 
 				// Set calculation of header and footer high line
 				// footer high
@@ -265,10 +264,10 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$this->pdf->Output($file, 'F');
 
 				// Add pdfgeneration hook
-				$hookmanager->initHooks(array (
+				$hookmanager->initHooks(array(
 						'pdfgeneration'
 				));
-				$parameters = array (
+				$parameters = array(
 						'file' => $file,
 						'object' => $object,
 						'outputlangs' => $this->outputlangs,
@@ -381,7 +380,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$posy += 2;
 
 		// Show list of linked objects
-		// $posy = pdf_writeLinkedObjects($pdf, $object, $outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
+		// $posy = pdf_writeLinkedObjects($this->pdf, $object, $this->outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
 
 		if ($showaddress) {
 			// Sender properties
@@ -391,7 +390,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			 if (count($arrayidcontact) > 0)
 			 {
 			 $object->fetch_user($arrayidcontact[0]);
-			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
+			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$this->outputlangs->transnoentities("Name").": ".$this->outputlangs->convToOutputCharset($object->user->getFullName($this->outputlangs))."\n";
 			 }*/
 
 			$carac_emetteur .= pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty);
@@ -455,7 +454,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
 				$posx = $this->marge_gauche;
 
-				// Show recipient frame
+			// Show recipient frame
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx + 2, $posy - 5);

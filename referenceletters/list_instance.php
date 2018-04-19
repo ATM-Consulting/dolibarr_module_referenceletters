@@ -33,12 +33,21 @@ require_once '../class/html.formreferenceletters.class.php';
 require_once '../class/referenceletterselements.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+dol_include_once('/contact/class/contact.class.php');
+dol_include_once('/societe/class/societe.class.php');
 
 // Security check
 if (! $user->rights->referenceletters->read)
 	accessforbidden();
 
 $langs->load("referenceletters@referenceletters");
+
+
+$action = GETPOST('action');
+$massaction=GETPOST('massaction','alpha');
+$toselect = GETPOST('toselect', 'array');
+
+$arrayofselected=is_array($toselect)?$toselect:array();
 
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
@@ -49,10 +58,17 @@ $search_ref_int = GETPOST("search_ref_int");
 $search_element_type = GETPOST("search_element_type");
 $search_title = GETPOST("search_title");
 $search_company = GETPOST("search_company");
+$search_ref = GETPOST("search_ref");
+
+$limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
+if ($limit > 0 && $limit != $conf->liste_limit) $options.='&limit='.$limit;
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
 	$search_ref_int = '';
 	$search_element_type = '';
+	$search_company = '';
+	$search_ref = '';
+	$toselect='';
 }
 
 $filter = array ();
@@ -72,12 +88,16 @@ if (! empty($search_company)) {
 	$filter['search_company'] = $search_company;
 	$options .= '&amp;search_company=' . $search_company;
 }
+if (! empty($search_ref)) {
+	$filter['search_ref'] = $search_ref;
+	$options .= '&amp;search_ref=' . $search_ref;
+}
 
 if ($page == - 1) {
 	$page = 0;
 }
 
-$offset = $conf->liste_limit * $page;
+$offset = $limit* $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 
@@ -85,6 +105,8 @@ $form = new Form($db);
 $object = new ReferenceLettersElements($db);
 $object_ref = new ReferenceLetters($db);
 $formrefleter = new FormReferenceLetters($db);
+ $objecttmp=new ReferenceLetters($db);
+
 
 if (empty($sortorder)) {
 	$sortorder = "ASC";
@@ -93,11 +115,12 @@ if (empty($sortfield)) {
 	$sortfield = "t.datec";
 }
 
-$title = $langs->trans('RefLtrListInstance');
 
+$title = $langs->trans('RefLtrListInstance');
+include '../core/sendAll.inc.php';
 llxHeader('', $title);
 
-$result = 
+
 
 // Count total nb of records
 $nbtotalofrecords = 0;
@@ -105,14 +128,30 @@ $nbtotalofrecords = 0;
 if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
 	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield, 0, 0, $filter);
 }
+if(!empty($limit) && (float)$page > $nbtotalofrecords/$limit){
+	$offset=0;
+	$page='0';
+}
+$num = $object->fetchAll($sortorder, $sortfield, $limit, $offset, $filter);
 
-$num = $object->fetchAll($sortorder, $sortfield, $conf->liste_limit, $offset, $filter);
+$arrayofmassactions =  array(
+	'presend'=>$langs->trans("SendByMail"),
+//    'builddoc'=>$langs->trans("PDFMerge"),
+);
+if($massaction != 'presend')$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
+else $massactionbutton='';
+if (GETPOST('cancel','alpha')) { $action='list'; $massaction=''; }
+if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massaction != 'confirm_presend') { $massaction=''; }
+
+
 
 if ($num != - 1) {
 	
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	print '<form enctype="multipart/form-data" method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	include '../core/massactions.inc.php';
 	
-	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	
+	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords,'title_generic.png',0, '', '', $limit);
 	
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
@@ -127,40 +166,44 @@ if ($num != - 1) {
 	print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "t.fk_element", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $options, '', $sortfield, $sortorder);
+	
+	// edit button
+	print '<th style="width:70px" class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
+	print '&nbsp; ';
+	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
+	print '</th>';
 	print "</tr>\n";
 	
 	print '<tr class="liste_titre">';
 	
-	print '<td><input type="text" class="flat" name="search_ref_int" value="' . $search_ref_int . '" size="10"></td>';
+	print '<th><input type="text" class="flat" name="search_ref_int" value="' . $search_ref_int . '" size="10"></th>';
 	
-	print '<td>';
+	print '<th>';
 	print $formrefleter->selectElementType($search_element_type, 'search_element_type', 1);
-	print '</td>';
+	print '</th>';
 	
-	print '<td>';
+	print '<th>';
 	print '<input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10">';
-	print '</td>';
+	print '</th>';
 	
-	print '<td></td>';
+	print '<th><input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="10"></td>';
 	
-	print '<td>';
+	print '<th>';
 	print '<input type="text" class="flat" name="search_company" value="' . $search_company . '" size="10">';
-	print '</td>';
+	print '</th>';
 	
-	// edit button
-	print '<td class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
-	print '&nbsp; ';
-	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
-	print '</td>';
+	print '<th></th>';
+	$selectedfields=$form->showCheckAddButtons('checkforselect', 1);
+	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
 	
+
 	print "</tr>\n";
 	print '</form>';
 	
 	$var = true;
-	
 	foreach ( $object->lines as $line ) {
 		
 		// Affichage tableau des lead
@@ -190,19 +233,30 @@ if ($num != - 1) {
 		print '<td>' . $line->title . '</a></td>';
 		
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
-		} else {
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->getNomUrl() . '</a></td>';
+		} else if($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Contact'){
+			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->getNomUrl() . '</a></td>';
+		}else {
+			
 			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->ref . '</a></td>';
 		}
 		
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->name . '</a></td>';
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' .$object_src->getNomUrl() . '</a></td>';
 		} else {
-			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->name . '</a></td>';
+			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->getNomUrl() . '</a></td>';
 		}
 		
 		print '<td>' . dol_print_date($line->datec) . '</a></td>';
-		
+		// Action column
+	print '<td class="nowrap" align="center">';
+	if ($massactionbutton || $massaction)   // If we are in select mode (massactionbutton defined) or if we have already selected and sent an action ($massaction) defined
+	{
+		$selected=0;
+		if (in_array($line->id, $arrayofselected)) $selected=1;
+		if($line->element_type == 'contact' || $line->element_type== 'thirdparty')print '<input id="cb'.$obj->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->id.'"'.($selected?' checked="checked"':'').'>';
+	}
+	print '</td>';
 		print "</tr>\n";
 	}
 	

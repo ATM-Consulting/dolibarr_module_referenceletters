@@ -72,7 +72,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 		$object_ref=new ReferenceLetters($db);
 
 		$object=new ReferenceLettersElements($db);
-		$result = $object->fetchAll('ASC','t.datec',5,0);
+		$result = $object->fetchAll('DESC','t.datec',5,0);
 		if ($result<0) {
 			setEventMessage($object->error,'errors');
 		}

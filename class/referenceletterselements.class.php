@@ -373,7 +373,7 @@ class ReferenceLettersElements extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
-				} elseif ($key !== 'search_company') {
+				} elseif ($key !== 'search_company' && $key !== 'search_ref') {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
@@ -382,19 +382,21 @@ class ReferenceLettersElements extends CommonObject
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
 		
-		if (! empty($limit)) {
-			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
-		}
+		
+		
+		
 		
 		dol_syslog(get_class($this) . "::fetchAll sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
+			
 			if ($num > 0) {
 				$this->lines = array ();
-				
+				$num=0;
 				while ( $obj = $this->db->fetch_object($resql) ) {
 					
+					$addline = true;
 					//Search for company need to be calculated
 					if (array_key_exists('search_company', $filter) && ! empty($filter['search_company'])) {
 						
@@ -418,7 +420,8 @@ class ReferenceLettersElements extends CommonObject
 							}
 						}
 						
-						if ($this->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
+						if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
+							
 							if (strpos(mb_strtoupper($object_src->name,'UTF-8'), mb_strtoupper($filter['search_company'],'UTF-8')) !== false) {
 								$addline = true;
 							}
@@ -430,8 +433,35 @@ class ReferenceLettersElements extends CommonObject
 					} else {
 						$addline = true;
 					}
+					if (array_key_exists('search_ref', $filter) && ! empty($filter['search_ref'])) {
+							$object_ref = new ReferenceLetters($this->db);
+						$element_type = $langs->trans($obj->element_type);
+						include_once( $object_ref->element_type_list[$obj->element_type]['classpath'].$object_ref->element_type_list[$obj->element_type]['class']);
+						$class =  $object_ref->element_type_list[$obj->element_type]['objectclass'];
+						
+						$object_src = new $class ($this->db);
+						$object_src->fetch($obj->fk_element);
+						$addline=false;
+						
+						if(strpos(mb_strtoupper($object_src->ref,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false){
+							$addline=true;
+						}
+						if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
+							if (strpos(mb_strtoupper($object_src->name,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false) {
+								$addline = true;
+							}
+						} else if($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Contact') {
+							
+							if (strpos(mb_strtoupper($object_src->lastname,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false || strpos(mb_strtoupper($object_src->firstname,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false ) {
+								
+								$addline = true;
+								
+							}
+						}
+					}
 					
 					if ($addline) {
+						$num++;
 						$line = new ReferenceLettersElementsLine();
 						
 						$line->id = $obj->rowid;
@@ -455,11 +485,18 @@ class ReferenceLettersElements extends CommonObject
 					}
 				}
 			}
+			
+			$this->lines=array_splice($this->lines, $offset,$limit);
+				
+				
+			
+			
 			$this->db->free($resql);
 			
 			if (! empty($error)) {
 				return - 1;
 			}
+			
 			
 			return $num;
 		} else {

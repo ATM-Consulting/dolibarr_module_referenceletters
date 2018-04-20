@@ -18,8 +18,7 @@ if (($action == 'send' || !empty($_REQUEST['sendmail']) ) && !$_POST['addfile'] 
 		$langs->load("dolimail@dolimail");
 	$langs->load('mails');
 
-
-	
+	$sendtoid=0;
 	if (!empty($arrayofselected))
 	{
 
@@ -32,10 +31,12 @@ if (($action == 'send' || !empty($_REQUEST['sendmail']) ) && !$_POST['addfile'] 
 					$fk_element = $object->fk_element;
 					$sendobj = new Contact($db);
 					$result = $sendobj->fetch($fk_element);
+					$sendtoid = $fk_element;
 					if(!empty($sendobj->socid)){
 						$thirdparty = new Societe($db);
 						$thirdparty->fetch($sendobj->socid);
 						$sendtosocid = $sendobj->socid;
+						
 					}
 					
 					if(empty($sendobj->mail)){
@@ -66,7 +67,6 @@ if (($action == 'send' || !empty($_REQUEST['sendmail']) ) && !$_POST['addfile'] 
 			
 				$sendtocc = '';
 				$sendtobcc = '';
-				$sendtoid = array();
 
 				
 			
@@ -318,19 +318,21 @@ if (($action == 'send' || !empty($_REQUEST['sendmail']) ) && !$_POST['addfile'] 
 								$object->actionmsg = $actionmsg;	  // Long text
 								$object->actionmsg2 = $actionmsg2;	 // Short text
 								$object->trackid = $trackid;
-								$object->fk_element = $object->id;
+								$object->fk_element = $sendobj->id;
 								$object->elementtype = $object->element;
 								if (is_array($attachedfiles) && count($attachedfiles) > 0)
 								{
 									$object->attachedfiles = $attachedfiles;
 								}
-
+								
 								// Call of triggers
 								if (!empty($trigger_name))
 								{
 									include_once DOL_DOCUMENT_ROOT.'/core/class/interfaces.class.php';
 									$interface = new Interfaces($db);
+									
 									$result = $interface->run_triggers($trigger_name, $object, $user, $langs, $conf);
+									
 									if ($result < 0)
 									{
 										setEventMessages($interface->error, $interface->errors, 'errors');

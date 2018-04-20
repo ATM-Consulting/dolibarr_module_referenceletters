@@ -119,6 +119,7 @@ if (empty($sortfield)) {
 
 
 $title = $langs->trans('RefLtrListInstance');
+$trigger_name = 'SEND_REFLETTER_BY_MAIL';
 include '../core/sendAll.inc.php';
 llxHeader('', $title);
 

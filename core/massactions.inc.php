@@ -96,14 +96,16 @@ if ($massaction == 'presend')
 		$listofselectedref = array();
 		foreach ($arrayofselected as $toselectid)
 		{
-
 			$result = $objecttmp->fetch($toselectid);
 			if ($result > 0)
 			{
 				$listofselectedid[$toselectid] = $toselectid;
 				$thirdpartyid = ($objecttmp->fk_soc ? $objecttmp->fk_soc : $objecttmp->socid);
-				if ($objecttmp->element == 'societe')
+				if ($objecttmp->element == 'societe'){
 					$thirdpartyid = $objecttmp->id;
+					$modelmail = 'thirdparty';
+				}else $modelmail = 'contact';
+					
 				if ($objecttmp->element == 'expensereport')
 					$thirdpartyid = $objecttmp->fk_user_author;
 

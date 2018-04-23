@@ -426,8 +426,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (! empty($object->fk_formation_catalogue)) {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-
-			$catalogue = new Agefodd($db);
+			
+			if(class_exists('Agefodd')){
+			    $catalogue = new Agefodd($db);
+			} elseif (class_exists('Formation')) {
+			    $catalogue = new Formation($db);
+			}
+			
 			$catalogue->fetch($object->fk_formation_catalogue);
 			$resarray['formation_but'] = strip_tags($catalogue->but);
 			$resarray['formation_methode'] = strip_tags($catalogue->methode);

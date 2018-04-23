@@ -266,7 +266,12 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 
 				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
-					$agfTraining = new Agefodd($db);
+				    if(class_exists('Agefodd')){
+				        $agfTraining = new Agefodd($db);
+				    } elseif (class_exists('Formation')) {
+				        $agfTraining = new Formation($db);
+				    }
+					
 					$agfTraining->fetch($object->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $object->fk_formation_catalogue . '.pdf';

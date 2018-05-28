@@ -122,7 +122,7 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Proposal',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
-				'card' => 'comm/propal.php',
+				'card' => 'comm/propal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
@@ -136,7 +136,7 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Bill',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
-				'card' => 'compta/facture.php',
+				'card' => 'compta/facture/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);

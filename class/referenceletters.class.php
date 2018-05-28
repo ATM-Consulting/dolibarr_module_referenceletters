@@ -122,7 +122,7 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Proposal',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
-				'card' => 'comm/propal.php',
+				'card' => 'comm/propal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
@@ -136,7 +136,7 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Bill',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
-				'card' => 'compta/facture.php',
+				'card' => 'compta/facture/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
@@ -187,6 +187,59 @@ class ReferenceLetters extends CommonObject
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
+
+		if(!empty($conf->agefodd->enabled)) {
+
+			// Convention de formation
+			$this->element_type_list['rfltr_agefodd_convention'] = array (
+					'class' => 'agsession.class.php',
+					'objectclass' => 'Agsession',
+					'classpath' => dol_buildpath('/agefodd/class/'),
+					'trans' => 'agefodd',
+					'title' => 'AgfConvention',
+					'card' => '/agefodd/session/card.php',
+					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
+			);
+
+
+			$Tab = array(
+			    'fiche_pedago'=>'AgfFichePedagogique'
+			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
+			    ,'conseils'=>'AgfConseilsPratique'
+			    ,'fiche_presence'=>'AgfFichePresence'
+			    ,'fiche_presence_direct'=>'AgfFichePresenceDirect'
+			    ,'fiche_presence_empty'=>'AgfFichePresenceEmpty'
+			    ,'fiche_presence_trainee'=>'AgfFichePresenceTrainee'
+			    ,'fiche_presence_trainee_direct'=>'AgfFichePresenceTraineeDirect'
+			    ,'fiche_presence_landscape'=>'AgfFichePresenceTraineeLandscape'
+			    ,'fiche_evaluation'=>'AgfFicheEval'
+			    ,'fiche_remise_eval'=>'AgfRemiseEval'
+			    ,'attestationendtraining_empty'=>'AgfAttestationEndTrainingEmpty'
+			    ,'chevalet'=>'AgfChevalet'
+			    ,'convocation'=>'AgfPDFConvocation'
+			    ,'attestationendtraining'=>'AgfAttestationEndTraining'
+			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
+			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
+			    ,'attestation'=>'AgfSendAttestation'
+			    ,'certificateA4'=>'AgfPDFCertificateA4'
+			    ,'certificatecard'=>'AgfPDFCertificateCard'
+			    ,'contrat_presta'=>'AgfContratPrestation'
+			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
+			    ,'contrat_trainer'=>'AgfContratTrainer'
+			    ,'courrier'=>'RefLtrLetters'
+			    ,'convocation_trainee'=>'Convocation Stagiaire'
+			    ,'attestation_trainee'=>'Attestation stagiaire'
+			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			);
+
+			foreach ($Tab as $key => $val){
+			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
+			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
+
+		}
+
 		return 1;
 	}
 
@@ -409,7 +462,7 @@ class ReferenceLetters extends CommonObject
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
 				}if ($key == 't.status') {
 					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
-				}else {
+				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
@@ -575,15 +628,89 @@ class ReferenceLetters extends CommonObject
 			);
 		}
 
-		$this->completeSubstitution($subst_array);
+		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		return $subst_array;
 	}
 
-	function completeSubstitution(&$subst_array) {
+	function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs;
 
+		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
+		unset($subst_array['Agsession']);
+
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+
+		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
+				'formation_nom'=>'Intitulé de la formation'
+				,'formation_ref'=>'Référence de la formation'
+				,'formation_statut'=>'Statut de la formation'
+		        ,'formation_date_debut' => 'Date de début de la formation'
+		        ,'formation_date_fin' => 'Date de fin de la formation'
+				,'objvar_object_date_text'=>'Date de la session'
+		        ,'formation_duree' => 'Durée de la formation'
+				,'formation_commercial'=>'commercial en charge de la formation'
+				,'formation_societe'=>'Société concernée'
+		        ,'formation_but'=>'But de la formation'
+		        ,'formation_methode'=>'Methode de formation'
+		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
+		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
+		        ,'formation_documents'=>'Documents nécessaires à la formation'
+		        ,'formation_equipements'=>'Equipements nécessaires à la formation'
+		        ,'formation_lieu'=>'Lieu de la formation'
+		        ,'formation_lieu_adresse'=>'Adresse du lieu de formation'
+		        ,'formation_lieu_cp'=>'Code postal du lieu de formation'
+		        ,'formation_lieu_ville'=>'Ville du lieu de formation'
+		        ,'formation_lieu_acces'=>'Instruction d\'accès au lieu lieu de formation'
+		        ,'formation_lieu_horaires'=>'Horaires du lieu de formation'
+		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
+		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
+		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules'
+		        ,'objvar_object_id'=>'Id de la session'
+		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
+		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
+		);
+
+		// Liste de données - Participants
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
+				'line_civilite'=>'Civilité'
+				,'line_nom'=>'Nom participant'
+				,'line_prenom'=>'Prénom participant'
+				,'line_nom_societe'=>'Société du participant'
+				,'line_poste'=>'Poste occupé au sein de sa société'
+				,'line_mail' => 'Email du participant'
+				,'line_siret' => 'SIRET de la société du participant'
+				,'line_birthday' => 'Date de naissance du participant'
+				,'line_birthplace'=>'Lieu de naissance du participant'
+				,'line_code_societe'=> 'Code de la société du participant'
+				,'line_nom_societe'=> 'Nom du client du participant'
+		);
+
+		// Liste de données - Horaires
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
+				'line_date_session'=>'Date de la session'
+				,'line_heure_debut_session'=>'Heure début session'
+				,'line_heure_fin_session'=>'Heure fin session'
+		);
+
+		// Liste de données - Formateurs
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
+				'line_formateur_nom'=>'Nom du formateur'
+				,'line_formateur_prenom'=>'Prénom du formateur'
+				,'line_formateur_mail'=>'Adresse mail du formateur'
+				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
+		);
+
+		$subst_array['RefLtrSubstAgefoddStagiaire'] = array(
+		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
+		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
+		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
+		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
+		);
+
+		// Tags des lignes
 		$subst_array[$langs->trans('RefLtrLines')] = array(
 				'line_fulldesc'=>'Description complète',
 				'line_product_ref'=>'Référence produit',
@@ -817,6 +944,7 @@ class ReferenceLetters extends CommonObject
 		// Load source object
 		$object->fetch($fromid);
 		$object->title = $object->title . ' (Clone)';
+
 		$clonedrefletterid = $object->create($user);
 
 		// Other options

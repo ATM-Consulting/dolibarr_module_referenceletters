@@ -247,20 +247,20 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
     					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
-    
+
     					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
     						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
     							if (! empty($option_detail['use_content_option'])) {
     								$posY = $this->pdf->GetY();
     								$this->pdf->SetXY($posX, $posY);
-    
+
     								$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
     							}
     						}
     					}
-                        
+
     					$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
-    					
+
 					}
 				}
 
@@ -271,7 +271,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				    } elseif (class_exists('Formation')) {
 				        $agfTraining = new Formation($db);
 				    }
-					
+
 					$agfTraining->fetch($object->fk_formation_catalogue);
 					$agfTraining->generatePDAByLink();
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $object->fk_formation_catalogue . '.pdf';
@@ -482,6 +482,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 $carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 			 }*/
 
+			$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 
 			// Show recipient

@@ -197,7 +197,9 @@ class ActionsReferenceLetters
 						$file = $dir . '/' . $objectref . ".pdf";
 
 						$objectref = dol_sanitizeFileName($object->ref);
-						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output;
+						$classname = get_class($object);
+						if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
+						$dir_dest = $conf->{strtolower($classname)}->dir_output;
 						if (empty($dir_dest)) {
 							dol_include_once('/referenceletters/class/referenceletters.class.php');
 							$refstatic = new ReferenceLetters($this->db);

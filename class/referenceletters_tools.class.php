@@ -100,6 +100,7 @@ class RfltrTools {
 
 		global $db;
 
+		dol_include_once('/agefodd/class/agsession.class.php');
 		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
 		$object->fetch($id_object);
 		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention);

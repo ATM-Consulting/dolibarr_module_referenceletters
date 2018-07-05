@@ -129,7 +129,7 @@ class FormReferenceLetters extends Form
 			}else {
 				$option_selected='';
 			}
-			
+
 			$module = '';
 			if(strpos($element_type, 'rfltr_agefodd_') !== false) $module = $langs->trans('Module103000Name') . ' - ';
 
@@ -143,7 +143,7 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
+	 * @param string $selected
 	 * @param string $htmlname
 	 * @return select HTML
 	 */

@@ -1309,9 +1309,8 @@ L&#39;organisme d&eacute;clare &ecirc;tre assujetti &agrave; la TVA au sens de l
 			<td style="background-color:#dddddd; text-align:center">Total TTC</td>
 		</tr>
 		<tr>
-			<td style="text-align:center">Formation journ&eacute;e<br />
-			formation chez client (dur&eacute;e 7h)</td>
-			<td style="text-align:center">1</td>
+			<td style="text-align:center">{objvar_object_conv_products}</td>
+			<td style="text-align:center">{objvar_object_conv_qty}</td>
 			<td style="text-align:center">{objvar_object_conv_tva_tx}%</td>
 			<td style="text-align:center">{objvar_object_conv_amount_ht}</td>
 			<td style="text-align:center">{objvar_object_conv_amount_ttc}</td>

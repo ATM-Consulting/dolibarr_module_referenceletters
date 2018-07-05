@@ -105,52 +105,35 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectElementType($selected='',$htmlname='element_type',$showempty=0, $in_array=array(), $outputtype='select') {
+	public function selectElementType($selected='',$htmlname='element_type',$showempty=0, $in_array=array()) {
 		global $langs;
-
+		
 		require_once 'referenceletters.class.php';
-
+		
 		$refletter = new Referenceletters($this->db);
-		if ($outputtype=='select') {
-			$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
-		} elseif ($outputtype=='editfieldval'){
-			$select_elemnt = 'select;';
-		}
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
 		if (!empty($showempty)) {
-			if ($outputtype=='select') {
-				$select_elemnt .= '<option value=""></option>';
-			} elseif ($outputtype=='editfieldval'){
-				$select_elemnt .= ':,';
-			}
+			$select_elemnt .= '<option value=""></option>';
 		}
 		foreach($refletter->element_type_list as $element_type=>$array_data) {
 			$langs->load($array_data['trans']);
-
+			
 			if(!empty($in_array)) {
-
+				
 				if(!in_array($element_type, $in_array)) continue;
-
+				
 			}
-
+			
 			if ($selected==$element_type) {
 				$option_selected=' selected="selected" ';
 			}else {
 				$option_selected='';
 			}
-			if ($outputtype=='select') {
-				$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
-			} elseif ($outputtype=='editfieldval'){
-				$select_elemnt .= $element_type . ':' . $langs->trans($array_data['title']) . ',';
-			}
-
+			
+			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
 		}
-
-		if ($outputtype=='select') {
-			$select_elemnt .= '</select>';
-		} elseif ($outputtype=='editfieldval'){
-			$select_elemnt .= '';
-		}
-
+		
+		$select_elemnt .= '</select>';
 		return $select_elemnt;
 	}
 

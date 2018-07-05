@@ -381,6 +381,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_mail'] = $line->email;
 		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
+		// Substitutions tableau des objectif :
+		$resarray['line_objpeda_rang'] = $line->priorite;
+		$resarray['line_objpeda_description'] = $line->intitule;
+
 		// Retrieve extrafields
 		$extrafieldkey = $line->element;
 		$array_key = "line";
@@ -422,17 +426,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_commentaire'] = nl2br($object->notes);
 		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
 		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
+		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention;
 		$resarray['formation_prix'] = price($object->sell_price);
+		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
 		if (! empty($object->fk_formation_catalogue)) {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
-			
+
 			if(class_exists('Agefodd')){
 			    $catalogue = new Agefodd($db);
 			} elseif (class_exists('Formation')) {
 			    $catalogue = new Formation($db);
 			}
-			
+
 			$catalogue->fetch($object->fk_formation_catalogue);
 			$resarray['formation_but'] = strip_tags($catalogue->but);
 			$resarray['formation_methode'] = strip_tags($catalogue->methode);

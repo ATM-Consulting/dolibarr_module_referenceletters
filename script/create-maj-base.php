@@ -980,57 +980,48 @@ PERSONNALISE</strong></span><br />
 		$chapter->sort_order = 1;
 		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
 		$chapter->title = 'Contenu';
-		$chapter->content_text = 'Id Session : <strong>{objvar_object_id}</strong><br />
+		$chapter->content_text = '<u>Formation : </u><br />
 Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
+But de la formation : <strong>{formation_but}</strong><br />
+M&eacute;thode de la formation : <strong>{formation_methode}</strong><br />
+Pr&eacute;requis : <strong>{formation_prerequis}</strong><br />
+Saction : <strong>{formation_sanction}</strong><br />
+Type de participant : <strong>{formation_type_stagiaire}</strong><br />
+Programme : <strong>{formation_programme}</strong><br />
+Documents necessaires : <strong>{formation_documents}</strong><br />
+Equipement necessaire : <strong>{formation_equipements}</strong><br />
+Objectif de formation text : <strong>{formation_obj_peda}</strong><br />
+Tableau des objectifs :<br />
+[!-- BEGIN TFormationObjPeda --] Priorit&eacute;/Rang : <strong>{line_objpeda_rang}, </strong>Description : <strong>{line_objpeda_description}</strong><br />
+[!-- END TFormationObjPeda --]<br />
+<br />
+<u>Lieu</u> :&nbsp;<br />
+<strong>{formation_lieu} -&nbsp;{formation_lieu_adresse}&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}</strong><br />
+Instruction d&#39;acces au lieu : <strong>{formation_lieu_acces}</strong><br />
+Horaire du lieu : <strong>{formation_lieu_horaires}</strong><br />
+Infos diverses :&nbsp;<strong>{formation_lieu_divers}</strong><br />
+Commentaire Lieu : <strong>{formation_lieu_notes}</strong><br />
+<br />
+<u>Session : </u><br />
+Id Session : <strong>{objvar_object_id}</strong><br />
+Client :<strong> {formation_societe} </strong>(Intra)<br />
+Commenatire session : <strong>{formation_commentaire}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
 Autre format de date: <strong>{objvar_object_date_text}</strong><br />
-Lieu :&nbsp;<strong>{formation_lieu} -&nbsp;{formation_lieu_adresse}&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}<br />
-Commentaire Lieu : {formation_lieu_notes}</strong><br />
-Instruction d\'acces au lieu : {formation_lieu_acces}</strong><br />
-Horaire du lieu : {formation_lieu_horaires}</strong><br />
 Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
+Commercial de la session : <strong>{formation_commercial}</strong><br />
 <br />
-Tiers convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />
-<br />
-Montant HT convention : {objvar_object_conv_amount_ht}
-Montant TVA convention : {objvar_object_conv_amount_tva}
-Montant TTC convention : {objvar_object_conv_amount_ttc}
-<br />
-<strong>{objvar_object_document_societe_name}<br />
-{objvar_object_document_societe_address}<br />
-{objvar_object_document_societe_zip}&nbsp;{objvar_object_document_societe_town}<br />
-Repr&eacute;sent&eacute; par&nbsp;{objvar_object_signataire_intra}/{objvar_object_signataire_inter}</strong><br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
-<br />
-Lieu de la session<br />
-<br />
-{formation_lieu}<br />
-{formation_lieu_adresse}<br />
-{formation_lieu_cp}<br />
-{formation_lieu_ville}<br />
-<br />
-infos d&#39;acc&egrave;s : {formation_lieu_acces}<br />
-<br />
-Horaires du lieu : {formation_lieu_horaires}<br />
-<br />
-Notes :&nbsp;{formation_lieu_notes}<br />
-<br />
-Infos diverses :&nbsp;{formation_lieu_divers}<br />
-<br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
-<br />
-Liste horaires :<br />
+<u>Liste horaires :</u><br />
 <br />
 [!-- BEGIN THorairesSession --]Le&nbsp;<strong>{line_date_session} </strong>:<br />
 - D&eacute;but&nbsp;<strong>{line_heure_debut_session}</strong>&nbsp;<br />
 - Fin&nbsp;<strong>{line_heure_fin_session}</strong><br />
 [!-- END THorairesSession --]<br />
 <br />
-Horaire session en texte : <strong>{objvar_object_dthour_text}</strong>
+Horaire session en texte : <strong>{objvar_object_dthour_text}</strong><br />
 <br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
-Tableau des participants :<br />
+<u>Tableau des participants :</u><br />
 &nbsp;<br />
 &nbsp;
 <table border="1" cellpadding="1" cellspacing="1">
@@ -1057,9 +1048,17 @@ Tableau des participants :<br />
 </table>
 <br />
 <br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
+<u>Convention :</u><br />
+Tiers convention <span style="color:#ff0000">(disponible uniquement sur PDF convention)</span> :<br />
 <br />
-Tableau des participants au sein d&#39;une convention <span style="color:#FF0000">(disponible uniquement sur PDF convention)</span> :<br />
+Montant HT convention : {objvar_object_conv_amount_ht} Montant TVA convention : {objvar_object_conv_amount_tva} Montant TTC convention : {objvar_object_conv_amount_ttc}<br />
+<strong>{objvar_object_document_societe_name}<br />
+{objvar_object_document_societe_address}<br />
+{objvar_object_document_societe_zip}&nbsp;{objvar_object_document_societe_town}</strong><br />
+Repr&eacute;sent&eacute; par<strong>&nbsp;{objvar_object_signataire_intra}/{objvar_object_signataire_inter}</strong><br />
+Nombre de participant de la convention<strong> </strong>{formation_nb_stagiaire_convention}<br />
+<br />
+Tableau des participants au sein d&#39;une convention <span style="color:#ff0000">(disponible uniquement sur PDF convention)</span> :<br />
 &nbsp;<br />
 &nbsp;
 <table border="1" cellpadding="1" cellspacing="1">
@@ -1104,31 +1103,26 @@ Tableau des participants au sein d&#39;une convention <span style="color:#ff0000
 	</tbody>
 </table>
 <br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
-Liste des formateurs :<br />
+<br />
+<u>Liste des formateurs :</u><br />
 <br />
 [!-- BEGIN TFormateursSession --] Nom : <strong>{line_formateur_nom}, </strong>pr&eacute;nom : <strong>{line_formateur_prenom}</strong>, statut : <strong>{line_formateur_statut}</strong><br />
 [!-- END TFormateursSession --]<br />
 <br />
-ou en une ligne : <strong>{objvar_object_trainer_text}</strong>
-<br />
-Cout formateur (cout/nb de creneaux): <strong>{objvar_object_trainer_day_cost}</strong>
-<br />
-D&eacute;tail par formateur<span style="color:#FF0000"> (disponible uniquement sur contrat formateur)</span> :<br />
+ou en une ligne : <strong>{objvar_object_trainer_text}</strong><br />
+Cout formateur (cout/nb de creneaux): <strong>{objvar_object_trainer_day_cost}</strong><br />
+D&eacute;tail par formateur<span style="color:#ff0000"> (disponible uniquement sur contrat formateur)</span> :<br />
 <br />
 <strong>{objvar_object_formateur_session_name}&nbsp;{objvar_object_formateur_session_firstname}<br />
 {objvar_object_formateur_session_address}<br />
 {objvar_object_formateur_session_zip}&nbsp;{objvar_object_formateur_session_town}</strong><br />
 Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />
 <br />
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------<br />
 <br />
-Autres :<br />
+<u>Autres :</u><br />
 <br />
-Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong>
-Numero de déclaration : <strong>{objvar_object_AGF_ORGANISME_NUM}</strong>
-Prefecture : <strong>{objvar_object_AGF_ORGANISME_PREF}</strong>';
+Repr&eacute;sentant Agefodd : <strong>{objvar_object_AGF_ORGANISME_REPRESENTANT}</strong> Numero de d&eacute;claration : <strong>{objvar_object_AGF_ORGANISME_NUM}</strong> Prefecture : <strong>{objvar_object_AGF_ORGANISME_PREF}</strong>';
 
 		$chapter->create($user);
 

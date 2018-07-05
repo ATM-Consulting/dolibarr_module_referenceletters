@@ -183,8 +183,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param string $typeprint
 	 */
 	function _pagefootCustom($object, $typeprint = '') {
-
 		// Conversion des tags
+
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
 
 		$this->pdf->SetX($this->marge_gauche);
@@ -194,6 +194,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (! empty($typeprint)) {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+
 		} else {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - $this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		}
@@ -326,9 +327,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// store starting values
 		$start_y = $this->pdf->GetY();
-		// print '$start_y='.$start_y.'<br>';
+		//print '$start_y='.$start_y.'<br>';
 
 		$start_page = $this->pdf->getPage();
+		//print '$start_page='.$start_page.'<br>';
 
 		$height = 0;
 		$bottom_margin = 0;
@@ -360,12 +362,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$end_y = $this->pdf->GetY();
 			$end_page = $this->pdf->getPage() - 1;
 			// calculate height
-			// print '$end_y='.$end_y.'<br>';
-			// print '$end_page='.$end_page.'<br>';
+			//print '$end_y='.$end_y.'<br>';
+			//print '$end_page='.$end_page.'<br>';
 
 			if (($end_page == $start_page || $end_page == 0) && $end_y > $start_y) {
 				$height = $end_y - $start_y;
-				// print 'aa$height='.$height.'<br>';
+				//print 'aa$height='.$height.'<br>';
 			} else {
 				for($page = $start_page; $page <= $end_page; $page ++) {
 					$this->pdf->setPage($page);
@@ -394,7 +396,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$this->pdf = $this->pdf->rollbackTransaction();
 
 		if (! empty($bottom_margin)) {
-			if (get_class($this->pdf->ref_object) === 'Agsession') {
+			if (get_class($this->pdf->ref_object) === 'Agsession' && ($bottom_margin / 2)<$height) {
 				$height -= ($bottom_margin / 2);
 			}
 			$this->pdf->mybottommargin = $height;

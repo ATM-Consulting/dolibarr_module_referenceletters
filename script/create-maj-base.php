@@ -118,6 +118,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -285,6 +286,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -458,6 +460,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -600,6 +603,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -745,6 +749,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>
@@ -876,6 +881,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 						<td style="height:121px"><br />
 						<strong>{cust_company_name}</strong><br />
 						{cust_contactclient}<br />
+						{cust_contactclientfact}<br />
 						{cust_company_address}<br />
 						{cust_company_zip}&nbsp;{cust_company_town}</td>
 					</tr>

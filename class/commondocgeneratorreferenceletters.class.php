@@ -88,10 +88,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             }
         }
 
-        unset($arrayidcontact);
+
         // contact tiers
-        if ($object instanceof Facture) $arrayidcontact=$object->getIdContact('external','BILLING');
-        else $arrayidcontact=$object->getIdContact('external','CUSTOMER');
+        unset($arrayidcontact);
+        $arrayidcontact=$object->getIdContact('external','CUSTOMER');
 
         $resarray['cust_contactclient'] = '';
         if (count($arrayidcontact) > 0)
@@ -101,7 +101,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                 $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
             }
         }
-        //var_dump($arrayidcontact, $resarray[$array_key.'_contactsale'], $resarray[$array_key.'_contactclient'], $object); exit;
+        
+        // contact tiers facturation
+        unset($arrayidcontact_inv);
+        $arrayidcontact_inv=$object->getIdContact('external','BILLING');
+        
+        $resarray['cust_contactclientfact'] = '';
+        if (count($arrayidcontact_inv) > 0)
+        {
+            foreach ($arrayidcontact_inv as $id){
+                $object->fetch_contact($id);
+                $resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
+            }
+        }
 
         return $resarray;
     }

@@ -272,7 +272,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<li class="noborder litext">'.$linkback.'</li>';
 	print '</ul></div>';
 	print '<div class="inline-block floatleft valignmiddle refid refidpadding">';
-	print $langs->trans('RefLtrElement').' : '. $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
+	print $langs->trans('RefLtrTitle').' : '. $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
 	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
 	print '<div class="refidno">';
 	if ($action=='editrefltrelement') {

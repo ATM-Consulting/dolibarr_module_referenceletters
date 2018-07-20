@@ -277,14 +277,16 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $object->fk_formation_catalogue . '.pdf';
 					if (is_file($infile)) {
 						$count = $this->pdf->setSourceFile($infile);
+						if (count($count)>0) {
+							// Add footer manully beacuse auto footer won't work cause of setPrintFooter=false set just after
+							$this->pdf->SetAutoPageBreak(0);
+							if(empty($instance_letter->use_custom_footer)) {
+							 	$this->_pagefoot($object, $this->outputlangs);
+							 } else {
+							 	$this->_pagefootCustom($object);
+							 }
+						}
 
-						//J'ai essayé, mais ca décale tous
-						// Add footer manully beacuse auto footer won't work cause of setPrintFooter=false set just after
-						/*if(empty($instance_letter->use_custom_footer)) {
-							$this->_pagefoot($object, $this->outputlangs);
-						} else {
-							$this->_pagefootCustom($object);
-						}*/
 
 						// import all page
 						for($p = 1; $p <= $count; $p ++) {

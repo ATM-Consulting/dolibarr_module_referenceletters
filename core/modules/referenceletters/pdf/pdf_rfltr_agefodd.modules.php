@@ -265,7 +265,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 				}
 
-
 				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 				    if(class_exists('Agefodd')){
 				        $agfTraining = new Agefodd($db);
@@ -278,9 +277,17 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$infile = $conf->agefodd->dir_output . '/fiche_pedago_' . $object->fk_formation_catalogue . '.pdf';
 					if (is_file($infile)) {
 						$count = $this->pdf->setSourceFile($infile);
+
+						//J'ai essayé, mais ca décale tous
+						// Add footer manully beacuse auto footer won't work cause of setPrintFooter=false set just after
+						/*if(empty($instance_letter->use_custom_footer)) {
+							$this->_pagefoot($object, $this->outputlangs);
+						} else {
+							$this->_pagefootCustom($object);
+						}*/
+
 						// import all page
 						for($p = 1; $p <= $count; $p ++) {
-							// New page
 							$this->pdf->setPrintHeader(false);
 							$this->pdf->setPrintFooter(false);
 							$this->pdf->AddPage();

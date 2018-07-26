@@ -145,12 +145,20 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 
 	$error = 0;
 	$filefound = 0;
-	// Search template files
-	$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
+	// Search custom template files
+	$file = dol_buildpath('/referenceletters/core/modules/custom/pdf/pdf_rfltr_' . $element_type . '.modules.php');
 	if (file_exists($file)) {
 		$filefound = 1;
 	}
-
+	else
+	// Search template files
+	{
+		$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
+		if (file_exists($file)) {
+			$filefound = 1;
+		}
+	}
+	
 	$classname = 'pdf_rfltr_' . $element_type;
 	// Charge le modele
 	if ($filefound) {

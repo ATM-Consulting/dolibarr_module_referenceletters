@@ -184,6 +184,20 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
 		);
+		$this->element_type_list['shipping'] = array (
+				'class' => 'expedition.class.php',
+				'securityclass' => 'expedition',
+				'securityfeature' => '',
+				'objectclass' => 'Expedition',
+				'classpath' => DOL_DOCUMENT_ROOT . '/expedition/class/',
+				'trans' => 'sending',
+				'title' => 'SendingSheet',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/expedition.lib.php',
+				'menuloader_function' => 'expedition_prepare_head',
+				'card' => 'expedition/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines'
+		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
@@ -520,12 +534,12 @@ class ReferenceLetters extends CommonObject
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-				
+
 					$array_second_thirdparty_object = array ();
-					
+
 					if($testObj->element == 'societe'){
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
-						
+
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
@@ -533,16 +547,16 @@ class ReferenceLetters extends CommonObject
 					}else {
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 					}
-					
+
 					if (! empty($testObj->thirdparty->id)) {
-						
+
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
-						
+
 					}
-					
+
 
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {

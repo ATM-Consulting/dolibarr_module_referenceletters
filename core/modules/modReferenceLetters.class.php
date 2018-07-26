@@ -93,6 +93,7 @@ class modReferenceLetters extends DolibarrModules
 						,'contractcard'
 						,'supplier_proposalcard'
 						,'ordersuppliercard'
+						,'expeditioncard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory
@@ -127,6 +128,7 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/supplier_proposal',
 				'/referenceletters/order_supplier',
 				'/referenceletters/referenceletters',
+				'/referenceletters/shipping',
 		);
 
 		// Config pages. Put here list of php pages

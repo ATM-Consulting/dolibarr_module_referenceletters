@@ -52,7 +52,7 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
-RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard 
+RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION
@@ -61,6 +61,7 @@ RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
 RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
 RefLtrSupplierOrders=Exemple de modèle de COMMANDE FOURNISSEUR
+RefLtrShipping=Exemple de modèle de BON DE LIVRAISON
 
 #
 # Page À propos
@@ -119,7 +120,7 @@ RefLtrListInstance=Liste des documents
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Erreur durant la copie du document PDF du document sur l'événement de l'agenda
 RefLtrBackground=Image de fond
-RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
+RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond
 RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
 RefLtrTitleModel=Titre modèle de document
 

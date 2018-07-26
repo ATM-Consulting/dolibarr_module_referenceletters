@@ -61,6 +61,7 @@ RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrSupplierProposals=Sample template of PRICE REQUEST
 RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
+RefLtrShipping=Sample template of SENDING SHEET
 
 #
 # About page
@@ -116,7 +117,7 @@ RefLtrPageBreak=Page break
 RefLtrAddPageBreakWithoutHeader=Page break (without repeat header on next page)
 RefLtrListInstance=Document template list
 RefLtrDoc=Document
-RefLtrErrorCopyFile=Error during copying letter PDF into event 
+RefLtrErrorCopyFile=Error during copying letter PDF into event
 RefLtrBackground=Background image
 RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore. <BR> Only page with "manual" break page will use background image
 RefLtrReadOnly=Read only (chapter invisible during letter edition)

@@ -97,11 +97,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                 $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
             }
         }
-        
+
         // contact tiers facturation
         unset($arrayidcontact_inv);
         $arrayidcontact_inv=$object->getIdContact('external','BILLING');
-        
+
         $resarray['cust_contactclientfact'] = '';
         if (count($arrayidcontact_inv) > 0)
         {
@@ -395,6 +395,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_objpeda_rang'] = $line->priorite;
 		$resarray['line_objpeda_description'] = $line->intitule;
 
+		// Substitutions tableau des élément financier :
+		$resarray['line_fin_desciption'] = str_replace('<br />',"\n",str_replace('<BR>',"\n",$line->description));
+		$resarray['line_fin_qty'] = $line->qty;
+		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx,1);
+		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);
+		$resarray['line_fin_amount_ttc'] = price($line->total_ttc, 0, $outputlangs, 1, - 1, 2);
+		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent,$outputlangs);
+		$resarray['line_fin_pu_ht'] = price($line->price, 0, $outputlangs, 1, - 1, 2);
+
 		// Retrieve extrafields
 		$extrafieldkey = $line->element;
 		$array_key = "line";
@@ -437,6 +446,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
 		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
 		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention;
+		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention;
 		$resarray['formation_prix'] = price($object->sell_price);
 		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
 		if (! empty($object->fk_formation_catalogue)) {

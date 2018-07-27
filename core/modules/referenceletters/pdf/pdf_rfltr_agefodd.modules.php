@@ -213,7 +213,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TStagiairesSessionSocMore',
 							'TStagiairesSessionConvention',
 							'TFormateursSession',
-							'TFormationObjPeda'
+							'TFormationObjPeda',
+							'TConventionFinancialLine'
 					));
 
 					// correction de problème de décalage de texte

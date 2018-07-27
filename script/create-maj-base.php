@@ -1064,6 +1064,46 @@ Montant HT convention : {objvar_object_conv_amount_ht} Montant TVA convention : 
 Repr&eacute;sent&eacute; par<strong>&nbsp;{objvar_object_signataire_intra}/{objvar_object_signataire_inter}</strong><br />
 Nombre de participant de la convention<strong> </strong>{formation_nb_stagiaire_convention}<br />
 <br />
+<br />
+<table border="0.5" cellpadding="1" cellspacing="1" style="width:440px">
+	<tbody>
+		<tr>
+			<td style="background-color:#dddddd; text-align:center; width:40%">D&eacute;signation</td>
+			<td style="background-color:#dddddd; text-align:center">TVA</td>
+			<td style="background-color:#dddddd; text-align:center">PU H.T</td>
+			<td style="background-color:#dddddd; text-align:center">R&eacute;duc.</td>
+			<td style="background-color:#dddddd; text-align:center">Qt&eacute;</td>
+			<td style="background-color:#dddddd; text-align:center">Total HT</td>
+			<td style="background-color:#dddddd; text-align:center">Total TTC[!-- BEGIN TConventionFinancialLine --]</td>
+		</tr>
+		<tr>
+			<td style="text-align:center">{line_fin_desciption}</td>
+			<td style="text-align:center">{line_fin_tva_tx}</td>
+			<td style="text-align:center">{line_fin_pu_ht}</td>
+			<td style="text-align:center">{line_fin_discount}</td>
+			<td style="text-align:center">{line_fin_qty}</td>
+			<td style="text-align:center">{line_fin_amount_ht}</td>
+			<td style="text-align:center">{line_fin_amount_ttc}[!-- END TConventionFinancialLine --]</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total HT</td>
+			<td>{objvar_object_conv_amount_ht}</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total TVA</td>
+			<td>{objvar_object_conv_amount_tva}</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total TTC</td>
+			<td>{objvar_object_conv_amount_ttc}</td>
+		</tr>
+	</tbody>
+</table>
+<br />
+<br />
 Tableau des participants au sein d&#39;une convention <span style="color:#ff0000">(disponible uniquement sur PDF convention)</span> :<br />
 &nbsp;<br />
 &nbsp;
@@ -1086,6 +1126,8 @@ Tableau des participants au sein d&#39;une convention <span style="color:#ff0000
 	</tbody>
 </table>
 <br />
+<br />
+Ou en forme texte : {formation_stagiaire_convention}
 <br />
 Tableau des participants au sein d&#39;une convention <span style="color:#ff0000">(disponible uniquement sur PDF &nbsp;d&#39;une soci&eacute;te)</span> :<br />
 &nbsp;<br />

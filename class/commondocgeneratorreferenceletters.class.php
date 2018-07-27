@@ -106,6 +106,34 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			foreach ( $arrayidcontact_inv as $id ) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientfacttel'] .= ($resarray['cust_contactclientfacttel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
+				'')) . "\n";
+				$resarray['cust_contactclientfactmail'] .= ($resarray['cust_contactclientfactmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
+			}
+		}
+
+		// contact tiers livraison
+		unset($arrayidcontact_inv);
+		$arrayidcontact_inv = $object->getIdContact('external', 'SHIPPING');
+
+		$resarray['cust_contactclientlivr'] = '';
+		$resarray['cust_contactclientlivrtel'] = '';
+		$resarray['cust_contactclientlivrmail'] = '';
+		$resarray['cust_contactclientlivraddress'] = '';
+		$resarray['cust_contactclientlivrzip'] = '';
+		$resarray['cust_contactclientlivrtown'] = '';
+		$resarray['cust_contactclientlivrcountry'] = '';
+		if (count($arrayidcontact_inv) > 0) {
+			foreach ( $arrayidcontact_inv as $id ) {
+				$object->fetch_contact($id);
+				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientlivrtel'] .= ($resarray['cust_contactclientlivrtel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
+				'')) . "\n";
+				$resarray['cust_contactclientlivrmail'] .= ($resarray['cust_contactclientlivrmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
+				$resarray['cust_contactclientlivraddress'] .= ($resarray['cust_contactclientlivraddress'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->address) . "\n";
+				$resarray['cust_contactclientlivrzip'] .= ($resarray['cust_contactclientlivrzip'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->zip) . "\n";
+				$resarray['cust_contactclientlivrtown'] .= ($resarray['cust_contactclientlivrtown'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->town) . "\n";
+				$resarray['cust_contactclientlivrcountry'] .= ($resarray['cust_contactclientlivrcountry'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->country) . "\n";
 			}
 		}
 

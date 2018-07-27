@@ -517,6 +517,127 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	}
 }
 
+/************* Expédition **************/
+$title = $langs->transnoentities('RefLtrShipping');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
+if($rfltr->fetch('', $title) <= 0) {
+
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type ='shipping';
+	$rfltr->status = 0;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '&nbsp;<br />
+<br />
+&nbsp;
+<table cellpadding="1" cellspacing="1">
+	<tbody>
+		<tr>
+			<td>MON LOGO ENTREPRISE</td>
+			<td style="text-align:right"><strong><span style="font-size:16px">Bon de Livraison</span><br />
+			R&eacute;f. :&nbsp;{object_ref}</strong><br />
+			Date de livraison :&nbsp;{object_date_creation}<br />
+			{objets_lies}</td>
+		</tr>
+	</tbody>
+</table>
+';
+	$rfltr->use_custom_header = 1;
+	$rfltr->footer = '<div style="text-align:center"><br />
+<span style="font-size:8px">{mycompany_juridicalstatus} - SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><br />
+&nbsp;</div>';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_landscape_format = 0;
+
+	$id_rfltr = $rfltr->create($user);
+
+	// Instanciation du contenu
+	if(!empty($id_rfltr)) {
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Contenu';
+		$chapter->content_text = '<table cellpadding="1" cellspacing="1" style="width:550px">
+	<tbody>
+		<tr>
+			<td style="width:50%">Emetteur :<br />
+			&nbsp;
+			<table cellpadding="1" cellspacing="1" style="width:242px">
+				<tbody>
+					<tr>
+						<td style="background-color:#e6e6e6; height:121px"><br />
+						<strong>{mycompany_name}</strong><br />
+						{object_contactsale}<br />
+						{mycompany_address}<br />
+						{mycompany_zip}&nbsp;{mycompany_town}<br />
+						<br />
+						T&eacute;l. : {mycompany_phone} - Fax :&nbsp;{mycompany_fax}<br />
+						Email : {mycompany_email}<br />
+						Web :&nbsp;{mycompany_web}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+			<td style="width:50%">Adress&eacute; &agrave; :<br />
+			&nbsp;
+			<table border="1" style="width:245px">
+				<tbody>
+					<tr>
+						<td style="height:121px"><br />
+						<strong>{cust_company_name}</strong><br />
+						{cust_contactclient}<br />
+						{cust_company_address}<br />
+						{cust_company_zip}&nbsp;{cust_company_town}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+
+<table border="1" style="cellpadding:1; cellspacing:1; width:530px">
+	<tbody>
+		<tr>
+			<td style="width:50%">D&eacute;signation</td>
+			<td style="width:10%">Poids</td>
+			<td style="width:20%">Qt&eacute; command&eacute;e</td>
+			<td style="width:20%">Quantit&eacute; livr&eacute;e[!-- BEGIN lines --]</td>
+		</tr>
+		<tr>
+			<td>{line_fulldesc}</td>
+			<td style="text-align:right">{line_weight}</td>
+			<td style="text-align:right">{line_qty_asked}</td>
+			<td style="text-align:right">{line_qty_shipped}[!-- END lines --]</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;<br />
+&nbsp;<br />
+&nbsp;';
+		$chapter->create($user);
+	}
+}
+
+
 
 /************* Contrat **************/
 $title = $langs->transnoentities('RefLtrContract');

@@ -166,7 +166,7 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard'))) {
+		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard','expeditioncard'))) {
 
 			if($action === 'builddoc') {
 
@@ -198,6 +198,7 @@ class ActionsReferenceLetters
 
 						$objectref = dol_sanitizeFileName($object->ref);
 						$dir_dest = $conf->{strtolower(get_class($object))}->dir_output;
+						if ($object->element == 'shipping') $dir_dest .= '/sending';
 						if (empty($dir_dest)) {
 							dol_include_once('/referenceletters/class/referenceletters.class.php');
 							$refstatic = new ReferenceLetters($this->db);

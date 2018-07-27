@@ -95,6 +95,14 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs);
 								complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
+
+								// shipment
+								if (strtolower(get_class($object)) == 'expedition')
+								{
+									$tmparray = $this->get_substitutionarray_shipment_lines($line, $this->outputlangs);
+									complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
+								}
+
 								// Call the ODTSubstitutionLine hook
 
 								$parameters = array(
@@ -307,6 +315,16 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 					}
 					
+		// Shipment
+		$tmparray = $this->get_substitutionarray_shipment($object, $this->outputlangs);
+		$substitution_array = array ();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+
 					return $txt;
 	}
 

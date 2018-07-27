@@ -85,31 +85,29 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-        // contact tiers
-        unset($arrayidcontact);
-        $arrayidcontact=$object->getIdContact('external','CUSTOMER');
+		// contact tiers
+		unset($arrayidcontact);
+		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 
-        $resarray['cust_contactclient'] = '';
-        if (count($arrayidcontact) > 0)
-        {
-            foreach ($arrayidcontact as $id){
-                $object->fetch_contact($id);
-                $resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
-            }
-        }
+		$resarray['cust_contactclient'] = '';
+		if (count($arrayidcontact) > 0) {
+			foreach ( $arrayidcontact as $id ) {
+				$object->fetch_contact($id);
+				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+			}
+		}
 
-        // contact tiers facturation
-        unset($arrayidcontact_inv);
-        $arrayidcontact_inv=$object->getIdContact('external','BILLING');
+		// contact tiers facturation
+		unset($arrayidcontact_inv);
+		$arrayidcontact_inv = $object->getIdContact('external', 'BILLING');
 
-        $resarray['cust_contactclientfact'] = '';
-        if (count($arrayidcontact_inv) > 0)
-        {
-            foreach ($arrayidcontact_inv as $id){
-                $object->fetch_contact($id);
-                $resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '' ).$outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs))."\n";
-            }
-        }
+		$resarray['cust_contactclientfact'] = '';
+		if (count($arrayidcontact_inv) > 0) {
+			foreach ( $arrayidcontact_inv as $id ) {
+				$object->fetch_contact($id);
+				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+			}
+		}
 
 		return $resarray;
 	}
@@ -396,12 +394,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_objpeda_description'] = $line->intitule;
 
 		// Substitutions tableau des élément financier :
-		$resarray['line_fin_desciption'] = str_replace('<br />',"\n",str_replace('<BR>',"\n",$line->description));
+		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 		$resarray['line_fin_qty'] = $line->qty;
-		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx,1);
+		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);
 		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);
 		$resarray['line_fin_amount_ttc'] = price($line->total_ttc, 0, $outputlangs, 1, - 1, 2);
-		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent,$outputlangs);
+		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent, $outputlangs);
 		$resarray['line_fin_pu_ht'] = price($line->price, 0, $outputlangs, 1, - 1, 2);
 
 		// Retrieve extrafields
@@ -453,10 +451,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 
-			if(class_exists('Agefodd')){
-			    $catalogue = new Agefodd($db);
+			if (class_exists('Agefodd')) {
+				$catalogue = new Agefodd($db);
 			} elseif (class_exists('Formation')) {
-			    $catalogue = new Formation($db);
+				$catalogue = new Formation($db);
 			}
 
 			$catalogue->fetch($object->fk_formation_catalogue);

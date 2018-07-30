@@ -1347,24 +1347,44 @@ L&#39;organisme d&eacute;clare &ecirc;tre assujetti &agrave; la TVA au sens de l
 <br />
 <br />
 &nbsp;
-<table border="1" cellpadding="1" cellspacing="1">
+<table border="0.5" cellpadding="1" cellspacing="1" style="width:440px">
 	<tbody>
 		<tr>
-			<td style="background-color:#dddddd; text-align:center">D&eacute;signation</td>
-			<td style="background-color:#dddddd; text-align:center">Qt&eacute;</td>
+			<td style="background-color:#dddddd; text-align:center; width:40%">D&eacute;signation</td>
 			<td style="background-color:#dddddd; text-align:center">TVA</td>
+			<td style="background-color:#dddddd; text-align:center">PU H.T</td>
+			<td style="background-color:#dddddd; text-align:center">R&eacute;duc.</td>
+			<td style="background-color:#dddddd; text-align:center">Qt&eacute;</td>
 			<td style="background-color:#dddddd; text-align:center">Total HT</td>
-			<td style="background-color:#dddddd; text-align:center">Total TTC</td>
+			<td style="background-color:#dddddd; text-align:center">Total TTC[!-- BEGIN TConventionFinancialLine --]</td>
 		</tr>
 		<tr>
-			<td style="text-align:center">{objvar_object_conv_products}</td>
-			<td style="text-align:center">{objvar_object_conv_qty}</td>
-			<td style="text-align:center">{objvar_object_conv_tva_tx}%</td>
-			<td style="text-align:center">{objvar_object_conv_amount_ht}</td>
-			<td style="text-align:center">{objvar_object_conv_amount_ttc}</td>
+			<td style="text-align:center">{line_fin_desciption}</td>
+			<td style="text-align:center">{line_fin_tva_tx}</td>
+			<td style="text-align:center">{line_fin_pu_ht}</td>
+			<td style="text-align:center">{line_fin_discount}</td>
+			<td style="text-align:center">{line_fin_qty}</td>
+			<td style="text-align:center">{line_fin_amount_ht}</td>
+			<td style="text-align:center">{line_fin_amount_ttc}[!-- END TConventionFinancialLine --]</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total HT</td>
+			<td>{objvar_object_conv_amount_ht}</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total TVA</td>
+			<td>{objvar_object_conv_amount_tva}</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="border-color:#ffffff">&nbsp;</td>
+			<td style="background-color:#dddddd">Total TTC</td>
+			<td>{objvar_object_conv_amount_ttc}</td>
 		</tr>
 	</tbody>
 </table>
+<div style="text-align:right"><span style="font-size:8px"><em>Montant exprim&eacute;s en Euros</em></span></div>
 <br />
 <br />
 <br />

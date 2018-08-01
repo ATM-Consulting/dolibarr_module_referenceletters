@@ -257,7 +257,9 @@ if ($num != - 1) {
 	{
 		$selected=0;
 		if (in_array($line->id, $arrayofselected)) $selected=1;
-	if($line->element_type == 'contact' && !empty($object_src->mail) || $line->element_type== 'thirdparty'&& !empty($object_src->email))print '<input id="cb'.$obj->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->id.'"'.($selected?' checked="checked"':'').'>';	}
+		if($line->element_type == 'contact' && !empty($object_src->mail) || $line->element_type== 'thirdparty'&& !empty($object_src->email))print '<input id="cb'.$obj->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->id.'"'.($selected?' checked="checked"':'').'>';	
+	
+	}
 	print '</td>';
 		print "</tr>\n";
 	}

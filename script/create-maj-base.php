@@ -992,6 +992,7 @@ But de la formation : <strong>{formation_but}</strong><br />
 M&eacute;thode de la formation : <strong>{formation_methode}</strong><br />
 Pr&eacute;requis : <strong>{formation_prerequis}</strong><br />
 Saction : <strong>{formation_sanction}</strong><br />
+Type (intra/inter) : <strong>{formation_type}</strong><br />
 Type de participant : <strong>{formation_type_stagiaire}</strong><br />
 Programme : <strong>{formation_programme}</strong><br />
 Documents necessaires : <strong>{formation_documents}</strong><br />
@@ -1315,7 +1316,7 @@ L&#39;organisme accomplit l&#39;action de formation suivante : Formation : &laqu
 Objectifs :<br />
 - D&eacute;veloppement de comp&eacute;tences<br />
 Type d&#39;action de formation : Actions d&rsquo;adaptation au poste de travail, li&eacute;es &agrave; l&#39;&eacute;volution ou au maintien dans l&rsquo;emploi ou de d&eacute;veloppement des comp&eacute;tences des salari&eacute;s.<br />
-Date: le {formation_date_debut} Dur&eacute;e : {formation_duree} heures, r&eacute;parties de la fa&ccedil;on suivante :<br />
+Date: le {formation_date_debut} Dur&eacute;e : {formation_duree} heures ou {formation_duree_session} heures, r&eacute;parties de la fa&ccedil;on suivante :<br />
 [!-- BEGIN THorairesSession --]Le {line_date_session} ({line_heure_debut_session} / {line_heure_fin_session})<br />
 [!-- END THorairesSession --]Evaluation et sanction : Feuilles d&rsquo;&eacute;margement par demi-journ&eacute;e; Evaluation des acquis par questions / r&eacute;ponses et mises en situation; Acquisition de connaissances donnant lieu &agrave; la d&eacute;livrance d&#39;une attestation de formation.<br />
 Nombre de Participants :&nbsp;{formation_nb_stagiaire}<br />

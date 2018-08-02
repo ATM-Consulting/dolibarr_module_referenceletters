@@ -439,6 +439,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
+		$resarray['formation_duree_session'] = $object->duree_session;
 		$resarray['formation_commercial'] = $object->commercialname;
 		$resarray['formation_societe'] = $object->thirdparty->nom;
 		$resarray['formation_commentaire'] = nl2br($object->notes);

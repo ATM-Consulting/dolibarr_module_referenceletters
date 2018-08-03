@@ -102,8 +102,12 @@ if ($massaction == 'presend')
 			{
 				$listofselectedid[$toselectid] = $toselectid;
 				$thirdpartyid = ($objecttmp->fk_soc ? $objecttmp->fk_soc : $objecttmp->socid);
-				if ($objecttmp->element == 'societe')
+				if ($objecttmp->element == 'societe'){
 					$thirdpartyid = $objecttmp->id;
+					$modelmail = 'thirdparty';
+				
+				}else $modelmail = 'all';
+				
 				if ($objecttmp->element == 'expensereport')
 					$thirdpartyid = $objecttmp->fk_user_author;
 
@@ -139,31 +143,7 @@ if ($massaction == 'presend')
 	$formmail->withfrom = 1;
 	//$formmail->withform = 1;
 	$liste = $langs->trans("AllRecipientSelected", count($arrayofselected));
-	if (count($listofselectedthirdparties) == 1) // Only 1 different recipient selected, we can suggest contacts
-	{
-		$liste = array();
-		$thirdpartyid = array_shift($listofselectedthirdparties);
-		if ($objecttmp->element == 'expensereport')
-		{
-			$fuser = new User($db);
-			$fuser->fetch($thirdpartyid);
-			$liste['thirdparty'] = $fuser->getFullName($langs)." &lt;".$fuser->email."&gt;";
-		}
-		else
-		{
-			$soc = new Societe($db);
-			$soc->fetch($thirdpartyid);
-			foreach ($soc->thirdparty_and_contact_email_array(1) as $key => $value)
-			{
-				$liste[$key] = $value;
-			}
-		}
-		$formmail->withtoreadonly = 0;
-	}
-	else
-	{
-		$formmail->withtoreadonly = 1;
-	}
+	$formmail->withtoreadonly = 1;
 	//$formmail->withoptiononeemailperrecipient = empty($liste)?0:((GETPOST('oneemailperrecipient')=='on')?1:-1);
 	$formmail->withto = empty($liste) ? (GETPOST('sendto', 'alpha') ? GETPOST('sendto', 'alpha') : array()) : $liste;
 	$formmail->withtofree = empty($liste) ? 1 : 0;

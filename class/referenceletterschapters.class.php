@@ -40,7 +40,7 @@ class ReferenceLettersChapters extends CommonObject
 	public $table_element='referenceletterschapters';		//!< Name of table without prefix where object is stored
 
     public $id;
-    
+
 	public $entity;
 	public $fk_referenceletters;
 	public $lang;
@@ -55,9 +55,9 @@ class ReferenceLettersChapters extends CommonObject
 	public $fk_user_mod;
 	public $tms='';
 	public $readonly='';
-	
+
 	public $lines_chapters = array();
-    
+
 
 
     /**
@@ -85,7 +85,7 @@ class ReferenceLettersChapters extends CommonObject
 		$error=0;
 
 		// Clean parameters
-        
+
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->sort_order)) $this->sort_order=trim($this->sort_order);
@@ -95,8 +95,8 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
-		
-		
+
+
 		// Check parameters
 		// Put here code to add a control on parameters values
         if (is_array($this->options_text) && count($this->options_text)>0) {
@@ -108,14 +108,14 @@ class ReferenceLettersChapters extends CommonObject
         } else {
         	$option_text=trim($this->options_text);
         }
-        
+
         if (empty($this->lang)) {
         	$this->lang=$langs->defaultlang;
         }
 
         // Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."referenceletters_chapters(";
-		
+
 		$sql.= "entity,";
 		$sql.= "fk_referenceletters,";
 		$sql.= "lang,";
@@ -225,7 +225,7 @@ class ReferenceLettersChapters extends CommonObject
                 $obj = $this->db->fetch_object($resql);
 
                 $this->id    = $obj->rowid;
-                
+
 				$this->entity = $obj->entity;
 				$this->fk_referenceletters = $obj->fk_referenceletters;
 				$this->lang = $obj->lang;
@@ -241,7 +241,7 @@ class ReferenceLettersChapters extends CommonObject
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
 
-                
+
             }
             $this->db->free($resql);
 
@@ -254,7 +254,7 @@ class ReferenceLettersChapters extends CommonObject
             return -1;
         }
     }
-    
+
 /**
      *  Load object in memory from the database
      *
@@ -296,11 +296,11 @@ class ReferenceLettersChapters extends CommonObject
             {
             	$this->lines_chapters=array();
                 while ($obj = $this->db->fetch_object($resql)) {
-                	
+
 	               	$chapter = new ReferenceLettersChapters($this->db);
-	
+
 	                $chapter->id    = $obj->rowid;
-	                
+
 					$chapter->entity = $obj->entity;
 					$chapter->fk_referenceletters = $obj->fk_referenceletters;
 					$chapter->lang = $obj->lang;
@@ -315,7 +315,7 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->datec = $this->db->jdate($obj->datec);
 					$chapter->fk_user_mod = $obj->fk_user_mod;
 					$chapter->tms = $this->db->jdate($obj->tms);
-					
+
 					$this->lines_chapters[]=$chapter;
                 }
             }
@@ -345,7 +345,7 @@ class ReferenceLettersChapters extends CommonObject
 		$error=0;
 
 		// Clean parameters
-        
+
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->lang)) $this->lang=trim($this->lang);
@@ -356,7 +356,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 
-		
+
 		// Check parameters
 		// Put here code to add a control on parameters values
 		if (is_array($this->options_text) && count($this->options_text)>0) {
@@ -367,16 +367,16 @@ class ReferenceLettersChapters extends CommonObject
 		} else {
 			$option_text=trim($this->options_text);
 		}
-		
+
 		if (empty($this->lang)) {
 			$this->lang=$langs->defaultlang;
 		}
 
-		
+
 
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."referenceletters_chapters SET";
-        
+
 		$sql.= " fk_referenceletters=".(isset($this->fk_referenceletters)?$this->fk_referenceletters:"null").",";
 		$sql.= " lang=".(!empty($this->lang)?"'".$this->db->escape($this->lang)."'":"null").",";
 		$sql.= " sort_order=".(isset($this->sort_order)?$this->sort_order:"null").",";
@@ -388,7 +388,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id;
 
-        
+
         $sql.= " WHERE rowid=".$this->id;
 
 		$this->db->begin();
@@ -555,7 +555,7 @@ class ReferenceLettersChapters extends CommonObject
 	function initAsSpecimen()
 	{
 		$this->id=0;
-		
+
 		$this->entity='';
 		$this->fk_referenceletters='';
 		$this->lang='';
@@ -571,12 +571,12 @@ class ReferenceLettersChapters extends CommonObject
 		$this->fk_user_mod='';
 		$this->tms='';
 
-		
+
 	}
-	
+
 	/**
 	 * Retrun max +1 sort roder for a letters model
-	 * 
+	 *
 	 * @return int	max + 1
 	 */
 	public function findMaxSortOrder() {
@@ -585,7 +585,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " MAX(t.sort_order) as maxsortorder";
 		$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
 		$sql.= " WHERE t.fk_referenceletters = ".$this->fk_referenceletters;
-		
+
 		dol_syslog(get_class($this)."::findMaxSortOrder sql=".$sql, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		$max=0;
@@ -594,13 +594,13 @@ class ReferenceLettersChapters extends CommonObject
 			if ($this->db->num_rows($resql))
 			{
 				$obj = $this->db->fetch_object($resql);
-		
+
 				$max = $obj->maxsortorder;
-		
-		
+
+
 			}
 			$this->db->free($resql);
-			
+
 			return $max+1;
 		}
 		else
@@ -610,6 +610,46 @@ class ReferenceLettersChapters extends CommonObject
 			return -1;
 		}
 	}
-	
+
+	/**
+	 * Retrun max +1 sort roder for a letters model
+	 *
+	 * @return int	max + 1
+	 */
+	public function findPreviewsLanguage() {
+		global $langs;
+		$sql = "SELECT";
+		$sql.= " t.lang";
+		$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
+		$sql.= " WHERE t.fk_referenceletters = ".$this->fk_referenceletters;
+		$sql.= " AND t.sort_order <".$this->sort_order;
+		$sql.= " LIMIT 1";
+
+
+		dol_syslog(get_class($this)."::".__METHOD__." sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		$max=0;
+		if ($resql)
+		{
+			if ($this->db->num_rows($resql))
+			{
+				$obj = $this->db->fetch_object($resql);
+
+				$lang = $obj->lang;
+
+
+			}
+			$this->db->free($resql);
+
+			return $lang;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+
 
 }

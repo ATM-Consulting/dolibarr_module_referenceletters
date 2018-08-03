@@ -144,6 +144,7 @@ if ($action == "add") {
 	$object_chapters_breakpage->title ='';
 	$object_chapters_breakpage->content_text = '@breakpage@';
 	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();
 	$result = $object_chapters_breakpage->create($user);
 	if ($result < 0) {
 		$action = 'addbreakpage';
@@ -157,6 +158,7 @@ if ($action == "add") {
 	$object_chapters_breakpage->title ='';
 	$object_chapters_breakpage->content_text = '@breakpagenohead@';
 	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();
 	$result = $object_chapters_breakpage->create($user);
 	if ($result < 0) {
 		$action = 'addbreakpagewithoutheader';

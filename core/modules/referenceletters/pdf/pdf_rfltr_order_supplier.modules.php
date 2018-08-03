@@ -116,6 +116,11 @@ class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
+			if (!empty($object->thirdparty->country_code))
+			{
+				$this->outputlangs->load("dict");
+				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
+			}
 
 			// $deja_regle = 0;
 

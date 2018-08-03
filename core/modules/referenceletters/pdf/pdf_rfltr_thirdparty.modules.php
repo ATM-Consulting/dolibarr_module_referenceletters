@@ -111,6 +111,12 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 		$this->outputlangs->load("companies");
 		$this->outputlangs->load("referenceletters@referenceletters");
 
+		if (!empty($object->country_code))
+		{
+			$this->outputlangs->load("dict");
+			$object->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->country_code);
+		}
+
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray = array ();
 

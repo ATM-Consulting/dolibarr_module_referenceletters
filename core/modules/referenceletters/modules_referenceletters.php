@@ -93,7 +93,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 						foreach ( $object->{$element_array} as $line ) {
 
-							$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
+							if (method_exists($this, 'get_substitutionarray_lines_agefodd')) {
+								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
+							} else {
+								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs, false);
+							}
 							complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
 							// Call the ODTSubstitutionLine hook
 							$parameters = array(
@@ -239,11 +243,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (get_class($object) === 'Societe') {
 			$socobject = $object;
-		}
-		if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
-			$socobject = $object->contact;
 		} else {
-			$socobject = $object->thirdparty;
+			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
+				$socobject = $object->contact;
+			} else {
+				$socobject = $object->thirdparty;
+			}
 		}
 
 		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);

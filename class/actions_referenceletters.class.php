@@ -186,8 +186,15 @@ class ActionsReferenceLetters
 					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 					$instance_rfltr->create($user);
 
+					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
+					if (! empty($newlang))
+					{
+						$outputlangs = new Translate("",$conf);
+						$outputlangs->setDefaultLang($newlang);
+					}
+
 					// Création du PDF
-					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $langs, $instance_rfltr->element_type);
+					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
 
 					if($result > 0) {
 

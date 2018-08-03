@@ -174,8 +174,13 @@ class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 				// Set calculation of header and footer high line
 				// Header high
 				$height = $this->getRealHeightLine('head');
+				if (!empty($conf->global->REF_LETTER_PREDEF_HIGHT) && !empty($instance_letter->use_custom_header)) {
+					$height=$height+$conf->global->REF_LETTER_PREDEF_HIGHT;
+				} else {
+					$height=$height+10;
+				}
 				// Left, Top, Right
-				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
+				$this->pdf->SetMargins($this->marge_gauche, $height, $this->marge_droite, 1);
 
 				// New page
 				$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L', $this->format, true);

@@ -166,13 +166,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
 
-		$posy = $this->marge_haute;
-		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
-		$this->pdf->writeHTMLCell(0, 0, $posx + 3, $posy, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
+		$this->pdf->writeHTMLCell(0, 0, $this->marge_droite, 0, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
 		$end_y = $this->pdf->GetY();
-		$height = $end_y - $posy;
+		$height = $end_y;
 
 		return $height;
 	}

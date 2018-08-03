@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -55,7 +55,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	/**
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
 	 *
-	 * @param $TElementArray : Tableau qui va contenir les différents éléments sur lesquels on peut boucler (lignes, etc...)
+	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (lignes, participants, horaires)
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray = array()) {
 		global $hookmanager, $conf;
@@ -70,12 +70,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		$odfHandler = new OdfRfltr($srctemplatepath,
-				array(
-						'PATH_TO_TMP' => $conf->propal->dir_temp,
-						'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
-						'DELIMITER_LEFT' => '{',
-						'DELIMITER_RIGHT' => '}'
-				), $chapter_text);
+			array(
+				'PATH_TO_TMP' => $conf->propal->dir_temp,
+				'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+				'DELIMITER_LEFT' => '{',
+				'DELIMITER_RIGHT' => '}'
+		), $chapter_text);
 
 		if (! empty($TElementArray)) {
 
@@ -93,10 +93,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 						foreach ( $object->{$element_array} as $line ) {
 
-							$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs);
+							$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
 							complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
 							// Call the ODTSubstitutionLine hook
-
 							$parameters = array(
 									'odfHandler' => &$odfHandler,
 									'file' => $file,
@@ -108,7 +107,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							);
 							$action = "builddoc";
 							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-
 							if ($conf->subtotal->enabled) {
 								if (TSubtotal::isModSubtotalLine($line)) {
 									$tmparray['line_up_locale'] = '';
@@ -121,7 +119,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							$oldline = $listlines->xml;
 							foreach ( $tmparray as $key => $val ) {
 								try {
-
 									$listlines->setVars($key, $val, true, 'UTF-8');
 								} catch ( OdfException $e ) {
 								} catch ( SegmentException $e ) {
@@ -146,7 +143,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									// var_dump($listlines->xml);exit;
 								}
 							}
-
 							$res = $listlines->merge();
 
 							$listlines->xml = $listlines->savxml = $oldline;
@@ -160,7 +156,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		return $chapter_text;
 	}
-
 	/**
 	 *
 	 * @param stdClass $object
@@ -171,13 +166,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
 
-		$posy = $this->marge_haute;
-		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
-		$this->pdf->writeHTMLCell(0, 0, $posx + 3, $posy, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
+		$this->pdf->writeHTMLCell(0, 0, $this->marge_droite, 0, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
 		$end_y = $this->pdf->GetY();
-		$height = $end_y - $posy;
+		$height = $end_y;
 
 		return $height;
 	}
@@ -199,11 +192,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (! empty($typeprint)) {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+
 		} else {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - $this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		}
-
-
 
 		// Show page nb only on iso languages (so default Helvetica font)
 		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && empty($conf->global->MAIN_USE_FPDF))
@@ -223,7 +215,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param string $txt
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt = '') {
+	function setSubstitutions(&$object, $txt='') {
 		global $user, $mysoc;
 
 		// User substitution value
@@ -247,11 +239,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (get_class($object) === 'Societe') {
 			$socobject = $object;
+		}
+		if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
+			$socobject = $object->contact;
 		} else {
-			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact))
-				$socobject = $object->contact;
-			else
-				$socobject = $object->thirdparty;
+			$socobject = $object->thirdparty;
 		}
 
 		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
@@ -273,7 +265,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		// Réservé aux pièces de vente
-		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters') {
+		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters' && get_class($object) !== 'Agsession' ) {
 			$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
@@ -296,6 +288,17 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (get_class($object) === 'Contact') {
 			$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
+			$substitution_array = array();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
+
+		if (get_class($object) === 'Agsession') {
+			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -333,9 +336,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// store starting values
 		$start_y = $this->pdf->GetY();
-		// print '$start_y='.$start_y.'<br>';
+		//print '$start_y='.$start_y.'<br>';
 
 		$start_page = $this->pdf->getPage();
+		//print '$start_page='.$start_page.'<br>';
 
 		$height = 0;
 		$bottom_margin = 0;
@@ -363,15 +367,16 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (empty($height)) {
 			// get the new Y
+
 			$end_y = $this->pdf->GetY();
 			$end_page = $this->pdf->getPage() - 1;
 			// calculate height
-			// print '$end_y='.$end_y.'<br>';
-			// print '$end_page='.$end_page.'<br>';
+			//print '$end_y='.$end_y.'<br>';
+			//print '$end_page='.$end_page.'<br>';
 
 			if (($end_page == $start_page || $end_page == 0) && $end_y > $start_y) {
 				$height = $end_y - $start_y;
-				// print 'aa$height='.$height.'<br>';
+				//print 'aa$height='.$height.'<br>';
 			} else {
 				for($page = $start_page; $page <= $end_page; $page ++) {
 					$this->pdf->setPage($page);
@@ -400,7 +405,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$this->pdf = $this->pdf->rollbackTransaction();
 
 		if (! empty($bottom_margin)) {
-
+			if (get_class($this->pdf->ref_object) === 'Agsession' && ($bottom_margin / 2)<$height) {
+				$height -= ($bottom_margin / 2);
+			}
 			$this->pdf->mybottommargin = $height;
 		}
 
@@ -535,7 +542,6 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 /**
  *
  * @param object $pdf
- * @param object $this->outputlangs
  * @param int $id
  */
 function importImageBackground(&$pdf, $id) {

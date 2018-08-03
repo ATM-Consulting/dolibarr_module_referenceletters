@@ -96,11 +96,11 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
-		
+
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -215,9 +215,9 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 						if (method_exists($this->pdf, 'AliasNbPages')) {
 							$this->pdf->AliasNbPages();
 						}
-						
+
 						$this->pdf->setPrintHeader(false);
-						
+
 						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
 						if (! empty($tplidx)) {
 							$this->pdf->useTemplate($tplidx);
@@ -474,11 +474,11 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 			$this->pdf->SetFont('', '', $default_font_size - 1);
 			$this->pdf->SetXY($posx + 2, $this->pdf->GetY());
 			$this->pdf->MultiCell($widthrecbox, 4, $carac_client, 0, 'L');
-			
+
 			$this->pdf->SetY(42+$hautcadre);
 		}
 
-		
+
 		$this->pdf->SetTextColor(0, 0, 0);
 	}
 

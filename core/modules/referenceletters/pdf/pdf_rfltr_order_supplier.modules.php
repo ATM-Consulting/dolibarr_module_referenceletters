@@ -96,7 +96,7 @@ class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;

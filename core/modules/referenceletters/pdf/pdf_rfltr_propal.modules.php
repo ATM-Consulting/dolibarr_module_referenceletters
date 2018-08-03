@@ -96,11 +96,11 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
-		
+
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
-		
+
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -240,7 +240,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'lines'
 					));
-					
+
 					$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
 					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);

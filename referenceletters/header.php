@@ -5,7 +5,7 @@ if (! $res)
 	$res = @include ("../../../main.inc.php"); // For "custom" directory
 	if (! $res)
 		die("Include of main fails");
-	
+
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';
 require_once '../class/html.formreferenceletters.class.php';
@@ -61,10 +61,10 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if(empty($action)) $action = 'view';
 
 if($action === 'save') {
-	
+
 	$object->header = GETPOST('header');
 	$object->update($user);
-	
+
 } elseif($action === 'set_custom_header') {
 	$object->use_custom_header = GETPOST('use_custom_header');
 	echo $object->update($user);
@@ -79,7 +79,7 @@ if($action === 'save') {
  * View
  */
 
-$title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrHeader');
+$title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrHeaderTab');
 
 llxHeader('',$title);
 
@@ -99,12 +99,12 @@ $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
 
 if(!empty($object->id)) {
-	
+
 	$head = referenceletterPrepareHead($object);
 	dol_fiche_head($head, 'head', $langs->trans('RefLtrHeaderTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
-	
+
 	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
-	
+
 	print '<table class="border" width="100%">';
 	print '<tr>';
 	print '<td  width="20%">';
@@ -113,7 +113,7 @@ if(!empty($object->id)) {
 	print $object->title;
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td width="20%">';
 	print $langs->trans('RefLtrElement');
@@ -122,7 +122,7 @@ if(!empty($object->id)) {
 	print $object->displayElement();
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<td width="20%">';
 	print $langs->trans('RefLtrTag');
 	print '</td>';
@@ -131,7 +131,7 @@ if(!empty($object->id)) {
 	print $formrefleter->displaySubtitutionKey($user,$object);
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr style="background-color:#CEECF5;">';
 	print '<td>'.$langs->trans('RefLtrUseCustomHeader');
 	print '</td>';
@@ -141,7 +141,7 @@ if(!empty($object->id)) {
 	}
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr class="wysiwyg" '.(empty($object->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 	print '<td>'.$langs->trans('RefLtrHeaderContent');
 	print '</td>';
@@ -150,16 +150,16 @@ if(!empty($object->id)) {
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
-	
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	
+
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields);
 	}
-	
+
 	print '</table>';
-	
+
 	print '<div class="wysiwyg" '.(empty($object->use_custom_header) ? 'style="display:none;"' : '').'>';
 	print '<input type="hidden" name="action" value="save" />';
 	print '<center>';
@@ -167,9 +167,9 @@ if(!empty($object->id)) {
 	print '&nbsp;<input type="button" class="button" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
 	print '</center>';
 	print '</div>';
-	
+
 	print '</form>';
-	
+
 }
 
 ?>
@@ -186,16 +186,16 @@ if(!empty($object->id)) {
 		}
 
 		$.ajax({
-			
+
 			url:"<?php echo dol_buildpath('/referenceletters/referenceletters/header.php',1) ?>"
 					,data:{
 							id:<?php echo (int)$object->id ?>
 							,action:"set_custom_header"
 							,use_custom_header:+is_checked
 						}
-					
+
 		});
-		
+
 	});
 
 </script>

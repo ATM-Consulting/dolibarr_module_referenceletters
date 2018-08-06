@@ -298,6 +298,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				foreach ( $tmparray as $key => $value ) {
 					$substitution_array['{' . $key . '}'] = $value;
 				}
+				if (!empty($object->civility_id)) {
+					$substitution_array['{contact_civility}'] = $this->outputlangs->transnoentitiesnoconv('Civility'.$object->civility_id);
+				}
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
 		}

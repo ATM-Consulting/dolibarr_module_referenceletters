@@ -379,6 +379,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	function get_substitutionarray_lines($line, $outputlangs) {
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
+		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
 		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');

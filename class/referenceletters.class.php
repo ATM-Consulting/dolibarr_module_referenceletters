@@ -714,6 +714,7 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrLines')] = array(
 				'line_fulldesc'=>'Description complète',
 				'line_product_ref'=>'Référence produit',
+				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
 				'line_product_label'=>'Libellé produit',
 				'line_product_type'=>'Type produit',
 				'line_desc'=>'Description',

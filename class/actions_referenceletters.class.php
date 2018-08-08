@@ -267,7 +267,7 @@ class ActionsReferenceLetters
 			$(document).ready(function(){
 				var tab = new Array();
 				<?php foreach($TModelsID as &$TData) { ?>
-					var option = new Option('<?php print $TData['title']; ?>', 'rfltr_<?php print $TData['id']; ?>');
+					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>');
 					tab.push(option);
 					$("#model").append(tab);
 				<?php } ?>

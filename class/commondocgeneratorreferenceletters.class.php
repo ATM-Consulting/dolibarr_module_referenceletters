@@ -481,6 +481,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention;
 		$resarray['formation_prix'] = price($object->sell_price);
 		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
+		$resarray['session_nb_days'] = $object->session_nb_days;
 		if (! empty($object->fk_formation_catalogue)) {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');

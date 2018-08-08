@@ -484,6 +484,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_prix'] = price($object->sell_price);
 		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
 		$resarray['session_nb_days'] = $object->session_nb_days;
+		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
+		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
+
 		if (! empty($object->fk_formation_catalogue)) {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
@@ -519,6 +522,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
 			$resarray['formation_lieu_divers'] = $agf_place->note1;
 		}
+
+
 
 		return $resarray;
 	}

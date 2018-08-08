@@ -991,7 +991,7 @@ Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
 But de la formation : <strong>{formation_but}</strong><br />
 M&eacute;thode de la formation : <strong>{formation_methode}</strong><br />
 Pr&eacute;requis : <strong>{formation_prerequis}</strong><br />
-Saction : <strong>{formation_sanction}</strong><br />
+Sanction : <strong>{formation_sanction}</strong><br />
 Type (intra/inter) : <strong>{formation_type}</strong><br />
 Type de participant : <strong>{formation_type_stagiaire}</strong><br />
 Programme : <strong>{formation_programme}</strong><br />
@@ -1016,6 +1016,8 @@ Commenatire session : <strong>{formation_commentaire}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />
 Autre format de date: <strong>{objvar_object_date_text}</strong><br />
 Dur&eacute;e : <strong>{formation_duree}</strong> heure(s)<br />
+Dur&eacute;e Session: <strong>{formation_duree_session}</strong> heure(s)<br />
+Nombre de jours <strong>{session_nb_days}</strong> jour(s)<br />
 Commercial de la session : <strong>{formation_commercial}</strong><br />
 <br />
 <u>Liste horaires :</u><br />
@@ -1167,6 +1169,8 @@ D&eacute;tail par formateur<span style="color:#ff0000"> (disponible uniquement s
 {objvar_object_formateur_session_address}<br />
 {objvar_object_formateur_session_zip}&nbsp;{objvar_object_formateur_session_town}</strong><br />
 Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />
+Horaire du formateur dans la session avec heure :{trainer_datehourtextline}
+Horaire du formateur dans la session sans heure :{trainer_datetextline}
 <br />
 <br />
 <u>Autres :</u><br />

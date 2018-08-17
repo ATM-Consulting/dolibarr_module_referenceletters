@@ -397,6 +397,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
 		global $db, $conf, $langs;
 
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
+
 		// Substitutions tableau de participants :
 		$resarray = array();
 		$resarray['line_poste'] = $line->poste;

@@ -49,6 +49,7 @@ $page = GETPOST('page', 'int');
 $search_title = GETPOST("search_title");
 $search_element_type = GETPOST("search_element_type");
 $search_status = GETPOST("search_status",'int');
+$search_default_doc = GETPOST("search_default_doc",'int');
 
 // Do we click on purge search criteria ?
 if (GETPOST("button_removefilter_x")) {
@@ -77,6 +78,13 @@ if (array_key_exists($search_status,$object->TStatus)) {
 }
 else {
 	$search_status=-1;
+}
+if (array_key_exists($search_default_doc,$object->TStatus)) {
+	$filter['t.default_doc'] = $search_default_doc;
+	$option .= '&search_default_doc=' . $search_default_doc;
+}
+else {
+	$search_default_doc=-1;
 }
 if ($page == - 1) {
 	$page = 0;
@@ -123,6 +131,7 @@ if ($resql != - 1) {
 	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $option, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Status"), $_SERVEUR['PHP_SELF'], "t.status", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrDefaultDoc"), $_SERVEUR['PHP_SELF'], "t.default_doc", "", $option, '', $sortfield, $sortorder);
 	print '<td align="center"></td>';
 
 	print "</tr>\n";
@@ -137,6 +146,10 @@ if ($resql != - 1) {
 
 	print '<td>';
 	print $formrefleter->selectStatus($search_status, 'search_status',1);
+	print '</td>';
+
+	print '<td>';
+	print $formrefleter->selectDefaultDoc($search_default_doc, 'search_default_doc',-1);
 	print '</td>';
 
 	// edit button
@@ -164,6 +177,9 @@ if ($resql != - 1) {
 
 		//Status
 		print '<td>' . $langs->trans($object->TStatus[$line->status]) . '</td>';
+
+		//Status
+		print '<td>' . $langs->trans($object->TDefaultDoc[$line->default_doc]) . '</td>';
 
 		print '<td align="center"><a href="card.php?id=' . $line->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a></td>';
 

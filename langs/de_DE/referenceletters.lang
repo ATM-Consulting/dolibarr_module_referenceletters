@@ -121,6 +121,7 @@ RefLtrBackground=Hintergrund
 RefLtrBackgroundHelp=Nur PDF Dateien können für Hintergründe verwendet werden. URLs funktionieren nicht. <BR> Nur Seiten mit manuellem Seitenumbruch verwenden den Hintergrund. 
 RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt)
 RefLtrTitleModel=Brief Titel
+RefLtrDefaultDoc=Default Document
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

@@ -43,6 +43,7 @@ class ReferenceLetters extends CommonObject
 	public $element_type;
 	public $use_landscape_format;
 	public $status;
+	public $default_doc;
 	public $import_key;
 	public $fk_user_author;
 	public $datec = '';
@@ -60,6 +61,14 @@ class ReferenceLetters extends CommonObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
+	/**
+	 * DefaultDoc status
+	 */
+	const DEFAULTDOC_YES= 1;
+	/**
+	 * DefaultDoc status
+	 */
+	const DEFAULTDOC_NO = 0;
 
 	/**
 	 * Constructor
@@ -188,6 +197,9 @@ class ReferenceLetters extends CommonObject
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 
+		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]='Yes';
+		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO]='No';
+
 		if(!empty($conf->agefodd->enabled)) {
 
 			// Convention de formation
@@ -269,6 +281,8 @@ class ReferenceLetters extends CommonObject
 			$this->element_type = trim($this->element_type);
 		if (isset($this->status))
 			$this->status = trim($this->status);
+		if (isset($this->default_doc))
+			$this->default_doc = trim($this->default_doc);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
 
@@ -284,6 +298,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= "use_landscape_format,";
 		$sql .= "use_custom_header,header,use_custom_footer,footer,";
 		$sql .= "status,";
+		$sql .= "default_doc,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
@@ -299,7 +314,8 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
 		$sql .= " " . (int)$this->use_custom_footer . ",";
 		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
-		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
+		$sql .= " " . (! isset($this->status) ? '1' : $this->status ) . ",";
+		$sql .= " " . (! isset($this->default_doc) ? '0' : $this->default_doc ) . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
@@ -309,7 +325,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -345,7 +361,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -371,6 +387,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
 		$sql .= " t.status,";
+		$sql .= " t.default_doc,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
@@ -388,7 +405,7 @@ class ReferenceLetters extends CommonObject
 		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__MEHOD__. ' ', LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -400,6 +417,7 @@ class ReferenceLetters extends CommonObject
 				$this->title = $obj->title;
 				$this->element_type = $obj->element_type;
 				$this->status = $obj->status;
+				$this->default_doc = $obj->default_doc;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
@@ -422,7 +440,7 @@ class ReferenceLetters extends CommonObject
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__MEHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -446,6 +464,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
 		$sql .= " t.status,";
+		$sql .= " t.default_doc,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
@@ -460,7 +479,7 @@ class ReferenceLetters extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
-				}if ($key == 't.status') {
+				}if ($key == 't.status' || $key == 't.default_doc') {
 					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
 				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
@@ -469,14 +488,14 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! empty($sortfield)) {
-			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+			$sql .= $this->db->order($sortfield,$sortorder);
 		}
 
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -492,6 +511,7 @@ class ReferenceLetters extends CommonObject
 					$line->title = $obj->title;
 					$line->element_type = $obj->element_type;
 					$line->status = $obj->status;
+					$line->default_doc = $obj->default_doc;
 					$line->import_key = $obj->import_key;
 					$line->fk_user_author = $obj->fk_user_author;
 					$line->datec = $this->db->jdate($obj->datec);
@@ -506,7 +526,8 @@ class ReferenceLetters extends CommonObject
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			$this->errors[] = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__MEHOD__ .' '.$this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -573,12 +594,12 @@ class ReferenceLetters extends CommonObject
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
 					}
-				
+
 					$array_second_thirdparty_object = array ();
-					
+
 					if($testObj->element == 'societe'){
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
-						
+
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
@@ -586,16 +607,16 @@ class ReferenceLetters extends CommonObject
 					}else {
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 					}
-					
+
 					if (! empty($testObj->thirdparty->id)) {
-						
+
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
-						
+
 					}
-					
+
 
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
@@ -780,6 +801,8 @@ class ReferenceLetters extends CommonObject
 			$this->element_type = trim($this->element_type);
 		if (isset($this->status))
 			$this->status = trim($this->status);
+		if (isset($this->default_doc))
+			$this->default_doc = trim($this->default_doc);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
 
@@ -791,7 +814,8 @@ class ReferenceLetters extends CommonObject
 
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
-		$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
+		$sql .= " status=" . (isset($this->status) ? $this->status : "0") . ",";
+		$sql .= " default_doc=" . (isset($this->default_doc) ? $this->default_doc : "0") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
 		$sql .= " header=" . (isset($this->header) ? "'" . $this->header . "'" : "null") . ",";
 		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer. "'" : "null") . ",";
@@ -804,7 +828,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -839,7 +863,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -881,7 +905,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_chapters";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -893,7 +917,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -905,7 +929,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -916,7 +940,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -975,6 +999,7 @@ class ReferenceLetters extends CommonObject
 						$chaptersnew->content_text = $line->content_text;
 						$chaptersnew->options_text = $line->options_text;
 						$chaptersnew->status = $line->status;
+						$chaptersnew->default_doc = $line->default_doc;
 						$result = $chaptersnew->create($user);
 						if ($result < 0) {
 							$this->errors[] = $object->error;
@@ -991,7 +1016,7 @@ class ReferenceLetters extends CommonObject
 			return $object->id;
 		} else {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__MEHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -1012,6 +1037,7 @@ class ReferenceLetters extends CommonObject
 		$this->title = '';
 		$this->element_type = '';
 		$this->status = '';
+		$this->default_doc = '';
 		$this->import_key = '';
 		$this->fk_user_author = '';
 		$this->datec = '';
@@ -1033,7 +1059,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -1048,7 +1074,7 @@ class ReferenceLetters extends CommonObject
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::info " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__MEHOD__. " " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -1060,6 +1086,7 @@ class ReferenceLettersLine
 	public $title;
 	public $element_type;
 	public $status;
+	public $default_doc;
 	public $import_key;
 	public $fk_user_author;
 	public $datec = '';

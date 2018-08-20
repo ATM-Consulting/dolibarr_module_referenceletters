@@ -172,6 +172,41 @@ class FormReferenceLetters extends Form
 		return $select_elemnt;
 	}
 
+	/**
+	 * Return a Select Element
+	 *
+	 * @param strint $selected
+	 * @param string $htmlname
+	 * @return select HTML
+	 */
+	public function selectDefaultDoc($selected='',$htmlname='defaultdoc',$showempty=1) {
+		global $langs;
+
+		$status_array=array();
+
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
+		if (!empty($showempty)) {
+			$status_array[-1]='';
+		}
+		require_once 'referenceletters.class.php';
+		$refletter = new Referenceletters($this->db);
+
+		$status_array+=$refletter->TDefaultDoc;
+
+		foreach($status_array as $key=>$val) {
+			if ($selected==$key) {
+				$option_selected=' selected="selected" ';
+			}else {
+				$option_selected='';
+			}
+
+			$select_elemnt .= '<option value="' . $key . '" '.$option_selected.'>' . $langs->trans($val) . '</option>';
+		}
+
+		$select_elemnt .= '</select>';
+		return $select_elemnt;
+	}
+
 
 	/**
 	 * Return a Select Element

@@ -36,6 +36,7 @@ $confirm = GETPOST('confirm', 'alpha');
 $refltrtitle=GETPOST('refltrtitle', 'alpha');
 $refltrelement_type=GETPOST('refltrelement_type', 'alpha');
 $refltruse_landscape_format=GETPOST('refltruse_landscape_format', 'alpha');
+$refltrdefault_doc=GETPOST('refltrdefault_doc', 'alpha');
 
 
 // Access control
@@ -84,6 +85,7 @@ if ($action == "add") {
 	$object->title = $refltrtitle;
 	$object->element_type = $refltrelement_type;
 	$object->use_landscape_format = $refltruse_landscape_format;
+	$object->default_doc = $refltrdefault_doc;
 
 	$extrafields->setOptionalsFromPost($extralabels, $object);
 
@@ -125,6 +127,16 @@ if ($action == "add") {
 	$result = $object->update($user);
 	if ($result < 0) {
 		$action = 'editrefltruse_landscape_format';
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
+} elseif($action=='setrefltrdefault_doc' && isset($_REQUEST['modify'])) {
+
+	$object->default_doc = $refltrdefault_doc;
+	$result = $object->update($user);
+	if ($result < 0) {
+		$action = 'editrefltrdefault_doc';
 		setEventMessage($object->error, 'errors');
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
@@ -218,6 +230,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '</td>';
 	print '</tr>';
 
+	print '<tr>';
+	print '<td width="20%">';
+	print $langs->trans('RefLtrDefaultDoc');
+	print '</td>';
+	print '<td>';
+	print $form->selectyesno('refltrdefault_doc', $refltrdefault_doc, 1);
+	print '</td>';
+	print '</tr>';
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
 
@@ -269,7 +290,10 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print $langs->trans('RefLtrElement') . ' : ' . $object->displayElement() . '<br>';
 	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
 	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
-	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<bt>';
+	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<br>';
+	print $langs->trans('RefLtrDefaultDoc') . ' : ';
+	if ($action !== 'editrefltrdefault_doc') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrdefault_doc&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	print '&nbsp;' . $form->editfieldval("RefLtrDefaultDoc",'refltrdefault_doc',$object->default_doc,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]).',0:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO])) . '<br>';
 
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook

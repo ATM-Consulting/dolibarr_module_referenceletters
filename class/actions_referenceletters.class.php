@@ -221,6 +221,13 @@ class ActionsReferenceLetters
 							dol_copy($file, $file_dest);
 						}
 
+						//Update model_pdf comlumn (eg for invoice auto generation when input payment...)
+						$sql='UPDATE '.MAIN_DB_PREFIX.$object->table_element.' SET model_pdf=\''.$model.'\' WHERE rowid='.$object->id;
+						$resql=$this->db->query($sql);
+						if (!$resql) {
+							setEventMessage($this->db->lasterror,'errors');
+						}
+
 						// Header sur la même page pour annuler le traitement standard de génération de PDF
 						$field_id = 'id';
 						if(get_class($object) === 'Facture') $field_id = 'facid';
@@ -247,11 +254,21 @@ class ActionsReferenceLetters
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
 
-		$sql = 'SELECT rowid, title FROM '.MAIN_DB_PREFIX.'referenceletters WHERE element_type = "'.$element.'" AND entity IN (' . getEntity('referenceletters') . ') AND status=1';
-		$resql = $db->query($sql);
-		while($res = $db->fetch_object($resql)) $TModelsID[] = array('id'=>$res->rowid, 'title'=>$res->title);
+		$TModelsID=array();
+		dol_include_once('/referenceletters/class/referenceletters.class.php');
+		$object_refletters = new Referenceletters($db);
+		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
+		if ($result<0) {
+			setEventMessages(null,$object_refletters->errors,'errors');
+		} else {
+			if (is_array($object_refletters->lines) && count($object_refletters)>0) {
+				foreach($object_refletters->lines as $line) {
+					$TModelsID[] = array('id'=>$line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
+				}
+			}
+		}
 
-		if(empty($TModelsID)) return 0;
+		if(count($TModelsID)==0) return 0;
 
 		// 2 - On ajoute les données au selectmodels
 		?>
@@ -259,11 +276,21 @@ class ActionsReferenceLetters
 
 			$(document).ready(function(){
 				var tab = new Array();
-				<?php foreach($TModelsID as &$TData) { ?>
+				<?php
+				$defaultset=false;
+				foreach($TModelsID as &$TData) {
+				?>
 					var option = new Option('<?php print $TData['title']; ?>', 'rfltr_<?php print $TData['id']; ?>');
 					tab.push(option);
 					$("#model").append(tab);
-				<?php } ?>
+				<?php
+				if (!empty($TData['default_doc']) && !$defaultset) {?>
+					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
+				<?php
+						$defaultset=true;
+					}
+				}
+				?>
 			});
 
 		</script>

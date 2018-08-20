@@ -11,3 +11,4 @@ ALTER TABLE llx_referenceletters_elements ADD COLUMN use_custom_footer integer N
 ALTER TABLE llx_referenceletters_elements ADD COLUMN header text;
 ALTER TABLE llx_referenceletters_elements ADD COLUMN footer text;
 ALTER TABLE llx_referenceletters_elements ADD COLUMN use_landscape_format integer NOT NULL DEFAULT 0;
+ALTER TABLE llx_referenceletters ADD COLUMN default_doc integer NOT NULL DEFAULT 0 AFTER status;

@@ -122,6 +122,7 @@ RefLtrBackground=Image de fond
 RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
 RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
 RefLtrTitleModel=Titre modèle de document
+RefLtrDefaultDoc=Document par defaut
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer

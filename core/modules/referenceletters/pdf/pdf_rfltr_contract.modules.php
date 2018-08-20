@@ -96,11 +96,11 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
-		
+
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -116,6 +116,11 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
+			if (!empty($object->thirdparty->country_code))
+			{
+				$this->outputlangs->load("dict");
+				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
+			}
 
 			// $deja_regle = 0;
 
@@ -138,7 +143,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 				$heightforinfotot = 50; // Height reserved to output the info and total part
 				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-				
+
 				// Set calculation of header and footer high line
 				// footer high
 				$height = $this->getRealHeightLine('foot');
@@ -181,7 +186,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
-				
+
 				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
@@ -231,7 +236,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 						continue;
 					}
-					
+
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
 
@@ -239,7 +244,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'lines'
 					));
-					
+
 					$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
 					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
 					// var_dump($test);

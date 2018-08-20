@@ -96,11 +96,11 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
-		
+
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -116,6 +116,11 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
+			if (!empty($object->thirdparty->country_code))
+			{
+				$this->outputlangs->load("dict");
+				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
+			}
 
 			// $deja_regle = 0;
 
@@ -169,8 +174,13 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 				// Set calculation of header and footer high line
 				// Header high
 				$height = $this->getRealHeightLine('head');
+				if (!empty($conf->global->REF_LETTER_PREDEF_HIGHT) && !empty($instance_letter->use_custom_header)) {
+					$height=$height+$conf->global->REF_LETTER_PREDEF_HIGHT;
+				} else {
+					$height=$height+10;
+				}
 				// Left, Top, Right
-				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
+				$this->pdf->SetMargins($this->marge_gauche, $height, $this->marge_droite, 1);
 
 				// New page
 				$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L', $this->format, true);
@@ -178,7 +188,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 					$this->pdf->useTemplate($tplidx);
 				}
 
-				
+
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
 
@@ -231,10 +241,10 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 
 						continue;
 					}
-					
+
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
-					
+
 					// Merge arrays
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'lines'

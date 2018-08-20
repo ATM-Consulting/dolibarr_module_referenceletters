@@ -80,7 +80,7 @@ require_once $object_refletter->element_type_list[$element_type]['classpath'] . 
 require_once $object_refletter->element_type_list[$element_type]['menuloader_lib'];
 
 // Access control
-restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature']);
+restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature'], $element_type === 'order_supplier' ? 'commande' : '');
 
 // Load translation files required by the page
 $langs->load($object_refletter->element_type_list[$element_type]['trans']);

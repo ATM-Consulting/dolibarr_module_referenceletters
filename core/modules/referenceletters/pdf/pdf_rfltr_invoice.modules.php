@@ -96,7 +96,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 	function write_file($object, $instance_letter, $outputlangs) {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
-		$this->outputlangs=$this->outputlangs;
+		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = (int)$instance_letter->use_landscape_format;
@@ -116,6 +116,11 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
+			if (!empty($object->thirdparty->country_code))
+			{
+				$this->outputlangs->load("dict");
+				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
+			}
 
 			// $deja_regle = 0;
 
@@ -170,8 +175,13 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				// Set calculation of header and footer high line
 				// Header high
 				$height = $this->getRealHeightLine('head');
+				if (!empty($conf->global->REF_LETTER_PREDEF_HIGHT) && !empty($instance_letter->use_custom_header)) {
+					$height=$height+$conf->global->REF_LETTER_PREDEF_HIGHT;
+				} else {
+					$height=$height+10;
+				}
 				// Left, Top, Right
-				$this->pdf->SetMargins($this->marge_gauche, $height+10, $this->marge_droite, 1);
+				$this->pdf->SetMargins($this->marge_gauche, $height, $this->marge_droite, 1);
 
 				// New page
 				$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L', $this->format, true);

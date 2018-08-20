@@ -55,11 +55,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	/**
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
 	 *
-	 * @param $TElementArray : Tableau qui va contenir les différents éléments sur lesquels on peut boucler (lignes, etc...)
+	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (lignes, participants, horaires)
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray = array()) {
-		global $hookmanager,$conf;
-		
+		global $hookmanager, $conf;
+
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
 		if ($conf->subtotal->enabled) {
@@ -69,101 +69,98 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
 		}
 
-			$odfHandler = new OdfRfltr($srctemplatepath,
-					array(
-							'PATH_TO_TMP' => $conf->propal->dir_temp,
-							'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
-							'DELIMITER_LEFT' => '{',
-							'DELIMITER_RIGHT' => '}'
-					), $chapter_text);
+		$odfHandler = new OdfRfltr($srctemplatepath,
+			array(
+				'PATH_TO_TMP' => $conf->propal->dir_temp,
+				'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
+				'DELIMITER_LEFT' => '{',
+				'DELIMITER_RIGHT' => '}'
+		), $chapter_text);
 
-			if (! empty($TElementArray)) {
+		if (! empty($TElementArray)) {
 
-				foreach ( $TElementArray as $element_array ) {
+			foreach ( $TElementArray as $element_array ) {
 
 				if (strpos($chapter_text, $element_array . ' ') === false && strpos($chapter_text, $element_array . '&nbsp;') === false) {
-						continue;
+					continue;
 				}
-						
-						$listlines = $odfHandler->setSegment($element_array);
 
-						if (strpos($chapter_text, '[!-- BEGIN') !== false) {
+				$listlines = $odfHandler->setSegment($element_array);
+
+				if (strpos($chapter_text, '[!-- BEGIN') !== false) {
 
 					if (! empty($object->{$element_array})) {
 
-							foreach ( $object->{$element_array} as $line ) {
+						foreach ( $object->{$element_array} as $line ) {
 
-								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs);
-								complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
-								// Call the ODTSubstitutionLine hook
+							if (method_exists($this, 'get_substitutionarray_lines_agefodd')) {
+								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
+							} else {
+								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs, false);
+							}
+							complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
+							// Call the ODTSubstitutionLine hook
+							$parameters = array(
+									'odfHandler' => &$odfHandler,
+									'file' => $file,
+									'object' => $object,
+									'outputlangs' => $this->outputlangs,
+									'substitutionarray' => &$tmparray,
+									'line' => $line,
+									'context' => $object->element . 'card'
+							);
+							$action = "builddoc";
+							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+							if ($conf->subtotal->enabled) {
+								if (TSubtotal::isModSubtotalLine($line)) {
+									$tmparray['line_up_locale'] = '';
+									$tmparray['line_price_ht_locale'] = '';
+								}
+								if (TSubtotal::isSubtotal($line)) {
+									$tmparray['line_price_ht_locale'] = price($tmparray['line_price_ht'], 0);
+								}
+							}
+							$oldline = $listlines->xml;
+							foreach ( $tmparray as $key => $val ) {
+								try {
+									$listlines->setVars($key, $val, true, 'UTF-8');
+								} catch ( OdfException $e ) {
+								} catch ( SegmentException $e ) {
+								}
+							}
 
-								$parameters = array(
-										'odfHandler' => &$odfHandler,
-										'file' => $file,
-										'object' => $object,
-										'outputlangs' => $this->outputlangs,
-										'substitutionarray' => &$tmparray,
-										'line' => $line,
-										'context' => $object->element.'card'
-								);
-								$action = "builddoc";
-								$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-							
-								if($conf->subtotal->enabled){
-									if(TSubtotal::isModSubtotalLine($line)){
-										$tmparray['line_up_locale']='';
-										$tmparray['line_price_ht_locale']='';
-									}
-									if(TSubtotal::isSubtotal($line)){
-										$tmparray['line_price_ht_locale']=price($tmparray['line_price_ht'],0);
-									
-										
-									}
-								}
-								$oldline = $listlines->xml;
-								foreach ( $tmparray as $key => $val ) {
-									try {
-										
-										
-										$listlines->setVars($key, $val, true, 'UTF-8');
-										
-									} catch ( OdfException $e ) {
-									} catch ( SegmentException $e ) {
-									}
-								}
-								
-								if($conf->subtotal->enabled){
-									if(TSubtotal::isTitle($line)){
+							if ($conf->subtotal->enabled) {
+								if (TSubtotal::isTitle($line)) {
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}' => '<strong><u>{line_fulldesc}</u></strong>'
+											,'{line_product_label}' => '<strong><u>{line_product_label}</u></strong>'
 									));
-									}else if(TSubtotal::isSubtotal($line)){
+								} else if (TSubtotal::isSubtotal($line)) {
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
 									));
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}' => '<strong><i>{line_fulldesc}</i></strong>'
+											,'{line_product_label}' => '<strong><i>{line_product_label}</i></strong>'
 									));
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_price_ht_locale}' => '<strong>{line_price_ht_locale}</strong>'
 									));
-										//var_dump($listlines->xml);exit;
-									}
+									// var_dump($listlines->xml);exit;
 								}
-								
-								$res = $listlines->merge();
-								
-								$listlines->xml=$listlines->savxml=$oldline;
-								
 							}
-					}
-							$res = $odfHandler->mergeSegment($listlines);
-							$chapter_text = $odfHandler->getContentXml();
+							$res = $listlines->merge();
+
+							$listlines->xml = $listlines->savxml = $oldline;
 						}
+					}
+					$res = $odfHandler->mergeSegment($listlines);
+					$chapter_text = $odfHandler->getContentXml();
 				}
 			}
+		}
 
-			return $chapter_text;
+		return $chapter_text;
 	}
 	/**
 	 *
@@ -175,13 +172,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
 
-		$posy = $this->marge_haute;
-		$posx = $this->page_largeur - $this->marge_droite - 100;
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
-		$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
+		$this->pdf->writeHTMLCell(0, 0, $this->marge_droite, 0, $this->outputlangs->convToOutputCharset($this->instance_letter->header), 0, 1);
 		$end_y = $this->pdf->GetY();
-		$height = $end_y - $posy;
+		$height = $end_y;
 
 		return $height;
 	}
@@ -191,7 +186,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param stdClass $object
 	 * @param string $typeprint
 	 */
-	function _pagefootCustom($object,$typeprint='') {
+	function _pagefootCustom($object, $typeprint = '') {
 
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
@@ -200,11 +195,23 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-		
-		if (!empty($typeprint)) {
+
+		if (! empty($typeprint)) {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+
 		} else {
-			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk']-$this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - $this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
+		}
+
+		// Show page nb only on iso languages (so default Helvetica font)
+		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && empty($conf->global->MAIN_USE_FPDF))
+		{
+			$currenty=$this->pdf->GetY();
+			$currentx=$this->pdf->GetX();
+			$this->pdf->SetXY($dims['wk']-10,$dims['hk']-5);
+			$this->pdf->SetFont('','',7);
+			$this->pdf->MultiCell(13, 2, $this->outputlangs->convToOutputCharset($this->pdf->PageNo().'/'.$this->pdf->getAliasNbPages()), 0, 'R', 0);
+			$this->pdf->SetXY($currentx,$currenty);
 		}
 	}
 
@@ -238,76 +245,90 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		if (get_class($object) === 'Societe') {
 			$socobject = $object;
-		}
-		else
-		{
-			if (!empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && !empty($object->contact))
+		} else {
+			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
 				$socobject = $object->contact;
-			else
-					$socobject = $object->thirdparty;
+			} else {
+				$socobject = $object->thirdparty;
+			}
 		}
 
-					$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
-					$substitution_array = array();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{cust_' . $key . '}'] = $value;
-						}
-						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-					}
+		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
+		$substitution_array = array();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+			    if ($key == 'company_address') $value = nl2br($value);
+				$substitution_array['{cust_' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
 
-					$tmparray = $this->get_substitutionarray_other($this->outputlangs, $object);
-					$substitution_array = array();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-					}
+		$tmparray = $this->get_substitutionarray_other($this->outputlangs, $object);
+		$substitution_array = array();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
 
 		// Réservé aux pièces de vente
-		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters') {
-						$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
-						$substitution_array = array();
-						if (is_array($tmparray) && count($tmparray) > 0) {
-							foreach ( $tmparray as $key => $value ) {
-								$substitution_array['{' . $key . '}'] = $value;
-							}
-							$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-						}
-					}
+		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters' && get_class($object) !== 'Agsession' ) {
+			$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
+			$substitution_array = array();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
 
-					// Get instance letter substitution
-					$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $this->outputlangs);
-					$substitution_array = array();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{' . $key . '}'] = $value;
-						}
-						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-					}
+		// Get instance letter substitution
+		$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $this->outputlangs);
+		$substitution_array = array();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
 
-					if (get_class($object) === 'Contact') {
-						$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
-						$substitution_array = array();
-						if (is_array($tmparray) && count($tmparray) > 0) {
-							foreach ( $tmparray as $key => $value ) {
-								$substitution_array['{' . $key . '}'] = $value;
-							}
-							$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-						}
-					}
+		if (get_class($object) === 'Contact') {
+			$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
+			$substitution_array = array();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				if (!empty($object->civility_id)) {
+					$substitution_array['{contact_civility}'] = $this->outputlangs->transnoentitiesnoconv('Civility'.$object->civility_id);
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
 
-					$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
-					$substitution_array = array ();
-					if (is_array($tmparray) && count($tmparray) > 0) {
-						foreach ( $tmparray as $key => $value ) {
-							$substitution_array['{objvar_' . $key . '}'] = $value;
-						}
-						$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
-					}
-					
-					return $txt;
+		if (get_class($object) === 'Agsession') {
+			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$substitution_array = array();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = $value;
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
+
+		$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
+		$substitution_array = array();
+		if (is_array($tmparray) && count($tmparray) > 0) {
+			foreach ( $tmparray as $key => $value ) {
+				$substitution_array['{objvar_' . $key . '}'] = $value;
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+
+		return $txt;
 	}
 
 	/**
@@ -326,12 +347,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// store starting values
 		$start_y = $this->pdf->GetY();
-		// print '$start_y='.$start_y.'<br>';
+		//print '$start_y='.$start_y.'<br>';
 
 		$start_page = $this->pdf->getPage();
+		//print '$start_page='.$start_page.'<br>';
 
 		$height = 0;
-		$bottom_margin=0;
+		$bottom_margin = 0;
 
 		// print content
 		if ($type == 'head') {
@@ -349,22 +371,23 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				// HEre standard _pagefoot method return bottom margin
 				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
 			} else {
-				$bottom_margin=$this->pdf->getMargins()['bottom'];
+				$bottom_margin = $this->pdf->getMargins()['bottom'];
 				$this->_pagefootCustom($this->pdf->ref_object, 'custom');
 			}
 		}
 
 		if (empty($height)) {
 			// get the new Y
+
 			$end_y = $this->pdf->GetY();
 			$end_page = $this->pdf->getPage() - 1;
 			// calculate height
-			// print '$end_y='.$end_y.'<br>';
-			// print '$end_page='.$end_page.'<br>';
+			//print '$end_y='.$end_y.'<br>';
+			//print '$end_page='.$end_page.'<br>';
 
 			if (($end_page == $start_page || $end_page == 0) && $end_y > $start_y) {
 				$height = $end_y - $start_y;
-				// print 'aa$height='.$height.'<br>';
+				//print 'aa$height='.$height.'<br>';
 			} else {
 				for($page = $start_page; $page <= $end_page; $page ++) {
 					$this->pdf->setPage($page);
@@ -392,12 +415,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// restore previous object
 		$this->pdf = $this->pdf->rollbackTransaction();
 
-		
-		if (!empty($bottom_margin)) {
-
-			$this->pdf->mybottommargin=$height;
+		if (! empty($bottom_margin)) {
+			if (get_class($this->pdf->ref_object) === 'Agsession' && ($bottom_margin / 2)<$height) {
+				$height -= ($bottom_margin / 2);
+			}
+			$this->pdf->mybottommargin = $height;
 		}
-		
 
 		return $height;
 	}
@@ -477,11 +500,11 @@ abstract class ModeleNumRefrReferenceLetters
 
 		if ($this->version == 'development')
 			return $langs->trans("VersionDevelopment");
-			if ($this->version == 'experimental')
-				return $langs->trans("VersionExperimental");
-				if ($this->version == 'dolibarr')
-					return DOL_VERSION;
-					return $langs->trans("NotAvailable");
+		if ($this->version == 'experimental')
+			return $langs->trans("VersionExperimental");
+		if ($this->version == 'dolibarr')
+			return DOL_VERSION;
+		return $langs->trans("NotAvailable");
 	}
 }
 
@@ -530,7 +553,6 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 /**
  *
  * @param object $pdf
- * @param object $this->outputlangs
  * @param int $id
  */
 function importImageBackground(&$pdf, $id) {

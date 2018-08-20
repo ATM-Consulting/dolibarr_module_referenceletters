@@ -81,7 +81,7 @@ if($action === 'save') {
  * View
  */
 
-$title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrFooter');
+$title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrFooterTab');
 
 llxHeader('',$title);
 

@@ -121,6 +121,15 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+}elseif($action=='setrefltrelement') {
+	$object->element_type = $refltrelement_type;
+	$result = $object->update($user);
+	if ($result < 0) {
+		$action = 'editrefltrelement';
+		setEventMessage($object->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 } elseif($action=='setrefltruse_landscape_format' && isset($_REQUEST['modify'])) {
 
 	$object->use_landscape_format = $refltruse_landscape_format;
@@ -147,6 +156,7 @@ if ($action == "add") {
 	$object_chapters_breakpage->title ='';
 	$object_chapters_breakpage->content_text = '@breakpage@';
 	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();
 	$result = $object_chapters_breakpage->create($user);
 	if ($result < 0) {
 		$action = 'addbreakpage';
@@ -160,6 +170,7 @@ if ($action == "add") {
 	$object_chapters_breakpage->title ='';
 	$object_chapters_breakpage->content_text = '@breakpagenohead@';
 	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();
 	$result = $object_chapters_breakpage->create($user);
 	if ($result < 0) {
 		$action = 'addbreakpagewithoutheader';
@@ -284,10 +295,30 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<li class="noborder litext">'.$linkback.'</li>';
 	print '</ul></div>';
 	print '<div class="inline-block floatleft valignmiddle refid refidpadding">';
-	print $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
-	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	print $langs->trans('RefLtrTitle').' : '. $form->editfieldval("RefLtrTitle",'refltrtitle',$object->title,$object,$user->rights->referenceletters->write);
+	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
 	print '<div class="refidno">';
-	print $langs->trans('RefLtrElement') . ' : ' . $object->displayElement() . '<br>';
+	if ($action=='editrefltrelement') {
+		print '<form method="post" action="'.$_SERVER["PHP_SELF"].'">';
+		print '<input type="hidden" name="action" value="setrefltrelement">';
+		print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+		print '<input type="hidden" name="id" value="'.$object->id.'">';
+		print '<table class="nobordernopadding" cellpadding="0" cellspacing="0">';
+		print '<tr><td>';
+		print $langs->trans('RefLtrElement').$formrefleter->selectElementType($object->element_type, 'refltrelement_type');
+		print '</td>';
+
+		print '<td align="left">';
+		print '<input type="submit" class="button'.(empty($notabletag)?'':' ').'" name="modify" value="'.$langs->trans("Modify").'">';
+		print'<input type="submit" class="button'.(empty($notabletag)?'':' ').'" name="cancel" value="'.$langs->trans("Cancel").'">';
+		print'</td>';
+
+		print '</tr></table>'."\n";
+		print '</form>'."\n";
+		print '<br>'."\n";
+	} else {
+		print $langs->trans('RefLtrElement').' : '. $object->displayElement(). '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrelement&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
+	}
 	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
 	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
 	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat",'refltruse_landscape_format',$object->use_landscape_format,$object,$user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<br>';

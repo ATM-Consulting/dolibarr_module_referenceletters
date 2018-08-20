@@ -156,12 +156,37 @@ class RfltrTools {
 
 	}
 
+	static function getAgefoddModelListDefaultJSON() {
+		$TDefaultModel=array();
+		$TModel = self::getAgefoddModelListDefault();
+		if (is_array($TModel) && count($TModel)>0) {
+			foreach($TModel as $line) {
+				if (!empty($line->default_doc) && !array_key_exists($line->element_type, $TDefaultModel) && $line->element_type!=='rfltr_agefodd_convention')  {
+					$TDefaultModel[str_replace('rfltr_agefodd_', '', $line->element_type)]=$line->rowid;
+				}
+			}
+		}
+		return json_encode($TDefaultModel);
+
+
+	}
+
 	static function print_js_external_models($page='document') {
 		?>
 
 		<script type="text/javascript">
 
 			$(document).ready(function() {
+
+				var defaultdoc=JSON.parse('<?php print self::getAgefoddModelListDefaultJSON();?>');
+				console.log(defaultdoc);
+				$("a[name^='builddoc_']").each(function () {
+					if (defaultdoc[$(this).attr("name").split("__")[1]]) {
+						var _href = $(this).attr("href");
+						$(this).attr("href", _href + '&id_external_model='+defaultdoc[$(this).attr("name").split("__")[1]]);
+					}
+
+				});
 
 				// Affichage de la liste des modèles disponibles
 				$(".btn_show_external_model_list").click(function() {
@@ -180,7 +205,6 @@ class RfltrTools {
 					}
 
 				});
-
 				// Sélection du modèle et génération du document
 				$(".id_external_model").change(function() {
 

@@ -30,7 +30,7 @@ class RfltrTools {
 
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
-		
+
 		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' || get_class($obj) === 'SupplierProposal' ))  {
 			$object = &$obj;
 			if(empty($object->thirdparty)) {
@@ -113,7 +113,7 @@ class RfltrTools {
 
 		global $db;
 
-		$sql = 'SELECT rowid, title, element_type
+		$sql = 'SELECT rowid, title, element_type , default_doc
 				FROM '.MAIN_DB_PREFIX.'referenceletters
 				WHERE element_type LIKE "%agefodd%"
 				AND entity IN (' . getEntity('referenceletters') . ")
@@ -126,6 +126,29 @@ class RfltrTools {
 			while($res = $db->fetch_object($resql)) {
 
 				$TModels[$res->element_type][$res->rowid]=$res->title;
+
+			}
+			return $TModels;
+		} else return 0;
+
+	}
+
+	static function getAgefoddModelListDefault() {
+
+		global $db;
+		$sql = 'SELECT rowid, title, element_type , default_doc
+				FROM '.MAIN_DB_PREFIX.'referenceletters
+				WHERE element_type LIKE "%agefodd%"
+				AND entity IN (' . getEntity('referenceletters') . ")
+				AND status=1";
+
+		$resql = $db->query($sql);
+		if(!empty($resql)) {
+
+			$TModels=array();
+			while($res = $db->fetch_object($resql)) {
+
+				$TModels[]=$res;
 
 			}
 			return $TModels;

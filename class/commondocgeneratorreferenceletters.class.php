@@ -508,6 +508,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_programme'] = $catalogue->programme;
 			$resarray['formation_documents'] = $catalogue->note1;
 			$resarray['formation_equipements'] = $catalogue->note2;
+
+			foreach($catalogue->array_options as $key=>$val) {
+				$resarray['formation_'.$key]=$val;
+			}
+
 		}
 
 		if (! empty($object->placeid)) {
@@ -524,8 +529,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
 			$resarray['formation_lieu_divers'] = $agf_place->note1;
 		}
-
-
 
 		return $resarray;
 	}

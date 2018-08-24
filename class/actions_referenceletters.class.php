@@ -268,7 +268,7 @@ class ActionsReferenceLetters
 		if ($result<0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {
-			if (is_array($object_refletters->lines) && count($object_refletters)>0) {
+			if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
 				foreach($object_refletters->lines as $line) {
 					$TModelsID[] = array('id'=>$line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
 				}

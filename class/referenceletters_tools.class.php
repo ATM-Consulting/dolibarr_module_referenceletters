@@ -21,7 +21,7 @@ class RfltrTools {
 	 */
 	static function load_object_refletter($id_object, $id_model, &$object, $socid='', $lang_id='') {
 		
-		global $db, $conf;
+		global $db, $conf, $langs;
 		
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');

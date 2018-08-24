@@ -108,7 +108,7 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 		
 		if (!empty($element_type)) {
 			$this->prefix .= mb_strtoupper(substr($element_type,0,3)).'-';
-			$posindice = 12 + count(mb_strtoupper(substr($element_type,0,3)))+1;
+			$posindice = 12 + strlen(mb_strtoupper(substr($element_type,0,3)))+1;
 		} else {
 			$posindice = 12;
 		}

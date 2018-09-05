@@ -470,6 +470,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray = array();
 		$resarray['formation_nom'] = $object->formintitule;
+		$resarray['formation_nom_custo'] = $object->intitule_custo;
 		$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
 		$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
 		$resarray['formation_ref'] = $object->formref;

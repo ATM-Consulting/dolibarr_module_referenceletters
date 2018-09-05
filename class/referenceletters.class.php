@@ -666,6 +666,7 @@ class ReferenceLetters extends CommonObject
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
+				,'formation_nom_custo'=>'Intitulé formation (pour les documents PDF)'
 				,'formation_ref'=>'Référence de la formation'
 				,'formation_statut'=>'Statut de la formation'
 		        ,'formation_date_debut' => 'Date de début de la formation'

@@ -432,6 +432,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// Substitutions tableau des élément financier :
 		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 		$resarray['line_fin_desciption_light'] = $line->form_label;
+		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
 		$resarray['line_fin_qty'] = $line->qty;
 		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);
 		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);

@@ -1409,6 +1409,7 @@ function _list_thirdparty()
 	print '</td>';
 
 	print "</tr>\n";
+	$param.='&action='.$action.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter;
 
 	print '<tr class="liste_titre">';
 	if (!empty($arrayfields['s.rowid']['checked']))
@@ -2152,6 +2153,8 @@ function _list_contact()
 			$search_categ_thirdparty = '';
 			$search_categ_supplier = '';
 			$search_import_key = '';
+			$search_town = '';
+			$search_zip='';
 			$toselect = '';
 			$search_array_options = array();
 		}
@@ -2238,7 +2241,6 @@ function _list_contact()
 		$sql .= " AND cs2.fk_categorie = ".$db->escape($search_categ_supplier);
 	if ($search_categ_supplier == -2)
 		$sql .= " AND cs2.fk_categorie IS NULL";
-
 	if ($sall)
 		$sql .= natural_search(array_keys($fieldstosearchall), $sall);
 	if (strlen($search_phone))
@@ -2252,6 +2254,10 @@ function _list_contact()
 		$sql .= natural_search("p.rowid", $search_id, 1);
 	if ($search_lastname)
 		$sql .= natural_search('p.lastname', $search_lastname);
+	if ($search_zip)
+		$sql .= natural_search('p.zip', $search_zip);
+	if ($search_town)
+		$sql .= natural_search('p.town', $search_town);
 	if ($search_firstname)
 		$sql .= natural_search('p.firstname', $search_firstname);
 	if ($search_societe)
@@ -2261,7 +2267,7 @@ function _list_contact()
 	if (strlen($search_phone_perso))
 		$sql .= natural_search('p.phone_perso', $search_phone_perso);
 	if (strlen($search_phone_pro))
-		$sql .= natural_search('p.phone', $search_phone);
+		$sql .= natural_search('p.phone', $search_phone_pro);
 	if (strlen($search_phone_mobile))
 		$sql .= natural_search('p.phone_mobile', $search_phone_mobile);
 	if (strlen($search_fax))
@@ -2604,8 +2610,9 @@ function _list_contact()
 	print '</td>';
 
 	print '</tr>';
-
 // Ligne des titres
+	$param.='&action='.$action.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter;
+	//var_dump($_REQUEST, $action, $refltrelement_type, $idletter);exit;
 	print '<tr class="liste_titre">';
 	if (!empty($arrayfields['p.rowid']['checked']))
 		print_liste_field_titre($arrayfields['p.rowid']['label'], $_SERVER["PHP_SELF"], "p.rowid", "", $param, "", $sortfield, $sortorder);

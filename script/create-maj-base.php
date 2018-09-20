@@ -231,7 +231,7 @@ if($rfltr->fetch('', $title) <= 0) {
 			<td style="text-align:right"><strong>Facture<br />
 			R&eacute;f. :&nbsp;{object_ref}</strong><br />
 			Date facturation :&nbsp;{object_date}<br />
-			Date &eacute;ch&eacute;ance :&nbsp;{object_date_delivery_planed}<br />
+			Date &eacute;ch&eacute;ance :&nbsp;{object_date_limit}<br />
 			Code client :&nbsp;{cust_company_customercode}<br />
 			{objets_lies}</td>
 		</tr>

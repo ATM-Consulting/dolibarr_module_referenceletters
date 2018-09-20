@@ -325,7 +325,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -361,7 +361,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -405,7 +405,7 @@ class ReferenceLetters extends CommonObject
 		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
-		dol_syslog(get_class($this) . "::".__MEHOD__. ' ', LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__. ' ', LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -440,7 +440,7 @@ class ReferenceLetters extends CommonObject
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::".__MEHOD__ . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -495,7 +495,7 @@ class ReferenceLetters extends CommonObject
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -527,7 +527,7 @@ class ReferenceLetters extends CommonObject
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			$this->errors[] = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::".__MEHOD__ .' '.$this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ .' '.$this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -829,7 +829,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -864,7 +864,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -906,7 +906,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_chapters";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
-			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -918,7 +918,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
 
-			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -930,7 +930,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
 
-			dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -941,7 +941,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::".__MEHOD__. ' ' . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -1017,7 +1017,7 @@ class ReferenceLetters extends CommonObject
 			return $object->id;
 		} else {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::".__MEHOD__ . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -1060,7 +1060,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::".__MEHOD__, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -1075,7 +1075,7 @@ class ReferenceLetters extends CommonObject
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::".__MEHOD__. " " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. " " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}

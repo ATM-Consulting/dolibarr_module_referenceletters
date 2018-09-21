@@ -564,7 +564,7 @@ class ReferenceLetters extends CommonObject
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
 
-		$subst_array = '';
+		$subst_array = array();
 		$docgen = new commondocgeneratorreferenceletters($this->db);
 		$docgen->db = $this->db;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
@@ -659,8 +659,8 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
-		unset($subst_array['Agsession']);
-
+		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
+		
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
 

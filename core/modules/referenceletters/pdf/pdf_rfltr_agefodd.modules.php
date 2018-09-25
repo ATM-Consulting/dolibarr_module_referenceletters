@@ -302,7 +302,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 				}
 
-				if(count($test_array) > 1) $this->pdf->deletePage($this->pdf->getPage());
+				if(count($test_array) > 1) {
+					//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
+					//$this->pdf->deletePage($this->pdf->getPage());
+				}
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

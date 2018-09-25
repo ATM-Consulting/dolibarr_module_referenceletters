@@ -93,6 +93,7 @@ class modReferenceLetters extends DolibarrModules
 						,'contractcard'
 						,'supplier_proposalcard'
 						,'ordersuppliercard'
+				        ,'paiementcard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory

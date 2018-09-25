@@ -248,6 +248,102 @@ class ActionsReferenceLetters
 		}
 
 	}
+	
+	function commonGenerateDocument($parameters, &$object, &$action)
+	{
+	    global $db, $langs, $conf;
+	    
+	    dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+	    dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+	    
+	    // 1 - On récupère les modèles disponibles pour ce type de document
+	    $element = $object->element;
+	    if($element === 'facture') $element = 'invoice';
+	    if($element === 'commande') $element = 'order';
+	    if($element === 'contrat') $element = 'contract';
+	    
+	    $id_model = 0;
+	    
+	    if(strpos($parameters['modele'], 'rfltr_') !== false) {
+	        $id_model = (int)explode('rfltr_', $parameters['modele'])[1];
+	    } else {
+	    
+    	    dol_include_once('/referenceletters/class/referenceletters.class.php');
+    	    $object_refletters = new Referenceletters($db);
+    	    $result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
+    	    if ($result<0) {
+    	        setEventMessages(null,$object_refletters->errors,'errors');
+    	    } else {
+    	        if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
+    	            foreach($object_refletters->lines as $line) {
+    	                if($line->default_doc) $id_model = $line->id;
+    	                break;
+    	            }
+    	        }
+    	    }
+	    }
+	    
+	    if (!empty($id_model))
+	    {
+	        
+	        // Création et chargement d'une nouvelle instance de modèle
+	        $instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object)[0];
+	        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
+	        $instance_rfltr->create($user);
+	        
+	        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
+	        if (! empty($newlang))
+	        {
+	            $outputlangs = new Translate("",$conf);
+	            $outputlangs->setDefaultLang($newlang);
+	        }
+	        
+	        // Création du PDF
+	        $result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
+	        
+	        if($result > 0) {
+	            
+	            // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
+	            $objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
+	            $dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
+	            $file = $dir . '/' . $objectref . ".pdf";
+	            
+	            $objectref = dol_sanitizeFileName($object->ref);
+	            $classname = get_class($object);
+	            if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
+	            $dir_dest = $conf->{strtolower($classname)}->dir_output;
+	            if (empty($dir_dest)) {
+	                dol_include_once('/referenceletters/class/referenceletters.class.php');
+	                $refstatic = new ReferenceLetters($this->db);
+	                if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
+	                    $dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
+	                }
+	            }
+	            if (empty($dir_dest)) {
+	                setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
+	            } else {
+	                $dir_dest .= '/' . $objectref;
+	                if (! file_exists($dir_dest))
+	                {
+	                    dol_mkdir($dir_dest);
+	                }
+	                $file_dest = $dir_dest . '/' . $objectref . '.pdf';
+	                $test=$conf->{strtolower(get_class($object))}->dir_output;
+	                
+	                dol_copy($file, $file_dest);
+	            }
+	            
+	            // Header sur la même page pour annuler le traitement standard de génération de PDF
+	            $field_id = 'id';
+	            if(get_class($object) === 'Facture') $field_id = 'facid';
+	            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
+	        }
+	    }
+	    
+// 	    var_dump($TModelsID, $parameters['modele'], $object->element);
+	    //exit('la');
+	    return 1;
+	}
 
 	function formBuilddocOptions($parameters, &$object, &$action, $hookmanager) {
 

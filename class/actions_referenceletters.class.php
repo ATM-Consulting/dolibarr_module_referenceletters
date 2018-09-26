@@ -166,11 +166,15 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard'))) {
+		$THook = $conf->modules_parts['hooks']['referenceletters']; // Voir le descripteur du module pour la liste
+		if (empty($THook)) $THook = array();
+		
+		if(in_array($parameters['currentcontext'], $THook)) {
 
-			if($action === 'builddoc') {
+			if($action === 'builddoc' || $action == 'confirm_paiement') {
 
 				$model = GETPOST('model');
+				if (empty($model)) $model = $object->modelpdf; // si confirm_paiement, il n'y a pas de param GET donc on prend celui de l'objet
 
 				// Récupération de l'id du modèle
 				if(strpos($model, 'rfltr_') !== false) {

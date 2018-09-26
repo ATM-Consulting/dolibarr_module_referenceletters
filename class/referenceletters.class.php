@@ -564,7 +564,7 @@ class ReferenceLetters extends CommonObject
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
 
-		$subst_array = '';
+		$subst_array = array();
 		$docgen = new commondocgeneratorreferenceletters($this->db);
 		$docgen->db = $this->db;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);

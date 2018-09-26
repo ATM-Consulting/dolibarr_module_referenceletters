@@ -262,7 +262,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -378,7 +378,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id, $title='') {
+	public function fetch($id, $title='') {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -455,7 +455,7 @@ class ReferenceLetters extends CommonObject
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -654,7 +654,7 @@ class ReferenceLetters extends CommonObject
 		return $subst_array;
 	}
 
-	function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
+	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs;
 
@@ -787,7 +787,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -881,7 +881,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -957,7 +957,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 
 		$error = 0;
@@ -1030,7 +1030,7 @@ class ReferenceLetters extends CommonObject
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 
 		$this->entity = '';
@@ -1051,7 +1051,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function info($id) {
 		global $langs;
 
 		$sql = "SELECT";

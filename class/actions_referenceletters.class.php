@@ -267,7 +267,8 @@ class ActionsReferenceLetters
 	    $id_model = 0;
 	    
 	    if(strpos($parameters['modele'], 'rfltr_') !== false) {
-	        $id_model = (int)explode('rfltr_', $parameters['modele'])[1];
+		$models = explode('rfltr_', $parameters['modele']);
+	        $id_model = (int)$models[1];
 	    } else {
 	    
     	    dol_include_once('/referenceletters/class/referenceletters.class.php');
@@ -289,7 +290,8 @@ class ActionsReferenceLetters
 	    {
 	        
 	        // Création et chargement d'une nouvelle instance de modèle
-	        $instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object)[0];
+		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
+	        $instance_rfltr = $instances[0];
 	        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 	        $instance_rfltr->create($user);
 	        

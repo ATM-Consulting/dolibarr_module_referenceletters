@@ -179,10 +179,12 @@ class ActionsReferenceLetters
 					dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 
 					// Récupération l'id du modèle sélectionné
-					$id_model = (int)explode('rfltr_', $model)[1];
+					$models = (int)explode('rfltr_', $model);
+					$id_model = $models[1];
 
 					// Création et chargement d'une nouvelle instance de modèle
-					$instance_rfltr = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'))[0];
+					$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
+					$instance_rfltr = $instances[0];
 					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 					$instance_rfltr->create($user);
 

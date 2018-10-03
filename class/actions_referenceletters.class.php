@@ -179,7 +179,7 @@ class ActionsReferenceLetters
 					dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 
 					// Récupération l'id du modèle sélectionné
-					$models = (int)explode('rfltr_', $model);
+					$models = explode('rfltr_', $model);
 					$id_model = $models[1];
 
 					// Création et chargement d'une nouvelle instance de modèle

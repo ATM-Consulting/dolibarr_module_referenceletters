@@ -395,10 +395,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '') {
+	    global $db, $conf;
+	    
 		$array_other = array();
 
 		if (! empty($object)) {
-
+            dol_include_once('/core/class/extrafields.class.php');
+            
 			foreach ( $object as $key => $value ) {
 
 				// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
@@ -409,7 +412,34 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 
 				if (! is_array($value) && ! is_object($value)) {
-					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
+				    if (strpos($key, 'options_') !== false){
+				        $tmp = explode('options_', $key);
+				        $efcode = $tmp[1];
+				        $sql = "SELECT type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE name = '". $efcode . "' AND entity in (0, " . $conf->entity . ")";
+				        $res = $db->query($sql);
+				        if ($res && $db->num_rows($res))
+				        {
+				            $obj = $db->fetch_object($res);
+
+				            if ($obj->type == "sellist")
+				            {
+				                $param = unserialize($obj->param);
+				                $tmp2 = array_keys($param['options']);
+				                $params = explode(":", $tmp2[0]);
+
+				                $sqlname = "SELECT ".$params[1]." FROM ".MAIN_DB_PREFIX.$params[0]." WHERE ".$params[2]." = " . $value;
+				                $resname = $db->query($sqlname);
+				                
+				                if($resname && $db->num_rows($resname))
+				                {
+				                    $obj2 = $db->fetch_object($resname);
+				                    $value = $obj2->{$params[1]};
+				                }
+				            }
+				        }
+
+				    }
+					elseif (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
 						$value = price($value);
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {

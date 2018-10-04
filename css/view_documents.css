@@ -1,0 +1,16 @@
+.docedit_docboard{
+	background: #ededed;
+	padding:1cm;
+}
+
+.docedit_document{
+	
+	margin-left: auto;
+    margin-right: auto;
+	padding:1.5cm;
+	width: 19.5cm;
+	background: #fff;
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+}

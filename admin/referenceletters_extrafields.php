@@ -75,7 +75,7 @@ llxHeader('', $langs->trans("ReferenceLettersSetup"));
 
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
 print_fiche_titre($langs->trans("ReferenceLettersSetup"), $linkback, 'setup');
-print "<br>\n";
+
 
 // Configuration header
 $head = referencelettersAdminPrepareHead();

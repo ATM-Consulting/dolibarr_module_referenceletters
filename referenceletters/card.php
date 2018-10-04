@@ -197,8 +197,9 @@ if ($action == "add") {
  * VIEW
 */
 $title = $langs->trans('Module103258Name');
-
-llxHeader('',$title);
+$arrayofcss = array('referenceletters/css/view_documents.css');
+$arrayofjs = array();
+llxHeader('',$title, '', '', 0, 0, $arrayofjs, $arrayofcss);
 
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
@@ -339,7 +340,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
 
+		
+		
 		print '<div class="underbanner clearboth"></div>';
+		print '<div class="docedit_docboard"><div class="docedit_document">';
+		
 		print '<table class="border" width="100%">';
 		print '<tr class="liste_titre"><td>'. img_picto('',dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 'class="valignmiddle" id="pictotitle"', 1) . ' ' . $langs->trans("RefLtrChapters");
 		print '</td></tr>';
@@ -426,6 +431,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 			}
 		}
 		print '</table>';
+		
+		print '<!-- end docedit_docboard --></div><!-- end docedit_document --></div>';
 	}
 
 	print "</div>\n";

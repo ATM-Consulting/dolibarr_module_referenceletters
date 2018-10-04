@@ -181,69 +181,71 @@ class ActionsReferenceLetters
 					// Récupération l'id du modèle sélectionné
 					$models = explode('rfltr_', $model);
 					$id_model = $models[1];
-
-					// Création et chargement d'une nouvelle instance de modèle
-					$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
-					$instance_rfltr = $instances[0];
-					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
-					$instance_rfltr->create($user);
-
-					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
-					if (! empty($newlang))
-					{
-						$outputlangs = new Translate("",$conf);
-						$outputlangs->setDefaultLang($newlang);
-					}
-
-					// Création du PDF
-					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
-
-					if($result > 0) {
-
-						// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-						$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
-						$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
-						$file = $dir . '/' . $objectref . ".pdf";
-
-						$objectref = dol_sanitizeFileName($object->ref);
-						$classname = get_class($object);
-						if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
-						$dir_dest = $conf->{strtolower($classname)}->dir_output;
-						if (empty($dir_dest)) {
-							dol_include_once('/referenceletters/class/referenceletters.class.php');
-							$refstatic = new ReferenceLetters($this->db);
-							if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
-								$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
-							}
-						}
-						if (empty($dir_dest)) {
-							setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
-						} else {
-							$dir_dest .= '/' . $objectref;
-							if (! file_exists($dir_dest))
-							{
-								dol_mkdir($dir_dest);
-							}
-							$file_dest = $dir_dest . '/' . $objectref . '.pdf';
-							$test=$conf->{strtolower(get_class($object))}->dir_output;
-
-							dol_copy($file, $file_dest);
-						}
-
-						//Update model_pdf comlumn (eg for invoice auto generation when input payment...)
-						$sql='UPDATE '.MAIN_DB_PREFIX.$object->table_element.' SET model_pdf=\''.$model.'\' WHERE rowid='.$object->id;
-						$resql=$this->db->query($sql);
-						if (!$resql) {
-							setEventMessage($this->db->lasterror,'errors');
-						}
-
-						// Header sur la même page pour annuler le traitement standard de génération de PDF
-						$field_id = 'id';
-						if(get_class($object) === 'Facture') $field_id = 'facid';
-						header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
-
-					}
-
+					
+                    if(is_numeric($id_model)) {
+    					// Création et chargement d'une nouvelle instance de modèle
+    					$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
+    					$instance_rfltr = $instances[0];
+    					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
+    					$instance_rfltr->create($user);
+    
+    					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
+    					if (! empty($newlang))
+    					{
+    						$outputlangs = new Translate("",$conf);
+    						$outputlangs->setDefaultLang($newlang);
+    					}
+    
+    					// Création du PDF
+    					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
+    
+    					if($result > 0) {
+    
+    						// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
+    						$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
+    						$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
+    						$file = $dir . '/' . $objectref . ".pdf";
+    
+    						$objectref = dol_sanitizeFileName($object->ref);
+    						$classname = get_class($object);
+    						if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
+    						$dir_dest = $conf->{strtolower($classname)}->dir_output;
+    						if (empty($dir_dest)) {
+    							dol_include_once('/referenceletters/class/referenceletters.class.php');
+    							$refstatic = new ReferenceLetters($this->db);
+    							if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
+    								$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
+    							}
+    						}
+    						if (empty($dir_dest)) {
+    							setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
+    						} else {
+    							$dir_dest .= '/' . $objectref;
+    							if (! file_exists($dir_dest))
+    							{
+    								dol_mkdir($dir_dest);
+    							}
+    							$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+    							$test=$conf->{strtolower(get_class($object))}->dir_output;
+    
+    							dol_copy($file, $file_dest);
+    						}
+    
+    						//Update model_pdf comlumn (eg for invoice auto generation when input payment...)
+    						$sql='UPDATE '.MAIN_DB_PREFIX.$object->table_element.' SET model_pdf=\''.$model.'\' WHERE rowid='.$object->id;
+    						$resql=$this->db->query($sql);
+    						if (!$resql) {
+    							setEventMessage($this->db->lasterror,'errors');
+    						}
+    
+    						// Header sur la même page pour annuler le traitement standard de génération de PDF
+    						$field_id = 'id';
+    						if(get_class($object) === 'Facture') $field_id = 'facid';
+    						header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
+    
+    					}
+    
+    				}
 				}
 			}
 
@@ -285,21 +287,66 @@ class ActionsReferenceLetters
 
 			$(document).ready(function(){
 				var tab = new Array();
-				<?php
-				$defaultset=false;
-				foreach($TModelsID as &$TData) {
-				?>
-					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>');
-					tab.push(option);
-					$("#model").append(tab);
-				<?php
-				if (!empty($TData['default_doc']) && !$defaultset) {?>
-					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
-				<?php
-						$defaultset=true;
-					}
+				var modelgeneric = $("#model").find('option[value=rfltr_<?php print $object->element; ?>]');
+				console.log(modelgeneric);
+				if (modelgeneric.length > 0)
+				{
+					modelgeneric[0].remove();
+    				<?php
+    				$defaultset=false;
+    				foreach($TModelsID as &$TData) {
+    				    $selected = false;
+    				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
+    				        $selected = true;
+    				        $defaultset=true;
+    				    }
+    				?>
+    					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
+    					tab.push(option);
+    					$("#model").append(tab);
+        				<?php
+        				if (!empty($TData['default_doc']) && !$defaultset) {?>
+        					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
+        				<?php
+    						$defaultset=true;
+    				    }
+    				} 
+    				?>
 				}
-				?>
+				$("#model").change(function(e){
+					id_model = parseInt($(this).val().replace('rfltr_', ''));
+					if(isNaN(id_model)) id_model = '';
+					console.log(id_model);
+					if ($(this).val().replace('rfltr_', '') !== '<?php print $object->element; ?>'){
+     					$.ajax({ // on check s'il existe un prix plus bas ailleurs
+                            url : "<?php echo $_SERVER['PHP_SELF']; ?>"
+                             ,data:{
+                                 action: 'update_extras'
+                                 ,attribute:'rfltr_model_id'
+                                 ,id: '<?php print $object->id; ?>'
+                                 ,options_rfltr_model_id: id_model
+                             }
+                             ,method:"post"
+                             ,dataType:'json'
+                        });
+					}
+				});
+
+				$('#builddoc_generatebutton').click(function(e){
+					e.preventDefault();
+					id_model = parseInt($("#model").val().replace('rfltr_', ''));
+					
+					if($.isNumeric(id_model))
+					{
+						var html = $('option[value='+$('#model').val()+']').text();
+						var option = '<option value="rfltr_<?php print $object->element; ?>">'+html+'</option>';
+						$("#model").append(option);
+						$("#model").val('rfltr_<?php print $object->element; ?>').change();
+					}
+
+					$('#builddoc_form').submit();
+					
+				});
 			});
 
 		</script>

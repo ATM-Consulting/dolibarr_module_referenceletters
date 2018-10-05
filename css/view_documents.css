@@ -26,6 +26,9 @@
 	
 	border-top: 1px dashed #fff;
 	border-bottom: 1px dashed #fff;
+	
+  	transition: border-color 600ms;
+  	-webkit-transition: border-color 600ms;
 }
 .docedit_document_body .docedit_infos{
 	position: absolute;

@@ -29,10 +29,16 @@
 }
 .docedit_document_body .docedit_infos{
 	position: absolute;
-	display:none;
+	/*display:none;*/
+	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 600ms, visibility 600ms;
+  	-webkit-transition: opacity 600ms, visibility 600ms;
 }
 .docedit_document_body:hover .docedit_infos, .docedit_document_body:focus .docedit_infos{
-	display:block;
+	/*display:block;*/
+  	visibility: visible;
+  	opacity: 1;
 }
 .docedit_document_body:hover{
 	border-top: 1px dashed #cccaca;
@@ -89,10 +95,15 @@
 
 
 .docedit_document_option_read_only{
-	display:none;
+	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 600ms, visibility 600ms;
+  	-webkit-transition: opacity 600ms, visibility 600ms;
+  	
 	background: #afd0de;
 	padding: 3px;
 }
 .docedit_document_body:hover .docedit_document_option_read_only, .docedit_document_body:focus .docedit_document_option_read_only{
-	display:inline;
+  	visibility: visible;
+  	opacity: 1;
 }

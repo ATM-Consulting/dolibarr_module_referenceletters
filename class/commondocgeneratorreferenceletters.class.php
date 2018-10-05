@@ -401,6 +401,32 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		if (! empty($object)) {
             dol_include_once('/core/class/extrafields.class.php');
+            if(is_array($object)) 
+            {
+                $Tfields = array_keys($object);
+            
+                if (!empty($Tfields) && strpos($Tfields[0], 'options_') !== false)
+                {
+                    $Tef = array();
+                    foreach ($Tfields as $k => $v){
+                        $tmp = explode('options_', $v);
+                        $Tef[$v] = $tmp[1];
+                    }
+                    
+                    $TExtrafields = array();
+                    $sql = "SELECT name, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE name in ('". implode("','", $Tef) . "') AND entity in (0, " . $conf->entity . ")";
+                    
+                    $resql = $db->query($sql);
+                    if ($resql && $db->num_rows($resql))
+                    {
+                        while ($obj = $db->fetch_object($resql))
+                        {
+                            $TExtrafields['options_'.$obj->name]['param'] = $obj->param;
+                            $TExtrafields['options_'.$obj->name]['type'] = $obj->type;
+                        }
+                    }
+                }
+            }
             
 			foreach ( $object as $key => $value ) {
 
@@ -413,30 +439,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if (! is_array($value) && ! is_object($value)) {
 				    if (strpos($key, 'options_') !== false){
-				        $tmp = explode('options_', $key);
-				        $efcode = $tmp[1];
-				        $sql = "SELECT type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE name = '". $efcode . "' AND entity in (0, " . $conf->entity . ")";
-				        $res = $db->query($sql);
-				        if ($res && $db->num_rows($res))
-				        {
-				            $obj = $db->fetch_object($res);
+				        
+				        if ($TExtrafields[$key]['type'] == "sellist")
+			            {
+			                $param = unserialize($TExtrafields[$key]['param']);
+			                $tmp2 = array_keys($param['options']);
+			                $params = explode(":", $tmp2[0]);
 
-				            if ($obj->type == "sellist")
-				            {
-				                $param = unserialize($obj->param);
-				                $tmp2 = array_keys($param['options']);
-				                $params = explode(":", $tmp2[0]);
-
-				                $sqlname = "SELECT ".$params[1]." FROM ".MAIN_DB_PREFIX.$params[0]." WHERE ".$params[2]." = " . $value;
-				                $resname = $db->query($sqlname);
-				                
-				                if($resname && $db->num_rows($resname))
-				                {
-				                    $obj2 = $db->fetch_object($resname);
-				                    $value = $obj2->{$params[1]};
-				                }
-				            }
-				        }
+			                $sqlname = "SELECT ".$params[1]." FROM ".MAIN_DB_PREFIX.$params[0]." WHERE ".$params[2]." = " . $value;
+			                $resname = $db->query($sqlname);
+			                
+			                if($resname && $db->num_rows($resname))
+			                {
+			                    $obj2 = $db->fetch_object($resname);
+			                    $value = $obj2->{$params[1]};
+			                }
+			            }
 
 				    }
 					elseif (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')

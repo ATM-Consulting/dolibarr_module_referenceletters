@@ -395,13 +395,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '') {
-	    global $db, $conf;
+	    global $db, $conf, $TExtrafields;
 	    
 		$array_other = array();
 
 		if (! empty($object)) {
             dol_include_once('/core/class/extrafields.class.php');
-            if(is_array($object)) 
+            if(is_array($object)&& empty($TExtrafields)) 
             {
                 $Tfields = array_keys($object);
             
@@ -425,7 +425,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                             $TExtrafields['options_'.$obj->name]['type'] = $obj->type;
                         }
                     }
+                    
                 }
+                
             }
             
 			foreach ( $object as $key => $value ) {

@@ -13,6 +13,13 @@
 	-webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
 	-moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
 	box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+     user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
 
@@ -30,7 +37,9 @@
   	transition: border-color 600ms;
   	-webkit-transition: border-color 600ms;
 }
-.docedit_document_body .docedit_infos{
+.docedit_document_body .docedit_infos, 
+.docedit_document_body.ui-sortable-helper:hover .docedit_infos, 
+.docedit_document_body.ui-sortable-helper:focus docedit_infos{
 	position: absolute;
 	/*display:none;*/
 	visibility: hidden;
@@ -48,9 +57,13 @@
 	border-bottom: 1px dashed #cccaca;
 }
 
+.docedit_document_body.ui-sortable-helper{
+  	opacity: 0.4;
+}
+
 .docedit_document_body_text{
-	overflow-x: scroll;
-	min-height:2em;
+	overflow-x: auto;
+	min-height:4em;
 }
 
 
@@ -96,8 +109,13 @@
 	display:block;
 }
 
-
-.docedit_document_option_read_only{
+.ui-sortable-helper{
+	
+	
+}
+.docedit_document_option_read_only, 
+.docedit_document_body.ui-sortable-helper:hover .docedit_document_option_read_only, 
+.docedit_document_body.ui-sortable-helper:focus .docedit_document_option_read_only{
 	visibility: hidden;
   	opacity: 0;
   	transition: opacity 600ms, visibility 600ms;
@@ -110,3 +128,9 @@
   	visibility: visible;
   	opacity: 1;
 }
+
+.handle{
+	cursor: grab;
+}
+
+

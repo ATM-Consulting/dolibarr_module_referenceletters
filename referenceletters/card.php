@@ -340,12 +340,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters)>0) {
 
-		
+		$pageCurrentNum = 1;
 		
 		print '<div class="underbanner clearboth"></div>';
-		print '<div class="docedit_docboard">';
+		print '<div  id="sortablezone" class="docedit_docboard">';
 		
-		print '<div class="docedit_document">';
+		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
 		print '<div class="docedit_document_head"><!-- END docedit_document_head --></div>';
 		
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
@@ -354,11 +354,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
 		        
 		        // first close page
-		        print '<div class="docedit_document_footer"><!-- END docedit_document_footer --></div>';
+		        print '<div class="sortable  docedit_document_footer"><!-- END docedit_document_footer --></div>';
 		        print '<!-- END docedit_document --></div>';
 		        
 		        // add break page element
-		        print '<div class="docedit_document_pagebreak">';
+		        print '<div class="sortable sortabledisable docedit_document_pagebreak">';
 		        if ($line_chapter->content_text=='@breakpagenohead@')
 		        {
 		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
@@ -372,13 +372,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '</div>';
 		        
 		        // start new page
-		        print '<div class="docedit_document">';
-		        print '<div class="docedit_document_head"><!-- END docedit_document_head --></div>';
+		        $pageCurrentNum++;
+		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
+		        print '<div class="sortable docedit_document_head"><!-- END docedit_document_head --></div>';
 		        
 		        
 		    } else {
 		        
-		        print '<div class="docedit_document_body">';
+		        print '<div class="sortable  docedit_document_body">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -412,7 +413,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		  
 		        //print $langs->trans('RefLtrText');
-		        print '<div class="docedit_document_body_text">';
+		        $handle = $user->rights->referenceletters->write && !empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)?'handle':'';
+		        print '<div class="docedit_document_body_text '.$handle. '" >';
 		        print $line_chapter->content_text;
 		        print '<!-- END docedit_document_body_text --></div>';
 		        
@@ -451,106 +453,32 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		
 		print '<!-- end docedit_docboard --></div>';
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		/*print '<table class="border" width="100%">';
-		print '<tr class="liste_titre"><td>'. img_picto('',dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 'class="valignmiddle" id="pictotitle"', 1) . ' ' . $langs->trans("RefLtrChapters");
-		print '</td></tr>';
-		
-		
-		foreach ($object_chapters->lines_chapters as $line_chapter) {
-			if ($line_chapter->content_text=='@breakpage@') {
-				print '<tr class="oddeven"><td><table class="border" width="100%">';
-				print '<tr><td style="text-align:center;font-weight:bold">';
-				print $langs->trans('RefLtrPageBreak');
-				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
-				print '</td></tr>';
-				print '</table></td></tr>';
-			} elseif ($line_chapter->content_text=='@breakpagenohead@') {
-				print '<tr class="oddeven"><td><table class="border" width="100%">';
-				print '<tr><td style="text-align:center;font-weight:bold">';
-				print $langs->trans('RefLtrAddPageBreakWithoutHeader');
-				print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
-				print '</td></tr>';
-				print '</table></td><tr>';
-			} else {
-				print '<tr class="oddeven"><td><table class="border" width="100%">';
-
-				if ($user->rights->referenceletters->write) {
-					print '<tr><td rowspan="6" width="20px">';
-					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-					print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
-					print '</td></tr>';
-				}
-
-				if (! empty($conf->global->MAIN_MULTILANGS))
-				{
-					print '<tr>';
-					print '<td  width="20%">';
-					print $langs->trans('RefLtrLangue');
-					print '</td>';
-					print '<td>';
-					$langs->load("languages");
-					$labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
-					print $labellang;
-					print '</td>';
-					print '</tr>';
-				}
-
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrTitle');
-				print '</td>';
-				print '<td>';
-				print $line_chapter->title;
-				print '</td>';
-				print '</tr>';
-
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrText');
-				print '</td>';
-				print '<td>';
-				print $line_chapter->content_text;
-				print '</td>';
-				print '</tr>';
-
-				print '<tr>';
-				print '<td  width="20%">';
-				print $langs->trans('RefLtrOption');
-				print '</td>';
-				print '<td>';
-				if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
-					foreach($line_chapter->options_text as $key=>$option_text) {
-						print '<input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'">'.$option_text.'<br>';
-					}
-				}
-				print '</td>';
-				print '</tr>';
-
-				print '<tr>';
-				print '<td width="20%">';
-				print $langs->trans('RefLtrReadOnly');
-				print '</td>';
-				print '<td>';
-				print '<input type="checkbox" name="refltrreadonly" size="20" disabled="disabled" '.(!empty($line_chapter->readonly)?'checked="checked"':'').' value="1"/>';
-				print '</td>';
-				print '</tr>';
-
-				print '</table></td></tr>';
-			}
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE))
+		{
+		    // experimental, not finish
+		    print '<script>$( function() {';
+		    
+		    $connectedWith=array();
+		    for ($i = 1; $i <= $pageCurrentNum; $i++){
+		        $connectedWith[] = '#page-'.$i;
+		    }
+		    
+		    for ($i = 1; $i <= $pageCurrentNum; $i++){
+		        
+		        print '
+		        $( "#page-'.$i.'" ).sortable({
+		            placeholder: "ui-state-highlight",
+		            connectWith: "'.implode(',', $connectedWith).'",
+		            items: ".sortable:not(.sortabledisable)",
+		            handle: ".handle"
+		          });
+                ';
+		        
+		    }
+		    
+		    print '} );</script>';
 		}
-		print '</table>';
-		*/
+		
 		
 	}
 

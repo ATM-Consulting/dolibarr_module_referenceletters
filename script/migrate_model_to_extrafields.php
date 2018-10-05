@@ -23,16 +23,16 @@ if(!defined('DB_HOST')) {
 global $db;
 
 $TTables = array(
-    'facture'
-    ,'commande'
-    ,'contrat'
-    ,'propal'
-    ,'societe'
-    ,'supplier_proposal'
-    ,'supplier_order'
+    'facture'=>'facture'
+    ,'commande'=>'commande'
+    ,'commande_fournisseur'=>'supplier_order'
+    ,'contrat'=>'contrat'
+    ,'propal'=>'propal'
+    ,'societe'=>'societe'
+    ,'supplier_proposal'=>'supplier_proposal'
 );
 
-foreach ($TTables as $table)
+foreach ($TTables as $table => $element)
 {
     $sql = "SELECT t.rowid, t.model_pdf FROM " . MAIN_DB_PREFIX . $table . " as t WHERE model_pdf LIKE '%rfltr_%'";
     $resql = $db->query($sql);

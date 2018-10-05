@@ -287,32 +287,34 @@ class ActionsReferenceLetters
 
 			$(document).ready(function(){
 				var tab = new Array();
-				var modelgeneric = $("#model").find('option[value=rfltr_<?php print $object->element; ?>]');
+				var modelgeneric = $("#model").find('option[value=rfltr_<?php print ($object->element !== 'order_supplier') ? $object->element : $object->table_element; ?>]');
 				console.log(modelgeneric);
 				if (modelgeneric.length > 0)
 				{
 					modelgeneric[0].remove();
-    				<?php
-    				$defaultset=false;
-    				foreach($TModelsID as &$TData) {
-    				    $selected = false;
-    				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
-    				        $selected = true;
-    				        $defaultset=true;
-    				    }
-    				?>
-    					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
-    					tab.push(option);
-    					$("#model").append(tab);
-        				<?php
-        				if (!empty($TData['default_doc']) && !$defaultset) {?>
-        					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
-        				<?php
-    						$defaultset=true;
-    				    }
-    				} 
-    				?>
 				}
+				
+				<?php
+				$defaultset=false;
+				foreach($TModelsID as &$TData) {
+				    $selected = false;
+				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
+				        $selected = true;
+				        $defaultset=true;
+				    }
+				?>
+					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
+					tab.push(option);
+					$("#model").append(tab);
+    				<?php
+    				if (!empty($TData['default_doc']) && !$defaultset) {?>
+    					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
+    				<?php
+						$defaultset=true;
+				    }
+				} 
+				?>
+				
 				$("#model").change(function(e){
 					id_model = parseInt($(this).val().replace('rfltr_', ''));
 					if(isNaN(id_model)) id_model = '';
@@ -334,14 +336,15 @@ class ActionsReferenceLetters
 
 				$('#builddoc_generatebutton').click(function(e){
 					e.preventDefault();
-					id_model = parseInt($("#model").val().replace('rfltr_', ''));
-					
+					model = $("#model").val();
+					id_model = parseInt(model.substring(6));
+					console.log(id_model);
 					if($.isNumeric(id_model))
 					{
 						var html = $('option[value='+$('#model').val()+']').text();
-						var option = '<option value="rfltr_<?php print $object->element; ?>">'+html+'</option>';
+						var option = '<option value="rfltr_<?php print ($object->element !== 'order_supplier') ? $object->element : $object->table_element; ?>">'+html+'</option>';
 						$("#model").append(option);
-						$("#model").val('rfltr_<?php print $object->element; ?>').change();
+						$("#model").val('rfltr_<?php print ($object->element !== 'order_supplier') ? $object->element : $object->table_element; ?>').change();
 					}
 
 					$('#builddoc_form').submit();

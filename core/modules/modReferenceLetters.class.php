@@ -632,7 +632,7 @@ class modReferenceLetters extends DolibarrModules
 	 * @return int if OK, 0 if KO
 	 */
 	function init($options = '') {
-	    global $db;
+	    global $db, $conf;
 	    
 		$sql = array ();
 
@@ -652,6 +652,11 @@ class modReferenceLetters extends DolibarrModules
 		
 		$reinstalltemplate=false;
 		dol_include_once('/referenceletters/script/create-maj-base.php');
+		if (empty($conf->global->REF_LETTER_MIGRATED))
+		{
+		    dolibarr_set_const($db, "REF_LETTER_MIGRATED", '1', 'chaine', 0, '', $conf->entity);
+		    dol_include_once('/referenceletters/script/migrate_model_to_extrafields.php');
+		}
 
 		return $this->_init($sql, $options);
 	}

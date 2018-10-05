@@ -395,10 +395,41 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '') {
+	    global $db, $conf, $TExtrafields;
+	    
 		$array_other = array();
 
 		if (! empty($object)) {
-
+            dol_include_once('/core/class/extrafields.class.php');
+            if(is_array($object)&& empty($TExtrafields)) 
+            {
+                $Tfields = array_keys($object);
+            
+                if (!empty($Tfields) && strpos($Tfields[0], 'options_') !== false)
+                {
+                    $Tef = array();
+                    foreach ($Tfields as $k => $v){
+                        $tmp = explode('options_', $v);
+                        $Tef[$v] = $tmp[1];
+                    }
+                    
+                    $TExtrafields = array();
+                    $sql = "SELECT name, type, param FROM ".MAIN_DB_PREFIX."extrafields WHERE name in ('". implode("','", $Tef) . "') AND entity in (0, " . $conf->entity . ")";
+                    
+                    $resql = $db->query($sql);
+                    if ($resql && $db->num_rows($resql))
+                    {
+                        while ($obj = $db->fetch_object($resql))
+                        {
+                            $TExtrafields['options_'.$obj->name]['param'] = $obj->param;
+                            $TExtrafields['options_'.$obj->name]['type'] = $obj->type;
+                        }
+                    }
+                    
+                }
+                
+            }
+            
 			foreach ( $object as $key => $value ) {
 
 				// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
@@ -409,7 +440,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 
 				if (! is_array($value) && ! is_object($value)) {
-					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
+				    if (strpos($key, 'options_') !== false){
+				        
+				        if ($TExtrafields[$key]['type'] == "sellist")
+			            {
+			                $param = unserialize($TExtrafields[$key]['param']);
+			                $tmp2 = array_keys($param['options']);
+			                $params = explode(":", $tmp2[0]);
+
+			                $sqlname = "SELECT ".$params[1]." FROM ".MAIN_DB_PREFIX.$params[0]." WHERE ".$params[2]." = " . $value;
+			                $resname = $db->query($sqlname);
+			                
+			                if($resname && $db->num_rows($resname))
+			                {
+			                    $obj2 = $db->fetch_object($resname);
+			                    $value = $obj2->{$params[1]};
+			                }
+			            }
+
+				    }
+					elseif (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
 						$value = price($value);
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {

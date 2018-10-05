@@ -343,11 +343,130 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		
 		
 		print '<div class="underbanner clearboth"></div>';
-		print '<div class="docedit_docboard"><div class="docedit_document">';
+		print '<div class="docedit_docboard">';
 		
-		print '<table class="border" width="100%">';
+		print '<div class="docedit_document">';
+		print '<div class="docedit_document_head"><!-- END docedit_document_head --></div>';
+		
+		foreach ($object_chapters->lines_chapters as $line_chapter) {
+		    
+		    
+		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
+		        
+		        // first close page
+		        print '<div class="docedit_document_footer"><!-- END docedit_document_footer --></div>';
+		        print '<!-- END docedit_document --></div>';
+		        
+		        // add break page element
+		        print '<div class="docedit_document_pagebreak">';
+		        if ($line_chapter->content_text=='@breakpagenohead@')
+		        {
+		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		        }
+		        else // if $line_chapter->content_text=='@breakpage@' 
+		        {
+		            print $langs->trans('RefLtrPageBreak');
+		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		        }
+		        print '</div>';
+		        
+		        // start new page
+		        print '<div class="docedit_document">';
+		        print '<div class="docedit_document_head"><!-- END docedit_document_head --></div>';
+		        
+		        
+		    } else {
+		        
+		        print '<div class="docedit_document_body">';
+		        
+		        // Button and infos
+		        print '<div class="docedit_infos docedit_infos_left">';
+		        
+		       
+		        if ($user->rights->referenceletters->write) {
+		            
+		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            
+		        }
+		        
+		        print '<!-- END docedit_infos --></div>';
+		        
+		        
+		        print '<div class="docedit_infos docedit_infos_top">';
+		            
+		        //print $langs->trans('RefLtrTitle');
+		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
+		        
+		        if (! empty($conf->global->MAIN_MULTILANGS))
+		        {
+		           
+		            print $langs->trans('RefLtrLangue');
+		            $langs->load("languages");
+		            $labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
+		            print $labellang;
+		        }
+		        print '<!-- END docedit_infos_top --></div>';
+		       
+		        
+		  
+		        //print $langs->trans('RefLtrText');
+		        print '<div class="docedit_document_body_text">';
+		        print $line_chapter->content_text;
+		        print '<!-- END docedit_document_body_text --></div>';
+		        
+		        
+		        
+		        if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
+		            
+		            print '<div class="docedit_document_option">';
+		            
+		            
+		            print $langs->trans('RefLtrOption');
+		            
+		            
+		            if(!empty($line_chapter->readonly))
+		            {
+		                print ' <span class="docedit_document_option_read_only" >'.$langs->trans('RefLtrReadOnly').'</span>';
+		            }
+		            
+		            
+		            foreach($line_chapter->options_text as $key=>$option_text) {
+		                print '<label class="docedit_label" ><input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'"> '.$option_text.'</label>';
+		            }
+		            print '<!-- END docedit_document_option --></div>';
+		        } 
+		       
+		        
+		       
+		        
+		        
+		        print '<!-- end docedit_document_body --></div>';
+		    }
+		}
+		
+		print '<div class="docedit_document_footer"><!-- END docedit_document_footer --></div>';
+		print '<!-- END docedit_document --></div>';
+		
+		print '<!-- end docedit_docboard --></div>';
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*print '<table class="border" width="100%">';
 		print '<tr class="liste_titre"><td>'. img_picto('',dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 'class="valignmiddle" id="pictotitle"', 1) . ' ' . $langs->trans("RefLtrChapters");
 		print '</td></tr>';
+		
+		
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
 			if ($line_chapter->content_text=='@breakpage@') {
 				print '<tr class="oddeven"><td><table class="border" width="100%">';
@@ -431,8 +550,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 			}
 		}
 		print '</table>';
+		*/
 		
-		print '<!-- end docedit_docboard --></div><!-- end docedit_document --></div>';
 	}
 
 	print "</div>\n";

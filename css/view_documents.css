@@ -21,14 +21,8 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
      user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
-
-
-.docedit_document_head{
-	padding:1.5cm 1.5cm 0 1.5cm ;
-	position: relative;
-}
-.docedit_document_body{
-	padding:0cm 1.5cm;
+.docedit_document_bloc{
+	
 	position: relative;
 	
 	border-top: 1px dashed #fff;
@@ -37,9 +31,17 @@
   	transition: border-color 600ms;
   	-webkit-transition: border-color 600ms;
 }
-.docedit_document_body .docedit_infos, 
-.docedit_document_body.ui-sortable-helper:hover .docedit_infos, 
-.docedit_document_body.ui-sortable-helper:focus docedit_infos{
+
+.docedit_document_head{
+	padding:1.5cm 1.5cm 0 1.5cm ;
+	position: relative;
+}
+.docedit_document_body{
+	padding:0cm 1.5cm;
+}
+.docedit_document_bloc .docedit_infos, 
+.docedit_document_bloc.ui-sortable-helper:hover .docedit_infos, 
+.docedit_document_bloc.ui-sortable-helper:focus docedit_infos{
 	position: absolute;
 	/*display:none;*/
 	visibility: hidden;
@@ -47,12 +49,12 @@
   	transition: opacity 600ms, visibility 600ms;
   	-webkit-transition: opacity 600ms, visibility 600ms;
 }
-.docedit_document_body:hover .docedit_infos, .docedit_document_body:focus .docedit_infos{
+.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos{
 	/*display:block;*/
   	visibility: visible;
   	opacity: 1;
 }
-.docedit_document_body:hover{
+.docedit_document_bloc:hover{
 	border-top: 1px dashed #cccaca;
 	border-bottom: 1px dashed #cccaca;
 }
@@ -133,4 +135,9 @@
 	cursor: grab;
 }
 
+.ui-state-highlight{
+	height:100px;
+	background: #e0f6ff;
+	border:1px dotted #afd0de;
+}
 

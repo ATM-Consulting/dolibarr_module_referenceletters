@@ -346,7 +346,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div  id="sortablezone" class="docedit_docboard">';
 		
 		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
-		print '<div class="docedit_document_head"><!-- END docedit_document_head --></div>';
+		
+		_print_docedit_header($object);
 		
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
 		    
@@ -354,7 +355,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
 		        
 		        // first close page
-		        print '<div class="sortable  docedit_document_footer"><!-- END docedit_document_footer --></div>';
+		        _print_docedit_footer($object);
 		        print '<!-- END docedit_document --></div>';
 		        
 		        // add break page element
@@ -363,23 +364,24 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        {
 		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
 		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            $norepeat=true;
 		        }
 		        else // if $line_chapter->content_text=='@breakpage@' 
 		        {
 		            print $langs->trans('RefLtrPageBreak');
 		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            $norepeat=false;
 		        }
 		        print '</div>';
 		        
 		        // start new page
 		        $pageCurrentNum++;
 		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
-		        print '<div class="sortable docedit_document_head"><!-- END docedit_document_head --></div>';
-		        
+		        _print_docedit_header($object, $norepeat);
 		        
 		    } else {
 		        
-		        print '<div class="sortable  docedit_document_body">';
+		        print '<div class="sortable  docedit_document_body docedit_document_bloc">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -448,7 +450,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    }
 		}
 		
-		print '<div class="docedit_document_footer"><!-- END docedit_document_footer --></div>';
+		_print_docedit_footer($object);
+		
 		print '<!-- END docedit_document --></div>';
 		
 		print '<!-- end docedit_docboard --></div>';
@@ -524,3 +527,62 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 // Page end
 llxFooter();
 $db->close();
+
+function _print_docedit_footer($object){
+    global $langs, $conf, $user;
+    print '<div class="docedit_document_footer docedit_document_bloc">';
+    
+    
+    // Button and infos
+    print '<div class="docedit_infos docedit_infos_left">';
+    if ($user->rights->referenceletters->write) {
+        print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+    }
+    print '<!-- END docedit_infos --></div>';
+    
+    
+    print '<div class="docedit_infos docedit_infos_top">';
+    //print $langs->trans('RefLtrTitle');
+    print '<span class="docedit_title" >'. $langs->trans('RefLtrFooterTab').'</span>';
+    print '</div>';
+    
+    
+    if($object->use_custom_footer){
+        print $object->footer;
+    }
+    else{
+        // TODO : add default footer
+    }
+    
+    print '<!-- END docedit_document_footer --></div>';
+}
+
+
+function _print_docedit_header($object, $norepeat=false){
+    global $langs, $conf, $user;
+    print '<div class="docedit_document_head docedit_document_bloc">';
+    
+    // Button and infos
+    print '<div class="docedit_infos docedit_infos_left">';
+    if ($user->rights->referenceletters->write) {
+        print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
+    }
+    
+    print '<!-- END docedit_infos --></div>';
+    
+    
+    print '<div class="docedit_infos docedit_infos_top">';
+    //print $langs->trans('RefLtrTitle');
+    print '<span class="docedit_title" >'. $langs->trans('RefLtrHeaderTab').'</span>';
+    print '</div>';
+    
+    if($object->use_custom_header){
+        print $object->header;
+    }
+    else{
+        // TODO : add default header
+    }
+    
+    print '<!-- END docedit_document_head --></div>';
+}
+

@@ -632,13 +632,31 @@ class modReferenceLetters extends DolibarrModules
 	 * @return int if OK, 0 if KO
 	 */
 	function init($options = '') {
+	    global $db, $conf;
+	    
 		$sql = array ();
 
 		$result = $this->load_tables();
 
 		define('INC_FROM_DOLIBARR', true);
+		
+		$ext = new ExtraFields($db);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'facture', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'thirdparty', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'propal', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'contrat', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'socpeople', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'commande', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'commande_fournisseur', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'supplier_proposal', 0, 0, '', '', 1, '', 0, 1);
+		
 		$reinstalltemplate=false;
 		dol_include_once('/referenceletters/script/create-maj-base.php');
+		if (empty($conf->global->REF_LETTER_MIGRATED))
+		{
+		    dolibarr_set_const($db, "REF_LETTER_MIGRATED", '1', 'chaine', 0, '', $conf->entity);
+		    dol_include_once('/referenceletters/script/migrate_model_to_extrafields.php');
+		}
 
 		return $this->_init($sql, $options);
 	}

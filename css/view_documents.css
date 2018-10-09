@@ -7,7 +7,6 @@
 	
 	margin-left: auto;
     margin-right: auto;
-	width: 19.5cm;
 	background: #fff;
 	
 	-webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
@@ -21,6 +20,25 @@
     -ms-user-select: none; /* Internet Explorer/Edge */
      user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
+
+.docedit_document.portrait{
+	width: 19.5cm;
+}
+.docedit_document.landscape{
+	width: 29.7cm;
+}
+
+@media only screen and (max-width: calc(12.5cm + 250px) ) {
+    .docedit_document.portrait{
+		width: auto;
+	}
+}
+@media only screen and (max-width: calc(31.7cm + 250px) ) {
+    .docedit_document.landscape{
+		width: auto;
+	}
+}
+
 .docedit_document_bloc{
 	
 	position: relative;

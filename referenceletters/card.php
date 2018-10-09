@@ -345,7 +345,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div class="underbanner clearboth"></div>';
 		print '<div  id="sortablezone" class="docedit_docboard">';
 		
-		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
+		print '<div class="info">'.$langs->trans('doceditinfo_viewlimit').'</div>';
+		$classOrientation = "portrait";
+		if(!empty($object->use_landscape_format))
+		{
+		    $classOrientation = "landscape";
+		}
+		
+		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		
 		_print_docedit_header($object);
 		
@@ -376,7 +383,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        // start new page
 		        $pageCurrentNum++;
-		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document" data-page="'.$pageCurrentNum.'" >';
+		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		        _print_docedit_header($object, $norepeat);
 		        
 		    } else {
@@ -560,6 +567,11 @@ function _print_docedit_footer($object){
 
 function _print_docedit_header($object, $norepeat=false){
     global $langs, $conf, $user;
+    
+    if($norepeat){
+        return;
+    }
+    
     print '<div class="docedit_document_head docedit_document_bloc">';
     
     // Button and infos
@@ -580,7 +592,26 @@ function _print_docedit_header($object, $norepeat=false){
         print $object->header;
     }
     else{
-        // TODO : add default header
+        //var_dump($object->element_type);
+        // Add default header
+        if($object->element_type == 'invoice'){
+            print $conf->global->INVOICE_FREE_TEXT;
+        }
+        elseif($object->element_type == 'propal'){
+            print $conf->global->PROPOSAL_FREE_TEXT;
+        }
+        elseif($object->element_type == 'order'){
+            print $conf->global->ORDER_FREE_TEXT;
+        }
+        elseif($object->element_type == 'contract'){
+            print $conf->global->CONTRACT_FREE_TEXT;
+        }
+        elseif($object->element_type == 'order_supplier'){
+            print $conf->global->SUPPLIER_ORDER_FREE_TEXT;
+        }
+        elseif($object->element_type == 'supplier_proposal'){
+            print $conf->global->SUPPLIER_PROPOSAL_FREE_TEXT;
+        }
     }
     
     print '<!-- END docedit_document_head --></div>';

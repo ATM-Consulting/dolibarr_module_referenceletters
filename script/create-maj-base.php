@@ -1197,7 +1197,18 @@ Saut de page dans une boucle (ex: un stagiaire par page)<br />
 {line_nom_societe} ({line_code_societe})</strong><br />
 <br />
 @breakpage@<br />
-[!-- END TStagiairesSession --]';
+[!-- END TStagiairesSession --]
+
+Saut de page dans une boucle (ex: un stagiaire PRESENT ou PARTIELLEMENT par page)<br />
+<br />
+[!-- BEGIN TStagiairesSessionPresent --]<br />
+<strong>{line_civilite} {line_nom}&nbsp;{line_prenom}<br />
+<br />
+{line_nom_societe} ({line_code_societe})</strong><br />
+<br />
+@breakpage@<br />
+[!-- END TStagiairesSessionPresent --]
+';
 
 		$chapter->create($user);
 	}

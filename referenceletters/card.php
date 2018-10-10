@@ -568,9 +568,7 @@ function _print_docedit_footer($object){
 function _print_docedit_header($object, $norepeat=false){
     global $langs, $conf, $user;
     
-    if($norepeat){
-        return;
-    }
+    
     
     print '<div class="docedit_document_head docedit_document_bloc">';
     
@@ -587,30 +585,32 @@ function _print_docedit_header($object, $norepeat=false){
     //print $langs->trans('RefLtrTitle');
     print '<span class="docedit_title" >'. $langs->trans('RefLtrHeaderTab').'</span>';
     print '</div>';
-    
-    if($object->use_custom_header){
-        print $object->header;
-    }
-    else{
-        //var_dump($object->element_type);
-        // Add default header
-        if($object->element_type == 'invoice'){
-            print $conf->global->INVOICE_FREE_TEXT;
+    if(!$norepeat)
+    {
+        if($object->use_custom_header){
+            print $object->header;
         }
-        elseif($object->element_type == 'propal'){
-            print $conf->global->PROPOSAL_FREE_TEXT;
-        }
-        elseif($object->element_type == 'order'){
-            print $conf->global->ORDER_FREE_TEXT;
-        }
-        elseif($object->element_type == 'contract'){
-            print $conf->global->CONTRACT_FREE_TEXT;
-        }
-        elseif($object->element_type == 'order_supplier'){
-            print $conf->global->SUPPLIER_ORDER_FREE_TEXT;
-        }
-        elseif($object->element_type == 'supplier_proposal'){
-            print $conf->global->SUPPLIER_PROPOSAL_FREE_TEXT;
+        else{
+            //var_dump($object->element_type);
+            // Add default header
+            if($object->element_type == 'invoice'){
+                print $conf->global->INVOICE_FREE_TEXT;
+            }
+            elseif($object->element_type == 'propal'){
+                print $conf->global->PROPOSAL_FREE_TEXT;
+            }
+            elseif($object->element_type == 'order'){
+                print $conf->global->ORDER_FREE_TEXT;
+            }
+            elseif($object->element_type == 'contract'){
+                print $conf->global->CONTRACT_FREE_TEXT;
+            }
+            elseif($object->element_type == 'order_supplier'){
+                print $conf->global->SUPPLIER_ORDER_FREE_TEXT;
+            }
+            elseif($object->element_type == 'supplier_proposal'){
+                print $conf->global->SUPPLIER_PROPOSAL_FREE_TEXT;
+            }
         }
     }
     

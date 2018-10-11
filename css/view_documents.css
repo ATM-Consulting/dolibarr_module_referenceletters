@@ -155,7 +155,12 @@
 
 .ui-state-highlight{
 	height:100px;
+	line-height: 100px;
+	text-align: center;
 	background: #e0f6ff;
 	border:1px dotted #afd0de;
+	color:#afd0de;
+	font-weight: bold;
+	font-size:2.5em;
 }
 

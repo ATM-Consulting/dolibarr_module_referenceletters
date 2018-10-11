@@ -352,7 +352,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    $classOrientation = "landscape";
 		}
 		
-		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
+		print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		
 		_print_docedit_header($object);
 		
@@ -383,12 +383,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        // start new page
 		        $pageCurrentNum++;
-		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
+		        print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		        _print_docedit_header($object, $norepeat);
 		        
 		    } else {
 		        
-		        print '<div class="sortable  docedit_document_body docedit_document_bloc">';
+		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable  docedit_document_body docedit_document_bloc">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -468,30 +468,49 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    // experimental, not finish
 		    print '<script>$( function() {';
 		    
-		    $connectedWith=array();
-		    for ($i = 1; $i <= $pageCurrentNum; $i++){
-		        $connectedWith[] = '#page-'.$i;
-		    }
-		    
-		    for ($i = 1; $i <= $pageCurrentNum; $i++){
-		        
-		        print '
-		        $( "#page-'.$i.'" ).sortable({
-		            placeholder: "ui-state-highlight",
-		            connectWith: "'.implode(',', $connectedWith).'",
-		            items: ".sortable:not(.sortabledisable)",
-		            handle: ".handle"
-		          });
-                ';
-		        
-		    }
+
+	        print '
+	        $( ".docedit_document" ).sortable({
+                cursor: "move",
+	            placeholder: "ui-state-highlight",
+	            connectWith: ".docedit_document",
+	            items: ".sortable:not(.sortabledisable)",
+	            handle: ".handle",
+                stop: function (event, ui) {
+						
+						console.log("onstop");
+						console.log(cleanSerialize($(this).sortable("serialize")));
+						
+                       // var pageid = $(this).attr("id");
+                       // console.log($(this).attr("id"));
+                        //var footer = $(this).find(".docedit_document_footer"); 
+                        //footer.append($(this));
+
+						$.ajax({
+		    	            data: {
+								object_id: '.$object->id.',
+						    	roworder: cleanSerialize($(this).sortable("serialize")),
+                                set: "sortChapter"
+							},
+		    	            type: "POST",
+		    	            url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+		    	            success: function(data) {
+               	                console.log(data);
+		    	            }
+		    	        });
+		    	        
+		    	  },
+	          });
+            ';
+	        
+	    
 		    
 		    print '} );</script>';
 		}
 		
 		
 	}
-
+    print '<style>.ui-state-highlight:before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
 	print "</div>\n";
 
 	/*

@@ -510,7 +510,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		
 		
 	}
-    print '<style>.ui-state-highlight:before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
+    print '<style>.ui-state-highlight::before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
 	print "</div>\n";
 
 	/*

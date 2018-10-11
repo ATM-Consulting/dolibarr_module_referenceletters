@@ -43,6 +43,7 @@ $langs->load("referenceletters@referenceletters");
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$page = intval($page);
 
 
 // Search criteria

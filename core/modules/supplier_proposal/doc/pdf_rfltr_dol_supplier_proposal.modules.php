@@ -32,7 +32,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_supplier_proposal extends pdf_rfltr_default
+class pdf_rfltr_dol_supplier_proposal extends pdf_rfltr_default
 {
 	public $db;
 	public $name;

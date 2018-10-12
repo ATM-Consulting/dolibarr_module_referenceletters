@@ -32,7 +32,7 @@ $TTables = array(
     ,'supplier_proposal'=>'supplier_proposal'
 );
 
-foreach ($TTables as $table => $element)
+foreach ($TTables as $table => $model)
 {
     $sql = "SELECT t.rowid, t.model_pdf FROM " . MAIN_DB_PREFIX . $table . " as t WHERE model_pdf LIKE '%rfltr_%'";
     $resql = $db->query($sql);
@@ -63,7 +63,7 @@ foreach ($TTables as $table => $element)
                 
             }
         }
-        $updt = "UPDATE " . MAIN_DB_PREFIX . $table . " SET model_pdf = 'rfltr_" .$table. "' WHERE model_pdf LIKE '%rfltr_%'";
+        $updt = "UPDATE " . MAIN_DB_PREFIX . $table . " SET model_pdf = 'rfltr_dol_" .$model. "' WHERE model_pdf LIKE '%rfltr_%'";
         $db->query($updt);
     }
 }

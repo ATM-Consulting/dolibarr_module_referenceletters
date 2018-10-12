@@ -95,9 +95,9 @@ class pdf_rfltr_default extends CommonDocGenerator
 	 * @param Translate $outputlangs Lang output object
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($object, $outputlangs) {
+	function write_file(&$object, $outputlangs) {
 		global $user, $langs, $conf, $object, $db;
-        
+        $object->fetch_optionals();
 		$id_model = $object->array_options['options_rfltr_model_id'];
 		
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');

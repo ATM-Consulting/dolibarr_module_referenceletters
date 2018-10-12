@@ -225,7 +225,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @return mixed
 	 */
 	function setSubstitutions(&$object, $txt='') {
-		global $user, $mysoc;
+		global $user, $mysoc, $conf;
 
 		// User substitution value
 		$tmparray = $this->get_substitutionarray_user($user, $this->outputlangs);
@@ -312,7 +312,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Agsession') {
-			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$tmparray = $this->get_substitutionsarray_agefodd($object, $this->outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {

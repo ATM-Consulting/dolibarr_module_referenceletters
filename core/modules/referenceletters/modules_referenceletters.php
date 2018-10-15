@@ -162,7 +162,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		// Annule la modification de la méthode preOdfToOdf() de la class Odf (htdocs/includes/odtphp/odf.php) si on passe dans une boucle
 		$chapter_text = str_replace("<text:line-break/>", "\n", $chapter_text);
-		
+
 		return $chapter_text;
 	}
 	/**
@@ -250,7 +250,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$socobject = $object;
 		} else {
 			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
-				$socobject = $object->contact;
+				if (method_exists($object->contact, 'fetch_thirdparty')) {
+					$object->contact->fetch_thirdparty();
+					$socobject = $object->contact->thirdparty;
+				} else {
+					$socobject = $object->contact;
+				}
 			} else {
 				$socobject = $object->thirdparty;
 			}

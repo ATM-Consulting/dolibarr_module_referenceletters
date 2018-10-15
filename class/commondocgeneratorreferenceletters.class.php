@@ -424,7 +424,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$array_other['object_options_'.$key_opt] =  '';
 						$array_other['object_array_options_options_'.$key_opt] =  ''; // backward compatibility
 						// Attention, ce test est différent d'un isset()
-						if (array_key_exists('options_'.$key_opt, $object->array_options))
+						if (is_array($object->array_options) && count($object->array_options)>0 && array_key_exists('options_'.$key_opt, $object->array_options))
 						{
 							$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_'.$key_opt]);
 

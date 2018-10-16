@@ -397,12 +397,12 @@ class ActionsReferenceLetters
 				}
 				
 				<?php
-				$defaultset=false;
+				$defaultset=0;
 				foreach($TModelsID as &$TData) {
-				    $selected = false;
+				    $selected = 0;
 				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
-				        $selected = true;
-				        $defaultset=true;
+				        $selected = 1;
+				        $defaultset=1;
 				    }
 				?>
 					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
@@ -412,7 +412,7 @@ class ActionsReferenceLetters
     				if (!empty($TData['default_doc']) && !$defaultset) {?>
     					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
     				<?php
-						$defaultset=true;
+						$defaultset=1;
 				    }
 				} 
 				?>

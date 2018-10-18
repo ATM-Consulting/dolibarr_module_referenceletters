@@ -142,6 +142,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
+		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
+
 		return $resarray;
 	}
 

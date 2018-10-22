@@ -168,90 +168,25 @@ class ActionsReferenceLetters
 
 		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard'))) {
 
-		    /**
-		     *  Ancienne méthode de génération
-		     *  deprecated
-		     */
-// 			if($action === 'builddoc') {
+		    if($action === 'builddoc') {
 
-// 				$model = GETPOST('model');
+				$model = GETPOST('model');
 
-// 				// Récupération de l'id du modèle
-// 				if(strpos($model, 'rfltr_') !== false) {
+				// Récupération de l'id du modèle
+				if(strpos($model, 'rfltr_') !== false) {
 
-// 					dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
-// 					dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-
-// 					// Récupération l'id du modèle sélectionné
-// 					$models = explode('rfltr_', $model);
-// 					$id_model = $models[1];
+ 					// Récupération l'id du modèle sélectionné
+					$models = explode('rfltr_', $model);
+					$id_model = $models[1];
 					
-//                     if(is_numeric($id_model)) {
-//     					// Création et chargement d'une nouvelle instance de modèle
-//     					$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
-//     					$instance_rfltr = $instances[0];
-//     					if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
-//     					$instance_rfltr->create($user);
-    
-//     					if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
-//     					if (! empty($newlang))
-//     					{
-//     						$outputlangs = new Translate("",$conf);
-//     						$outputlangs->setDefaultLang($newlang);
-//     					}
-    
-//     					// Création du PDF
-//     					$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
-    
-//     					if($result > 0) {
-    
-//     						// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-//     						$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
-//     						$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
-//     						$file = $dir . '/' . $objectref . ".pdf";
-    
-//     						$objectref = dol_sanitizeFileName($object->ref);
-//     						$classname = get_class($object);
-//     						if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
-//     						$dir_dest = $conf->{strtolower($classname)}->dir_output;
-//     						if (empty($dir_dest)) {
-//     							dol_include_once('/referenceletters/class/referenceletters.class.php');
-//     							$refstatic = new ReferenceLetters($this->db);
-//     							if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
-//     								$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
-//     							}
-//     						}
-//     						if (empty($dir_dest)) {
-//     							setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
-//     						} else {
-//     							$dir_dest .= '/' . $objectref;
-//     							if (! file_exists($dir_dest))
-//     							{
-//     								dol_mkdir($dir_dest);
-//     							}
-//     							$file_dest = $dir_dest . '/' . $objectref . '.pdf';
-//     							$test=$conf->{strtolower(get_class($object))}->dir_output;
-    
-//     							dol_copy($file, $file_dest);
-//     						}
-    
-//     						//Update model_pdf comlumn (eg for invoice auto generation when input payment...)
-//     						$sql='UPDATE '.MAIN_DB_PREFIX.$object->table_element.' SET model_pdf=\''.$model.'\' WHERE rowid='.$object->id;
-//     						$resql=$this->db->query($sql);
-//     						if (!$resql) {
-//     							setEventMessage($this->db->lasterror,'errors');
-//     						}
-    
-//     						// Header sur la même page pour annuler le traitement standard de génération de PDF
-//     						$field_id = 'id';
-//     						if(get_class($object) === 'Facture') $field_id = 'facid';
-//     						header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
-    
-//     					}
-    
-//     				}
-// 				}
-// 			}
+					// MAJ de l'extrafield
+					$object->array_options['options_rfltr_model_id'] = intval($id_model);
+					$object->insertExtraFields();
+					
+					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier') ? $object->element : $object->table_element);
+					
+				}
+			}
 
 		}
 
@@ -417,35 +352,6 @@ class ActionsReferenceLetters
 				} 
 				?>
 				
-				$('#builddoc_generatebutton').click(function(e){
-					e.preventDefault();
-					model = $("#model").val();
-					id_model = parseInt(model.substring(6));
-					if(isNaN(id_model)) id_model = '';
-					$.ajax({ 
-                        url : "<?php echo $_SERVER['PHP_SELF']; ?>"
-                         ,data:{
-                             action: 'update_extras'
-                             ,attribute:'rfltr_model_id'
-                             ,id: '<?php print $object->id; ?>'
-                             ,options_rfltr_model_id: id_model
-                         }
-                         ,method:"post"
-                         ,dataType:'json'
-                    });
-                    
-					console.log(id_model);
-					if($.isNumeric(id_model))
-					{
-						var html = $('option[value='+$('#model').val()+']').text();
-						var option = '<option value="rfltr_dol_<?php print ($object->element !== 'order_supplier') ? $object->element : $object->table_element; ?>">'+html+'</option>';
-						$("#model").append(option);
-						$("#model").val('rfltr_dol_<?php print ($object->element !== 'order_supplier') ? $object->element : $object->table_element; ?>').change();
-					}
-
-					$('#builddoc_form').submit();
-					
-				});
 			});
 
 		</script>

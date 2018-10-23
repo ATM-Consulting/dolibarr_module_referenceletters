@@ -355,11 +355,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		
 		_print_docedit_header($object);
-		
+		$nbChapterInPage = 0;
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
 		    
 		    
 		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
+		        
+		        // reset nb chapters in page
+		        $nbChapterInPage = 0;
 		        
 		        // first close page
 		        _print_docedit_footer($object);
@@ -387,7 +390,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        _print_docedit_header($object, $norepeat);
 		        
 		    } else {
-		        
+		        $nbChapterInPage++;
 		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable  docedit_document_body docedit_document_bloc">';
 		        
 		        // Button and infos
@@ -477,7 +480,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	            items: ".sortable:not(.sortabledisable)",
 	            handle: ".handle",
                 stop: function (event, ui) {
-						
+						$(".slide-placeholder-animator").remove();
+
 						console.log("onstop");
 						console.log(cleanSerialize($(this).sortable("serialize")));
 						
@@ -500,6 +504,34 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    	        });
 		    	        
 		    	  },
+
+                revert: 150,
+                start: function(e, ui){
+                    
+                    placeholderHeight = ui.item.outerHeight();
+                    ui.placeholder.height(placeholderHeight + 15);
+                    $(\'<div class="slide-placeholder-animator" data-height="\' + placeholderHeight + \'"></div>\').insertAfter(ui.placeholder);
+                
+                },
+                change: function(event, ui) {
+                    
+                    ui.placeholder.stop().height(0).animate({
+                        height: ui.item.outerHeight() + 15
+                    }, 300);
+                    
+                    placeholderAnimatorHeight = parseInt($(".slide-placeholder-animator").attr("data-height"));
+                    
+                    $(".slide-placeholder-animator").stop().height(placeholderAnimatorHeight + 15).animate({
+                        height: 0
+                    }, 300, function() {
+                        $(this).remove();
+                        placeholderHeight = ui.item.outerHeight();
+                        $(\'<div class="slide-placeholder-animator" data-height="\' + placeholderHeight + \'"></div>\').insertAfter(ui.placeholder);
+                    });
+                    
+                },
+
+
 	          });
             ';
 	        
@@ -556,6 +588,9 @@ $db->close();
 
 function _print_docedit_footer($object){
     global $langs, $conf, $user;
+    
+    print '<div class="sortable .sortableHelper docedit_document_body docedit_document_bloc"></div>';
+    
     print '<div class="docedit_document_footer docedit_document_bloc">';
     
     

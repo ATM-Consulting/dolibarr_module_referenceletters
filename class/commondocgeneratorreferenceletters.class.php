@@ -159,6 +159,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$array_other = parent::get_substitutionarray_other($outputlangs);
 		$array_other['current_date_fr'] = $outputlangs->trans('Day' . (( int ) date('w'))) . ' ' . date('d') . ' ' . $outputlangs->trans(date('F')) . ' ' . date('Y');
+		$array_other['current_date_fr_formated'] = date('d') . ' ' . ucfirst($outputlangs->trans(date('F'))) . ' ' . date('Y');
 		if (! empty($object)) {
 
 			// TVA
@@ -417,6 +418,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_code_societe'] = $line->soccode;
 		$resarray['line_nom_societe'] = $line->socname;
 
+		$resarray['line_societe_address'] = $line->societe_address;
+		$resarray['line_societe_zip'] = $line->societe_zip;
+		$resarray['line_societe_town'] = $line->societe_town;
+
 		// Substitutions tableau d'horaires
 		$resarray['line_date_session'] = dol_print_date($line->date_session);
 		$resarray['line_heure_debut_session'] = dol_print_date($line->heured, 'hour');
@@ -476,7 +481,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_nom'] = $object->formintitule;
 		$resarray['formation_nom_custo'] = $object->intitule_custo;
 		$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
+		$resarray['formation_date_debut_formated'] = date('d', $object->dated) . ' ' . ucfirst($outputlangs->trans(date('F', $object->dated))) . ' ' . date('Y', $object->dated);
 		$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
+		$resarray['formation_date_fin_formated'] = date('d', $object->datef) . ' ' . ucfirst($outputlangs->trans(date('F', $object->datef))) . ' ' . date('Y', $object->datef);
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;

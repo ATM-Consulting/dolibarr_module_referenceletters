@@ -92,6 +92,15 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if (! empty($object->{$element_array})) {
 
 						foreach ( $object->{$element_array} as $line ) {
+                            if(! empty($line->socid)) {
+                                if(! class_exists('Societe')) dol_include_once('/societe/class/societe.class.php');
+                                $s = new Societe($object->db);
+                                $s->fetch($line->socid);
+
+                                if(empty($line->societe_address)) $line->societe_address = $s->address;
+                                if(empty($line->societe_zip)) $line->societe_zip = $s->zip;
+                                if(empty($line->societe_town)) $line->societe_town = $s->town;
+                            }
 
 							if (method_exists($this, 'get_substitutionarray_lines_agefodd')) {
 								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);

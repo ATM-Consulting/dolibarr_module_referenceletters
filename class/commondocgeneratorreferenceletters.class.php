@@ -156,7 +156,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $conf;
 
 		$outputlangs->load('main');
-
 		$array_other = parent::get_substitutionarray_other($outputlangs);
 		$array_other['current_date_fr'] = $outputlangs->trans('Day' . (( int ) date('w'))) . ' ' . date('d') . ' ' . $outputlangs->trans(date('F')) . ' ' . date('Y');
 		$array_other['current_date_fr_formated'] = date('d') . ' ' . ucfirst($outputlangs->trans(date('F'))) . ' ' . date('Y');
@@ -480,10 +479,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = array();
 		$resarray['formation_nom'] = $object->formintitule;
 		$resarray['formation_nom_custo'] = $object->intitule_custo;
-		$resarray['formation_date_debut'] = date('d/m/Y', $object->dated);
-		$resarray['formation_date_debut_formated'] = date('d', $object->dated) . ' ' . ucfirst($outputlangs->trans(date('F', $object->dated))) . ' ' . date('Y', $object->dated);
-		$resarray['formation_date_fin'] = date('d/m/Y', $object->datef);
-		$resarray['formation_date_fin_formated'] = date('d', $object->datef) . ' ' . ucfirst($outputlangs->trans(date('F', $object->datef))) . ' ' . date('Y', $object->datef);
+		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzuser',$langs);
+		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'daytextshort','tzuser',$langs);
+		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzuser',$langs);
+		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'daytextshort','tzuser',$langs);
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
@@ -592,7 +591,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$array_other['object_array_options_options_'.$key_opt] = $val;
 						}
 					}
-					
+
 					// Si les clés des extrafields ne sont pas remplacé, c'est que fetch_name_optionals_label() un poil plus haut retour vide (pas la bonne valeur passé en param)
 					continue;
 				}

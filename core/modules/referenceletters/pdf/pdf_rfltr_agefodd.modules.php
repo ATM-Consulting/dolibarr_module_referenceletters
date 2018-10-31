@@ -70,13 +70,19 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 
 		// Chargement du modèle utilisé
-		list ( $instance_letter, $object ) = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid);
+		list ( $instance_letter, $object ) = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = ( int ) $instance_letter->use_landscape_format;
 
-		if (! is_object($this->outputlangs))
-			$this->outputlangs = &$langs;
+		if (! is_object($this->outputlangs)) {
+			if (! is_object($outputlangs) && get_class($outputlangs)=='Translate') {
+				$this->outputlangs = &$langs;
+			} else {
+				$this->outputlangs=$outputlangs;
+			}
+		}
+
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (! empty($conf->global->MAIN_USE_FPDF))

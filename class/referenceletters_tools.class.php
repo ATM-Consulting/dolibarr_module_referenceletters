@@ -22,7 +22,7 @@ class RfltrTools {
 	 */
 	static function load_object_refletter($id_object, $id_model, $obj='', $socid='', $lang_id='') {
 
-		global $db, $conf, $langs;
+		global $db, $conf;
 
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
@@ -31,15 +31,25 @@ class RfltrTools {
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
 
+		if (! empty($lang_id)) {
+			$outputlangs = new Translate("", $conf);
+			$outputlangs->setDefaultLang($lang_id);
+			$outputlangs->load('main');
+			$outputlangs->load('agefodd@agefodd');
+		} else {
+			global $langs;
+			$outputlangs=$langs;
+		}
+
 		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' || get_class($obj) === 'SupplierProposal' ))  {
 			$object = &$obj;
 			if(empty($object->thirdparty)) {
 				$object->fetch_thirdparty();
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj);
+		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
 
-		if (!empty($lang_id)) $langs_chapter = $lang_id;
+		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
 			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
 			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
@@ -96,14 +106,14 @@ class RfltrTools {
 	/**
 	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
 	 */
-	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='') {
+	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='') {
 
 		global $db;
 
 		dol_include_once('/agefodd/class/agsession.class.php');
 		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
 		$object->fetch($id_object);
-		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention);
+		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 

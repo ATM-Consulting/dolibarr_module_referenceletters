@@ -956,7 +956,7 @@ if ($rfltr->fetch('', $title) <= 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
-	$rfltr->element_type = 'rfltr_agefodd_fiche_presence';
+	$rfltr->element_type = 'rfltr_agefodd_courrier';
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
@@ -1334,7 +1334,7 @@ Type d&#39;action de formation : Actions d&rsquo;adaptation au poste de travail,
 Date: le {formation_date_debut} Dur&eacute;e : {formation_duree} heures ou {formation_duree_session} heures, r&eacute;parties de la fa&ccedil;on suivante :<br />
 [!-- BEGIN THorairesSession --]Le {line_date_session} ({line_heure_debut_session} / {line_heure_fin_session})<br />
 [!-- END THorairesSession --]Evaluation et sanction : Feuilles d&rsquo;&eacute;margement par demi-journ&eacute;e; Evaluation des acquis par questions / r&eacute;ponses et mises en situation; Acquisition de connaissances donnant lieu &agrave; la d&eacute;livrance d&#39;une attestation de formation.<br />
-Nombre de Participants :&nbsp;{formation_nb_stagiaire}<br />
+Nombre de Participants :&nbsp;{formation_nb_stagiaire_convention}<br />
 Lieu : {formation_lieu} {formation_lieu_adresse},&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}<br />
 <br />
 <strong>Article 3 - Programme et m&eacute;thode</strong><br />
@@ -1342,8 +1342,8 @@ Cf. annexe 1 (Programme de formation)<br />
 <br />
 <strong>Article 4 - Effectif form&eacute;</strong><br />
 L&#39;organisme formera les participants :<br />
-[!-- BEGIN TStagiairesSession --]- {line_nom}&nbsp;{line_prenom}<br />
-[!-- END TStagiairesSession --]</span>';
+[!-- BEGIN TStagiairesSessionConvention --]- {line_nom}&nbsp;{line_prenom}<br />
+[!-- END TStagiairesSessionConvention --]</span>';
 		$chapter->create($user);
 
 		unset($chapter);

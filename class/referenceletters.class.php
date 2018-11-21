@@ -239,7 +239,7 @@ class ReferenceLetters extends CommonObject
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
-			    ,'courrier'=>'RefLtrLetters'
+			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
 			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
@@ -660,7 +660,7 @@ class ReferenceLetters extends CommonObject
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
-		
+
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
 

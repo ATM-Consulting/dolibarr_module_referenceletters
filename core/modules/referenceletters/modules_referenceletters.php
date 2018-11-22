@@ -192,7 +192,21 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$end_y = $this->pdf->GetY();
 		$height = $end_y;
 
-		return !empty($conf->global->REF_LETTER_CUSTOM_PAGE_HEAD_SIZE) ? $conf->global->REF_LETTER_CUSTOM_PAGE_HEAD_SIZE : $height;
+		$nb=0;
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
+			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
+			if(is_array($tmp_array) && !empty($tmp_array)) {
+				foreach($tmp_array as $v) {
+					list($element, $tmp_nb) = explode(':',$v);
+					if($element == $object->element) {
+						$nb = $tmp_nb;
+						break;
+					}
+				}
+			}
+		}
+
+		return $height + (float)$nb;
 	}
 
 	/**

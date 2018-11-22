@@ -181,6 +181,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	function _pageheadCustom($object) {
 
+		global $conf;
+
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
 
@@ -190,7 +192,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$end_y = $this->pdf->GetY();
 		$height = $end_y;
 
-		return $height;
+		return !empty($conf->global->REF_LETTER_CUSTOM_PAGE_HEAD_SIZE) ? $conf->global->REF_LETTER_CUSTOM_PAGE_HEAD_SIZE : $height;
 	}
 
 	/**

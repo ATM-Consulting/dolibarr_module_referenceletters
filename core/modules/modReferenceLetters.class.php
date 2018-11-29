@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.2.0';
+		$this->version = '2.2.1';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -93,7 +93,6 @@ class modReferenceLetters extends DolibarrModules
 						,'contractcard'
 						,'supplier_proposalcard'
 						,'ordersuppliercard'
-				        ,'paiementcard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory

@@ -110,7 +110,7 @@ class ReferenceLetters extends CommonObject
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
-				'securityclass' => 'societe',
+				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
 				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',

@@ -2951,8 +2951,6 @@ function _list_contact()
 				data["id"] = $item.val();
 
 				$td.html('...');
-				console.log(data);
-
 				$.ajax({
 					url:"instance.php"
 					,data:data

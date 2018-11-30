@@ -172,6 +172,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	function _pageheadCustom($object) {
 
+		global $conf;
+
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
 
@@ -181,7 +183,21 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$end_y = $this->pdf->GetY();
 		$height = $end_y;
 
-		return $height;
+		$nb=0;
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
+			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
+			if(is_array($tmp_array) && !empty($tmp_array)) {
+				foreach($tmp_array as $v) {
+					list($element, $tmp_nb) = explode(':',$v);
+					if($element == $object->element) {
+						$nb = $tmp_nb;
+						break;
+					}
+				}
+			}
+		}
+
+		return $height + (float)$nb;
 	}
 
 	/**

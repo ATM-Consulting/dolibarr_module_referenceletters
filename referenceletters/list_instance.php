@@ -230,7 +230,6 @@ if ($num != - 1) {
 				setEventMessage($object_src->error, 'errors');
 			}
 		}
-		
 		print '<td>' . $object_ref->displayElementElement(0, $line->element_type) . '</a></td>';
 		
 		print '<td>' . $line->title . '</a></td>';
@@ -246,8 +245,10 @@ if ($num != - 1) {
 		
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
 			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' .$object_src->getNomUrl() . '</a></td>';
-		} else {
+		} else if(!empty ($object_src->thirdparty)){
 			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->getNomUrl() . '</a></td>';
+		}else {
+			print '<td></td>';
 		}
 		
 		print '<td>' . dol_print_date($line->datec) . '</a></td>';

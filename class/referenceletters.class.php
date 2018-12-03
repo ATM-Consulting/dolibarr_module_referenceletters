@@ -598,7 +598,7 @@ class ReferenceLetters extends CommonObject
 					$array_second_thirdparty_object = array ();
 
 					if($testObj->element == 'societe'){
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
@@ -610,7 +610,7 @@ class ReferenceLetters extends CommonObject
 
 					if (! empty($testObj->thirdparty->id)) {
 
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}

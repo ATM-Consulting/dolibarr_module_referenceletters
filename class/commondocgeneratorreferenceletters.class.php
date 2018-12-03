@@ -141,6 +141,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
+		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
+
 		return $resarray;
 	}
 
@@ -413,7 +415,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					// à la différence que si l'objet n'a pas de ligne extrafield en BDD, le tag {objvar_object_array_options_options_XXX} affichera vide
 					// au lieu de laisser la clé, ce qui est le cas avec les clés standards Dolibarr : {object_options_XXX}
 					// Retrieve extrafields
-					$extrafieldkey=$object->element;
+					if (substr($object->element, 0, 7) === 'agefodd') $extrafieldkey=$object->table_element;
+					else $extrafieldkey=$object->element;
 
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
@@ -424,7 +427,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$array_other['object_options_'.$key_opt] =  '';
 						$array_other['object_array_options_options_'.$key_opt] =  ''; // backward compatibility
 						// Attention, ce test est différent d'un isset()
-						if (array_key_exists('options_'.$key_opt, $object->array_options))
+						if (is_array($object->array_options) && count($object->array_options)>0 && array_key_exists('options_'.$key_opt, $object->array_options))
 						{
 							$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_'.$key_opt]);
 
@@ -432,6 +435,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$array_other['object_array_options_options_'.$key_opt] = $val;
 						}
 					}
+					
+					// Si les clés des extrafields ne sont pas remplacé, c'est que fetch_name_optionals_label() un poil plus haut retour vide (pas la bonne valeur passé en param)
+					continue;
 				}
 
 				// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics

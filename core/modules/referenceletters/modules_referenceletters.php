@@ -161,8 +161,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		// Annule la modification de la méthode preOdfToOdf() de la class Odf (htdocs/includes/odtphp/odf.php) si on passe dans une boucle
-		$chapter_text = str_replace("<text:line-break/>", "\n", $chapter_text);
-		
+		$chapter_text = str_replace("<text:line-break/>", "<br />", $chapter_text);
+
 		return $chapter_text;
 	}
 	/**
@@ -171,6 +171,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @return number
 	 */
 	function _pageheadCustom($object) {
+
+		global $conf;
 
 		// Conversion des tags
 		$this->instance_letter->header = $this->setSubstitutions($object, $this->instance_letter->header);
@@ -181,7 +183,21 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$end_y = $this->pdf->GetY();
 		$height = $end_y;
 
-		return $height;
+		$nb=0;
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
+			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
+			if(is_array($tmp_array) && !empty($tmp_array)) {
+				foreach($tmp_array as $v) {
+					list($element, $tmp_nb) = explode(':',$v);
+					if($element == $object->element) {
+						$nb = $tmp_nb;
+						break;
+					}
+				}
+			}
+		}
+
+		return $height + (float)$nb;
 	}
 
 	/**
@@ -250,7 +266,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$socobject = $object;
 		} else {
 			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
-				$socobject = $object->contact;
+				if (method_exists($object->contact, 'fetch_thirdparty')) {
+					$object->contact->fetch_thirdparty();
+					$socobject = $object->contact->thirdparty;
+				} else {
+					$socobject = $object->contact;
+				}
 			} else {
 				$socobject = $object->thirdparty;
 			}

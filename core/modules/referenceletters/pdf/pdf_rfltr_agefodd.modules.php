@@ -272,6 +272,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
     					$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
 
 					}
+
+					if(count($test_array) > 1) {
+						//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
+						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP)) $this->pdf->deletePage($this->pdf->getPage());
+					}
 				}
 
 				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
@@ -309,10 +314,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 				}
 
-				if(count($test_array) > 1) {
-					//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
-					if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP)) $this->pdf->deletePage($this->pdf->getPage());
-				}
 				if (method_exists($this->pdf, 'AliasNbPages'))
 					$this->pdf->AliasNbPages();
 

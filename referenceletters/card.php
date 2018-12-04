@@ -398,7 +398,9 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		       
 		        if ($user->rights->referenceletters->write) {
-		            
+		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
+		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
+		            }
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		            
@@ -425,10 +427,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		  
 		        //print $langs->trans('RefLtrText');
-		        $handle = $user->rights->referenceletters->write && !empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)?'handle':'';
-		        print '<div class="docedit_document_body_text '.$handle. '" >';
+		        $editInline = '';
+		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ $editInline = ' contenteditable="true" '; }
+		        
+		        print '<div class="docedit_document_body_text" '.$editInline.' >';
 		        print $line_chapter->content_text;
-		        print '<!-- END docedit_document_body_text --></div>';
+		        print '</div><!-- END docedit_document_body_text -->';
 		        
 		        
 		        
@@ -540,7 +544,18 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    print '} );</script>';
 		}
 		
-		
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION))
+		{
+		    // experimental, not finish
+		    print '<script>$( function() {';
+		    
+		   /* print '
+		          // Turn off automatic editor creation first.
+		          CKEDITOR.disableAutoInline = true;
+		          CKEDITOR.inline( \'editor1\' );
+            ';*/
+		    print '} );</script>';
+		}
 	}
     print '<style>.ui-state-highlight::before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
 	print "</div>\n";

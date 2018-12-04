@@ -391,7 +391,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		    } else {
 		        $nbChapterInPage++;
-		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable  docedit_document_body docedit_document_bloc">';
+		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -401,6 +401,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
 		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
 		            }
+		            
+		            if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ 
+		                print '<span class="docedit_infos_icon docedit_save" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+		            }
+		            
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		            
@@ -430,7 +435,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        $editInline = '';
 		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ $editInline = ' contenteditable="true" '; }
 		        
-		        print '<div class="docedit_document_body_text" '.$editInline.' >';
+		        print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 		        print $line_chapter->content_text;
 		        print '</div><!-- END docedit_document_body_text -->';
 		        
@@ -487,7 +492,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						$(".slide-placeholder-animator").remove();
 
 						console.log("onstop");
-						console.log(cleanSerialize($(this).sortable("serialize")));
+						console.log(getContent());
 						
                        // var pageid = $(this).attr("id");
                        // console.log($(this).attr("id"));
@@ -497,13 +502,19 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						$.ajax({
 		    	            data: {
 								object_id: '.$object->id.',
-						    	roworder: cleanSerialize($(this).sortable("serialize")),
+						    	roworder: getContent(),
                                 set: "sortChapter"
 							},
 		    	            type: "POST",
+                            dataType: "json",
 		    	            url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
 		    	            success: function(data) {
                	                console.log(data);
+                                if(data.saved > 0){
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+                                }else{
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+                                }
 		    	            }
 		    	        });
 		    	        
@@ -535,8 +546,19 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     
                 },
 
-
 	          });
+
+                function getContent() {
+                    var data = "";
+            
+                    $(".docedit_document").each(function(){
+                       if(data.length>0){
+                            data += ",";
+                       }
+                       data += cleanSerialize($(this).sortable("serialize"));
+                    });
+                   return data;
+                }
             ';
 	        
 	    
@@ -549,11 +571,36 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    // experimental, not finish
 		    print '<script>$( function() {';
 		    
-		   /* print '
-		          // Turn off automatic editor creation first.
-		          CKEDITOR.disableAutoInline = true;
-		          CKEDITOR.inline( \'editor1\' );
-            ';*/
+		    print '
+                   $(".docedit_save").click(function(btnsave) {
+
+                        var saveTarget = $($(this).data("target"));
+                        
+                        if(CKEDITOR.instances[saveTarget.attr("id")] != undefined)
+                        {
+                            var evt = CKEDITOR.instances[saveTarget.attr("id")];
+                            // getData() returns CKEditor\'s HTML content.
+                            console.log( evt ); //evt.editor.getData().length 
+
+
+                            $.ajax({
+                              method: "POST",
+                              url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+                              dataType: "json",
+                              data: { set: "content" , id: saveTarget.data("id") , type: saveTarget.data("type"), content: evt.getData() }
+                            })
+                            .done(function( data ) {
+                                if(data.status){
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+                                }else{
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+                                }
+                            });
+
+                        }
+
+                   });
+            ';
 		    print '} );</script>';
 		}
 	}
@@ -604,7 +651,7 @@ $db->close();
 function _print_docedit_footer($object){
     global $langs, $conf, $user;
     
-    print '<div class="sortable .sortableHelper docedit_document_body docedit_document_bloc"></div>';
+    print '<div class="sortable sortableHelper docedit_document_body docedit_document_bloc"></div>';
     
     print '<div class="docedit_document_footer docedit_document_bloc">';
     

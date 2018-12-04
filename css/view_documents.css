@@ -67,10 +67,11 @@
   	transition: opacity 600ms, visibility 600ms;
   	-webkit-transition: opacity 600ms, visibility 600ms;
 }
-.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos{
+.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos, docedit_infos:hover{
 	/*display:block;*/
   	visibility: visible;
   	opacity: 1;
+  	z-index:200;
 }
 .docedit_document_bloc:hover{
 	border-top: 1px dashed #cccaca;
@@ -106,6 +107,10 @@
 	background: #afd0de;
 	padding: 0px 5px;
 	text-align: center;
+}
+
+.docedit_document_head .docedit_infos_top, .docedit_document_footer  .docedit_infos_top{
+	background: #deafaf;
 }
 
 .docedit_infos_left{
@@ -151,6 +156,10 @@
 
 .handle{
 	cursor: grab;
+}
+
+.docedit_save{
+	cursor: pointer;
 }
 
 .ui-state-highlight{

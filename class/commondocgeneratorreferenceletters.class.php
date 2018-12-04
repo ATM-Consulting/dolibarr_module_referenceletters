@@ -512,6 +512,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			$catalogue->fetch($object->fk_formation_catalogue);
 			$resarray['formation_but'] = strip_tags($catalogue->but);
+			$resarray['formation_ref'] = strip_tags($catalogue->ref_obj);
+			$resarray['formation_refint'] = strip_tags($catalogue->ref_interne);
 			$resarray['formation_methode'] = strip_tags($catalogue->methode);
 			$resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
 			$resarray['formation_sanction'] = strip_tags($catalogue->sanction);

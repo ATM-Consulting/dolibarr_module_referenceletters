@@ -997,6 +997,8 @@ Type de participant : <strong>{formation_type_stagiaire}</strong><br />
 Programme : <strong>{formation_programme}</strong><br />
 Documents necessaires : <strong>{formation_documents}</strong><br />
 Equipement necessaire : <strong>{formation_equipements}</strong><br />
+Référence : <strong>{formation_ref}</strong><br />
+Référence Interne : <strong>{formation_refint}</strong><br />
 Objectif de formation text : <strong>{formation_obj_peda}</strong><br />
 Tableau des objectifs :<br />
 [!-- BEGIN TFormationObjPeda --] Priorit&eacute;/Rang : <strong>{line_objpeda_rang}, </strong>Description : <strong>{line_objpeda_description}</strong><br />

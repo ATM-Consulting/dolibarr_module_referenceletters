@@ -214,13 +214,13 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					// merge agefodd arrays
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'THorairesSession',
+							'TFormationObjPeda',
 							'TStagiairesSession',
 							'TStagiairesSessionPresent',
 							'TStagiairesSessionSoc',
 							'TStagiairesSessionSocMore',
 							'TStagiairesSessionConvention',
 							'TFormateursSession',
-							'TFormationObjPeda',
 							'TConventionFinancialLine',
 							'TFormateursSessionCal'
 					));

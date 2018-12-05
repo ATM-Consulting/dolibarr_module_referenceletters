@@ -127,6 +127,14 @@
 	position:relative;
 }
 
+.docedit_title{
+	font-style: italic;
+}
+.docedit_title_type{
+	font-style: normale;
+	opacity: 0.9;
+}
+
 .docedit_document_option{
 	margin-top: 2em;
 }

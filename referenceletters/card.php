@@ -415,13 +415,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        
 		        print '<div class="docedit_infos docedit_infos_top">';
-		        
+		        print '<span class="docedit_title_type" >';
+		        print $langs->trans('RefLtrTitle');
 		        if (! empty($conf->global->MAIN_MULTILANGS))
 		        {
 		            $s=picto_from_langcode($line_chapter->lang);
-		            print ($s?$s.' ':'');
+		            print ($s?' '.$s:'');
 		        }
-		        
+		        print ' : </span>';
 		        //print $langs->trans('RefLtrTitle');
 		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
 		        
@@ -659,12 +660,11 @@ function _print_docedit_footer($object){
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
-    print '<!-- END docedit_infos --></div>';
+    print '</div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
-    //print $langs->trans('RefLtrTitle');
-    print '<span class="docedit_title" >'. $langs->trans('RefLtrFooterTab').'</span>';
+    print '<span class="docedit_title_type" >'. $langs->trans('RefLtrFooterTab').'</span><span class="docedit_title" ></span>';
     print '</div>';
     
     
@@ -675,7 +675,7 @@ function _print_docedit_footer($object){
         // TODO : add default footer
     }
     
-    print '<!-- END docedit_document_footer --></div>';
+    print '</div><!-- END docedit_document_footer -->';
 }
 
 
@@ -692,12 +692,12 @@ function _print_docedit_header($object, $norepeat=false){
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
     
-    print '<!-- END docedit_infos --></div>';
+    print '</div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
-    //print $langs->trans('RefLtrTitle');
-    print '<span class="docedit_title" >'. $langs->trans('RefLtrHeaderTab').'</span>';
+
+    print '<span class="docedit_title_type" >'. $langs->trans('RefLtrHeaderTab').'</span><span class="docedit_title" ></span>';
     print '</div>';
     if(!$norepeat)
     {
@@ -728,6 +728,6 @@ function _print_docedit_header($object, $norepeat=false){
         }
     }
     
-    print '<!-- END docedit_document_head --></div>';
+    print '</div><!-- END docedit_document_head -->';
 }
 

@@ -580,7 +580,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            editor.on( \'configLoaded\', function () {
 		                
 		                // Remove redundant plugins to make the editor simpler.
-				    editor.config.removePlugins = \'colorbutton,find,flash,forms,iframe,newpage,smiley,specialchar,stylescombo,templates\';
+				    editor.config.removePlugins = \'flash,forms,iframe,newpage,smiley,specialchar,templates\';
 
 
 		                editor.config.customConfig = ckeditorConfig;
@@ -606,7 +606,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     	 	[\'SpellChecker\', \'Scayt\'],// \'Cut\',\'Copy\',\'Paste\',\'-\', are useless, can be done with right click, even on smarpthone
                     	 	[\'Undo\',\'Redo\',\'-\',\'Find\',\'Replace\'],
                     	    [\'Format\',\'Font\',\'FontSize\'],
-                    	 	[\'Bold\',\'Italic\',\'Underline\',\'Strike\',\'Superscript\',\'-\',\'TextColor\',\'RemoveFormat\'],
+                    	 	[\'Bold\',\'Italic\',\'Underline\',\'Strike\',\'Superscript\',\'-\',\'TextColor\',\'BGColor\',\'RemoveFormat\'],
                     	 	[\'NumberedList\',\'BulletedList\',\'Outdent\',\'Indent\'],
                     	 	[\'JustifyLeft\',\'JustifyCenter\',\'JustifyRight\',\'JustifyBlock\'],
                     	    [\'Link\',\'Unlink\',\'Image\',\'Table\',\'HorizontalRule\',\'SpecialChar\'],

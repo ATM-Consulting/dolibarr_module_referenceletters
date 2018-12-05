@@ -155,7 +155,7 @@
 }
 
 .handle{
-	cursor: grab;
+	cursor: move;
 }
 
 .docedit_save{

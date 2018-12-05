@@ -568,8 +568,59 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION))
 		{
 		    // experimental, not finish
-		    print '<script>$( function() {';
 		    
+			print '<script>';
+		    // The "instanceCreated" event is fired for every editor instance created.
+		    print ' CKEDITOR.on( \'instanceCreated\', function ( event ) {
+		                  var editor = event.editor, element = editor.element;
+		        
+		            // Customize the editor configuration on "configLoaded" event,
+		            // which is fired after the configuration file loading and execution. 
+		            // This makes it possible to change the configuration before the editor initialization takes place.
+		            editor.on( \'configLoaded\', function () {
+		                
+		                // Remove redundant plugins to make the editor simpler.
+				    editor.config.removePlugins = \'colorbutton,find,flash,forms,iframe,newpage,smiley,specialchar,stylescombo,templates\';
+
+
+		                editor.config.customConfig = ckeditorConfig;
+		                editor.config.readOnly = false;
+		                editor.config.htmlEncodeOutput =false;
+		                editor.config.allowedContent =false;
+		                editor.config.extraAllowedContent = \'\';
+		                editor.config.fullPage = false;
+		                editor.config.toolbarStartupExpanded=false;
+		                editor.config.language= \''.$langs->defaultlang.'\';
+		                editor.config.textDirection= \''.$langs->trans("DIRECTION").'\';
+                        width: element.offsetWidth,
+                        editor.config.filebrowserBrowseUrl = ckeditorFilebrowserBrowseUrl;   
+                        editor.config.filebrowserImageBrowseUrl = ckeditorFilebrowserImageBrowseUrl;
+                        editor.config.filebrowserWindowWidth = \'900\';
+                        editor.config.filebrowserWindowHeight = \'500\';
+                        editor.config.filebrowserImageWindowWidth = \'900\';
+                        editor.config.filebrowserImageWindowHeight = \'500\';
+
+                    	// Used for notes fields
+                    	editor.config.toolbar_dolibarr_inline_notes =
+                    	[
+                    	 	[\'SpellChecker\', \'Scayt\'],// \'Cut\',\'Copy\',\'Paste\',\'-\', are useless, can be done with right click, even on smarpthone
+                    	 	[\'Undo\',\'Redo\',\'-\',\'Find\',\'Replace\'],
+                    	    [\'Format\',\'Font\',\'FontSize\'],
+                    	 	[\'Bold\',\'Italic\',\'Underline\',\'Strike\',\'Superscript\',\'-\',\'TextColor\',\'RemoveFormat\'],
+                    	 	[\'NumberedList\',\'BulletedList\',\'Outdent\',\'Indent\'],
+                    	 	[\'JustifyLeft\',\'JustifyCenter\',\'JustifyRight\',\'JustifyBlock\'],
+                    	    [\'Link\',\'Unlink\',\'Image\',\'Table\',\'HorizontalRule\',\'SpecialChar\'],
+                    	 	[\'Source\']
+                    	];
+
+		                editor.config.toolbar = editor.config.toolbar_dolibarr_inline_notes;
+
+		            } );
+		    } );
+		    ';
+		    
+		    
+		    print ' $( function() { ';
 		    print '
                    $(".docedit_save").click(function(btnsave) {
 

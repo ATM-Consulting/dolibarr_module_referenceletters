@@ -369,7 +369,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '</div><!-- END docedit_document -->';
 		        
 		        // add break page element
-		        print '<div class="sortable sortabledisable docedit_document_pagebreak">';
+		        print '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapteur="'.$line_chapter->id.'" >';
 		        if ($line_chapter->content_text=='@breakpagenohead@')
 		        {
 		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
@@ -391,7 +391,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		    } else {
 		        $nbChapterInPage++;
-		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc">';
+		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapteur="'.$line_chapter->id.'">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -550,11 +550,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                 function getOrder() {
                     var data = "";
             
-                    $(".docedit_document").each(function(){
+                    $("[data-sortable-chapteur]").each(function(){
                        if(data.length>0){
                             data += ",";
                        }
-                       data += cleanSerialize($(this).sortable("serialize"));
+                       data += $(this).attr("data-sortable-chapteur");
                     });
                    return data;
                 }

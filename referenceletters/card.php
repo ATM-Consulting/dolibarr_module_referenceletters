@@ -366,7 +366,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        // first close page
 		        _print_docedit_footer($object);
-		        print '<!-- END docedit_document --></div>';
+		        print '</div><!-- END docedit_document -->';
 		        
 		        // add break page element
 		        print '<div class="sortable sortabledisable docedit_document_pagebreak">';
@@ -411,23 +411,21 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            
 		        }
 		        
-		        print '<!-- END docedit_infos --></div>';
+		        print '</div><!-- END docedit_infos -->';
 		        
 		        
 		        print '<div class="docedit_infos docedit_infos_top">';
-		            
-		        //print $langs->trans('RefLtrTitle');
-		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
 		        
 		        if (! empty($conf->global->MAIN_MULTILANGS))
 		        {
-		           
-		            print $langs->trans('RefLtrLangue');
-		            $langs->load("languages");
-		            $labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
-		            print $labellang;
+		            $s=picto_from_langcode($line_chapter->lang);
+		            print ($s?$s.' ':'');
 		        }
-		        print '<!-- END docedit_infos_top --></div>';
+		        
+		        //print $langs->trans('RefLtrTitle');
+		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
+		        
+		        print '</div><!-- END docedit_infos_top -->';
 		       
 		        
 		  
@@ -458,22 +456,22 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            foreach($line_chapter->options_text as $key=>$option_text) {
 		                print '<label class="docedit_label" ><input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'"> '.$option_text.'</label>';
 		            }
-		            print '<!-- END docedit_document_option --></div>';
+		            print '</div><!-- END docedit_document_option -->';
 		        } 
 		       
 		        
 		       
 		        
 		        
-		        print '<!-- end docedit_document_body --></div>';
+		        print '</div><!-- end docedit_document_body -->';
 		    }
 		}
 		
 		_print_docedit_footer($object);
 		
-		print '<!-- END docedit_document --></div>';
+		print '</div><!-- END docedit_document -->';
 		
-		print '<!-- end docedit_docboard --></div>';
+		print '</div><!-- end docedit_docboard -->';
 		
 		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE))
 		{
@@ -492,7 +490,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						$(".slide-placeholder-animator").remove();
 
 						console.log("onstop");
-						console.log(getContent());
+						console.log(getOrder());
 						
                        // var pageid = $(this).attr("id");
                        // console.log($(this).attr("id"));
@@ -502,7 +500,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 						$.ajax({
 		    	            data: {
 								object_id: '.$object->id.',
-						    	roworder: getContent(),
+						    	roworder: getOrder(),
                                 set: "sortChapter"
 							},
 		    	            type: "POST",
@@ -548,7 +546,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	          });
 
-                function getContent() {
+                function getOrder() {
                     var data = "";
             
                     $(".docedit_document").each(function(){

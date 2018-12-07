@@ -63,7 +63,7 @@ switch ($set) {
 	    
 	    //$Tjson = array_merge($Tjson, $_POST);
 	    
-	    if ($user->rights->referenceletters->write) 
+	    if (!empty($user->rights->referenceletters->write)) 
 	    {
     	    if( $type == 'chapter_text'){
     	        $object_chapters = new ReferenceLettersChapters($db);

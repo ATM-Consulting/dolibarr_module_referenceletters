@@ -369,7 +369,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '</div><!-- END docedit_document -->';
 		        
 		        // add break page element
-		        print '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapteur="'.$line_chapter->id.'" >';
+		        print '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$line_chapter->id.'" >';
 		        if ($line_chapter->content_text=='@breakpagenohead@')
 		        {
 		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
@@ -391,7 +391,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		    } else {
 		        $nbChapterInPage++;
-		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapteur="'.$line_chapter->id.'">';
+		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
@@ -492,11 +492,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 						console.log("onstop");
 						console.log(getOrder());
-						
-                       // var pageid = $(this).attr("id");
-                       // console.log($(this).attr("id"));
-                        //var footer = $(this).find(".docedit_document_footer"); 
-                        //footer.append($(this));
 
 						$.ajax({
 		    	            data: {
@@ -516,7 +511,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                                 }
 		    	            }
 		    	        });
-		    	        
 		    	  },
 
                 revert: 150,
@@ -550,11 +544,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                 function getOrder() {
                     var data = "";
             
-                    $("[data-sortable-chapteur]").each(function(){
+                    $("[data-sortable-chapter]").each(function(){
                        if(data.length>0){
                             data += ",";
                        }
-                       data += $(this).attr("data-sortable-chapteur");
+                       data += $(this).attr("data-sortable-chapter");
                     });
                    return data;
                 }

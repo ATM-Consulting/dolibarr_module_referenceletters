@@ -436,7 +436,9 @@ class ReferenceLetters extends CommonObject
 				}
 				$this->db->free($resql);
 
-				return 1;
+				return $this->id;
+			} else {
+				return 0;
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();

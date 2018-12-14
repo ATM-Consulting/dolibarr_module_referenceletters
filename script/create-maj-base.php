@@ -1167,7 +1167,7 @@ ou en une ligne : <strong>{objvar_object_trainer_text}</strong><br />
 Cout formateur (cout/nb de creneaux): <strong>{objvar_object_trainer_day_cost}</strong><br />
 D&eacute;tail par formateur<span style="color:#ff0000"> (disponible uniquement sur contrat formateur)</span> :<br />
 <br />
-<strong>{objvar_object_formateur_session_name}&nbsp;{objvar_object_formateur_session_firstname}<br />
+<strong>{objvar_object_formateur_session_lastname}&nbsp;{objvar_object_formateur_session_firstname}<br />
 {objvar_object_formateur_session_address}<br />
 {objvar_object_formateur_session_zip}&nbsp;{objvar_object_formateur_session_town}</strong><br />
 Siret : <strong>{objvar_object_formateur_session_societe_idprof2}</strong><br />

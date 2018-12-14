@@ -274,10 +274,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 	if ($id_rfltr < 0) {
 		setEventMessages(null, $rfltr->errors, 'errors');
-	}
+	} else {
 
-	// Instanciation du contenu
-	if (! empty($id_rfltr)) {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -463,10 +462,8 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 	if ($id_rfltr < 0) {
 		setEventMessages(null, $rfltr->errors, 'errors');
-	}
-
-	// Instanciation du contenu
-	if (! empty($id_rfltr)) {
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -621,10 +618,8 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 	if ($id_rfltr < 0) {
 		setEventMessages(null, $rfltr->errors, 'errors');
-	}
-
-	// Instanciation du contenu
-	if (! empty($id_rfltr)) {
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -783,10 +778,8 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 	if ($id_rfltr < 0) {
 		setEventMessages(null, $rfltr->errors, 'errors');
-	}
-
-	// Instanciation du contenu
-	if (! empty($id_rfltr)) {
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -931,10 +924,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$id_rfltr = $rfltr->create($user);
 	if ($id_rfltr < 0) {
 		setEventMessages(null, $rfltr->errors, 'errors');
-	}
+	} else {
 
-	// Instanciation du contenu
-	if (! empty($id_rfltr)) {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;

@@ -962,13 +962,23 @@ if ($rfltr->fetch('', $title) <= 0) {
 	$rfltr->datec = dol_now();
 	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
-	$rfltr->header = '<div style="text-align:center"><br />
-<span style="font-size:10px"><strong>ENTETE<br />
-PERSONNALISE</strong></span><br />
-&nbsp;</div>';
-	$rfltr->footer = '<div style="text-align:center"><em>PIED DE PAGE PERSONNALISE</em><br />
-<br />
-<br />
+	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td style="width:400px"><span style="font-size:9px"><strong>{mycompany_name}</strong><br />
+			{mycompany_address}<br />
+			{mycompany_zip}&nbsp;{mycompany_town}<br />
+			T&eacute;l. : {mycompany_phone} - Fax :&nbsp;{mycompany_fax}<br />
+			Email : {mycompany_email}<br />
+			Web :&nbsp;{mycompany_web}<br />
+			Formation / Session : {formation_ref}/ {objvar_object_ref}<br />
+			Date : {objvar_object_date_text}</span></td>
+			<td>YOUR LOGO</td>
+		</tr>
+	</tbody>
+</table>';
+	$rfltr->footer = '<hr /><div style="text-align:center"><span style="color:#95a5a6"><span style="font-size:6px">{mycompany_name} {mycompany_address} -&nbsp; {mycompany_zip}&nbsp;{mycompany_town} - T&eacute;l. : {mycompany_phone} - mail : {mycompany_email} - {mycompany_juridicalstatus} - Capital de {mycompany_capital} SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} -&nbsp; N&deg; d&eacute;claration d&#39;activit&eacute; (ce num&eacute;ro ne vaut pas agr&eacute;ment de l&#39;&eacute;tat) {__[AGF_ORGANISME_NUM]__} &nbsp; - pr&eacute;fecture {__[AGF_ORGANISME_PREF]__} &nbsp;Num VA :&nbsp;{mycompany_vatnumber}</span></span><br />
 <br />
 &nbsp;</div>';
 	$rfltr->use_custom_footer = 1;
@@ -1013,6 +1023,7 @@ Commentaire Lieu : <strong>{formation_lieu_notes}</strong><br />
 <br />
 <u>Session : </u><br />
 Id Session : <strong>{objvar_object_id}</strong><br />
+Ref Session : <strong>{objvar_object_ref}</strong><br />
 Client :<strong> {formation_societe} </strong>(Intra)<br />
 Commenatire session : <strong>{formation_commentaire}</strong><br />
 Date : du <strong>{formation_date_debut}</strong> au&nbsp;<strong>{formation_date_fin}</strong><br />

@@ -474,7 +474,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		
 		print '</div><!-- end docedit_docboard -->';
 		
-		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE))
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE) && $user->rights->referenceletters->write)
 		{
 		    // experimental, not finish
 		    print '<script>$( function() {';
@@ -559,7 +559,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    print '} );</script>';
 		}
 		
-		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION))
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION) && $user->rights->referenceletters->write)
 		{
 		    // experimental, not finish
 		    

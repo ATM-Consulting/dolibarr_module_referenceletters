@@ -432,7 +432,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		  
 		        //print $langs->trans('RefLtrText');
 		        $editInline = '';
-		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ $editInline = ' contenteditable="true" '; }
+		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
 		        
 		        print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 		        print $line_chapter->content_text;

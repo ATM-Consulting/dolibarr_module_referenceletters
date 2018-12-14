@@ -402,7 +402,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE 1 ";
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
-		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
+		if(!empty($title)) $sql .= " AND t.title = '".$this->db->escape($title)."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
 		dol_syslog(get_class($this) . "::".__METHOD__. ' ', LOG_DEBUG);

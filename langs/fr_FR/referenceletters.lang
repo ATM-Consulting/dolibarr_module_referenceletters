@@ -63,6 +63,7 @@ RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
 RefLtrSupplierOrders=Exemple de modèle de COMMANDE FOURNISSEUR
 RefLtrAgefodd=Exemple de modèle pour le module Formation
 RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
+RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 
 #
 # Page À propos

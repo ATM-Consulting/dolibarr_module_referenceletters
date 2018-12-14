@@ -1228,7 +1228,7 @@ Saut de page dans une boucle (ex: un stagiaire PRESENT ou PARTIELLEMENT par page
 }
 
 /**
- * *********** Document exemple Agefodd *************
+ * *********** Document exemple convention Agefodd *************
  */
 $title = $langs->trans('RefLtrAgefoddConvention');
 if ($reinstalltemplate) {
@@ -1453,6 +1453,208 @@ Ce document comporte trois (3) pages.<br />
 <div style="text-align:center"><span style="font-size:8px">(*) Faire pr&eacute;c&eacute;der la signature de la mention &laquo; lu et approuv&eacute; &raquo; apr&egrave;s avoir paraph&eacute; chaque page de la pr&eacute;sente convention.</span></div>
 
 <div style="text-align:center">&nbsp;</div>';
+		$chapter->create($user);
+	}
+}
+
+/**
+ * *********** Document exemple Feuille présence vide Agefodd *************
+ */
+$title = $langs->trans('RefLtrAgefoddFichePresence');
+if ($reinstalltemplate) {
+	$rfltr->fetch('', $title);
+	$result=$rfltr->delete($user);
+	if ($result<0) {
+		setEventMessages(null,$rfltr->errors,'errors');
+	}
+}
+if ($rfltr->fetch('', $title) <= 0) {
+	$rfltr->entity = $conf->entity;
+	$rfltr->title = $title;
+	$rfltr->element_type = 'rfltr_agefodd_fiche_presence_empty';
+	$rfltr->status = 0;
+	$rfltr->fk_user_author = $user->id;
+	$rfltr->datec = dol_now();
+	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	$rfltr->tms = dol_now();
+	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
+	<tbody>
+		<tr>
+			<td style="width:400px"><span style="font-size:9px"><strong>{mycompany_name}</strong><br />
+			{mycompany_address}<br />
+			{mycompany_zip}&nbsp;{mycompany_town}<br />
+			T&eacute;l. : {mycompany_phone} - Fax :&nbsp;{mycompany_fax}<br />
+			Email : {mycompany_email}<br />
+			Web :&nbsp;{mycompany_web}<br />
+			Formation / Session : {formation_ref}/ {objvar_object_ref}<br />
+			Date : {objvar_object_date_text}</span></td>
+			<td>YOUR LOGO</td>
+		</tr>
+	</tbody>
+</table>';
+	$rfltr->footer = '<hr />
+<div style="text-align:center"><span style="color:#95a5a6"><span style="font-size:6px">{mycompany_name} {mycompany_address} -&nbsp; {mycompany_zip}&nbsp;{mycompany_town} - T&eacute;l. : {mycompany_phone} - mail : {mycompany_email} - {mycompany_juridicalstatus} - Capital de {mycompany_capital} SIRET :&nbsp;{mycompany_idprof2}<br />
+NAF-APE :&nbsp;{mycompany_idprof3} -&nbsp; N&deg; d&eacute;claration d&#39;activit&eacute; (ce num&eacute;ro ne vaut pas agr&eacute;ment de l&#39;&eacute;tat) {__[AGF_ORGANISME_NUM]__} &nbsp; - pr&eacute;fecture {__[AGF_ORGANISME_PREF]__} &nbsp;Num VA :&nbsp;{mycompany_vatnumber}</span></span><br />
+<br />
+&nbsp;</div>';
+	$rfltr->use_custom_footer = 1;
+	$rfltr->use_custom_header = 1;
+	$rfltr->use_landscape_format = 0;
+
+	$id_rfltr = $rfltr->create($user);
+
+	// Instanciation du contenu
+	if (! empty($id_rfltr)) {
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Page titre';
+		$chapter->content_text = '<div style="text-align:center"><br />
+<br />
+<span style="font-size:20px"><strong>Feuille d&#39;&eacute;margement</strong></span><br />
+&nbsp;
+<div>Nous, &laquo; {mycompany_name} &raquo;,demeurant {mycompany_address} {mycompany_zip}&nbsp;{mycompany_town}, repr&eacute;sent&eacute;s par {__[AGF_ORGANISME_REPRESENTANT]__} ,</div>
+</div>
+
+<div>attestons par la pr&eacute;sente de la r&eacute;alit&eacute; des informations port&eacute;es ci-dessous &agrave; votre connaissance.</div>
+
+<div style="text-align:left"><br />
+<strong>La formation</strong></div>
+
+<table border="0.5" cellpadding="1" cellspacing="1" style="width:540px">
+	<tbody>
+		<tr>
+			<td>
+			<table border="0" cellpadding="1" cellspacing="1" style="width:540px">
+				<tbody>
+					<tr>
+						<td>
+						<div>Intitul&eacute; : <strong>{formation_nom}</strong></div>
+
+						<div>P&eacute;riode : {objvar_object_date_text} ({formation_duree_session}h)</div>
+						</td>
+						<td>Lieu de formation : {formation_lieu}<br />
+						{formation_lieu_adresse}&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}</td>
+					</tr>
+				</tbody>
+			</table>
+			</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;
+
+<div style="text-align:left"><br />
+<strong>Le(s)/</strong><strong>La formateur/trice(s)</strong></div>
+
+<table border="0.5" cellpadding="1" cellspacing="1" style="width:540px">
+	<tbody>
+		<tr>
+			<td style="width:100px">Nom et pr&eacute;nom</td>
+			<td style="width:440px">
+			<div style="text-align:center">Signature<br />
+			<span style="font-size:8px"><em>atteste(nt) par la(les) signature(s) avoir dispens&eacute; la formation ci-dessus nomm&eacute;e.</em></span></div>
+
+			<table border="0.5" cellpadding="1" cellspacing="1" style="width:440px">
+				<tbody>
+					<tr>
+						<td style="text-align:left">Date:</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td style="text-align:left">Heure :</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</tbody>
+			</table>
+			[!-- BEGIN TFormateursSession --]</td>
+		</tr>
+		<tr>
+			<td>{line_formateur_nom} {line_formateur_prenom}</td>
+			<td>
+			<table border="0.5" cellpadding="1" cellspacing="1" style="width:440px">
+				<tbody>
+					<tr>
+						<td style="height:27px">&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</tbody>
+			</table>
+			[!-- END TFormateursSession --]</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;
+
+<div style="text-align:left"><br />
+<strong>Le(s)/ La participant(e(s))</strong></div>
+
+<table border="0.5" cellpadding="1" cellspacing="1" style="width:540px">
+	<tbody>
+		<tr>
+			<td style="width:100px">Nom et pr&eacute;nom</td>
+			<td style="width:440px">
+			<div style="text-align:center">Signature<br />
+			<span style="font-size:8px"><em>atteste(nt) par la(les) signature(s) avoir re&ccedil;u la formation ci-dessus nomm&eacute;e</em></span></div>
+
+			<table border="0.5" cellpadding="1" cellspacing="1" style="width:440px">
+				<tbody>
+					<tr>
+						<td style="text-align:left">Date:</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td style="text-align:left">Heure :</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</tbody>
+			</table>
+			[!-- BEGIN TStagiairesSession --]</td>
+		</tr>
+		<tr>
+			<td>{line_nom} {line_prenom}<br />
+			({line_nom_societe})</td>
+			<td>
+			<table border="0.5" style="width:440px">
+				<tbody>
+					<tr>
+						<td style="height:27px">&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</tbody>
+			</table>
+			[!-- END TStagiairesSession --]</td>
+		</tr>
+	</tbody>
+</table>
+&nbsp;';
 		$chapter->create($user);
 	}
 }

@@ -37,9 +37,11 @@ $rfltr = new ReferenceLetters($db);
 $title = $langs->transnoentities('RefLtrPropal');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -78,7 +80,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
-
+	if ($id_rfltr<0) {
+		setEventMessages(null,$this->errors,'errors');
+	}
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
 
@@ -195,7 +199,10 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result=$chapter->create($user);
+		if ($result<0) {
+			setEventMessages(null,$chapter->errors,'errors');
+		}
 	}
 }
 
@@ -206,9 +213,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->transnoentities('RefLtrInvoice');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -246,6 +255,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
+	if ($id_rfltr<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 
 	// Instanciation du contenu
 	if(!empty($id_rfltr)) {
@@ -382,9 +394,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->transnoentities('RefLtrOrder');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -525,9 +539,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->transnoentities('RefLtrContract');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -671,9 +687,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->transnoentities('RefLtrSupplierProposals');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -801,9 +819,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->transnoentities('RefLtrSupplierOrders');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if($rfltr->fetch('', $title) <= 0) {
@@ -947,9 +967,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 $title = $langs->trans('RefLtrAgefodd');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if ($rfltr->fetch('', $title) <= 0) {
@@ -1233,9 +1255,11 @@ Saut de page dans une boucle (ex: un stagiaire PRESENT ou PARTIELLEMENT par page
 $title = $langs->trans('RefLtrAgefoddConvention');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if ($rfltr->fetch('', $title) <= 0) {
@@ -1463,9 +1487,11 @@ Ce document comporte trois (3) pages.<br />
 $title = $langs->trans('RefLtrAgefoddFichePresence');
 if ($reinstalltemplate) {
 	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	if (!empty($rfltr->id)) {
+		$result=$rfltr->delete($user);
+		if ($result<0) {
+			setEventMessages(null,$rfltr->errors,'errors');
+		}
 	}
 }
 if ($rfltr->fetch('', $title) <= 0) {

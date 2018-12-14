@@ -122,6 +122,7 @@ RefLtrBackgroundHelp=Nur PDF Dateien können für Hintergründe verwendet werden
 RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt)
 RefLtrTitleModel=Brief Titel
 RefLtrDefaultDoc=Default Document
+RefLtrModifyAndStay=Save and stay
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

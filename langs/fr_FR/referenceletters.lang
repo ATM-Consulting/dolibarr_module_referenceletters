@@ -125,6 +125,7 @@ RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond
 RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
 RefLtrTitleModel=Titre modèle de document
 RefLtrDefaultDoc=Document par defaut
+RefLtrModifyAndStay=Sauver et rester
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer

@@ -120,6 +120,7 @@ RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
 RefLtrTitleModel=Letter title
 RefLtrDefaultDoc=Default Document
+RefLtrModifyAndStay=Save and stay
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

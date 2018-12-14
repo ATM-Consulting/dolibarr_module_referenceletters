@@ -124,6 +124,7 @@ RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
 RefLtrTitleModel=Document template title
 RefLtrDefaultDoc=Default Document
+RefLtrModifyAndStay=Save and stay
 
 RefLtrListMassGen=Mass Generation
 RefLtrSelectModelToGen=Model to use

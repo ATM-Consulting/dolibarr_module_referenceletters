@@ -155,5 +155,7 @@ RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)
 # Doc preview
 #
 doceditinfo_viewlimit=Ceci est une vue du gabarit (template), elle permet une vision d'ensemble de votre document. Il ne s'agit pas d'une prévisualisation du rendu final converti en PDF.
-
+PlaceHere=Placer le chapitre ici
+MoveChapter=Déplacer / réorganiser
+Saved=Sauvegardé
 

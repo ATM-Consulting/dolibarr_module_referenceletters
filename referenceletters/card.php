@@ -352,21 +352,24 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    $classOrientation = "landscape";
 		}
 		
-		print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
+		print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		
 		_print_docedit_header($object);
-		
+		$nbChapterInPage = 0;
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
 		    
 		    
 		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
 		        
+		        // reset nb chapters in page
+		        $nbChapterInPage = 0;
+		        
 		        // first close page
 		        _print_docedit_footer($object);
-		        print '<!-- END docedit_document --></div>';
+		        print '</div><!-- END docedit_document -->';
 		        
 		        // add break page element
-		        print '<div class="sortable sortabledisable docedit_document_pagebreak">';
+		        print '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$line_chapter->id.'" >';
 		        if ($line_chapter->content_text=='@breakpagenohead@')
 		        {
 		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
@@ -383,49 +386,57 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        // start new page
 		        $pageCurrentNum++;
-		        print '<div id="page-'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
+		        print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
 		        _print_docedit_header($object, $norepeat);
 		        
 		    } else {
-		        
-		        print '<div class="sortable  docedit_document_body docedit_document_bloc">';
+		        $nbChapterInPage++;
+		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
 		        
 		       
 		        if ($user->rights->referenceletters->write) {
+		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
+		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
+		            }
+		            
+		            if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ 
+		                print '<span class="docedit_infos_icon docedit_save" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+		            }
 		            
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
 		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		            
 		        }
 		        
-		        print '<!-- END docedit_infos --></div>';
+		        print '</div><!-- END docedit_infos -->';
 		        
 		        
 		        print '<div class="docedit_infos docedit_infos_top">';
-		            
+		        print '<span class="docedit_title_type" >';
+		        print $langs->trans('RefLtrTitle');
+		        if (! empty($conf->global->MAIN_MULTILANGS))
+		        {
+		            $s=picto_from_langcode($line_chapter->lang);
+		            print ($s?' '.$s:'');
+		        }
+		        print ' : </span>';
 		        //print $langs->trans('RefLtrTitle');
 		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
 		        
-		        if (! empty($conf->global->MAIN_MULTILANGS))
-		        {
-		           
-		            print $langs->trans('RefLtrLangue');
-		            $langs->load("languages");
-		            $labellang = ($line_chapter->lang?$langs->trans('Language_'.$line_chapter->lang):'');
-		            print $labellang;
-		        }
-		        print '<!-- END docedit_infos_top --></div>';
+		        print '</div><!-- END docedit_infos_top -->';
 		       
 		        
 		  
 		        //print $langs->trans('RefLtrText');
-		        $handle = $user->rights->referenceletters->write && !empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)?'handle':'';
-		        print '<div class="docedit_document_body_text '.$handle. '" >';
+		        $editInline = '';
+		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
+		        
+		        print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 		        print $line_chapter->content_text;
-		        print '<!-- END docedit_document_body_text --></div>';
+		        print '</div><!-- END docedit_document_body_text -->';
 		        
 		        
 		        
@@ -446,52 +457,198 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            foreach($line_chapter->options_text as $key=>$option_text) {
 		                print '<label class="docedit_label" ><input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'"> '.$option_text.'</label>';
 		            }
-		            print '<!-- END docedit_document_option --></div>';
+		            print '</div><!-- END docedit_document_option -->';
 		        } 
 		       
 		        
 		       
 		        
 		        
-		        print '<!-- end docedit_document_body --></div>';
+		        print '</div><!-- end docedit_document_body -->';
 		    }
 		}
 		
 		_print_docedit_footer($object);
 		
-		print '<!-- END docedit_document --></div>';
+		print '</div><!-- END docedit_document -->';
 		
-		print '<!-- end docedit_docboard --></div>';
+		print '</div><!-- end docedit_docboard -->';
 		
-		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE))
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE) && $user->rights->referenceletters->write)
 		{
 		    // experimental, not finish
 		    print '<script>$( function() {';
 		    
-		    $connectedWith=array();
-		    for ($i = 1; $i <= $pageCurrentNum; $i++){
-		        $connectedWith[] = '#page-'.$i;
-		    }
-		    
-		    for ($i = 1; $i <= $pageCurrentNum; $i++){
-		        
-		        print '
-		        $( "#page-'.$i.'" ).sortable({
-		            placeholder: "ui-state-highlight",
-		            connectWith: "'.implode(',', $connectedWith).'",
-		            items: ".sortable:not(.sortabledisable)",
-		            handle: ".handle"
-		          });
-                ';
-		        
-		    }
+
+	        print '
+	        $( ".docedit_document" ).sortable({
+                cursor: "move",
+	            placeholder: "ui-state-highlight",
+	            connectWith: ".docedit_document",
+	            items: ".sortable:not(.sortabledisable)",
+	            handle: ".handle",
+                stop: function (event, ui) {
+						$(".slide-placeholder-animator").remove();
+
+						console.log("onstop");
+						console.log(getOrder());
+
+						$.ajax({
+		    	            data: {
+								object_id: '.$object->id.',
+						    	roworder: getOrder(),
+                                set: "sortChapter"
+							},
+		    	            type: "POST",
+                            dataType: "json",
+		    	            url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+		    	            success: function(data) {
+               	                console.log(data);
+                                if(data.saved > 0){
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+                                }else{
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+                                }
+		    	            }
+		    	        });
+		    	  },
+
+                revert: 150,
+                start: function(e, ui){
+                    
+                    placeholderHeight = ui.item.outerHeight();
+                    ui.placeholder.height(placeholderHeight + 15);
+                    $(\'<div class="slide-placeholder-animator" data-height="\' + placeholderHeight + \'"></div>\').insertAfter(ui.placeholder);
+                
+                },
+                change: function(event, ui) {
+                    
+                    ui.placeholder.stop().height(0).animate({
+                        height: ui.item.outerHeight() + 15
+                    }, 300);
+                    
+                    placeholderAnimatorHeight = parseInt($(".slide-placeholder-animator").attr("data-height"));
+                    
+                    $(".slide-placeholder-animator").stop().height(placeholderAnimatorHeight + 15).animate({
+                        height: 0
+                    }, 300, function() {
+                        $(this).remove();
+                        placeholderHeight = ui.item.outerHeight();
+                        $(\'<div class="slide-placeholder-animator" data-height="\' + placeholderHeight + \'"></div>\').insertAfter(ui.placeholder);
+                    });
+                    
+                },
+
+	          });
+
+                function getOrder() {
+                    var data = "";
+            
+                    $("[data-sortable-chapter]").each(function(){
+                       if(data.length>0){
+                            data += ",";
+                       }
+                       data += $(this).attr("data-sortable-chapter");
+                    });
+                   return data;
+                }
+            ';
+	        
+	    
 		    
 		    print '} );</script>';
 		}
 		
-		
-	}
+		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION) && $user->rights->referenceletters->write)
+		{
+		    // experimental, not finish
+		    
+			print '<script>';
+		    // The "instanceCreated" event is fired for every editor instance created.
+		    print ' CKEDITOR.on( \'instanceCreated\', function ( event ) {
+		                  var editor = event.editor, element = editor.element;
+		        
+		            // Customize the editor configuration on "configLoaded" event,
+		            // which is fired after the configuration file loading and execution. 
+		            // This makes it possible to change the configuration before the editor initialization takes place.
+		            editor.on( \'configLoaded\', function () {
+		                
+		                // Remove redundant plugins to make the editor simpler.
+				    editor.config.removePlugins = \'flash,forms,iframe,newpage,smiley,specialchar,templates\';
 
+
+		                editor.config.customConfig = ckeditorConfig;
+		                editor.config.readOnly = false;
+		                editor.config.htmlEncodeOutput =false;
+		                editor.config.allowedContent =false;
+		                editor.config.extraAllowedContent = \'\';
+		                editor.config.fullPage = false;
+		                editor.config.toolbarStartupExpanded=false;
+		                editor.config.language= \''.$langs->defaultlang.'\';
+		                editor.config.textDirection= \''.$langs->trans("DIRECTION").'\';
+                        width: element.offsetWidth,
+                        editor.config.filebrowserBrowseUrl = ckeditorFilebrowserBrowseUrl;   
+                        editor.config.filebrowserImageBrowseUrl = ckeditorFilebrowserImageBrowseUrl;
+                        editor.config.filebrowserWindowWidth = \'900\';
+                        editor.config.filebrowserWindowHeight = \'500\';
+                        editor.config.filebrowserImageWindowWidth = \'900\';
+                        editor.config.filebrowserImageWindowHeight = \'500\';
+
+                    	// Used for notes fields
+                    	editor.config.toolbar_dolibarr_inline_notes =
+                    	[
+                    	 	[\'SpellChecker\', \'Scayt\'],// \'Cut\',\'Copy\',\'Paste\',\'-\', are useless, can be done with right click, even on smarpthone
+                    	 	[\'Undo\',\'Redo\',\'-\',\'Find\',\'Replace\'],
+                    	    [\'Format\',\'Font\',\'FontSize\'],
+                    	 	[\'Bold\',\'Italic\',\'Underline\',\'Strike\',\'Superscript\',\'-\',\'TextColor\',\'BGColor\',\'RemoveFormat\'],
+                    	 	[\'NumberedList\',\'BulletedList\',\'Outdent\',\'Indent\'],
+                    	 	[\'JustifyLeft\',\'JustifyCenter\',\'JustifyRight\',\'JustifyBlock\'],
+                    	    [\'Link\',\'Unlink\',\'Image\',\'Table\',\'HorizontalRule\',\'SpecialChar\'],
+                    	 	[\'Source\']
+                    	];
+
+		                editor.config.toolbar = editor.config.toolbar_dolibarr_inline_notes;
+
+		            } );
+		    } );
+		    ';
+		    
+		    
+		    print ' $( function() { ';
+		    print '
+                   $(".docedit_save").click(function(btnsave) {
+
+                        var saveTarget = $($(this).data("target"));
+                        
+                        if(CKEDITOR.instances[saveTarget.attr("id")] != undefined)
+                        {
+                            var evt = CKEDITOR.instances[saveTarget.attr("id")];
+                            // getData() returns CKEditor\'s HTML content.
+                            console.log( evt ); //evt.editor.getData().length 
+
+
+                            $.ajax({
+                              method: "POST",
+                              url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+                              dataType: "json",
+                              data: { set: "content" , id: saveTarget.data("id") , type: saveTarget.data("type"), content: evt.getData() }
+                            })
+                            .done(function( data ) {
+                                if(data.status){
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+                                }else{
+                                    $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+                                }
+                            });
+
+                        }
+
+                   });
+            ';
+		    print '} );</script>';
+		}
+	}
+    print '<style>.ui-state-highlight::before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
 	print "</div>\n";
 
 	/*
@@ -537,6 +694,9 @@ $db->close();
 
 function _print_docedit_footer($object){
     global $langs, $conf, $user;
+    
+    print '<div class="sortable sortableHelper docedit_document_body docedit_document_bloc"></div>';
+    
     print '<div class="docedit_document_footer docedit_document_bloc">';
     
     
@@ -545,12 +705,11 @@ function _print_docedit_footer($object){
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
-    print '<!-- END docedit_infos --></div>';
+    print '</div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
-    //print $langs->trans('RefLtrTitle');
-    print '<span class="docedit_title" >'. $langs->trans('RefLtrFooterTab').'</span>';
+    print '<span class="docedit_title_type" >'. $langs->trans('RefLtrFooterTab').'</span><span class="docedit_title" ></span>';
     print '</div>';
     
     
@@ -561,7 +720,7 @@ function _print_docedit_footer($object){
         // TODO : add default footer
     }
     
-    print '<!-- END docedit_document_footer --></div>';
+    print '</div><!-- END docedit_document_footer -->';
 }
 
 
@@ -578,12 +737,12 @@ function _print_docedit_header($object, $norepeat=false){
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
     
-    print '<!-- END docedit_infos --></div>';
+    print '</div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
-    //print $langs->trans('RefLtrTitle');
-    print '<span class="docedit_title" >'. $langs->trans('RefLtrHeaderTab').'</span>';
+
+    print '<span class="docedit_title_type" >'. $langs->trans('RefLtrHeaderTab').'</span><span class="docedit_title" ></span>';
     print '</div>';
     if(!$norepeat)
     {
@@ -614,6 +773,6 @@ function _print_docedit_header($object, $norepeat=false){
         }
     }
     
-    print '<!-- END docedit_document_head --></div>';
+    print '</div><!-- END docedit_document_head -->';
 }
 

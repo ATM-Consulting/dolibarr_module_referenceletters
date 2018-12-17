@@ -67,10 +67,11 @@
   	transition: opacity 600ms, visibility 600ms;
   	-webkit-transition: opacity 600ms, visibility 600ms;
 }
-.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos{
+.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos, docedit_infos:hover{
 	/*display:block;*/
   	visibility: visible;
   	opacity: 1;
+  	z-index:200;
 }
 .docedit_document_bloc:hover{
 	border-top: 1px dashed #cccaca;
@@ -108,6 +109,10 @@
 	text-align: center;
 }
 
+.docedit_document_head .docedit_infos_top, .docedit_document_footer  .docedit_infos_top{
+	background: #deafaf;
+}
+
 .docedit_infos_left{
 	top:0;
 	left:0;
@@ -120,6 +125,14 @@
 	display : block;
 	margin:0.5em 0;
 	position:relative;
+}
+
+.docedit_title{
+	font-style: italic;
+}
+.docedit_title_type{
+	font-style: normale;
+	opacity: 0.9;
 }
 
 .docedit_document_option{
@@ -150,12 +163,21 @@
 }
 
 .handle{
-	cursor: grab;
+	cursor: move;
+}
+
+.docedit_save{
+	cursor: pointer;
 }
 
 .ui-state-highlight{
 	height:100px;
+	line-height: 100px;
+	text-align: center;
 	background: #e0f6ff;
 	border:1px dotted #afd0de;
+	color:#afd0de;
+	font-weight: bold;
+	font-size:2.5em;
 }
 

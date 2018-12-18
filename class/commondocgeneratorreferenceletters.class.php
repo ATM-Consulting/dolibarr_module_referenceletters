@@ -420,6 +420,43 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_societe_address'] = $line->societe_address;
 		$resarray['line_societe_zip'] = $line->societe_zip;
 		$resarray['line_societe_town'] = $line->societe_town;
+		$resarray['line_presence_bloc'] = '';
+		
+		// Display session stagiaire heure
+		if(!empty($line->sessid) && !empty($line->stagerowid))
+		{
+		    dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
+		    dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+		    if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
+		    {
+    		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
+    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->stagerowid);
+    		    if(!empty($agefoddsessionstagiaireheures->lines)){
+    		        foreach ($agefoddsessionstagiaireheures->lines as $heures)
+    		        {
+    		            $agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+    		            if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0)
+    		            {
+    		                if(!empty($heures->heures)){
+    		                    // start by converting to seconds
+    		                    $seconds = floor($heures->heures * 3600);
+    		                    // we're given hours, so let's get those the easy way
+    		                    $hours = floor($heures->heures);
+    		                    // since we've "calculated" hours, let's remove them from the seconds variable
+    		                    $seconds -= $hours * 3600;
+    		                    // calculate minutes left
+    		                    $minutes = floor($seconds / 60);
+    		                    
+    		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
+    		                    // return the time formatted HH:MM
+    		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
+    		                }
+    		            }
+    		        }
+    		    }
+		    }
+		    
+		}
 
 		// Substitutions tableau d'horaires
 		$resarray['line_date_session'] = dol_print_date($line->date_session);

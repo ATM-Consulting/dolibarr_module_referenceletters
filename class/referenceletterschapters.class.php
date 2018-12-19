@@ -65,7 +65,7 @@ class ReferenceLettersChapters extends CommonObject
      *
      *  @param	DoliDb		$db      Database handler
      */
-    function __construct($db)
+	public function __construct($db)
     {
         $this->db = $db;
         return 1;
@@ -79,7 +79,7 @@ class ReferenceLettersChapters extends CommonObject
      *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
      *  @return int      		   	 <0 if KO, Id of created object if OK
      */
-    function create($user, $notrigger=0)
+    public function create($user, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
@@ -147,7 +147,7 @@ class ReferenceLettersChapters extends CommonObject
 
 		$this->db->begin();
 
-	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
     	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 
@@ -174,7 +174,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::create ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -194,7 +194,7 @@ class ReferenceLettersChapters extends CommonObject
      *  @param	int		$id    Id object
      *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch($id)
+    public function fetch($id)
     {
     	global $langs;
         $sql = "SELECT";
@@ -216,7 +216,7 @@ class ReferenceLettersChapters extends CommonObject
         $sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
         $sql.= " WHERE t.rowid = ".$id;
 
-    	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+        dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -250,18 +250,19 @@ class ReferenceLettersChapters extends CommonObject
         else
         {
       	    $this->error="Error ".$this->db->lasterror();
-            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+      	    $this->errors[]="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
             return -1;
         }
     }
 
-/**
+	/**
      *  Load object in memory from the database
      *
      *  @param	int		$id    Id object
      *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch_byrefltr($id,$lang_chapter='')
+    public function fetch_byrefltr($id,$lang_chapter='')
     {
     	global $langs;
         $sql = "SELECT";
@@ -287,7 +288,7 @@ class ReferenceLettersChapters extends CommonObject
         }
         $sql.= " ORDER BY sort_order";
 
-    	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+    	dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -326,7 +327,8 @@ class ReferenceLettersChapters extends CommonObject
         else
         {
       	    $this->error="Error ".$this->db->lasterror();
-            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+      	    $this->errors[]="Error ".$this->db->lasterror();
+      	    dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
             return -1;
         }
     }
@@ -339,7 +341,7 @@ class ReferenceLettersChapters extends CommonObject
      *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
      *  @return int     		   	 <0 if KO, >0 if OK
      */
-    function update($user=0, $notrigger=0)
+    public function update($user=0, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
@@ -393,7 +395,7 @@ class ReferenceLettersChapters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql = $this->db->query($sql);
     	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 
@@ -418,7 +420,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this)."::".__METHOD__." ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -439,7 +441,7 @@ class ReferenceLettersChapters extends CommonObject
      *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
 	 *  @return	int					 <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger=0)
+    public function delete($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -467,7 +469,7 @@ class ReferenceLettersChapters extends CommonObject
     		$sql = "DELETE FROM ".MAIN_DB_PREFIX."referenceletters_chapters";
     		$sql.= " WHERE rowid=".$this->id;
 
-    		dol_syslog(get_class($this)."::delete sql=".$sql);
+    		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
     		$resql = $this->db->query($sql);
         	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		}
@@ -477,7 +479,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::delete ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this).__METHOD__." ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -498,7 +500,7 @@ class ReferenceLettersChapters extends CommonObject
 	 *	@param	int		$fromid     Id of object to clone
 	 * 	@return	int					New id of clone
 	 */
-	function createFromClone($fromid)
+	public function createFromClone($fromid)
 	{
 		global $user,$langs;
 
@@ -552,7 +554,7 @@ class ReferenceLettersChapters extends CommonObject
 	 *
 	 *	@return	void
 	 */
-	function initAsSpecimen()
+	public function initAsSpecimen()
 	{
 		$this->id=0;
 
@@ -586,7 +588,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
 		$sql.= " WHERE t.fk_referenceletters = ".$this->fk_referenceletters;
 
-		dol_syslog(get_class($this)."::findMaxSortOrder sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		$max=0;
 		if ($resql)
@@ -606,7 +608,8 @@ class ReferenceLettersChapters extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::findMaxSortOrder ".$this->error, LOG_ERR);
+			$this->errors[]="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
@@ -646,10 +649,9 @@ class ReferenceLettersChapters extends CommonObject
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
+			$this->errors[]="Error ".$this->db->lasterror();
 			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
-
-
 }

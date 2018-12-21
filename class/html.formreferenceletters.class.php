@@ -224,7 +224,7 @@ class FormReferenceLetters extends Form
 		require_once 'referenceletters.class.php';
 
 		$refletter = new Referenceletters($this->db);
-		$filter=array('t.element_type'=>$element_type);
+		$filter=array('t.element_type'=>$element_type, 't.status'=>1);
 		$refletter->fetch_all('ASC','t.title',0,0,$filter);
 		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
 		if (!empty($showempty)) {

@@ -218,6 +218,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TStagiairesSession',
 							'TStagiairesSessionPresent',
 							'TStagiairesSessionSoc',
+					        'TStagiairesSessionSocPresent',
 							'TStagiairesSessionSocMore',
 							'TStagiairesSessionConvention',
 							'TFormateursSession',

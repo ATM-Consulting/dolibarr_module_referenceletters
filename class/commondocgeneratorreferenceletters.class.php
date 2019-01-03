@@ -24,6 +24,7 @@
  */
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php");
+require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
 
 /**
  * \class CommonDocGenerator
@@ -157,6 +158,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$outputlangs->load('main');
 		$array_other = parent::get_substitutionarray_other($outputlangs);
 		$array_other['current_date_fr'] = $outputlangs->trans('Day' . (( int ) date('w'))) . ' ' . date('d') . ' ' . $outputlangs->trans(date('F')) . ' ' . date('Y');
+		$array_other['current_date_fr_formated'] = date('d') . ' ' . ucfirst($outputlangs->trans(date('F'))) . ' ' . date('Y');
 		if (! empty($object)) {
 
 			// TVA

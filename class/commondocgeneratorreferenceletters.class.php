@@ -421,7 +421,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_societe_zip'] = $line->societe_zip;
 		$resarray['line_societe_town'] = $line->societe_town;
 		$resarray['line_presence_bloc'] = '';
-		
+
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->stagerowid))
 		{
@@ -446,7 +446,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		                    $seconds -= $hours * 3600;
     		                    // calculate minutes left
     		                    $minutes = floor($seconds / 60);
-    		                    
+
     		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
     		                    // return the time formatted HH:MM
     		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
@@ -455,7 +455,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		        }
     		    }
 		    }
-		    
+
 		}
 
 		// Substitutions tableau d'horaires
@@ -490,10 +490,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-		if ($fetchoptionnals)
+		if ($fetchoptionnals) {
 			$line->fetch_optionals($line->rowid, $extralabels);
+		}
 
-		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key = $array_key, $outputlangs);
+		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
+			$extrafields = new ExtraFields($this->db);
+			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+			$line->array_options=$line->agefodd_stagiaire->array_options;
+		}
+
+		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
 
 		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
 		if (get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne' || get_class($line) === 'CommandeFournisseurLigne')
@@ -506,6 +513,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		return $resarray;
 	}
+
+	/**
+	 *
+	 * @param CommonObject $object
+	 * @param LangTest $outputlangs
+	 * @return string[]|NULL[]|mixed[]|array[]
+	 */
 	function get_substitutionsarray_agefodd(&$object, $outputlangs) {
 		global $db;
 

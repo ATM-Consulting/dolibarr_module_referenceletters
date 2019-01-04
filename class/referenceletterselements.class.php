@@ -32,7 +32,7 @@ class ReferenceLettersElements extends CommonObject
 {
 	public $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
-	public $errors = array (); // !< To return several error codes (or messages)
+	public $errors = array(); // !< To return several error codes (or messages)
 	public $element = 'referenceletterselements'; // !< Id that identify managed objects
 	public $table_element = 'referenceletters_elements'; // !< Name of table without prefix where object is stored
 	public $id;
@@ -50,8 +50,8 @@ class ReferenceLettersElements extends CommonObject
 	public $title;
 	public $outputref;
 	public $title_referenceletters;
-	public $lines = array ();
-	
+	public $lines = array();
+
 	/**
 	 * Constructor
 	 *
@@ -61,7 +61,7 @@ class ReferenceLettersElements extends CommonObject
 		$this->db = $db;
 		return 1;
 	}
-	
+
 	/**
 	 * Create object into database
 	 *
@@ -72,9 +72,9 @@ class ReferenceLettersElements extends CommonObject
 	function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (isset($this->ref_int))
 			$this->entity = trim($this->ref_int);
 		if (isset($this->fk_referenceletters))
@@ -89,21 +89,21 @@ class ReferenceLettersElements extends CommonObject
 			$this->title = trim($this->title);
 		if (isset($this->outputref))
 			$this->outputref = trim($this->outputref);
-			
-			// Check parameters
-			// Put here code to add a control on parameters values
+
+		// Check parameters
+		// Put here code to add a control on parameters values
 		if (is_array($this->content_letter) && count($this->content_letter) > 0) {
 			$content_letter = serialize($this->content_letter);
-		} else if(is_string($this->content_letter)) {
+		} else if (is_string($this->content_letter)) {
 			$content_letter = trim($this->content_letter);
 		}
-		
+
 		// Check parameters
 		// Put here code to add control on parameters values
-		
+
 		// Insert request
 		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters_elements(";
-		
+
 		$sql .= "entity,";
 		$sql .= "ref_int,";
 		$sql .= "title,";
@@ -121,9 +121,9 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= "use_custom_footer,";
 		$sql .= "footer,";
 		$sql .= "use_landscape_format";
-		
+
 		$sql .= ") VALUES (";
-		
+
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->ref_int) ? 'NULL' : "'" . $this->ref_int . "'") . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->title . "'") . ",";
@@ -136,28 +136,28 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
 		$sql .= " " . $user->id . ",";
-		$sql .= " " . (int)$this->use_custom_header. ",";
+		$sql .= " " . ( int ) $this->use_custom_header . ",";
 		$sql .= " " . (isset($this->header) ? "'" . $this->header . "'" : 'NULL') . ",";
-		$sql .= " " . (int)$this->use_custom_footer. ",";
-		$sql .= " " . (isset($this->footer) ? "'" . $this->footer. "'" : 'NULL') . ",";
-		$sql .= " " . (int)$this->use_landscape_format;
-		
+		$sql .= " " . ( int ) $this->use_custom_footer . ",";
+		$sql .= " " . (isset($this->footer) ? "'" . $this->footer . "'" : 'NULL') . ",";
+		$sql .= " " . ( int ) $this->use_landscape_format;
+
 		$sql .= ")";
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		if (! $error) {
 			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "referenceletters_elements");
-			
+
 			if (! $notrigger) {
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -166,7 +166,7 @@ class ReferenceLettersElements extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -180,7 +180,7 @@ class ReferenceLettersElements extends CommonObject
 			return $this->id;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -191,7 +191,7 @@ class ReferenceLettersElements extends CommonObject
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
-		
+
 		$sql .= " t.entity,";
 		$sql .= " t.ref_int,";
 		$sql .= " t.title,";
@@ -211,19 +211,19 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.footer,";
 		$sql .= " t.use_landscape_format";
 		$sql .= " ,p.title as title_referenceletters";
-		
+
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.rowid = " . $id;
-		
+
 		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
 				$obj = $this->db->fetch_object($resql);
-				
+
 				$this->id = $obj->rowid;
-				
+
 				$this->entity = $obj->entity;
 				$this->ref_int = $obj->ref_int;
 				$this->fk_referenceletters = $obj->fk_referenceletters;
@@ -245,7 +245,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->use_landscape_format = $obj->use_landscape_format;
 			}
 			$this->db->free($resql);
-			
+
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -253,7 +253,7 @@ class ReferenceLettersElements extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -287,28 +287,28 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.fk_element = " . $element_id;
 		$sql .= " AND t.element_type = '" . $this->db->escape($element_type) . "'";
-		
+
 		if (! empty($sortfield)) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
-		
+
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
-		
+
 		dol_syslog(get_class($this) . "::fetchAllByElement sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
 			if ($num > 0) {
-				$this->lines = array ();
-				
+				$this->lines = array();
+
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					
+
 					$line = new ReferenceLettersElementsLine();
-					
+
 					$line->id = $obj->rowid;
-					
+
 					$line->entity = $obj->entity;
 					$line->ref_int = $obj->ref_int;
 					$line->fk_referenceletters = $obj->fk_referenceletters;
@@ -323,12 +323,12 @@ class ReferenceLettersElements extends CommonObject
 					$line->tms = $this->db->jdate($obj->tms);
 					$line->title = $obj->title;
 					$line->title_referenceletters = $obj->title_referenceletters;
-					
+
 					$this->lines[] = $line;
 				}
 			}
 			$this->db->free($resql);
-			
+
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -336,7 +336,7 @@ class ReferenceLettersElements extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Load object in memory from the database
 	 *
@@ -368,7 +368,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
-		
+
 		if (is_array($filter)) {
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
@@ -381,32 +381,28 @@ class ReferenceLettersElements extends CommonObject
 		if (! empty($sortfield)) {
 			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
 		}
-		
-		
-		
-		
-		
+
 		dol_syslog(get_class($this) . "::fetchAll sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
-			
+
 			if ($num > 0) {
-				$this->lines = array ();
-				$num=0;
+				$this->lines = array();
+				$num = 0;
 				while ( $obj = $this->db->fetch_object($resql) ) {
-					
+
 					$addline = true;
-					//Search for company need to be calculated
+					// Search for company need to be calculated
 					if (array_key_exists('search_company', $filter) && ! empty($filter['search_company'])) {
-						
+
 						require_once 'referenceletters.class.php';
 						$object_ref = new ReferenceLetters($this->db);
-						
+
 						$addline = false;
 						require_once $object_ref->element_type_list[$obj->element_type]['classpath'] . $object_ref->element_type_list[$obj->element_type]['class'];
 						$object_src = new $object_ref->element_type_list[$obj->element_type]['objectclass']($this->db);
-						
+
 						$result = $object_src->fetch($obj->fk_element);
 						if ($result < 0) {
 							$this->errors[] = $object_src->error;
@@ -419,14 +415,14 @@ class ReferenceLettersElements extends CommonObject
 								$this->errors[] = $object_src->error;
 							}
 						}
-						
+
 						if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
-							
-							if (strpos(mb_strtoupper($object_src->name,'UTF-8'), mb_strtoupper($filter['search_company'],'UTF-8')) !== false) {
+
+							if (strpos(mb_strtoupper($object_src->name, 'UTF-8'), mb_strtoupper($filter['search_company'], 'UTF-8')) !== false) {
 								$addline = true;
 							}
 						} else {
-							if (strpos(mb_strtoupper($object_src->thirdparty->name,'UTF-8'), mb_strtoupper($filter['search_company'],'UTF-8')) !== false) {
+							if (strpos(mb_strtoupper($object_src->thirdparty->name, 'UTF-8'), mb_strtoupper($filter['search_company'], 'UTF-8')) !== false) {
 								$addline = true;
 							}
 						}
@@ -434,45 +430,45 @@ class ReferenceLettersElements extends CommonObject
 						$addline = true;
 					}
 					if (array_key_exists('search_ref', $filter) && ! empty($filter['search_ref'])) {
-							$object_ref = new ReferenceLetters($this->db);
+						$object_ref = new ReferenceLetters($this->db);
 						$element_type = $langs->trans($obj->element_type);
-						include_once( $object_ref->element_type_list[$obj->element_type]['classpath'].$object_ref->element_type_list[$obj->element_type]['class']);
-						$class =  $object_ref->element_type_list[$obj->element_type]['objectclass'];
-						
-						$object_src = new $class ($this->db);
+						include_once ($object_ref->element_type_list[$obj->element_type]['classpath'] . $object_ref->element_type_list[$obj->element_type]['class']);
+						$class = $object_ref->element_type_list[$obj->element_type]['objectclass'];
+
+						$object_src = new $class($this->db);
 						$object_src->fetch($obj->fk_element);
-						$addline=false;
-						
-						if(strpos(mb_strtoupper($object_src->ref,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false){
-							$addline=true;
+						$addline = false;
+
+						if (strpos(mb_strtoupper($object_src->ref, 'UTF-8'), mb_strtoupper($filter['search_ref'], 'UTF-8')) !== false) {
+							$addline = true;
 						}
 						if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Societe') {
-							if (strpos(mb_strtoupper($object_src->name,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false) {
+							if (strpos(mb_strtoupper($object_src->name, 'UTF-8'), mb_strtoupper($filter['search_ref'], 'UTF-8')) !== false) {
 								$addline = true;
 							}
-						} else if($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Contact') {
-							
-							if (strpos(mb_strtoupper($object_src->lastname,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false || strpos(mb_strtoupper($object_src->firstname,'UTF-8'), mb_strtoupper($filter['search_ref'],'UTF-8')) !== false ) {
-								
+						} else if ($object_ref->element_type_list[$obj->element_type]['objectclass'] == 'Contact') {
+
+							if (strpos(mb_strtoupper($object_src->lastname, 'UTF-8'), mb_strtoupper($filter['search_ref'], 'UTF-8')) !== false || strpos(mb_strtoupper($object_src->firstname, 'UTF-8'), mb_strtoupper($filter['search_ref'], 'UTF-8')) !== false) {
+
 								$addline = true;
-								
 							}
 						}
 					}
-					
+
 					if ($addline) {
-						$num++;
+						$num ++;
 						$line = new ReferenceLettersElementsLine();
-						
+
 						$line->id = $obj->rowid;
-						
+
 						$line->entity = $obj->entity;
 						$line->ref_int = $obj->ref_int;
 						$line->fk_referenceletters = $obj->fk_referenceletters;
 						$line->outputref = $obj->outputref;
 						$line->element_type = $obj->element_type;
 						$line->fk_element = $obj->fk_element;
-						$line->content_letter = unserialize($obj->content_letter);
+						//Comment because out of memory
+						// $line->content_letter = unserialize($obj->content_letter);
 						$line->import_key = $obj->import_key;
 						$line->fk_user_author = $obj->fk_user_author;
 						$line->datec = $this->db->jdate($obj->datec);
@@ -480,24 +476,20 @@ class ReferenceLettersElements extends CommonObject
 						$line->tms = $this->db->jdate($obj->tms);
 						$line->title = $obj->title;
 						$line->title_referenceletters = $obj->title_referenceletters;
-						
+
 						$this->lines[] = $line;
 					}
 				}
 			}
-			
-			$this->lines=array_splice($this->lines, $offset,$limit);
-				
-				
-			
-			
+
+			$this->lines = array_splice($this->lines, $offset, $limit);
+
 			$this->db->free($resql);
-			
+
 			if (! empty($error)) {
 				return - 1;
 			}
-			
-			
+
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
@@ -505,7 +497,7 @@ class ReferenceLettersElements extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Update object into database
 	 *
@@ -516,9 +508,9 @@ class ReferenceLettersElements extends CommonObject
 	function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		// Clean parameters
-		
+
 		if (isset($this->entity))
 			$this->entity = trim($this->entity);
 		if (isset($this->ref_int))
@@ -535,50 +527,50 @@ class ReferenceLettersElements extends CommonObject
 			$this->title = trim($this->title);
 		if (isset($this->outputref))
 			$this->outputref = trim($this->outputref);
-		
+
 		if (is_array($this->content_letter) && count($this->content_letter) > 0) {
 			$content_letter = serialize($this->content_letter);
 		} else {
 			$content_letter = trim($this->content_letter);
 		}
-		
+
 		// Check parameters
 		// Put here code to add a control on parameters values
-		
+
 		// Update request
 		$sql = "UPDATE " . MAIN_DB_PREFIX . "referenceletters_elements SET";
-		
+
 		$sql .= " ref_int=" . (isset($this->ref_int) ? "'" . $this->db->escape($this->ref_int) . "'" : "null") . ",";
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " fk_referenceletters=" . (isset($this->fk_referenceletters) ? $this->fk_referenceletters : "null") . ",";
-		$sql .= " outputref=" . (!empty($this->outputref) ? $this->outputref : "0") . ",";
+		$sql .= " outputref=" . (! empty($this->outputref) ? $this->outputref : "0") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
 		$sql .= " fk_element=" . (isset($this->fk_element) ? $this->fk_element : "null") . ",";
 		$sql .= " content_letter=" . (! empty($content_letter) ? "'" . $this->db->escape($content_letter) . "'" : "null") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
 		$sql .= " fk_user_mod=" . $user->id . ",";
-		$sql .= " use_custom_header=" . (int)$this->use_custom_header . ",";
-		$sql .= " use_custom_footer=" . (int)$this->use_custom_footer. ",";
-		$sql .= " header=" . (isset($this->header) ? "'" . $this->header. "'" : "null"). ",";
-		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer . "'" : "null"). ",";
-		$sql .= " use_landscape_format=" . (int)$this->use_landscape_format;
-		
+		$sql .= " use_custom_header=" . ( int ) $this->use_custom_header . ",";
+		$sql .= " use_custom_footer=" . ( int ) $this->use_custom_footer . ",";
+		$sql .= " header=" . (isset($this->header) ? "'" . $this->header . "'" : "null") . ",";
+		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer . "'" : "null") . ",";
+		$sql .= " use_landscape_format=" . ( int ) $this->use_landscape_format;
+
 		$sql .= " WHERE rowid=" . $this->id;
-		
+
 		$this->db->begin();
-		
+
 		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -587,7 +579,7 @@ class ReferenceLettersElements extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -601,7 +593,7 @@ class ReferenceLettersElements extends CommonObject
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Delete object in database
 	 *
@@ -612,14 +604,14 @@ class ReferenceLettersElements extends CommonObject
 	function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
-		
+
 		$this->db->begin();
-		
+
 		if (! $error) {
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
 				// want this action calls a trigger.
-				
+
 				// // Call triggers
 				// include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 				// $interface=new Interfaces($this->db);
@@ -628,11 +620,11 @@ class ReferenceLettersElements extends CommonObject
 				// // End call triggers
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
 			$sql .= " WHERE rowid=" . $this->id;
-			
+
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -640,12 +632,12 @@ class ReferenceLettersElements extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		if (! $error) {
 			$sql = "UPDATE " . MAIN_DB_PREFIX . "actioncomm SET fk_element=NULL, elementtype=NULL";
 			$sql .= " WHERE fk_element=" . $this->id;
 			$sql .= " AND elementtype='referenceletters_referenceletterselements'";
-			
+
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
@@ -653,7 +645,7 @@ class ReferenceLettersElements extends CommonObject
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
-		
+
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
@@ -667,7 +659,7 @@ class ReferenceLettersElements extends CommonObject
 			return 1;
 		}
 	}
-	
+
 	/**
 	 * Load an object from its id and create a new one in database
 	 *
@@ -676,33 +668,33 @@ class ReferenceLettersElements extends CommonObject
 	 */
 	function createFromClone($fromid) {
 		global $user, $langs;
-		
+
 		$error = 0;
-		
+
 		$object = new Referenceletterselements($this->db);
-		
+
 		$this->db->begin();
-		
+
 		// Load source object
 		$object->fetch($fromid);
 		$object->id = 0;
 		$object->statut = 0;
-		
+
 		// Clear fields
 		// ...
-		
+
 		// Create clone
 		$result = $object->create($user);
-		
+
 		// Other options
 		if ($result < 0) {
 			$this->error = $object->error;
 			$error ++;
 		}
-		
+
 		if (! $error) {
 		}
-		
+
 		// End
 		if (! $error) {
 			$this->db->commit();
@@ -712,7 +704,7 @@ class ReferenceLettersElements extends CommonObject
 			return - 1;
 		}
 	}
-	
+
 	/**
 	 * Initialise object with example values
 	 * Id must be 0 if object instance is a specimen
@@ -721,7 +713,7 @@ class ReferenceLettersElements extends CommonObject
 	 */
 	function initAsSpecimen() {
 		$this->id = 0;
-		
+
 		$this->entity = '';
 		$this->ref_int = 'LTR0001';
 		$this->fk_referenceletters = '';
@@ -734,7 +726,7 @@ class ReferenceLettersElements extends CommonObject
 		$this->fk_user_mod = '';
 		$this->tms = '';
 	}
-	
+
 	/**
 	 * Returns the reference to the following non used model letters used depending on the active numbering module
 	 * defined into REF_LETTER_ADDON
@@ -746,11 +738,11 @@ class ReferenceLettersElements extends CommonObject
 	function getNextNumRef($objsoc, $fk_user = '', $element_type = '') {
 		global $conf, $langs;
 		$langs->load("referenceletters@referenceletters");
-		
-		$dirmodels = array_merge(array (
-				'/' 
+
+		$dirmodels = array_merge(array(
+				'/'
 		), ( array ) $conf->modules_parts['models']);
-		
+
 		if (! empty($conf->global->REF_LETTER_ADDON)) {
 			foreach ( $dirmodels as $reldir ) {
 				$dir = dol_buildpath($reldir . "core/modules/referenceletters/");
@@ -758,22 +750,22 @@ class ReferenceLettersElements extends CommonObject
 					$handle = opendir($dir);
 					if (is_resource($handle)) {
 						$var = true;
-						
+
 						while ( ($file = readdir($handle)) !== false ) {
 							if ($file == $conf->global->REF_LETTER_ADDON . '.php') {
 								$file = substr($file, 0, dol_strlen($file) - 4);
 								require_once $dir . $file . '.php';
-								
+
 								$module = new $file();
-								
+
 								// Chargement de la classe de numerotation
 								$classname = $conf->global->REF_LETTER_ADDON;
-								
+
 								$obj = new $classname();
-								
+
 								$numref = "";
 								$numref = $obj->getNextValue($fk_user, $element_type, $objsoc, $this);
-								
+
 								if ($numref != "") {
 									return $numref;
 								} else {
@@ -791,7 +783,7 @@ class ReferenceLettersElements extends CommonObject
 			return "";
 		}
 	}
-	
+
 	/**
 	 * getNomUrl
 	 *
@@ -801,13 +793,13 @@ class ReferenceLettersElements extends CommonObject
 	 */
 	public function getNomUrl($withpicto = 0, $option = '') {
 		global $langs;
-		
+
 		$result = '';
-		
+
 		$url = dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $this->fk_element . '&amp;element_type=' . $this->element_type;
-		
+
 		$result = '<a href="' . $url . '">' . ((! empty($withpicto)) ? img_pdf($this->ref_int) : '') . $this->ref_int . '</a>';
-		
+
 		return $result;
 	}
 }

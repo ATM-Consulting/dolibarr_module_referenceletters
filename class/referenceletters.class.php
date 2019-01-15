@@ -110,7 +110,7 @@ class ReferenceLetters extends CommonObject
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
-				'securityclass' => 'societe',
+				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
 				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
@@ -402,7 +402,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE 1 ";
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
-		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
+		if(!empty($title)) $sql .= " AND t.title = '".$this->db->escape($title)."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
 		dol_syslog(get_class($this) . "::".__METHOD__. ' ', LOG_DEBUG);
@@ -436,7 +436,9 @@ class ReferenceLetters extends CommonObject
 				}
 				$this->db->free($resql);
 
-				return 1;
+				return $this->id;
+			} else {
+				return 0;
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();

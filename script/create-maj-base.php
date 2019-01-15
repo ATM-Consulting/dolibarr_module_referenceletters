@@ -1,48 +1,62 @@
 <?php
+if (is_file('../main.inc.php'))
+	$dir = '../';
+else if (is_file('../../../main.inc.php'))
+	$dir = '../../../';
+else
+	$dir = '../../';
 
-if(is_file('../main.inc.php'))$dir = '../';
-else  if(is_file('../../../main.inc.php'))$dir = '../../../';
-else $dir = '../../';
-
-if(!defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
-	include($dir."master.inc.php");
-}
-elseif(!defined('INC_FROM_DOLIBARR')) {
-	include($dir."main.inc.php");
+if (! defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
+	include ($dir . "master.inc.php");
+} elseif (! defined('INC_FROM_DOLIBARR')) {
+	include ($dir . "main.inc.php");
 } else {
 	global $dolibarr_main_db_host, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass;
 }
-if(!defined('DB_HOST')) {
-	define('DB_HOST',$dolibarr_main_db_host);
-	define('DB_NAME',$dolibarr_main_db_name);
-	define('DB_USER',$dolibarr_main_db_user);
-	define('DB_PASS',$dolibarr_main_db_pass);
-	define('DB_DRIVER',$dolibarr_main_db_type);
+if (! defined('DB_HOST')) {
+	define('DB_HOST', $dolibarr_main_db_host);
+	define('DB_NAME', $dolibarr_main_db_name);
+	define('DB_USER', $dolibarr_main_db_user);
+	define('DB_PASS', $dolibarr_main_db_pass);
+	define('DB_DRIVER', $dolibarr_main_db_type);
 }
 
 dol_include_once('/referenceletters/class/referenceletters.class.php');
 dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
 
-global $db,$langs,$reinstalltemplate;
+global $db, $langs, $reinstalltemplate;
 
 $langs->load('referenceletters@referenceletters');
 
 $rfltr = new ReferenceLetters($db);
 
-
-/***********************************/
-/************* Propal **************/
-/***********************************/
+/**
+ * ********************************
+ */
+/**
+ * *********** Propal *************
+ */
+/**
+ * ********************************
+ */
 
 $title = $langs->transnoentities('RefLtrPropal');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -78,9 +92,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
-
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $this->errors, 'errors');
+	}
 	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if (! empty($id_rfltr)) {
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -195,23 +211,33 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
 
-
-/************************************/
-/************* Facture **************/
-/************************************/
+//
+// *********** Facture *************
+//
 $title = $langs->transnoentities('RefLtrInvoice');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -246,9 +272,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
+	} else {
 
-	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -373,25 +401,37 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
 
-
-/************* Commande **************/
+//
+// *********** Commande *************
+//
 $title = $langs->transnoentities('RefLtrOrder');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
-	$rfltr->element_type ='order';
+	$rfltr->element_type = 'order';
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
@@ -420,9 +460,10 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
-
-	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -516,21 +557,33 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
 
-
-/************* Contrat **************/
+//
+// *********** Contrat *************
+//
 $title = $langs->transnoentities('RefLtrContract');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -563,9 +616,10 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
-
-	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -663,20 +717,33 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
 
-/************* price request **************/
+//
+// *********** price request *************
+//
 $title = $langs->transnoentities('RefLtrSupplierProposals');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
@@ -709,9 +776,10 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
-
-	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
+	} else {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -793,24 +861,37 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
 
-/************** Supplier order **************/
+//
+// ************ Supplier order *************
+//
 $title = $langs->transnoentities('RefLtrSupplierOrders');
 if ($reinstalltemplate) {
-	$rfltr->fetch('', $title);
-	$result=$rfltr->delete($user);
-	if ($result<0) {
-		setEventMessages(null,$rfltr->errors,'errors');
+	$result = $rfltr->fetch('', $title);
+	if ($result > 0) {
+		$result = $rfltr->delete($user);
+		if ($result < 0) {
+			setEventMessages(null, $rfltr->errors, 'errors');
+		}
+	} elseif ($result < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
 	}
 }
-if($rfltr->fetch('', $title) <= 0) {
+$result = $rfltr->fetch('', $title);
+if ($result < 0) {
+	setEventMessages(null, $rfltr->errors, 'errors');
+}
+if ($result == 0) {
 
 	$rfltr->entity = $conf->entity;
 	$rfltr->title = $title;
-	$rfltr->element_type ='order_supplier';
+	$rfltr->element_type = 'order_supplier';
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
@@ -841,9 +922,11 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	$rfltr->use_landscape_format = 0;
 
 	$id_rfltr = $rfltr->create($user);
+	if ($id_rfltr < 0) {
+		setEventMessages(null, $rfltr->errors, 'errors');
+	} else {
 
-	// Instanciation du contenu
-	if(!empty($id_rfltr)) {
+		// Instanciation du contenu
 
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
@@ -937,6 +1020,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
-		$chapter->create($user);
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }

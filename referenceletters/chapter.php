@@ -133,7 +133,12 @@ if ($action == "add") {
 		$action = 'edit';
 		setEventMessage($object->error, 'errors');
 	} else {
-		header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
+		$saveandstay=GETPOST('saveandstay');
+		if (! empty($saveandstay)) {
+			header('Location:' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id='.$id.'&action=edit');
+		} else {
+			header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
+		}
 	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
 	$result = $object->fetch($id);
@@ -170,6 +175,7 @@ if ($action=='create') {
 	$subtitle=$langs->trans("RefLtrNewChaters").' - '.$object_refletter->title;
 	$button_text='Create';
 	$action_next='add';
+	$button_text_stay='';
 
 
 } elseif ($action=='edit' || $action == 'delete') {
@@ -190,6 +196,7 @@ if ($action=='create') {
 	$subtitle=$langs->trans("RefLtrChapters").' - '.$object_refletter->title;
 
 	$button_text='Modify';
+	$button_text_stay='RefLtrModifyAndStay';
 	$action_next='update';
 }
 
@@ -336,8 +343,11 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '</table>';
 
 	print '<center>';
-	print '<input type="submit" class="button" value="' . $langs->trans($button_text) . '">';
-	print '&nbsp;<input type="button" class="button" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
+	print '<input type="submit" class="butAction" value="' . $langs->trans($button_text) . '">';
+	if (!empty($button_text_stay)) {
+		print '<input type="submit" class="butAction" name="saveandstay" value="' . $langs->trans($button_text_stay) . '">';
+	}
+	print '&nbsp;<input type="button" class="butAction" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
 	print '</center>';
 
 	print '</form>';

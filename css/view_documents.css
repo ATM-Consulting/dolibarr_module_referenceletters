@@ -1,0 +1,183 @@
+.docedit_docboard{
+	background: #ededed;
+	padding:1cm;
+}
+
+.docedit_document{
+	
+	margin-left: auto;
+    margin-right: auto;
+	background: #fff;
+	
+	-webkit-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	-moz-box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.66);
+	
+	-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+     user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.docedit_document.portrait{
+	width: 19.5cm;
+}
+.docedit_document.landscape{
+	width: 29.7cm;
+}
+
+@media only screen and (max-width: calc(12.5cm + 250px) ) {
+    .docedit_document.portrait{
+		width: auto;
+	}
+}
+@media only screen and (max-width: calc(31.7cm + 250px) ) {
+    .docedit_document.landscape{
+		width: auto;
+	}
+}
+
+.docedit_document_bloc{
+	
+	position: relative;
+	
+	border-top: 1px dashed #fff;
+	border-bottom: 1px dashed #fff;
+	
+  	transition: border-color 600ms;
+  	-webkit-transition: border-color 600ms;
+}
+
+.docedit_document_head{
+	padding:1.5cm 1.5cm 0 1.5cm ;
+	position: relative;
+}
+.docedit_document_body{
+	padding:0cm 1.5cm;
+}
+.docedit_document_bloc .docedit_infos, 
+.docedit_document_bloc.ui-sortable-helper:hover .docedit_infos, 
+.docedit_document_bloc.ui-sortable-helper:focus docedit_infos{
+	position: absolute;
+	/*display:none;*/
+	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 600ms, visibility 600ms;
+  	-webkit-transition: opacity 600ms, visibility 600ms;
+}
+.docedit_document_bloc:hover .docedit_infos, .docedit_document_bloc:focus .docedit_infos, docedit_infos:hover{
+	/*display:block;*/
+  	visibility: visible;
+  	opacity: 1;
+  	z-index:200;
+}
+.docedit_document_bloc:hover{
+	border-top: 1px dashed #cccaca;
+	border-bottom: 1px dashed #cccaca;
+}
+
+.docedit_document_body.ui-sortable-helper{
+  	opacity: 0.4;
+}
+
+.docedit_document_body_text{
+	overflow-x: auto;
+	min-height:4em;
+}
+
+
+.docedit_document_footer{
+	padding:0cm 1.5cm 1.5cm 1.5cm;
+	position: relative;
+}
+
+.docedit_document_pagebreak{
+	margin:3.5em 0 3em 0;
+	position: relative;
+	text-align: center;
+	border-bottom: 1px dashed #cccaca;
+}
+
+.docedit_infos_top{
+	top:-2em;
+	left:0;
+	line-height:2em;
+	background: #afd0de;
+	padding: 0px 5px;
+	text-align: center;
+}
+
+.docedit_document_head .docedit_infos_top, .docedit_document_footer  .docedit_infos_top{
+	background: #deafaf;
+}
+
+.docedit_infos_left{
+	top:0;
+	left:0;
+	background: #fff;
+	padding:5px;
+	text-align: center;
+}
+
+.docedit_infos_icon{
+	display : block;
+	margin:0.5em 0;
+	position:relative;
+}
+
+.docedit_title{
+	font-style: italic;
+}
+.docedit_title_type{
+	font-style: normale;
+	opacity: 0.9;
+}
+
+.docedit_document_option{
+	margin-top: 2em;
+}
+.docedit_label{
+	display:block;
+}
+
+.ui-sortable-helper{
+	
+	
+}
+.docedit_document_option_read_only, 
+.docedit_document_body.ui-sortable-helper:hover .docedit_document_option_read_only, 
+.docedit_document_body.ui-sortable-helper:focus .docedit_document_option_read_only{
+	visibility: hidden;
+  	opacity: 0;
+  	transition: opacity 600ms, visibility 600ms;
+  	-webkit-transition: opacity 600ms, visibility 600ms;
+  	
+	background: #afd0de;
+	padding: 3px;
+}
+.docedit_document_body:hover .docedit_document_option_read_only, .docedit_document_body:focus .docedit_document_option_read_only{
+  	visibility: visible;
+  	opacity: 1;
+}
+
+.handle{
+	cursor: move;
+}
+
+.docedit_save{
+	cursor: pointer;
+}
+
+.ui-state-highlight{
+	height:100px;
+	line-height: 100px;
+	text-align: center;
+	background: #e0f6ff;
+	border:1px dotted #afd0de;
+	color:#afd0de;
+	font-weight: bold;
+	font-size:2.5em;
+}
+

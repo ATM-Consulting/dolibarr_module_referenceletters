@@ -193,6 +193,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			// Linked objects
 			$array_other['objets_lies'] = self::getLinkedObjects($object, $outputlangs);
+
+			// @see function pdf_getLinkedObjects() in pdf.lib.php
+			$array_other['objets_lies;element=facture'] = '';
+			$array_other['objets_lies;element=invoice_supplier'] = ''; // Non utilisable pour le moment
+			$array_other['objets_lies;element=propal'] = '';
+			$array_other['objets_lies;element=supplier_proposal'] = '';
+			$array_other['objets_lies;element=commande'] = '';
+			$array_other['objets_lies;element=supplier_order'] = '';
+			$array_other['objets_lies;element=contrat'] = '';
+			$array_other['objets_lies;element=shipping'] = '';
+			if (!empty($object->linkedObjects))
+			{
+				foreach($object->linkedObjects as $objecttype => $objects)
+				{
+					$array_other['objets_lies;element='.$objecttype] = self::getLinkedObjects($object, $outputlangs, $objecttype);
+				}
+			}
 		}
 		// var_dump($array_other);exit;
 		return $array_other;
@@ -204,12 +221,21 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param stdClass $outputlangs
 	 * @return string
 	 */
-	static function getLinkedObjects(&$object, &$outputlangs) {
-		require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
-		$linkedobjects = pdf_getLinkedObjects($object, $outputlangs);
+	static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
+		global $linkedobjects;
+
+		if (empty($linkedobjects))
+		{
+			require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
+			$linkedobjects = pdf_getLinkedObjects($object, $outputlangs);
+		}
+
 		if (! empty($linkedobjects)) {
 			$TRefToShow = array();
-			foreach ( $linkedobjects as $linkedobject ) {
+			foreach ( $linkedobjects as $elementtype => $linkedobject )
+			{
+				if ($element !== null && $elementtype != $element) continue;
+
 				$reftoshow = $linkedobject["ref_title"] . ' : ' . $linkedobject["ref_value"];
 				if (! empty($linkedobject["date_value"]))
 					$reftoshow .= ' / ' . $linkedobject["date_value"];

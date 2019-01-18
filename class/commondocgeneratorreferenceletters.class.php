@@ -728,7 +728,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$perms=$extrafields->attributes[$extrafieldsobjectkey]['perms'][$key];
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
-			$hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
+			
+			if( (float)DOL_VERSION < 7 ){
+			    $hidden= ($ishidden == 0 ?  1 : 0);
+			}
+			else{
+			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			}
+			
 		}
 		else
 		{
@@ -744,7 +752,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$perms=$extrafields->attribute_perms[$key];
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
-			$hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			$ishidden=$extrafields->attribute_hidden[$key];
+			
+			if( (float)DOL_VERSION < 7 ){
+			    $hidden= ($ishidden == 0 ?  1 : 0);
+			}
+			else{
+			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			}
 		}
 
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.

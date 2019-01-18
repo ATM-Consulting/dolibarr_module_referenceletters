@@ -52,6 +52,7 @@ $arrayofselected=is_array($toselect)?$toselect:array();
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$page = intval($page);
 
 // Search criteria
 $search_ref_int = GETPOST("search_ref_int");

@@ -731,7 +731,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
 			
 			if( (float)DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 0 ?  1 : 0);
+			    $hidden= ($ishidden == 1 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
@@ -755,7 +755,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$ishidden=$extrafields->attribute_hidden[$key];
 			
 			if( (float)DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 0 ?  1 : 0);
+			    $hidden= ($ishidden == 1 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)

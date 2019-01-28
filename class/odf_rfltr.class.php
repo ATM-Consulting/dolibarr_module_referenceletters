@@ -35,6 +35,39 @@ class OdfRfltr extends Odf {
 	
 	
 	/**
+	 * @override
+	 * Function to convert a HTML string into an ODT string
+	 *
+	 * @param	string	$value	String to convert
+	 */
+	public function htmlToUTFAndPreOdf($value)
+	{
+		// We decode into utf8, entities
+		$value=dol_html_entity_decode($value, ENT_QUOTES);
+
+		// We convert html tags
+		$ishtml=dol_textishtml($value);
+		if ($ishtml)
+		{
+	        // If string is "MYPODUCT - Desc <strong>bold</strong> with &eacute; accent<br />\n<br />\nUn texto en espa&ntilde;ol ?"
+    	    // Result after clean must be "MYPODUCT - Desc bold with é accent\n\nUn texto en espa&ntilde;ol ?"
+
+			// We want to ignore \n and we want all <br> to be \n
+			$value=preg_replace('/(\r\n|\r|\n)/i','',$value);
+			$value=preg_replace('/<br>/i',"\n",$value);
+			$value=preg_replace('/<br\s+[^<>\/]*>/i',"\n",$value);
+			$value=preg_replace('/<br\s+[^<>\/]*\/>/i',"\n",$value);
+
+			//$value=preg_replace('/<strong>/','__lt__text:p text:style-name=__quot__bold__quot____gt__',$value);
+			//$value=preg_replace('/<\/strong>/','__lt__/text:p__gt__',$value);
+
+//			$value=dol_string_nohtmltag($value, 0);
+		}
+
+		return $value;
+	}
+	
+	/**
 	 * Move segment tags for lines of tables
 	 * This function is called automatically within the constructor, so this->contentXml is clean before any other thing
 	 *

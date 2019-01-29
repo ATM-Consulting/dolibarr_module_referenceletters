@@ -615,7 +615,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
 			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
 			$resarray['formation_lieu_acces'] = $agf_place->acces_site;
-			$resarray['formation_lieu_phone'] = $agf_place->tel;
+			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
 			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
 			$resarray['formation_lieu_divers'] = $agf_place->note1;

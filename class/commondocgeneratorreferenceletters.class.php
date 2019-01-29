@@ -615,6 +615,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
 			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
 			$resarray['formation_lieu_acces'] = $agf_place->acces_site;
+			$resarray['formation_lieu_phone'] = $agf_place->tel;
 			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
 			$resarray['formation_lieu_divers'] = $agf_place->note1;
@@ -729,14 +730,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
-			
+
 			if( (float)DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 1 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
-			
+
 		}
 		else
 		{
@@ -753,7 +754,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
-			
+
 			if( (float)DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 1 ?  1 : 0);
 			}

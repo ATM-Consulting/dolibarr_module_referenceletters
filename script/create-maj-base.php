@@ -1093,6 +1093,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} -&nbsp; N&deg; d&eacute;claration d&#39;activ
 		$chapter->title = 'Contenu';
 		$chapter->content_text = '<u>Formation : </u><br />
 Intitul&eacute; formation : <strong>{formation_nom}</strong><br />
+Intitul&eacute; formation pour les PDF: <strong>{formation_nom_custo}</strong><br />
 But de la formation : <strong>{formation_but}</strong><br />
 M&eacute;thode de la formation : <strong>{formation_methode}</strong><br />
 Pr&eacute;requis : <strong>{formation_prerequis}</strong><br />
@@ -1113,6 +1114,7 @@ Tableau des objectifs :<br />
 <strong>{formation_lieu} -&nbsp;{formation_lieu_adresse}&nbsp;{formation_lieu_cp}&nbsp;{formation_lieu_ville}</strong><br />
 Instruction d&#39;acces au lieu : <strong>{formation_lieu_acces}</strong><br />
 Horaire du lieu : <strong>{formation_lieu_horaires}</strong><br />
+Téléphone du lieu : <strong>{formation_lieu_phone}</strong><br />
 Infos diverses :&nbsp;<strong>{formation_lieu_divers}</strong><br />
 Commentaire Lieu : <strong>{formation_lieu_notes}</strong><br />
 <br />

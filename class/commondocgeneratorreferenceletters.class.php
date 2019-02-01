@@ -447,6 +447,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_societe_zip'] = $line->societe_zip;
 		$resarray['line_societe_town'] = $line->societe_town;
 		$resarray['line_presence_bloc'] = '';
+		$resarray['line_presence_total'] = '';
 
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->stagerowid))
@@ -458,6 +459,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
     		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->stagerowid);
     		    if(!empty($agefoddsessionstagiaireheures->lines)){
+    		        $hPresenceTotal = 0;
     		        foreach ($agefoddsessionstagiaireheures->lines as $heures)
     		        {
     		            $agefodd_sesscalendar = new Agefodd_sesscalendar($db);
@@ -473,12 +475,27 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		                    // calculate minutes left
     		                    $minutes = floor($seconds / 60);
 
+    		                    $hPresenceTotal+= $heures->heures;
+    		                    
+    		                    
     		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
     		                    // return the time formatted HH:MM
     		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
     		                }
     		            }
     		        }
+    		        
+    		        // TOTAL DES HEURES PASSEES
+    		        // start by converting to seconds
+    		        $seconds = floor($hPresenceTotal * 3600);
+    		        // we're given hours, so let's get those the easy way
+    		        $hours = floor($hPresenceTotal);
+    		        // since we've "calculated" hours, let's remove them from the seconds variable
+    		        $seconds -= $hours * 3600;
+    		        // calculate minutes left
+    		        $minutes = floor($seconds / 60);
+    		        $resarray['line_presence_total']= $hours."H".sprintf("%02u",$minutes);
+    		        
     		    }
 		    }
 

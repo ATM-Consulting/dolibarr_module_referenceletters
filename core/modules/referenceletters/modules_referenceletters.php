@@ -132,7 +132,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							$oldline = $listlines->xml;
 							foreach ( $tmparray as $key => $val ) {
 								try {
-									$listlines->setVars($key, $val, true, 'UTF-8');
+									$listlines->setVars($key, $val, false, 'UTF-8');
 								} catch ( OdfException $e ) {
 								} catch ( SegmentException $e ) {
 								}

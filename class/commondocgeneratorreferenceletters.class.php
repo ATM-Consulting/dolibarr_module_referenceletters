@@ -457,7 +457,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		    if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
 		    {
     		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
-    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->stagerowid);
+    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->id);
     		    if(!empty($agefoddsessionstagiaireheures->lines)){
     		        $hPresenceTotal = 0;
     		        foreach ($agefoddsessionstagiaireheures->lines as $heures)

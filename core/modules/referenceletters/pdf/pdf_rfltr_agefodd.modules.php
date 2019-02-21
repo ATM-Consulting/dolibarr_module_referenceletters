@@ -212,6 +212,15 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$chapter_text = $this->setSubstitutions($object, $chapter_text);
 
 					// merge agefodd arrays
+					//TODO : define this order on logical order by template
+					// BEGIN x1 =>
+					//   BEGIN x2 =>
+					//     BEGIN x4 => END x4
+					//   END x2 =>
+					//   BEGIN x3 => END x3
+					// END x1
+					// rather than hard coded
+					// Sould be x4 then x3,x2 (same level) then x1
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'THorairesSession',
 							'TFormationObjPeda',

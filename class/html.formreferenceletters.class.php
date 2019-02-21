@@ -248,17 +248,16 @@ class FormReferenceLetters extends Form
 	/**
 	 *
 	 *
-	 * @param unknown $user
-	 * @param unknown $object
+	 * @param User $user
+	 * @param CommonObject $object
 	 */
 	public function displaySubtitutionKey($user,$reflettersobject) {
 		global $langs,$bc;
 
-
+		$form = new Form($this->db);
 		$subs_array=$reflettersobject->getSubtitutionKey($user);
 
-		$html='<table witdh="100%" id="refltertags" style="display:none">';
-
+		$html='<table id="refltertags">';
 
 		if (is_array($subs_array) && count($subs_array)>0) {
 			foreach($subs_array as $block=>$data) {
@@ -268,7 +267,7 @@ class FormReferenceLetters extends Form
 				$html.='</td>';
 				$html.='</tr>';
 				$html.='<tr class="liste_titre">';
-				$html.='<td>';
+				$html.='<td width="50px">';
 				$html.=$langs->trans('RefLtrTag');
 				$html.='</td>';
 				$html.='<td>';
@@ -278,8 +277,7 @@ class FormReferenceLetters extends Form
 				if (count($data)>0) {
 					$var=true;
 					foreach($data as $key=>$value) {
-						$var = ! $var;
-						$html.="<tr $bc[$var]>";
+						$html.="<tr class=\"oddeven\">";
 						$html.='<td>';
 						$html.='{'.$key.'}';
 						$html.='</td>';
@@ -294,6 +292,6 @@ class FormReferenceLetters extends Form
 
 		$html.='</table>';
 
-		return $html;
+		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
 	}
 }

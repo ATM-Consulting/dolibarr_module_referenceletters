@@ -450,14 +450,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_presence_total'] = '';
 
 		// Display session stagiaire heure
-		if(!empty($line->sessid) && !empty($line->stagerowid))
+		if(!empty($line->sessid) && !empty($line->id))
 		{
 		    dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
 		    dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
 		    if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
 		    {
     		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
-    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->stagerowid);
+    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->id);
     		    if(!empty($agefoddsessionstagiaireheures->lines)){
     		        $hPresenceTotal = 0;
     		        foreach ($agefoddsessionstagiaireheures->lines as $heures)

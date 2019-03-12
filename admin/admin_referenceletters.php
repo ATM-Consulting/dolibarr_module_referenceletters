@@ -361,6 +361,23 @@ print '<a href="'.$_SERVER["PHP_SELF"].'?action=replacetemplate" class="butActio
 print '</td>';
 print '</tr>';
 
+print '<tr class="pair ifeventyes"><td>' . $langs->trans("RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION") . '</td>';
+print '<td align="left">';
+if ($conf->use_javascript_ajax) {
+    print ajax_constantonoff('DOCEDIT_CHAPTERS_INLINE_EDITION');
+} else {
+    $arrval = array (
+        '0' => $langs->trans("No"),
+        '1' => $langs->trans("Yes")
+    );
+    print $form->selectarray("DOCEDIT_CHAPTERS_INLINE_EDITION", $arrval, $conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION);
+}
+print '</td>';
+print '<td align="center">';
+// print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_TYPEEVENTNAME"), 1, 'help');
+print '</td>';
+print '</tr>';
+
 print "</table><br>\n";
 if (! $conf->use_javascript_ajax) {
 	print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';

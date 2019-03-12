@@ -231,7 +231,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 							$this->pdf->useTemplate($tplidx);
 						}
 
-
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;
 						$this->pdf->SetXY($posX, $posY);
@@ -241,6 +240,39 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 
 						continue;
 					}
+
+                    if ($chapter_text == '@pdfdoc@') {
+
+                        $this->pdf->setPrintHeader(false);
+
+                        $objectrefpdf = dol_sanitizeFileName($object->ref);
+                        $dirpdf = $conf->propal->multidir_output[$object->entity] . "/" . $objectrefpdf;
+                        $filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
+                        $pagecounttmp = $this->pdf->setSourceFile($filepdf);
+                        if ($pagecounttmp)
+                        {
+                            for ($idocpdf = 1; $idocpdf <= $pagecounttmp; $idocpdf++) {
+                                $tplidxdoc = $this->pdf->ImportPage($idocpdf);
+                                if (!empty($tplidxdoc)) {
+                                    $this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
+                                    $this->pdf->useTemplate($tplidxdoc);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            dol_syslog("Error: Can't read PDF content with setSourceFile, for file ".$file, LOG_ERR);
+                        }
+                        $this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
+                        $posY = $this->marge_haute;
+                        $posX = $this->marge_gauche;
+                        $this->pdf->SetXY($posX, $posY);
+                        $this->pdf->SetTextColor(0, 0, 0);
+
+                        $this->pdf->setPrintHeader(true);
+
+                        continue;
+                    }
 
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);

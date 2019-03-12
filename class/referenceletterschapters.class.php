@@ -58,6 +58,8 @@ class ReferenceLettersChapters extends CommonObject
 
 	public $lines_chapters = array();
 
+	private $special_pages = array();
+
 
 
     /**
@@ -66,13 +68,13 @@ class ReferenceLettersChapters extends CommonObject
      *  @param	DoliDb		$db      Database handler
      */
 	public function __construct($db)
-    {
-        $this->db = $db;
+	{
+		$this->db = $db;
+
         return 1;
     }
 
-
-    /**
+	/**
      *  Create object into database
      *
      *  @param	User	$user        User that creates
@@ -434,12 +436,12 @@ class ReferenceLettersChapters extends CommonObject
     }
 
 
- 	/**
+	/**
 	 *  Delete object in database
 	 *
-     *	@param  User	$user        User that deletes
-     *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
-	 *  @return	int					 <0 if KO, >0 if OK
+	 * @param  User $user User that deletes
+	 * @param  int $notrigger 0=launch triggers after, 1=disable triggers
+	 * @return    int                     <0 if KO, >0 if OK
 	 */
     public function delete($user, $notrigger=0)
 	{
@@ -652,6 +654,48 @@ class ReferenceLettersChapters extends CommonObject
 			$this->errors[]="Error ".$this->db->lasterror();
 			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 			return -1;
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function isSpecialChapters() {
+
+		$this->special_pages = array(
+			array(
+				'keyword' => '@breakpage@',
+				'trans'   => 'RefLtrPageBreak'
+			), array(
+				'keyword' => '@breakpagenohead@',
+				'trans'   => 'RefLtrAddPageBreakWithoutHeader'
+			),
+			array(
+				'keyword' => '@pdfdoc@',
+				'trans'   => 'RefLtrPDFDoc',
+				'nohead' => 1
+			)
+		);
+
+		foreach ($this->special_pages as $special_page) {
+			foreach($special_page as $type=>$data) {
+				if ($type='keyword' && ($this->content_text==$data || ($data=='@pdfdoc@' && strpos($this->content_text,'@pdfdoc')===0))) {
+					return $special_page;
+				}
+			}
+		}
+		return array();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isNoRepeat()
+	{
+		if ($this->content_text == '@breakpagenohead@' || strpos($this->content_text,'@pdfdoc')===0) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

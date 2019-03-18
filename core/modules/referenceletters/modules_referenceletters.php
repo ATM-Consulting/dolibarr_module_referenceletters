@@ -568,6 +568,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	if ($filefound) {
 		require_once $file;
 
+		/** @var pdf_rfltr_propal|pdf_rfltr_order|pdf_rfltr_invoice|pdf_rfltr_contract|pdf_rfltr_thirdparty|pdf_rfltr_contact|pdf_rfltr_supplier_proposal|pdf_rfltr_order_supplier $obj */
 		$obj = new $classname($db);
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.

@@ -139,10 +139,17 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 				// Create pdf instance
 				$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
 
+				if (! is_object($hookmanager))
+				{
+					include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+					$hookmanager=new HookManager($this->db);
+				}
+				$hookmanager->initHooks(array('pdfgeneration'));
+				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+				global $action;
+				$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);
+
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
-				$heightforinfotot = 50; // Height reserved to output the info and total part
-				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
-				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 
 				// Set calculation of header and footer high line
 				// footer high
@@ -313,18 +320,13 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 				$this->pdf->Output($file, 'F');
 
-				// Add pdfgeneration hook
-				$hookmanager->initHooks(array(
-						'pdfgeneration'
-				));
 				$parameters = array(
 						'file' => $file,
 						'object' => $object,
 						'outputlangs' => $this->outputlangs,
 						'instance_letter' => $instance_letter
 				);
-				global $action;
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+				$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				if (! empty($conf->global->MAIN_UMASK))
 					@chmod($file, octdec($conf->global->MAIN_UMASK));

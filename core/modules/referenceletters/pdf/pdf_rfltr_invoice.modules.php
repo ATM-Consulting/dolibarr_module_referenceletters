@@ -112,7 +112,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$this->outputlangs->load("referenceletters@referenceletters");
 
 		// Loop on each lines to detect if there is at least one image to show
-
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
 			if (!empty($object->thirdparty->country_code))
@@ -135,6 +134,16 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			if (file_exists($dir)) {
 				// Create pdf instance
 				$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
+
+				if (! is_object($hookmanager))
+				{
+					include_once DOL_DOCUMENT_ROOT.'/core/class/hookmanager.class.php';
+					$hookmanager=new HookManager($this->db);
+				}
+				$hookmanager->initHooks(array('pdfgeneration'));
+				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+				global $action;
+				$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);
 
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 
@@ -312,11 +321,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 				$this->pdf->Output($file, 'F');
 
-				// Add pdfgeneration hook
-				$hookmanager->initHooks(array(
-						'pdfgeneration'
-				));
-				$parameters = array(
+				$parameters = array (
 						'file' => $file,
 						'object' => $object,
 						'outputlangs' => $this->outputlangs,

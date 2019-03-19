@@ -56,6 +56,7 @@ class ReferenceLettersChapters extends CommonObject
 	public $tms='';
 	public $readonly='';
 
+	/** @var ReferenceLettersChapters[]  */
 	public $lines_chapters = array();
 
 	private $special_pages = array();

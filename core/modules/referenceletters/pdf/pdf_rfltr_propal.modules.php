@@ -94,7 +94,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file($object, $instance_letter, $outputlangs) {
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $user, $langs, $conf, $hookmanager;
 
 		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
@@ -112,7 +112,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 		$this->outputlangs->load("referenceletters@referenceletters");
 
 		// Loop on each lines to detect if there is at least one image to show
-		$realpatharray = array();
 
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
@@ -121,8 +120,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 				$this->outputlangs->load("dict");
 				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
 			}
-
-			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
 			$dir = $conf->referenceletters->dir_output . "/propal/" . $objectref;
@@ -140,9 +137,6 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 				$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
 
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
-				$heightforinfotot = 50; // Height reserved to output the info and total part
-				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
-				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 
 				// Set calculation of header and footer high line
 				// footer high
@@ -156,7 +150,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 				// Set path to the background PDF File
 				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
 					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
-					$tplidx = $this->pdf->importPage(1);
+					if ($pagecount>0) {
+						$tplidx = $this->pdf->importPage(1);
+					}
 				}
 
 				$this->pdf->Open();
@@ -188,13 +184,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					$this->pdf->useTemplate($tplidx);
 				}
 
-
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
-
-				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
-				$tab_height = 130;
-				$tab_height_newpage = 150;
 
 				$posY = $this->pdf->getY();
 				$posX = $this->marge_gauche;
@@ -208,10 +199,13 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 					if ($chapter_text == '@breakpage@') {
 						if (method_exists($this->pdf, 'AliasNbPages'))
 							$this->pdf->AliasNbPages();
-						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
-						if (! empty($tplidx))
-							$this->pdf->useTemplate($tplidx);
 
+						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
+						if (! empty($tplidx)) {
+							$this->pdf->useTemplate($tplidx);
+						}
+
+						$this->pdf->setPrintFooter(true);
 
 						$posX = $this->pdf->getX();
 						$posY = $this->pdf->getY();
@@ -223,6 +217,8 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						if (method_exists($this->pdf, 'AliasNbPages')) {
 							$this->pdf->AliasNbPages();
 						}
+
+						$this->pdf->setPrintFooter(true);
 
 						$this->pdf->setPrintHeader(false);
 
@@ -241,35 +237,46 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 						continue;
 					}
 
-                    if ($chapter_text == '@pdfdoc@') {
+                    if (strpos($chapter_text,'@pdfdoc')===0) {
 
-                        $this->pdf->setPrintHeader(false);
+	                    $documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
 
-                        $objectrefpdf = dol_sanitizeFileName($object->ref);
-                        $dirpdf = $conf->propal->multidir_output[$object->entity] . "/" . $objectrefpdf;
-                        $filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
-                        $pagecounttmp = $this->pdf->setSourceFile($filepdf);
-                        if ($pagecounttmp)
-                        {
-                            for ($idocpdf = 1; $idocpdf <= $pagecounttmp; $idocpdf++) {
-                                $tplidxdoc = $this->pdf->ImportPage($idocpdf);
-                                if (!empty($tplidxdoc)) {
-                                    $this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
-                                    $this->pdf->useTemplate($tplidxdoc);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            dol_syslog("Error: Can't read PDF content with setSourceFile, for file ".$file, LOG_ERR);
-                        }
-                        $this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
-                        $posY = $this->marge_haute;
-                        $posX = $this->marge_gauche;
-                        $this->pdf->SetXY($posX, $posY);
-                        $this->pdf->SetTextColor(0, 0, 0);
+	                    $hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
+	                    $hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
+	                    $hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
 
-                        $this->pdf->setPrintHeader(true);
+	                    $result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
+						if ($result <= 0)
+						{
+							setEventMessages($object->error, $object->errors, 'errors');
+						} else {
+							$this->pdf->setPrintHeader(false);
+							$objectrefpdf = dol_sanitizeFileName($object->ref);
+							$dirpdf = $conf->propal->multidir_output[$object->entity] . "/" . $objectrefpdf;
+							$filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
+							$pagecounttmp = $this->pdf->setSourceFile($filepdf);
+							if ($pagecounttmp>=1) {
+
+								for ($idocpdf = 1; $idocpdf <= $pagecounttmp; $idocpdf++) {
+									$tplidxdoc = $this->pdf->ImportPage($idocpdf);
+									if (!empty($tplidxdoc)) {
+										$s = $this->pdf->getTemplatesize($tplidxdoc);
+										$this->pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
+										$this->pdf->setPrintFooter(false);
+										$this->pdf->useTemplate($tplidxdoc);
+									}
+								}
+							} else {
+								dol_syslog("Error: Can't read PDF content with setSourceFile, for file " . $file, LOG_ERR);
+							}
+							$this->pdf->setPrintHeader(true);
+
+						}
+
+	                    $posY = $this->marge_haute;
+	                    $posX = $this->marge_gauche;
+	                    $this->pdf->SetXY($posX, $posY);
+	                    $this->pdf->SetTextColor(0, 0, 0);
 
                         continue;
                     }
@@ -344,7 +351,7 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 	 * @return void
 	 */
 	function _pagehead($object, $showaddress, $instance_letter) {
-		global $conf, $langs;
+		global $conf;
 
 		$this->outputlangs->load("main");
 		$this->outputlangs->load("bills");
@@ -419,21 +426,12 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("CustomerCode") . " : " . $this->outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
-		$posy += 2;
-
 		// Show list of linked objects
 		// $posy = pdf_writeLinkedObjects($this->pdf, $object, $this->outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
 
 		if ($showaddress) {
 			// Sender properties
 			$carac_emetteur = '';
-			// Add internal contact of proposal if defined
-			/*$arrayidcontact=$object->getIdContact('internal','SALESREPFOLL');
-			 if (count($arrayidcontact) > 0)
-			 {
-			 $object->fetch_user($arrayidcontact[0]);
-			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$this->outputlangs->transnoentities("Name").": ".$this->outputlangs->convToOutputCharset($object->user->getFullName($this->outputlangs))."\n";
-			 }*/
 
 			$carac_emetteur .= pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty);
 
@@ -471,6 +469,9 @@ class pdf_rfltr_propal extends ModelePDFReferenceLetters
 			if (count($arrayidcontact) > 0) {
 				$usecontact = true;
 				$result = $object->fetch_contact($arrayidcontact[0]);
+				if ($result<0) {
+					setEventMessage($object->contact->error,'errors');
+				}
 			}
 
 			// Recipient name

@@ -312,8 +312,9 @@ class FormReferenceLetters extends Form
 			}
 		}
 		elseif (strpos($chapter->content_text,'@pdfdoc')===0) {
+			$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter->content_text));
 			$out = '<div class="sortable sortabledisable docedit_pdfmodel"  data-sortable-chapter="'.$chapter->id.'" >';
-			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc');
+			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
 			if ($mode == 'view') {
 				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			}

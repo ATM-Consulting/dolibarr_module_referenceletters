@@ -58,7 +58,6 @@ class TCPDFRefletters extends TCPDI
 			$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
 		}
 		else {
-			var_dump($this->getPage());
 			$this->model->_pagefootCustom($this->ref_object);
 		}
 	}

@@ -261,20 +261,33 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 							'lines'
 					));
 
-					$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
-					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
-					// var_dump($test);
-					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
-						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
-							if (! empty($option_detail['use_content_option'])) {
-								$posY = $this->pdf->GetY();
-								$this->pdf->SetXY($posX, $posY);
+					$test_array = explode('@breakpage@', $chapter_text);
+					foreach ($test_array as $chapter_text){
+						$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
+						$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+						// var_dump($test);
+						if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
+							foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
+								if (! empty($option_detail['use_content_option'])) {
+									$posY = $this->pdf->GetY();
+									$this->pdf->SetXY($posX, $posY);
 
-								$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
+									$this->pdf->writeHTMLCell(0, 0, $posX + 3, $posY, '<b>-</b> ' . $this->outputlangs->convToOutputCharset($option_detail['text_content_option']), 0, 1);
+								}
 							}
 						}
+						if (count($test_array)>1) {
+							$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
+						} else {
+							$posY = $this->pdf->GetY();
+						}
+
 					}
-					$posY = $this->pdf->GetY();
+
+					if(count($test_array) > 1) {
+						//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
+						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP)) $this->pdf->deletePage($this->pdf->getPage());
+					}
 				}
 				// Pied de page
 				if (method_exists($this->pdf, 'AliasNbPages'))

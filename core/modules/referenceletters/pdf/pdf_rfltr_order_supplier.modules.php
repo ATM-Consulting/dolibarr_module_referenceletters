@@ -262,7 +262,7 @@ class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 						} else {
 							$this->pdf->setPrintHeader(false);
 							$objectrefpdf = dol_sanitizeFileName($object->ref);
-							$dirpdf = $conf->propal->multidir_output[$object->entity] . "/" . $objectrefpdf;
+							$dirpdf = $conf->fournisseur->multidir_output[$object->entity] . "/commande/" . $objectrefpdf;
 							$filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
 							$pagecounttmp = $this->pdf->setSourceFile($filepdf);
 							if ($pagecounttmp>=1) {

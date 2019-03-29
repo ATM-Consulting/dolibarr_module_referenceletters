@@ -93,6 +93,8 @@ class ReferenceLetters extends CommonObject
 				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
+				'listmodelclass' => 'ModelePDFContract'
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -106,7 +108,9 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'societe_prepare_head',
 				'card' => 'societe/soc.php',
 				'substitution_method' => 'get_substitutionarray_thirdparty',
-				'picto' => 'company'
+				'picto' => 'company',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
+				'listmodelclass' => 'ModeleThirdPartyDoc'
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
@@ -133,7 +137,10 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'propal_prepare_head',
 				'card' => 'comm/propal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/propale/modules_propale.php',
+				'listmodelclass' => 'ModelePDFPropales'
+
 		);
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
@@ -147,7 +154,9 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'facture_prepare_head',
 				'card' => 'compta/facture/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
+				'listmodelclass' => 'ModelePDFFactures'
 		);
 		$this->element_type_list['order'] = array (
 				'class' => 'commande.class.php',
@@ -161,7 +170,9 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'commande_prepare_head',
 				'card' => 'commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
+				'listmodelclass' => 'ModelePDFCommandes'
 		);
 		$this->element_type_list['order_supplier'] = array (
 				'class' => 'fournisseur.commande.class.php',
@@ -176,7 +187,9 @@ class ReferenceLetters extends CommonObject
 				'card' => '/fourn/commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/'
+				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
+				'listmodelclass' => 'ModelePDFSuppliersOrders'
 		);
 		$this->element_type_list['supplier_proposal'] = array (
 				'class' => 'supplier_proposal.class.php',
@@ -191,7 +204,9 @@ class ReferenceLetters extends CommonObject
 				'card' => '/supplier_proposal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
+				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
+				'listmodelclass' => 'ModelePDFSupplierProposal'
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';

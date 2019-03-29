@@ -235,7 +235,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TFormateursSessionCal'
 					));
 
-					// correction de problème de décalage de texte
+					// fix TK9360 : ce patch n'est plus utile à présent => je vire
+/*					// correction de problème de décalage de texte
 					if (preg_match('/<strong>/', $chapter_text)) {
 						$position = 0;
 
@@ -263,7 +264,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							$position = $endStrong;
 						}
 					}
-
+*/
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
     					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);

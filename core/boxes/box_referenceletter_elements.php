@@ -43,10 +43,12 @@ class box_referenceletter_elements extends ModeleBoxes {
 	 * Constructor
 	 */
 	function __construct() {
-		global $langs;
+		global $langs, $user;
 		$langs->load("boxes");
 
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrExistingLetters",10);
+
+		$this->hidden=! ($user->rights->referenceletters->read);
 	}
 
 	/**

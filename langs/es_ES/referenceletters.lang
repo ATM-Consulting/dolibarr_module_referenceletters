@@ -51,6 +51,7 @@ RefLtrREF_LETTER_TYPEEVENTNAME_normal=<New letter template  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
 RefLtrReInstallTemplate=Replace sample template by default template
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Use "Inline Editor" mode
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
@@ -120,6 +121,8 @@ RefLtrReadOnly=Read only (chapter invisible during letter edition)
 RefLtrTitleModel=Letter title
 RefLtrDefaultDoc=Default Document
 RefLtrModifyAndStay=Save and stay
+RefLtrAddPDFDoc=Add PDF document of this element
+RefLtrPDFDoc=PDF document of this element
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

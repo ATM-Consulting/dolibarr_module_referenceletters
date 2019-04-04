@@ -30,6 +30,11 @@ dol_include_once('/referenceletters/class/commondocgeneratorreferenceletters.cla
 abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLetters
 {
 	public $error = '';
+
+
+	/**
+	 * @var TCPDFRefletters
+	 */
 	public $pdf;
 	public $instance_letter;
 	public $outputlangs;
@@ -42,9 +47,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @return array of templates
 	 */
 	static function liste_modeles($db, $maxfilenamelength = 0) {
-		global $conf;
 
-		$type = 'referenceletters';
 		$liste = array();
 
 		$liste[] = 'referenceletters';
@@ -69,7 +72,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			dol_include_once('/product/class/product.class.php'); // Pour le segment lignes, parfois la classe produit n'est pas chargée (pour les contrats par exemple)...
 		}
 
-		$odfHandler = new OdfRfltr($srctemplatepath,
+		$odfHandler = new OdfRfltr('',
 			array(
 				'PATH_TO_TMP' => $conf->propal->dir_temp,
 				'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
@@ -111,7 +114,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							// Call the ODTSubstitutionLine hook
 							$parameters = array(
 									'odfHandler' => &$odfHandler,
-									'file' => $file,
+									'file' => '',
 									'object' => $object,
 									'outputlangs' => $this->outputlangs,
 									'substitutionarray' => &$tmparray,

@@ -52,7 +52,8 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
-RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard 
+RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Utiliser le mode "Edition dans le texte" d'un document
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION
@@ -127,6 +128,8 @@ RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
 RefLtrTitleModel=Titre modèle de document
 RefLtrDefaultDoc=Document par defaut
 RefLtrModifyAndStay=Sauver et rester
+RefLtrAddPDFDoc=Ajouter le document PDF standard de l'élément
+RefLtrPDFDoc=PDF standard de l'élément
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer

@@ -37,7 +37,7 @@ $refltrtitle=GETPOST('refltrtitle', 'alpha');
 $refltrelement_type=GETPOST('refltrelement_type', 'alpha');
 $refltruse_landscape_format=GETPOST('refltruse_landscape_format', 'alpha');
 $refltrdefault_doc=GETPOST('refltrdefault_doc', 'alpha');
-
+$refltrdoc_template=GETPOST('refltrdoc_template','alpha');
 
 // Access control
 // Restrict access to users with invoice reading permissions
@@ -164,6 +164,31 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+} elseif($action=='adddocpdf' && !empty($refltrdoc_template)) {
+	$modellist=array();
+	if (array_key_exists('listmodelfile', $object->element_type_list[$object->element_type])) {
+		if (file_exists($object->element_type_list[$object->element_type]['listmodelfile'])) {
+			include_once $object->element_type_list[$object->element_type]['listmodelfile'];
+			$modellist = $object->element_type_list[$object->element_type]['listmodelclass']::liste_modeles($db);
+		}
+	}
+	if (empty($modellist)) {
+		$action='adddocpdf_confirm';
+	}
+} elseif ($action=='adddocpdf_confirm' && !empty($refltrdoc_template)) {
+	$object_chapters_breakpage = new ReferenceLettersChapters($db);
+	$object_chapters_breakpage->fk_referenceletters=$object->id;
+	$object_chapters_breakpage->title ='';
+	$object_chapters_breakpage->content_text = '@pdfdoc_'.$refltrdoc_template.'@';
+	$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
+	$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();
+	$result = $object_chapters_breakpage->create($user);
+	if ($result < 0) {
+		$action = 'adddocpdf';
+		setEventMessage($object_chapters_breakpage->error, 'errors');
+	} else {
+		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+	}
 } elseif ($action=='addbreakpagewithoutheader') {
 	$object_chapters_breakpage = new ReferenceLettersChapters($db);
 	$object_chapters_breakpage->fk_referenceletters=$object->id;
@@ -280,6 +305,27 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'confirm_delete', '', 0, 1);
 	}
 
+	if ($action=='adddocpdf') {
+
+		if (array_key_exists('listmodelfile', $object->element_type_list[$object->element_type])) {
+			if (file_exists($object->element_type_list[$object->element_type]['listmodelfile'])) {
+				include_once $object->element_type_list[$object->element_type]['listmodelfile'];
+				$modellist = $object->element_type_list[$object->element_type]['listmodelclass']::liste_modeles($db);
+			}
+
+			$formquestion = array(
+				array(
+					'label' => $langs->trans('Model'),
+					'name'  => 'refltrdoc_template',
+					'type' => 'select',
+					'values' => $modellist
+				)
+			);
+
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'adddocpdf_confirm', $formquestion, 0, 1);
+		}
+	}
+
 	if (empty($formconfirm)) {
 		$parameters = array();
 		$formconfirm = $hookmanager->executeHooks('formConfirm', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -356,38 +402,34 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		
 		_print_docedit_header($object);
 		$nbChapterInPage = 0;
+		$nofooternext=false;
 		foreach ($object_chapters->lines_chapters as $line_chapter) {
-		    
-		    
-		    if ($line_chapter->content_text=='@breakpage@' || $line_chapter->content_text=='@breakpagenohead@') {
-		        
+			$TIsSprecialChapter=$line_chapter->isSpecialChapters();
+			if (count($TIsSprecialChapter)>1) {
 		        // reset nb chapters in page
 		        $nbChapterInPage = 0;
-		        
+
 		        // first close page
-		        _print_docedit_footer($object);
+				if (!$nofooternext) {
+		            _print_docedit_footer($object);
+
+				} else {
+					$nofooternext=false;
+				}
 		        print '</div><!-- END docedit_document -->';
 		        
 		        // add break page element
-		        print '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$line_chapter->id.'" >';
-		        if ($line_chapter->content_text=='@breakpagenohead@')
-		        {
-		            print $langs->trans('RefLtrAddPageBreakWithoutHeader');
-		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
-		            $norepeat=true;
-		        }
-		        else // if $line_chapter->content_text=='@breakpage@' 
-		        {
-		            print $langs->trans('RefLtrPageBreak');
-		            print '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
-		            $norepeat=false;
-		        }
-		        print '</div>';
-		        
+				print $formrefleter->renderChapterHTML($line_chapter,'view');
+				$norepeat=$line_chapter->isNoRepeat();
+
 		        // start new page
 		        $pageCurrentNum++;
 		        print '<div id="page_'.$pageCurrentNum.'"  class="docedit_document '.$classOrientation.'" data-page="'.$pageCurrentNum.'" >';
-		        _print_docedit_header($object, $norepeat);
+		        if (! array_key_exists('nohead',$TIsSprecialChapter)){
+		            _print_docedit_header($object, $norepeat);
+		        } else {
+			        $nofooternext=true;
+		        }
 		        
 		    } else {
 		        $nbChapterInPage++;
@@ -395,8 +437,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left">';
-		        
-		       
+
 		        if ($user->rights->referenceletters->write) {
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
 		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
@@ -412,8 +453,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        }
 		        
 		        print '</div><!-- END docedit_infos -->';
-		        
-		        
+
 		        print '<div class="docedit_infos docedit_infos_top">';
 		        print '<span class="docedit_title_type" >';
 		        print $langs->trans('RefLtrTitle');
@@ -427,60 +467,48 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '<span class="docedit_title" >'. $line_chapter->title.'</span>';
 		        
 		        print '</div><!-- END docedit_infos_top -->';
-		       
-		        
-		  
+
 		        //print $langs->trans('RefLtrText');
 		        $editInline = '';
 		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
-		        
-		        print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
-		        print $line_chapter->content_text;
-		        print '</div><!-- END docedit_document_body_text -->';
-		        
-		        
-		        
+
+			    print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
+			    print $line_chapter->content_text;
+			    print '</div><!-- END docedit_document_body_text -->';
+
 		        if (is_array($line_chapter->options_text) && count($line_chapter->options_text)>0) {
 		            
 		            print '<div class="docedit_document_option">';
 		            
-		            
 		            print $langs->trans('RefLtrOption');
-		            
-		            
+
 		            if(!empty($line_chapter->readonly))
 		            {
 		                print ' <span class="docedit_document_option_read_only" >'.$langs->trans('RefLtrReadOnly').'</span>';
 		            }
-		            
-		            
+
 		            foreach($line_chapter->options_text as $key=>$option_text) {
 		                print '<label class="docedit_label" ><input type="checkbox" readonly="readonly" disabled="disabled" name="'.$key.'"> '.$option_text.'</label>';
 		            }
 		            print '</div><!-- END docedit_document_option -->';
 		        } 
-		       
-		        
-		       
-		        
-		        
+
 		        print '</div><!-- end docedit_document_body -->';
 		    }
 		}
-		
-		_print_docedit_footer($object);
-		
+
+		if (!$nofooternext) {
+			_print_docedit_footer($object);
+		}
+
 		print '</div><!-- END docedit_document -->';
 		
 		print '</div><!-- end docedit_docboard -->';
 		
 		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE) && $user->rights->referenceletters->write)
 		{
-		    // experimental, not finish
-		    print '<script>$( function() {';
-		    
-
 	        print '
+	        <script>$( function() { 
 	        $( ".docedit_document" ).sortable({
                 cursor: "move",
 	            placeholder: "ui-state-highlight",
@@ -656,8 +684,11 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	*/
 	print '<div class="tabsAction">';
 	if ($user->rights->referenceletters->write) {
-	    print '<div class="inline-block divButAction">';
-	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpage&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+        print '<div class="inline-block divButAction">';
+        print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=addbreakpage&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+        if (strpos('rfltr_agefodd_', $object->element_type) == false && (array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
+            print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=adddocpdf&id=' . $object->id . '">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
+        }
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 	    print "</div><br>";

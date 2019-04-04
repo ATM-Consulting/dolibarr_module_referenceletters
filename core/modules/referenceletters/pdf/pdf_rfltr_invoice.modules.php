@@ -68,7 +68,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
 		$this->page_hauteur = $formatarray['height'];
-		$this->format = array (
+		$this->format = array(
 				$this->page_largeur,
 				$this->page_hauteur
 		);
@@ -94,7 +94,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file($object, $instance_letter, $outputlangs) {
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $user, $langs, $conf, $hookmanager;
 
 		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
@@ -112,8 +112,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 		$this->outputlangs->load("referenceletters@referenceletters");
 
 		// Loop on each lines to detect if there is at least one image to show
-		$realpatharray = array ();
-
 		if ($conf->referenceletters->dir_output) {
 			$object->fetch_thirdparty();
 			if (!empty($object->thirdparty->country_code))
@@ -121,8 +119,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$this->outputlangs->load("dict");
 				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
 			}
-
-			// $deja_regle = 0;
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
 			$dir = $conf->referenceletters->dir_output . "/invoice/" . $objectref;
@@ -150,10 +146,6 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);
 
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
-				$heightforinfotot = 50; // Height reserved to output the info and total part
-				$heightforfreetext = (isset($conf->global->MAIN_PDF_FREETEXT_HEIGHT) ? $conf->global->MAIN_PDF_FREETEXT_HEIGHT : 5); // Height reserved to output the free text on last page
-				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
-
 
 				// Set calculation of header and footer high line
 				// footer high
@@ -167,7 +159,9 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 				// Set path to the background PDF File
 				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
 					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
-					$tplidx = $this->pdf->importPage(1);
+					if ($pagecount>0) {
+						$tplidx = $this->pdf->importPage(1);
+					}
 				}
 
 				$this->pdf->Open();
@@ -199,13 +193,8 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					$this->pdf->useTemplate($tplidx);
 				}
 
-
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
-
-				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
-				$tab_height = 130;
-				$tab_height_newpage = 150;
 
 				$posY = $this->pdf->getY();
 				$posX = $this->marge_gauche;
@@ -219,10 +208,13 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					if ($chapter_text == '@breakpage@') {
 						if (method_exists($this->pdf, 'AliasNbPages'))
 							$this->pdf->AliasNbPages();
-						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
-						if (! empty($tplidx))
-							$this->pdf->useTemplate($tplidx);
 
+						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
+						if (! empty($tplidx)) {
+							$this->pdf->useTemplate($tplidx);
+						}
+
+						$this->pdf->setPrintFooter(true);
 
 						$posX = $this->pdf->getX();
 						$posY = $this->pdf->getY();
@@ -235,13 +227,14 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 							$this->pdf->AliasNbPages();
 						}
 
+						$this->pdf->setPrintFooter(true);
+
 						$this->pdf->setPrintHeader(false);
 
 						$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L');
 						if (! empty($tplidx)) {
 							$this->pdf->useTemplate($tplidx);
 						}
-
 
 						$posY = $this->marge_haute;
 						$posX = $this->marge_gauche;
@@ -252,6 +245,50 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 						continue;
 					}
+
+                    if (strpos($chapter_text,'@pdfdoc')===0) {
+
+	                    $documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
+
+	                    $hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
+	                    $hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
+	                    $hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+
+	                    $result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
+						if ($result <= 0)
+						{
+							setEventMessages($object->error, $object->errors, 'errors');
+						} else {
+							$this->pdf->setPrintHeader(false);
+							$objectrefpdf = dol_sanitizeFileName($object->ref);
+							$dirpdf = $conf->facture->multidir_output[$object->entity] . "/" . $objectrefpdf;
+							$filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
+							$pagecounttmp = $this->pdf->setSourceFile($filepdf);
+							if ($pagecounttmp>=1) {
+
+								for ($idocpdf = 1; $idocpdf <= $pagecounttmp; $idocpdf++) {
+									$tplidxdoc = $this->pdf->ImportPage($idocpdf);
+									if (!empty($tplidxdoc)) {
+										$s = $this->pdf->getTemplatesize($tplidxdoc);
+										$this->pdf->AddPage($s['h'] > $s['w'] ? 'P' : 'L');
+										$this->pdf->setPrintFooter(false);
+										$this->pdf->useTemplate($tplidxdoc);
+									}
+								}
+							} else {
+								dol_syslog("Error: Can't read PDF content with setSourceFile, for file " . $file, LOG_ERR);
+							}
+							$this->pdf->setPrintHeader(true);
+
+						}
+
+	                    $posY = $this->marge_haute;
+	                    $posX = $this->marge_gauche;
+	                    $this->pdf->SetXY($posX, $posY);
+	                    $this->pdf->SetTextColor(0, 0, 0);
+
+                        continue;
+                    }
 
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
@@ -303,6 +340,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 						'outputlangs' => $this->outputlangs,
 						'instance_letter' => $instance_letter
 				);
+				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				if (! empty($conf->global->MAIN_UMASK))
@@ -331,7 +369,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 	 * @return void
 	 */
 	function _pagehead($object, $showaddress, $instance_letter) {
-		global $conf, $langs;
+		global $conf;
 
 		$this->outputlangs->load("main");
 		$this->outputlangs->load("bills");
@@ -458,6 +496,9 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			if (count($arrayidcontact) > 0) {
 				$usecontact = true;
 				$result = $object->fetch_contact($arrayidcontact[0]);
+				if ($result<0) {
+					setEventMessage($object->contact->error,'errors');
+				}
 			}
 
 			// Recipient name
@@ -483,7 +524,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
 				$posx = $this->marge_gauche;
 
-				// Show recipient frame
+			// Show recipient frame
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx + 2, $posy - 5);

@@ -294,4 +294,35 @@ class FormReferenceLetters extends Form
 
 		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
 	}
+
+	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
+		global $langs;
+
+		if ($chapter->content_text=='@breakpagenohead@')
+		{
+			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out.= $langs->trans('RefLtrAddPageBreakWithoutHeader');
+			if ($mode=='view') {
+				$out.= '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		elseif ($chapter->content_text=='@breakpage@')
+		{
+			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out.= $langs->trans('RefLtrPageBreak');
+			if ($mode=='view') {
+				$out.= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		elseif (strpos($chapter->content_text,'@pdfdoc')===0) {
+			$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter->content_text));
+			$out = '<div class="sortable sortabledisable docedit_pdfmodel"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
+			if ($mode == 'view') {
+				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		$out .=  '</div>';
+		return $out;
+	}
 }

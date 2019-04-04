@@ -51,6 +51,7 @@ RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PDF ein
 RefLtrReInstallTemplate=Replace sample template by default template
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Use "Inline Editor" mode
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
@@ -123,6 +124,8 @@ RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt
 RefLtrTitleModel=Brief Titel
 RefLtrDefaultDoc=Default Document
 RefLtrModifyAndStay=Save and stay
+RefLtrAddPDFDoc=Add PDF document of this element
+RefLtrPDFDoc=PDF document of this element
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

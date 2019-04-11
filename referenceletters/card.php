@@ -169,7 +169,7 @@ if ($action == "add") {
 	if (array_key_exists('listmodelfile', $object->element_type_list[$object->element_type])) {
 		if (file_exists($object->element_type_list[$object->element_type]['listmodelfile'])) {
 			include_once $object->element_type_list[$object->element_type]['listmodelfile'];
-			$modellist = $object->element_type_list[$object->element_type]['listmodelclass']::liste_modeles($db);
+			$modellist = call_user_func($object->element_type_list[$object->element_type]['listmodelclass'].'::liste_modeles', $db);
 		}
 	}
 	if (empty($modellist)) {
@@ -310,7 +310,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		if (array_key_exists('listmodelfile', $object->element_type_list[$object->element_type])) {
 			if (file_exists($object->element_type_list[$object->element_type]['listmodelfile'])) {
 				include_once $object->element_type_list[$object->element_type]['listmodelfile'];
-				$modellist = $object->element_type_list[$object->element_type]['listmodelclass']::liste_modeles($db);
+				$modellist = call_user_func($object->element_type_list[$object->element_type]['listmodelclass'].'::liste_modeles', $db);
 			}
 
 			$formquestion = array(

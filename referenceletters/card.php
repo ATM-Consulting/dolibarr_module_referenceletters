@@ -436,23 +436,26 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 		        
 		        // Button and infos
-		        print '<div class="docedit_infos docedit_infos_left">';
+		        print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
 
 		        if ($user->rights->referenceletters->write) {
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
-		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
+		                print '<span class="docedit_infos_icon handle classfortooltip" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
 		            }
 		            
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ 
-		                print '<span class="docedit_infos_icon docedit_save" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+		                print '<span class="docedit_infos_icon docedit_save classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+
+						print '<span class="docedit_infos_icon docedit_shortcode classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+
 		            }
 		            
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		            
 		        }
 		        
-		        print '</div><!-- END docedit_infos -->';
+		        print '</div></div><!-- END docedit_infos -->';
 
 		        print '<div class="docedit_infos docedit_infos_top">';
 		        print '<span class="docedit_title_type" >';
@@ -673,7 +676,117 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
                    });
             ';
+
 		    print '} );</script>';
+
+            print '<div id="subtitutionkey" style="display: none;" >';
+
+            $subs_array=$object->getSubtitutionKey($user);
+
+            $html='<div id="accordion-refltertags" >';
+
+            if (is_array($subs_array) && count($subs_array)>0) {
+                foreach($subs_array as $block=>$data) {
+                    $html .= '<h3 class="accordion-refltertags-title" >' . $block . '</h3>';
+
+                    $html .= '<div class="accordion-refltertags-body" >';
+                    $html .= '<table>';
+                    $html .= '<tr class="liste_titre">';
+                    $html .= '<td width="50px">'.$langs->trans('RefLtrTag').'</td>';
+                    $html .= '<td>'.$langs->trans('Description').'</td>';
+                    $html .= '<td>'.$langs->trans('Value').'</td>';
+                    $html .= '</tr>';
+                    if (is_array($data) && count($data) > 0) {
+                        $var = true;
+                        foreach ($data as $key => $value) {
+                            $html .= "<tr class=\"oddeven\">";
+                            $html .= '    <td class="referenceletter-subtitutionkey-col">';
+                            $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" >{' . $key . '}</span>';
+                            $html .= '    </td>';
+                            $html .= '    <td class="referenceletter-subtitutionkey-desc">';
+                            if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
+                                $html .= $langs->trans('reflettershortcode_' . $key);
+                            }
+                            $html .= '    </td>';
+                            $html .= '    <td>';
+                            $html .= $value;
+                            $html .= '    </td>';
+                            $html .= '</tr>';
+                        }
+                    }
+                    $html .= '</table>';
+                    $html .= '</div>';
+                }
+
+                // Generate traduction for dev only
+                /*print '<pre>';
+                foreach($subs_array as $block=>$data) {
+                    print '#' . $block."\n";
+                    if (is_array($data) && count($data) > 0) {
+                        $var = true;
+                        foreach ($data as $key => $value) {
+                            print 'reflettershortcode_' . $key."=\n";
+                        }
+                    }
+                }
+                print '</pre>';*/
+            }
+
+            $html.='</div>';
+            $html.= '</div>';
+            $html.=  '<script>
+                $( function() {
+                    
+                    $("#accordion-refltertags" ).accordion({
+                            collapsible: true,
+                            heightStyle: "content",
+                            navigation: true ,
+                            active: false
+                    });
+                    
+                    $( "#subtitutionkey" ).dialog({
+                      title: "'.$langs->transnoentities('RefSubtitutionTable').'",
+                      width: $( document ).width() * 0.7,
+                      modal: true,
+                      autoOpen: false,
+                      maxHeight: $( window ).height() * 0.9,
+                      height: $( window ).height() * 0.9
+                    });
+                    
+                    $(".docedit_shortcode").click(function() {
+                         $( "#subtitutionkey" ).data("target", $(this).data("target"));
+                         $( "#subtitutionkey" ).dialog( "open" );
+                    });
+                    
+                    
+                   $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
+
+                        var shortcodeTarget = $($("#subtitutionkey").data("target"));
+                        
+                        if(CKEDITOR.instances[shortcodeTarget.attr("id")] != undefined)
+                        {
+                            var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
+
+                            try {
+                                evt.insertHtml( $(this).text()  );
+                            } catch (err) {
+                                console.log("Unable to copy ckeditor not ready ?.");
+                            }
+                            
+                            $( "#subtitutionkey" ).dialog( "close" );
+                        }
+                        else{
+                            console.log("shortcodeTarget notfound");
+                        }
+                   });
+                    
+                   
+                    
+                });</script>
+                
+                <style>.ui-dialog { z-index: 1000 !important ;}</style>
+                ';
+            print $html;
 		}
 	}
     print '<style>.ui-state-highlight::before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
@@ -732,11 +845,11 @@ function _print_docedit_footer($object){
     
     
     // Button and infos
-    print '<div class="docedit_infos docedit_infos_left">';
+    print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
-    print '</div><!-- END docedit_infos -->';
+    print '</div></div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
@@ -763,12 +876,12 @@ function _print_docedit_header($object, $norepeat=false){
     print '<div class="docedit_document_head docedit_document_bloc">';
     
     // Button and infos
-    print '<div class="docedit_infos docedit_infos_left">';
+    print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
     
-    print '</div><!-- END docedit_infos -->';
+    print '</div></div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';

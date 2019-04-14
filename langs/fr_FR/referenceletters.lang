@@ -150,6 +150,11 @@ RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier générer, il reste dispobile dans les documents.
 
+RefSubtitutionTable=Table des subtitutions
+DisplaySubtitutionTable=Afficher la table des subtitutions
+ClickToAddOnEditor=cliquer pour ajouter au texte
+ClickToCopy=Cliquer pour copier
+
 #
 # Tags lignes
 #

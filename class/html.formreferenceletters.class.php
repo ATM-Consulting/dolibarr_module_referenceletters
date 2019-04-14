@@ -251,46 +251,62 @@ class FormReferenceLetters extends Form
 	public function displaySubtitutionKey($user,$reflettersobject) {
 		global $langs,$bc;
 
-		$form = new Form($this->db);
-		$subs_array=$reflettersobject->getSubtitutionKey($user);
-
-		$html='<table id="refltertags">';
-
-		if (is_array($subs_array) && count($subs_array)>0) {
-			foreach($subs_array as $block=>$data) {
-				$html.='<tr class="liste_titre">';
-				$html.='<td colspan="2">';
-				$html.=$block;
-				$html.='</td>';
-				$html.='</tr>';
-				$html.='<tr class="liste_titre">';
-				$html.='<td width="50px">';
-				$html.=$langs->trans('RefLtrTag');
-				$html.='</td>';
-				$html.='<td>';
-				$html.=$langs->trans('Value');
-				$html.='</td>';
-				$html.='</tr>';
-				if (count($data)>0) {
-					$var=true;
-					foreach($data as $key=>$value) {
-						$html.="<tr class=\"oddeven\">";
-						$html.='<td>';
-						$html.='{'.$key.'}';
-						$html.='</td>';
-						$html.='<td>';
-						$html.=$value;
-						$html.='</td>';
-						$html.='</tr>';
-					}
-				}
-			}
-		}
-
-		$html.='</table>';
+        $form = new Form($this->db);
+		$html=$this->getSubtitutionKeyTable($user,$reflettersobject);
 
 		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
 	}
+
+
+    /**
+     *
+     *
+     * @param User $user
+     * @param CommonObject $object
+     */
+    public function getSubtitutionKeyTable($user,$reflettersobject){
+        global $langs,$bc;
+
+
+        $subs_array=$reflettersobject->getSubtitutionKey($user);
+
+        $html='<table id="refltertags" >';
+
+        if (is_array($subs_array) && count($subs_array)>0) {
+            foreach($subs_array as $block=>$data) {
+                $html.='<tr class="liste_titre">';
+                $html.='<td colspan="2">';
+                $html.=$block;
+                $html.='</td>';
+                $html.='</tr>';
+                $html.='<tr class="liste_titre">';
+                $html.='<td width="50px">';
+                $html.=$langs->trans('RefLtrTag');
+                $html.='</td>';
+                $html.='<td>';
+                $html.=$langs->trans('Value');
+                $html.='</td>';
+                $html.='</tr>';
+                if (count($data)>0) {
+                    $var=true;
+                    foreach($data as $key=>$value) {
+                        $html.="<tr class=\"oddeven\">";
+                        $html.='<td class="referenceletter-subtitutionkey">';
+                        $html.='{'.$key.'}';
+                        $html.='</td>';
+                        $html.='<td>';
+                        $html.=$value;
+                        $html.='</td>';
+                        $html.='</tr>';
+                    }
+                }
+            }
+        }
+
+        $html.='</table>';
+
+        return $html;
+    }
 
 	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
 		global $langs;

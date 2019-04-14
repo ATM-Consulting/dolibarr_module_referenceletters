@@ -45,6 +45,8 @@ restrictedArea($user, 'referenceletters');
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
+$langs->load("refflettersubtitution@referenceletters");
+
 
 $object = new ReferenceLetters($db);
 $object_chapters = new ReferenceLettersChapters($db);
@@ -681,6 +683,13 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
             print '<div id="subtitutionkey" style="display: none;" >';
 
+            print '<div class="search-filter-wrap"  >';
+            print '<i class="fa fa-search"></i>';
+            print '<input type="text" id="item-filter" class="search-filter" data-target="'.$target.'" value="" placeholder="'.$langs->trans('Search').'" ';
+            print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+            print '</div>';
+
+
             $subs_array=$object->getSubtitutionKey($user);
 
             $html='<div id="accordion-refltertags" >';
@@ -692,21 +701,24 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     $html .= '<div class="accordion-refltertags-body" >';
                     $html .= '<table>';
                     $html .= '<tr class="liste_titre">';
-                    $html .= '<td width="50px">'.$langs->trans('RefLtrTag').'</td>';
-                    $html .= '<td>'.$langs->trans('Description').'</td>';
-                    $html .= '<td>'.$langs->trans('Value').'</td>';
+                    $html .= '<th>'.$langs->trans('Description').'</th>';
+                    $html .= '<th width="50px">'.$langs->trans('RefLtrTag').'</th>';
+                    $html .= '<th>'.$langs->trans('Value').'</th>';
                     $html .= '</tr>';
                     if (is_array($data) && count($data) > 0) {
                         $var = true;
                         foreach ($data as $key => $value) {
-                            $html .= "<tr class=\"oddeven\">";
-                            $html .= '    <td class="referenceletter-subtitutionkey-col">';
-                            $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" >{' . $key . '}</span>';
-                            $html .= '    </td>';
+                            $html .= '<tr class="oddeven searchable">';
                             $html .= '    <td class="referenceletter-subtitutionkey-desc">';
                             if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
+
+                                $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
                                 $html .= $langs->trans('reflettershortcode_' . $key);
+                                $html .= '</span>';
                             }
+                            $html .= '    </td>';
+                            $html .= '    <td class="referenceletter-subtitutionkey-col">';
+                            $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '"  data-shortcode="{' . $key . '}"  >{' . $key . '}</span>';
                             $html .= '    </td>';
                             $html .= '    <td>';
                             $html .= $value;
@@ -746,7 +758,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     
                     $( "#subtitutionkey" ).dialog({
                       title: "'.$langs->transnoentities('RefSubtitutionTable').'",
-                      width: $( document ).width() * 0.7,
+                      width: $( document ).width() * 0.9,
                       modal: true,
                       autoOpen: false,
                       maxHeight: $( window ).height() * 0.9,
@@ -754,8 +766,13 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     });
                     
                     $(".docedit_shortcode").click(function() {
+                        
+                         // open dialog and add target key
                          $( "#subtitutionkey" ).data("target", $(this).data("target"));
                          $( "#subtitutionkey" ).dialog( "open" );
+                         
+                         // Focus on search input
+                         $("#item-filter").focus();
                     });
                     
                     
@@ -768,9 +785,14 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                             var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
 
                             try {
-                                evt.insertHtml( $(this).text()  );
-                            } catch (err) {
+                                evt.insertHtml( $(this).data("shortcode")  );
+                                
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + $(this).data("shortcode"),"3000","false",{ remove: function (){}})  ;
+
+                            }catch (err) {
                                 console.log("Unable to copy ckeditor not ready ?.");
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
+
                             }
                             
                             $( "#subtitutionkey" ).dialog( "close" );
@@ -780,7 +802,22 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                         }
                    });
                     
+                   $( document ).on("keyup", "#item-filter", function () {
+
+                        var filter = $(this).val(), count = 0;
+                        $("#subtitutionkey tr.searchable").each(function () {
+                       
+                            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                                $(this).hide();
+                            } else {
+                                $(this).show();
+                                count++;
+                            }
+                        });
+                        
+                        $("#filter-count").text(count);
                    
+                    });
                     
                 });</script>
                 

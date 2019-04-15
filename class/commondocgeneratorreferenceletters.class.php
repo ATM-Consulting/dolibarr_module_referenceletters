@@ -518,7 +518,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_objpeda_description'] = $line->intitule;
 
 		// Substitutions tableau des élément financier :
-		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
+//		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
+        $resarray['line_fin_desciption'] = $line->description;
 		$resarray['line_fin_desciption_light'] = $line->form_label;
 		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
 		$resarray['line_fin_qty'] = $line->qty;

@@ -70,7 +70,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 
 		// Chargement du modèle utilisé
-		list ( $instance_letter, $object ) = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
+		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
+        $instance_letter = $tmpTab[0];
+        $object = $tmpTab[1];
+
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = ( int ) $instance_letter->use_landscape_format;

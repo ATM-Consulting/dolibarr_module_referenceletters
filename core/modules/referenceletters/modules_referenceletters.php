@@ -358,7 +358,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$cond_reg_lib = $substitution_array['{objvar_object_cond_reglement_code}'];
 				$this->outputlangs->load("bills");
 				$key=$this->outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
-				$substitution_array['{objvar_object_cond_reglement_doc}']=(cond_reg_lib && $key != "PaymentConditionShort".strtoupper(cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
+				$substitution_array['{objvar_object_cond_reglement_doc}']=($cond_reg_lib && $key != "PaymentConditionShort".strtoupper($cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
 			}
 
                         // Traduction des conditions de règlement

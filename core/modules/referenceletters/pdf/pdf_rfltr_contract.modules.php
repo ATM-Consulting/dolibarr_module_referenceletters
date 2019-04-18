@@ -363,20 +363,20 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 	 *
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
-	 * @param object $instaance_letter instanceletters
+	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagehead($object, $showaddress, $instance_letter) {
+	function _pagehead($object, $showaddress, $outputlangs) {
 		global $conf;
 
-		$this->outputlangs->load("main");
-		$this->outputlangs->load("bills");
-		$this->outputlangs->load("propal");
-		$this->outputlangs->load("companies");
+		$outputlangs->load("main");
+		$outputlangs->load("bills");
+		$outputlangs->load("propal");
+		$outputlangs->load("companies");
 
-		$default_font_size = pdf_getPDFFontSize($this->outputlangs);
+		$default_font_size = pdf_getPDFFontSize($outputlangs);
 
-		pdf_pagehead($this->pdf, $this->outputlangs, $this->page_hauteur);
+		pdf_pagehead($this->pdf, $outputlangs, $this->page_hauteur);
 
 		$this->pdf->SetTextColor(0, 0, 60);
 		$this->pdf->SetFont('', 'B', $default_font_size + 3);
@@ -395,19 +395,19 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			} else {
 				$this->pdf->SetTextColor(200, 0, 0);
 				$this->pdf->SetFont('', 'B', $default_font_size - 2);
-				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
-				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 			}
 		} else {
 			$text = $this->emetteur->name;
-			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
+			$this->pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 
-		if (! empty($instance_letter->outputref)) {
+		if (! empty($this->instance_letter->outputref)) {
 			$this->pdf->SetFont('', 'B', $default_font_size + 3);
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$title = $this->outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
+			$title = $outputlangs->convToOutputCharset($this->instance_letter->title_referenceletters);
 			$this->pdf->MultiCell(100, 4, $title, '', 'R');
 			$posy += 5;
 		}
@@ -416,13 +416,13 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetTextColor(0, 0, 60);
-		$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("Ref") . " : " . $this->outputlangs->convToOutputCharset($object->ref), '', 'R');
+		$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref), '', 'R');
 
-		if (! empty($instance_letter->outputref)) {
+		if (! empty($this->instance_letter->outputref)) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("RefLtrRef") . " : " . $this->outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref_int), '', 'R');
 		}
 
 		$posy += 1;
@@ -432,25 +432,25 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("RefCustomer") . " : " . $this->outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("RefCustomer") . " : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 
 		$posy += 4;
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetTextColor(0, 0, 60);
-		$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("Date") . " : " . dol_print_date($object->date_contrat, "day", false, $this->outputlangs, true), '', 'R');
+		$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("Date") . " : " . dol_print_date($object->date_contrat, "day", false, $outputlangs, true), '', 'R');
 
 		if ($object->thirdparty->code_client) {
 			$posy += 4;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("CustomerCode") . " : " . $this->outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode") . " : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
 		$posy += 2;
 
 		// Show list of linked objects
-		$posy = pdf_writeLinkedObjects($this->pdf, $object, $this->outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
+		$posy = pdf_writeLinkedObjects($this->pdf, $object, $outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
 
 		if ($showaddress) {
 			// Sender properties
@@ -463,7 +463,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
 			 }*/
 
-			$carac_emetteur .= pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty);
+			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty);
 
 			// Show sender
 			$posy = 42;
@@ -476,7 +476,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx, $posy - 5);
-			$this->pdf->MultiCell(66, 5, $this->outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
+			$this->pdf->MultiCell(66, 5, $outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetFillColor(230, 230, 230);
 			$this->pdf->MultiCell(82, $hautcadre, "", 0, 'R', 1);
@@ -485,7 +485,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			// Show sender name
 			$this->pdf->SetXY($posx + 2, $posy + 3);
 			$this->pdf->SetFont('', 'B', $default_font_size);
-			$this->pdf->MultiCell(80, 4, $this->outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+			$this->pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 			$posy = $this->pdf->getY();
 
 			// Show sender information
@@ -511,12 +511,12 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 					$socname = $object->contact->socname;
 				else
 					$socname = $object->thirdparty->nom;
-				$carac_client_name = $this->outputlangs->convToOutputCharset($socname);
+				$carac_client_name = $outputlangs->convToOutputCharset($socname);
 			} else {
-				$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
+				$carac_client_name = $outputlangs->convToOutputCharset($object->thirdparty->nom);
 			}
 
-			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
+			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 
 			// Show recipient
 			$widthrecbox = 100;
@@ -531,7 +531,7 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx + 2, $posy - 5);
-			$this->pdf->MultiCell($widthrecbox, 5, $this->outputlangs->transnoentities("BillTo") . ":", 0, 'L');
+			$this->pdf->MultiCell($widthrecbox, 5, $outputlangs->transnoentities("BillTo") . ":", 0, 'L');
 			$this->pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
 
 			// Show recipient name

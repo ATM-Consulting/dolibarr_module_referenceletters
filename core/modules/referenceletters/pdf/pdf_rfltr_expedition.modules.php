@@ -18,7 +18,7 @@
  */
 
 /**
- * \file referenceletters/core/modules/referenceletters/pdf_rfltr_order.modules.php
+ * \file referenceletters/core/modules/referenceletters/pdf_rfltr_exepdition.modules.php
  * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */
@@ -28,42 +28,103 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 
+
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_order extends ModelePDFReferenceLetters
+class pdf_rfltr_expedition extends ModelePDFReferenceLetters
 {
-	public $db;
-	public $name;
-	public $description;
-	public $type;
-	public $version = 'dolibarr';
-	public $page_largeur;
-	public $page_hauteur;
-	public $format;
-	public $marge_gauche;
-	public $marge_droite;
-	public $marge_haute;
-	public $marge_basse;
-	public $emetteur; // Objet societe qui emet
+    /**
+     * @var DoliDb Database handler
+     */
+    public $db;
+
+    /**
+     * @var string model name
+     */
+    public $name;
+
+    /**
+     * @var string model description (short text)
+     */
+    public $description;
 
 	/**
-	 * Constructor
-	 *
-	 * @param DoliDB $db Database handler
+     * @var string document type
+     */
+    public $type;
+
+	/**
+     * @var array() Minimum version of PHP required by module.
+	 * e.g.: PHP ≥ 5.4 = array(5, 4)
+     */
+	public $phpmin = array(5, 4);
+
+	/**
+     * Dolibarr version of the loaded document
+     * @public string
+     */
+	public $version = 'dolibarr';
+
+	/**
+     * @var int page_largeur
+     */
+    public $page_largeur;
+
+	/**
+     * @var int page_hauteur
+     */
+    public $page_hauteur;
+
+	/**
+     * @var array format
+     */
+    public $format;
+
+	/**
+     * @var int marge_gauche
+     */
+	public $marge_gauche;
+
+	/**
+     * @var int marge_droite
+     */
+	public $marge_droite;
+
+	/**
+     * @var int marge_haute
+     */
+	public $marge_haute;
+
+	/**
+     * @var int marge_basse
+     */
+	public $marge_basse;
+
+	/**
+	 * Issuer
+	 * @var Company object that emits
 	 */
-	function __construct($db) {
-		global $conf, $langs, $mysoc;
+	public $emetteur;
+
+
+	/**
+	 *	Constructor
+	 *
+	 *	@param	DoliDB	$db		Database handler
+	 */
+	function __construct($db=0)
+	{
+		global $conf,$langs,$mysoc;
 
 		$langs->load("main");
 		$langs->load("bills");
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "referenceletter_order";
+		$this->name = "referenceletter_expedition";
 		$this->description = $langs->trans('Module103258Name');
 
-		// Dimension page pour format A4
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
@@ -80,11 +141,43 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 		$this->option_logo = 1; // Affiche logo
 
 		// Get source company
-		$this->emetteur = $mysoc;
-		if (empty($this->emetteur->country_code))
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+		$this->emetteur=$mysoc;
+		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default if not defined
+
+		// Define position of columns
+		$this->posxdesc=$this->marge_gauche+1;
+		$this->posxweightvol=$this->page_largeur - $this->marge_droite - 78;
+		$this->posxqtyordered=$this->page_largeur - $this->marge_droite - 56;
+		$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 28;
+		$this->posxpuht=$this->page_largeur - $this->marge_droite;
+
+		if (!empty($conf->global->SHIPPING_PDF_DISPLAY_AMOUNT_HT)) {	// Show also the prices
+			$this->posxweightvol=$this->page_largeur - $this->marge_droite - 118;
+			$this->posxqtyordered=$this->page_largeur - $this->marge_droite - 96;
+			$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 68;
+			$this->posxpuht=$this->page_largeur - $this->marge_droite - 40;
+			$this->posxtotalht=$this->page_largeur - $this->marge_droite - 20;
+		}
+
+		$this->posxpicture=$this->posxweightvol - (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH);	// width of images
+
+		if ($this->page_largeur < 210) // To work with US executive format
+		{
+		    $this->posxweightvol-=20;
+		    $this->posxpicture-=20;
+		    $this->posxqtyordered-=20;
+		    $this->posxqtytoship-=20;
+		}
+
+		if (! empty($conf->global->SHIPPING_PDF_HIDE_ORDERED))
+		{
+		    $this->posxweightvol += ($this->posxqtytoship - $this->posxqtyordered);
+		    $this->posxpicture += ($this->posxqtytoship - $this->posxqtyordered);
+		    $this->posxqtyordered = $this->posxqtytoship;
+		}
 	}
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.NotCamelCaps
 	/**
 	 * Function to build pdf onto disk
 	 *
@@ -93,7 +186,8 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 	 * @param Translate $outputlangs Lang output object
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($object, $instance_letter, $outputlangs) {
+	function write_file($object, $instance_letter, $outputlangs)
+	{
 		global $user, $langs, $conf, $hookmanager;
 
 		$this->outputlangs=$outputlangs;
@@ -103,7 +197,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
-			// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
+		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (! empty($conf->global->MAIN_USE_FPDF))
 			$this->outputlangs->charset_output = 'ISO-8859-1';
 
@@ -122,7 +216,7 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 			}
 
 			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
-			$dir = $conf->referenceletters->dir_output . "/order/" . $objectref;
+			$dir = $conf->referenceletters->dir_output . "/expedition/" . $objectref;
 			$file = $dir . '/' . $objectref . ".pdf";
 
 			if (! file_exists($dir)) {
@@ -247,15 +341,15 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 						continue;
 					}
 
-                    if (strpos($chapter_text,'@pdfdoc')===0) {
+					if (strpos($chapter_text,'@pdfdoc')===0) {
 
-	                    $documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
+						$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
 
-	                    $hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
-	                    $hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
-	                    $hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+						$hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
+						$hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
+						$hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
 
-	                    $result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
+						$result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
 						if ($result <= 0)
 						{
 							setEventMessages($object->error, $object->errors, 'errors');
@@ -283,20 +377,20 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 
 						}
 
-	                    $posY = $this->marge_haute;
-	                    $posX = $this->marge_gauche;
-	                    $this->pdf->SetXY($posX, $posY);
-	                    $this->pdf->SetTextColor(0, 0, 0);
+						$posY = $this->marge_haute;
+						$posX = $this->marge_gauche;
+						$this->pdf->SetXY($posX, $posY);
+						$this->pdf->SetTextColor(0, 0, 0);
 
-                        continue;
-                    }
+						continue;
+					}
 
 					// Remplacement des tags par les bonnes valeurs
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
 
 					// Merge arrays
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
-							'lines'
+						'lines'
 					));
 
 					$test_array = explode('@breakpage@', $chapter_text);
@@ -336,10 +430,10 @@ class pdf_rfltr_order extends ModelePDFReferenceLetters
 				$this->pdf->Output($file, 'F');
 
 				$parameters = array (
-						'file' => $file,
-						'object' => $object,
-						'outputlangs' => $this->outputlangs,
-						'instance_letter' => $instance_letter
+					'file' => $file,
+					'object' => $object,
+					'outputlangs' => $this->outputlangs,
+					'instance_letter' => $instance_letter
 				);
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks

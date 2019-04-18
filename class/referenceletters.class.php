@@ -270,7 +270,7 @@ class ReferenceLetters extends CommonObject
 			    ,'certificatecard'=>'AgfPDFCertificateCard'
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
-			    ,'contrat_trainer'=>'Apdf_rouget.modules.phpgfContratTrainer'
+			    ,'contrat_trainer'=>'AgfContratTrainer'
 			    ,'courrier'=>'RefLtrLetters'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'

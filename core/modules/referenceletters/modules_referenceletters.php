@@ -358,7 +358,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$cond_reg_lib = $substitution_array['{objvar_object_cond_reglement_code}'];
 				$this->outputlangs->load("bills");
 				$key=$this->outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
-				$substitution_array['{objvar_object_cond_reglement_doc}']=(cond_reg_lib && $key != "PaymentConditionShort".strtoupper(cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
+				$substitution_array['{objvar_object_cond_reglement_doc}']=($cond_reg_lib && $key != "PaymentConditionShort".strtoupper($cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
 			}
 
                         // Traduction des conditions de règlement
@@ -406,7 +406,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			if (empty($use_custom_header)) {
 				$height = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
-				$height = $this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->_pageheadCustom($this->pdf->ref_object);
 			}
 		} elseif ($type == 'foot') {
 			$use_custom_footer = $this->instance_letter->use_custom_footer;

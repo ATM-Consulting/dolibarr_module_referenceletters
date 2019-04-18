@@ -221,7 +221,7 @@ class ReferenceLetters extends CommonObject
 				'card' => '/exepedition/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/sending/',
+				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
 				'listmodelclass' => 'ModelePdfExpedition'
 		);

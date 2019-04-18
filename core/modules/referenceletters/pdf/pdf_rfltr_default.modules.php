@@ -126,6 +126,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		    $classname = get_class($object);
 		    if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
 		    $dir_dest = $conf->{strtolower($classname)}->dir_output;
+			if($classname === 'Expedition') $dir_dest .= '/sending';
 		    if (empty($dir_dest)) {
 		        dol_include_once('/referenceletters/class/referenceletters.class.php');
 		        $refstatic = new ReferenceLetters($this->db);
@@ -143,7 +144,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		        }
 		        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
 		        $test=$conf->{strtolower(get_class($object))}->dir_output;
-		        
+
 		        dol_copy($file, $file_dest);
 		    }
 		    

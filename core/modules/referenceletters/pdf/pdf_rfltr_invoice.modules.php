@@ -141,7 +141,7 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 					$hookmanager=new HookManager($this->db);
 				}
 				$hookmanager->initHooks(array('pdfgeneration'));
-				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$this->outputlangs);
 				global $action;
 				$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);
 

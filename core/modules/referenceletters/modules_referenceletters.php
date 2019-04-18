@@ -406,7 +406,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			if (empty($use_custom_header)) {
 				$height = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
-				$height = $this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->_pageheadCustom($this->pdf->ref_object);
 			}
 		} elseif ($type == 'foot') {
 			$use_custom_footer = $this->instance_letter->use_custom_footer;

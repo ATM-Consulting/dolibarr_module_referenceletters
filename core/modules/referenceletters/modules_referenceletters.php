@@ -352,6 +352,23 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			foreach ( $tmparray as $key => $value ) {
 				$substitution_array['{objvar_' . $key . '}'] = $value;
 			}
+
+			// Traduction des conditions de règlement
+			if(!empty($substitution_array['{objvar_object_cond_reglement_code}'])) {
+				$cond_reg_lib = $substitution_array['{objvar_object_cond_reglement_code}'];
+				$this->outputlangs->load("bills");
+				$key=$this->outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
+				$substitution_array['{objvar_object_cond_reglement_doc}']=($cond_reg_lib && $key != "PaymentConditionShort".strtoupper($cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
+			}
+
+                        // Traduction des conditions de règlement
+                        if(!empty($substitution_array['{objvar_object_mode_reglement_code}'])) {
+                                $mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
+                                $this->outputlangs->load("bills");
+                                $key=$this->outputlangs->trans("PaymentType".strtoupper($mod_reg_lib));
+                                $substitution_array['{objvar_object_mode_reglement}']=($mod_reg_lib && $key != "PaymentType".strtoupper($mod_reg_lib)?$key:$obj->{$fieldlist[$field]});
+                        }
+
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
@@ -389,7 +406,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			if (empty($use_custom_header)) {
 				$height = $this->_pagehead($this->pdf->ref_object, 1, $this->outputlangs);
 			} else {
-				$height = $this->_pageheadCustom($this->pdf->ref_object, 1, $this->outputlangs);
+				$height = $this->_pageheadCustom($this->pdf->ref_object);
 			}
 		} elseif ($type == 'foot') {
 			$use_custom_footer = $this->instance_letter->use_custom_footer;

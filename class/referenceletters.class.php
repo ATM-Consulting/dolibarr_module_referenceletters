@@ -208,6 +208,23 @@ class ReferenceLetters extends CommonObject
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
 				'listmodelclass' => 'ModelePDFSupplierProposal'
 		);
+		$this->element_type_list['expedition'] = array (
+				'class' => 'expedition.class.php',
+				'securityclass' => 'expedition',
+				'securityfeature' => '',
+				'objectclass' => 'Expedition',
+				'classpath' => DOL_DOCUMENT_ROOT . '/expedition/class/',
+				'trans' => 'sendings',
+				'title' => 'Shipment',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/sendings.lib.php',
+				'menuloader_function' => 'shipping_prepare_head',
+				'card' => '/exepedition/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
+				'listmodelclass' => 'ModelePdfExpedition'
+		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';

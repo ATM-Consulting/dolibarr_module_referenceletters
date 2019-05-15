@@ -142,7 +142,7 @@ class pdf_rfltr_supplier_proposal extends ModelePDFReferenceLetters
 					$hookmanager=new HookManager($this->db);
 				}
 				$hookmanager->initHooks(array('pdfgeneration'));
-				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$outputlangs);
+				$parameters=array('file'=>$file,'object'=>$object,'outputlangs'=>$this->outputlangs);
 				global $action;
 				$reshook=$hookmanager->executeHooks('beforePDFCreation',$parameters,$object,$action);
 
@@ -367,10 +367,10 @@ class pdf_rfltr_supplier_proposal extends ModelePDFReferenceLetters
 	 *
 	 * @param Object $object to show
 	 * @param int $showaddress 0=no, 1=yes
-	 * @param object $instaance_letter instanceletters
+	 * @param Translate $outputlangs Object lang for output
 	 * @return void
 	 */
-	function _pagehead($object, $showaddress, $instance_letter) {
+	function _pagehead($object, $showaddress, $outputlangs) {
 		global $conf;
 
 		$this->outputlangs->load("main");

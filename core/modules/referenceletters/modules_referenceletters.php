@@ -209,6 +209,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param string $typeprint
 	 */
 	function _pagefootCustom($object, $typeprint = '', $usePageNumber=1) {
+		global $conf
 
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);

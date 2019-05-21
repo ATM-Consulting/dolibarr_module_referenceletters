@@ -208,7 +208,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param stdClass $object
 	 * @param string $typeprint
 	 */
-	function _pagefootCustom($object, $typeprint = '') {
+	function _pagefootCustom($object, $typeprint = '', $usePageNumber=1) {
 
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
@@ -226,7 +226,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		// Show page nb only on iso languages (so default Helvetica font)
-		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && empty($conf->global->MAIN_USE_FPDF))
+		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && empty($conf->global->MAIN_USE_FPDF) && !empty($usePageNumber))
 		{
 			$currenty=$this->pdf->GetY();
 			$currentx=$this->pdf->GetX();

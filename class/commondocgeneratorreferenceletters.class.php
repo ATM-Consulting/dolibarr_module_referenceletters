@@ -169,6 +169,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
             $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_country']= $outputlangs->convToOutputCharset($object->contact->country);
             $countArray[$code]++;
         }
+
+        // Linked contacts informations
+        $array_key = 'objvar_object_cust_contactclient_&ltCODE&gt_&ltINDICE&gt_';
+        $resarray[$array_key.'name'] = '';
+        $resarray[$array_key.'civility'] = '';
+        $resarray[$array_key.'firstname'] = '';
+        $resarray[$array_key.'lastname'] = '';
+        $resarray[$array_key.'tel'] = '';
+        $resarray[$array_key.'mail'] = '';
+        $resarray[$array_key.'adress'] = '';
+        $resarray[$array_key.'zip'] = '';
+        $resarray[$array_key.'town'] = '';
+        $resarray[$array_key.'country'] = '';
+
 		return $resarray;
 	}
 

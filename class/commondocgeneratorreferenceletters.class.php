@@ -144,6 +144,31 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 
+		// Contact sélectionné
+        $linkedContacts = $object->liste_contact();
+        $countArray = array();
+        foreach ($linkedContacts as $contactRef){
+            $code  = $contactRef['code']; // Code
+            if($countArray[$code] == ''){ // Index
+                $countArray[$code] = 0;
+            }
+            $object->fetch_contact($contactRef['id']);
+            // Get the elements :
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_name']= $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs));
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_civility']= $outputlangs->convToOutputCharset($object->contact->civility_code);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_firstname']= $outputlangs->convToOutputCharset($object->contact->firstname);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_lastname']= $outputlangs->convToOutputCharset($object->contact->lastname);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_tel']=
+                    $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)
+                        ?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)
+                        ?$object->contact->phone_mobile :''));
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_mail']= $outputlangs->convToOutputCharset($object->contact->email);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_adress']= $outputlangs->convToOutputCharset($object->contact->address);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_zip']= $outputlangs->convToOutputCharset($object->contact->zip);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_town']= $outputlangs->convToOutputCharset($object->contact->town);
+            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_country']= $outputlangs->convToOutputCharset($object->contact->country);
+            $countArray[$code]++;
+        }
 		return $resarray;
 	}
 

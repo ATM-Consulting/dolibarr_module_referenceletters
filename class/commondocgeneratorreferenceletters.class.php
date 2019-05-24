@@ -146,42 +146,45 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// Contact sélectionné
         $linkedContacts = $object->liste_contact();
-        $countArray = array();
-        foreach ($linkedContacts as $contactRef){
-            $code  = $contactRef['code']; // Code
-            if($countArray[$code] == ''){ // Index
-                $countArray[$code] = 0;
-            }
-            $object->fetch_contact($contactRef['id']);
-            // Get the elements :
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_name']= $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs));
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_civility']= $outputlangs->convToOutputCharset($object->contact->civility_code);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_firstname']= $outputlangs->convToOutputCharset($object->contact->firstname);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_lastname']= $outputlangs->convToOutputCharset($object->contact->lastname);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_tel']=
+        $TCounts = array();
+        foreach ($linkedContacts as $TContactRef){
+            if ($TContactRef['source'] == 'external'){
+                $code  = $TContactRef['code']; // Code
+                if(empty($TCounts[$code])){ // Index
+                    $TCounts[$code] = 0;
+                }
+                $object->fetch_contact($TContactRef['id']);
+                // Get the elements :
+                $pre = $array_key.'_cust_contactclient_'.$code.'_'.$TCounts[$code];
+                $resarray[$pre.'_name']= $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs));
+                $resarray[$pre.'_civility']= $outputlangs->convToOutputCharset($object->contact->civility_code);
+                $resarray[$pre.'_firstname']= $outputlangs->convToOutputCharset($object->contact->firstname);
+                $resarray[$pre.'_lastname']= $outputlangs->convToOutputCharset($object->contact->lastname);
+                $resarray[$pre.'_tel']=
                     $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)
                         ?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)
-                        ?$object->contact->phone_mobile :''));
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_mail']= $outputlangs->convToOutputCharset($object->contact->email);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_adress']= $outputlangs->convToOutputCharset($object->contact->address);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_zip']= $outputlangs->convToOutputCharset($object->contact->zip);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_town']= $outputlangs->convToOutputCharset($object->contact->town);
-            $resarray['objvar_object_cust_contactclient_'.$code.'_'.$countArray[$code].'_country']= $outputlangs->convToOutputCharset($object->contact->country);
-            $countArray[$code]++;
+                            ?$object->contact->phone_mobile :''));
+                $resarray[$pre.'_mail']= $outputlangs->convToOutputCharset($object->contact->email);
+                $resarray[$pre.'_address']= $outputlangs->convToOutputCharset($object->contact->address);
+                $resarray[$pre.'_zip']= $outputlangs->convToOutputCharset($object->contact->zip);
+                $resarray[$pre.'_town']= $outputlangs->convToOutputCharset($object->contact->town);
+                $resarray[$pre.'_country']= $outputlangs->convToOutputCharset($object->contact->country);
+                $TCounts[$code]++;
+            }
         }
 
         // Linked contacts informations
-        $array_key = 'objvar_object_cust_contactclient_&ltCODE&gt_&ltINDICE&gt_';
-        $resarray[$array_key.'name'] = '';
-        $resarray[$array_key.'civility'] = '';
-        $resarray[$array_key.'firstname'] = '';
-        $resarray[$array_key.'lastname'] = '';
-        $resarray[$array_key.'tel'] = '';
-        $resarray[$array_key.'mail'] = '';
-        $resarray[$array_key.'adress'] = '';
-        $resarray[$array_key.'zip'] = '';
-        $resarray[$array_key.'town'] = '';
-        $resarray[$array_key.'country'] = '';
+        $pre = $array_key.'_cust_contactclient_&lt;CODE&gt;_&lt;INDICE&gt;_';
+        $resarray[$pre.'name'] = '';
+        $resarray[$pre.'civility'] = '';
+        $resarray[$pre.'firstname'] = '';
+        $resarray[$pre.'lastname'] = '';
+        $resarray[$pre.'tel'] = '';
+        $resarray[$pre.'mail'] = '';
+        $resarray[$pre.'address'] = '';
+        $resarray[$pre.'zip'] = '';
+        $resarray[$pre.'town'] = '';
+        $resarray[$pre.'country'] = '';
 
 		return $resarray;
 	}

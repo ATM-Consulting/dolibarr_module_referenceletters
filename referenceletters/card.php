@@ -721,7 +721,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                             $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '"  data-shortcode="{' . $key . '}"  >{' . $key . '}</span>';
                             $html .= '    </td>';
                             $html .= '    <td>';
-                            $html .= $value;
+							$html .= dol_escape_htmltag($value);// to prevent js execution like redirect...
                             $html .= '    </td>';
                             $html .= '</tr>';
                         }

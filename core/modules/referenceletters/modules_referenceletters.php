@@ -141,11 +141,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 								}
 							}
 
-							if ($conf->subtotal->enabled) {
+							if (! empty($conf->subtotal->enabled))
+							{
 								if (TSubtotal::isTitle($line)) {
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}' => '<strong><u>{line_fulldesc}</u></strong>'
 											,'{line_product_label}' => '<strong><u>{line_product_label}</u></strong>'
+											,'{line_desc}' => '<strong><u>{line_desc}</u></strong>'
 									));
 								} else if (TSubtotal::isSubtotal($line)) {
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
@@ -154,6 +156,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}' => '<strong><i>{line_fulldesc}</i></strong>'
 											,'{line_product_label}' => '<strong><i>{line_product_label}</i></strong>'
+											,'{line_desc}' => '<strong><i>{line_desc}</i></strong>'
 									));
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_price_ht_locale}' => '<strong>{line_price_ht_locale}</strong>'

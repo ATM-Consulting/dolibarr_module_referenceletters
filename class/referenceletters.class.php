@@ -576,7 +576,8 @@ class ReferenceLetters extends CommonObject
 	public function displayElement($mode = 0) {
 		global $langs;
 
-		$langs->load($this->element_type_list[$this->element_type]['trans']);
+		if(!empty($this->element_type_list[$this->element_type]['trans'])) $langs->load($this->element_type_list[$this->element_type]['trans']);
+
 		if (empty($mode)) {
 			$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
 		} else {

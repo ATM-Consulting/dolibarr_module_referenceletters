@@ -252,8 +252,9 @@ class pdf_rfltr_contract extends ModelePDFReferenceLetters
 	                    $hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
 	                    $hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
 	                    $hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
-
+						$backup_forceDisableConcatPdf = !empty($object->forceDisableConcatPdf);
 	                    $result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
+						$object->forceDisableConcatPdf = $backup_forceDisableConcatPdf;
 						if ($result <= 0)
 						{
 							setEventMessages($object->error, $object->errors, 'errors');

@@ -295,7 +295,7 @@ class FormReferenceLetters extends Form
                         $html.='{'.$key.'}';
                         $html.='</td>';
                         $html.='<td>';
-                        $html.=$value;
+                        $html.= dol_escape_htmltag($value);// to prevent js execution like redirect...
                         $html.='</td>';
                         $html.='</tr>';
                     }

@@ -107,6 +107,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact_inv = $object->getIdContact('external', 'BILLING');
 
 		$resarray['cust_contactclientfact'] = '';
+		$resarray['cust_contactclientfacttel'] = '';
+		$resarray['cust_contactclientfactmail'] = '';
 		if (count($arrayidcontact_inv) > 0) {
 			foreach ( $arrayidcontact_inv as $id ) {
 				$object->fetch_contact($id);

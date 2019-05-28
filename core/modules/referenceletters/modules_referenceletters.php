@@ -372,6 +372,17 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
+		// Les clés indexées pour les contacts ({cust_conctactclient_<CODE>_<INDICE>_fullname}) peuvent ne pas exister
+		// si le nombre de contacts liés n'est pas suffisant => on nettoie celles qui restent
+		$TContactTypes = $object->liste_type_contact('external', 'position', 1);
+
+		foreach($TContactTypes as $code => $dummy)
+		{
+			$prefixKey = 'cust_contactclient_' . $code;
+
+			$txt = preg_replace('/\{' . preg_quote($prefixKey, '/') . '_[0-9]+_[^\}]+\}/', '', $txt);
+		}
+
 		return $txt;
 	}
 

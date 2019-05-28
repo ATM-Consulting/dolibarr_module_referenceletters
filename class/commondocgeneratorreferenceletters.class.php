@@ -183,7 +183,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	        {
 		        $contactstatic = new Contact($db);
 		        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
-		        $contactstatic->statut = ''; // Champ prérempli par le construrcteur
+		        $contactstatic->statut = ''; // Champ prérempli par le constructeur
 		        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
 		        $resarray = array_merge($resarray, $contactarray);
 	        }

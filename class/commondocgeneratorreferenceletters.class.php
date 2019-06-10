@@ -470,6 +470,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
+		$resarray['line_rang'] = $line->rang;
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))

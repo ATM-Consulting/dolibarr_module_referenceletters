@@ -54,7 +54,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
-	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object') {
+	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
+	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
 		if ($object->element == 'facture' || $object->element == 'propal') {
@@ -69,7 +70,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if (count($agf_se->lines) > 1) {
 					$TSessions = array();
-					foreach ( $agf_se->lines as $line )
+					foreach ($agf_se->lines as $line)
 						$TSessions[] = $line->fk_session_agefodd;
 					$resarray['object_references'] = implode(', ', $TSessions);
 				} elseif (! empty($agf_se->lines)) {
@@ -84,9 +85,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $idsale ) {
+			foreach ($arrayidcontact as $idsale) {
 				$object->fetch_user($idsale);
-				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs)) . "\n";
+				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -96,9 +97,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['cust_contactclient'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $id ) {
+			foreach ($arrayidcontact as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -110,9 +111,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientfacttel'] = '';
 		$resarray['cust_contactclientfactmail'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientfacttel'] .= ($resarray['cust_contactclientfacttel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientfactmail'] .= ($resarray['cust_contactclientfactmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
@@ -131,9 +132,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientlivrtown'] = '';
 		$resarray['cust_contactclientlivrcountry'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientlivrtel'] .= ($resarray['cust_contactclientlivrtel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientlivrmail'] .= ($resarray['cust_contactclientlivrmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";

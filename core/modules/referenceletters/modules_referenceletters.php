@@ -359,6 +359,21 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
+	$tmparray['object_incoterms']='';
+        if($conf->incoterm->enabled){
+            $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
+            $resql=$this->db->query($sql);
+            if ($resql) {
+                $num = $this->db->num_rows($resql);
+                if ($num) {
+                    $obj = $this->db->fetch_object($resql);
+                    if ($obj->code) {
+                        $tmparray['object_code_incoterms'] = $obj->code;
+			$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
+                    }
+                }
+            }
+        }
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {

@@ -350,6 +350,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
+	$tmparray['object_incoterms']='';
         if($conf->incoterm->enabled){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
@@ -359,6 +360,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                     $obj = $this->db->fetch_object($resql);
                     if ($obj->code) {
                         $tmparray['object_code_incoterms'] = $obj->code;
+			$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
                     }
                 }
             }

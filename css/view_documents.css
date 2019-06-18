@@ -196,3 +196,9 @@
 	font-size:2.5em;
 }
 
+.h3-element-count {
+	margin-left: 8px;
+}
+.h3-element-count::after {
+	content: attr(data-element-count);
+}

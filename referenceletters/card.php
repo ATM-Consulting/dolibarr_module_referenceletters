@@ -224,7 +224,7 @@ if ($action == "add") {
  * VIEW
 */
 $title = $langs->trans('Module103258Name');
-$arrayofcss = array('referenceletters/css/view_documents.css');
+$arrayofcss = array('referenceletters/css/view_documents.css?v='.time());
 $arrayofjs = array();
 llxHeader('',$title, '', '', 0, 0, $arrayofjs, $arrayofcss);
 
@@ -696,7 +696,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
             if (is_array($subs_array) && count($subs_array)>0) {
                 foreach($subs_array as $block=>$data) {
-                    $html .= '<h3 class="accordion-refltertags-title" >' . $block . '</h3>';
+                    $html .= '<h3 class="accordion-refltertags-title">' . $block . '<span class="h3-element-count badge" data-element-count=""></span></h3>';
 
                     $html .= '<div class="accordion-refltertags-body" >';
                     $html .= '<table>';
@@ -708,7 +708,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                     if (is_array($data) && count($data) > 0) {
                         $var = true;
                         foreach ($data as $key => $value) {
-                            $html .= '<tr class="oddeven searchable">';
+                            $html .= '<tr class="oddeven searchable search-match">';
                             $html .= '    <td class="referenceletter-subtitutionkey-desc">';
                             if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
 
@@ -808,18 +808,33 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                         $("#subtitutionkey tr.searchable").each(function () {
                        
                             if ($(this).text().search(new RegExp(filter, "i")) < 0) {
-                                $(this).hide();
+                                $(this).removeClass("search-match").hide();
                             } else {
-                                $(this).show();
+                                $(this).addClass("search-match").show();
                                 count++;
                             }
                         });
                         
                         $("#filter-count").text(count);
-                   
+                        
+                        updateBadgeCount();
                     });
                     
-                });</script>
+                   
+                   updateBadgeCount = function () {
+                       $("#subtitutionkey .h3-element-count").each(function(i, item) {
+                            let divId = $(item).parent().attr("id");
+                            let nb = $("div[aria-labelledby="+divId+"]").find("tr.searchable.search-match").length;
+                            item.dataset.elementCount = nb;
+                            
+                            if (nb > 0) $(this).addClass("badge-primary").removeClass("badge-secondary");
+                            else $(this).addClass("badge-secondary").removeClass("badge-primary");
+                        });
+                   }
+                   updateBadgeCount();
+                   
+                });
+                </script>
                 
                 <style>.ui-dialog { z-index: 1000 !important ;}</style>
                 ';

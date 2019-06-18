@@ -255,11 +255,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param string $txt
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt='') {
+	function setSubstitutions(&$object, $txt='', $outputlangs=null) {
 		global $user, $mysoc, $conf;
 
+		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
+
 		// User substitution value
-		$tmparray = $this->get_substitutionarray_user($user, $this->outputlangs);
+		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -268,7 +270,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
-		$tmparray = $this->get_substitutionarray_mysoc($mysoc, $this->outputlangs);
+		$tmparray = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -292,7 +294,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 		}
 
-		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $this->outputlangs);
+		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -302,7 +304,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
-		$tmparray = $this->get_substitutionarray_other($this->outputlangs, $object);
+		$tmparray = $this->get_substitutionarray_other($outputlangs, $object);
+        complete_substitutions_array($tmparray, $outputlangs, $object);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -311,9 +314,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
+
 		// Réservé aux pièces de vente
 		if (get_class($object) !== 'Societe' && get_class($object) !== 'Contact' && get_class($object) !== 'ModelePDFReferenceLetters' && get_class($object) !== 'TCPDFRefletters' && get_class($object) !== 'Agsession' ) {
-			$tmparray = $this->get_substitutionarray_object($object, $this->outputlangs);
+			$tmparray = $this->get_substitutionarray_object($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -324,7 +328,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		// Get instance letter substitution
-		$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $this->outputlangs);
+		$tmparray = $this->get_substitutionarray_refletter($this->instance_letter, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -334,21 +338,21 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Contact') {
-			$tmparray = $this->get_substitutionarray_contact($object, $this->outputlangs);
+			$tmparray = $this->get_substitutionarray_contact($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
 					$substitution_array['{' . $key . '}'] = $value;
 				}
 				if (!empty($object->civility_id)) {
-					$substitution_array['{contact_civility}'] = $this->outputlangs->transnoentitiesnoconv('Civility'.$object->civility_id);
+					$substitution_array['{contact_civility}'] = $outputlangs->transnoentitiesnoconv('Civility'.$object->civility_id);
 				}
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
 		}
 
 		if (get_class($object) === 'Agsession') {
-			$tmparray = $this->get_substitutionsarray_agefodd($object, $this->outputlangs);
+			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -358,7 +362,22 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 		}
 
-		$tmparray = $this->get_substitutionarray_each_var_object($object, $this->outputlangs);
+		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
+	$tmparray['object_incoterms']='';
+        if($conf->incoterm->enabled){
+            $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
+            $resql=$this->db->query($sql);
+            if ($resql) {
+                $num = $this->db->num_rows($resql);
+                if ($num) {
+                    $obj = $this->db->fetch_object($resql);
+                    if ($obj->code) {
+                        $tmparray['object_code_incoterms'] = $obj->code;
+			$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
+                    }
+                }
+            }
+        }
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -368,20 +387,31 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			// Traduction des conditions de règlement
 			if(!empty($substitution_array['{objvar_object_cond_reglement_code}'])) {
 				$cond_reg_lib = $substitution_array['{objvar_object_cond_reglement_code}'];
-				$this->outputlangs->load("bills");
-				$key=$this->outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
+				$outputlangs->load("bills");
+				$key=$outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
 				$substitution_array['{objvar_object_cond_reglement_doc}']=($cond_reg_lib && $key != "PaymentConditionShort".strtoupper($cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
 			}
 
                         // Traduction des conditions de règlement
                         if(!empty($substitution_array['{objvar_object_mode_reglement_code}'])) {
                                 $mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
-                                $this->outputlangs->load("bills");
-                                $key=$this->outputlangs->trans("PaymentType".strtoupper($mod_reg_lib));
+                                $outputlangs->load("bills");
+                                $key=$outputlangs->trans("PaymentType".strtoupper($mod_reg_lib));
                                 $substitution_array['{objvar_object_mode_reglement}']=($mod_reg_lib && $key != "PaymentType".strtoupper($mod_reg_lib)?$key:$obj->{$fieldlist[$field]});
                         }
 
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+
+		// Les clés indexées pour les contacts ({cust_conctactclient_<CODE>_<INDICE>_fullname}) peuvent ne pas exister
+		// si le nombre de contacts liés n'est pas suffisant => on nettoie celles qui restent
+		$TContactTypes = $object->liste_type_contact('external', 'position', 1);
+
+		foreach($TContactTypes as $code => $dummy)
+		{
+			$prefixKey = 'cust_contactclient_' . $code;
+
+			$txt = preg_replace('/\{' . preg_quote($prefixKey, '/') . '_[0-9]+_[^\}]+\}/', '', $txt);
 		}
 
 		return $txt;

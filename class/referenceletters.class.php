@@ -606,6 +606,8 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
 
+        complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
+
 		foreach ( $this->element_type_list as $type => $item ) {
 			if ($this->element_type == $type) {
 

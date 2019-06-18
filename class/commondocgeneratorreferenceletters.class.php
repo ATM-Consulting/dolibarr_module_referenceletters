@@ -54,7 +54,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
-	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object') {
+	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
+	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
 		if ($object->element == 'facture' || $object->element == 'propal') {
@@ -69,7 +70,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if (count($agf_se->lines) > 1) {
 					$TSessions = array();
-					foreach ( $agf_se->lines as $line )
+					foreach ($agf_se->lines as $line)
 						$TSessions[] = $line->fk_session_agefodd;
 					$resarray['object_references'] = implode(', ', $TSessions);
 				} elseif (! empty($agf_se->lines)) {
@@ -84,9 +85,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $idsale ) {
+			foreach ($arrayidcontact as $idsale) {
 				$object->fetch_user($idsale);
-				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs)) . "\n";
+				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -96,9 +97,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['cust_contactclient'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $id ) {
+			foreach ($arrayidcontact as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -107,10 +108,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact_inv = $object->getIdContact('external', 'BILLING');
 
 		$resarray['cust_contactclientfact'] = '';
+		$resarray['cust_contactclientfacttel'] = '';
+		$resarray['cust_contactclientfactmail'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientfacttel'] .= ($resarray['cust_contactclientfacttel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientfactmail'] .= ($resarray['cust_contactclientfactmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
@@ -129,9 +132,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientlivrtown'] = '';
 		$resarray['cust_contactclientlivrcountry'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientlivrtel'] .= ($resarray['cust_contactclientlivrtel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientlivrmail'] .= ($resarray['cust_contactclientlivrmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
@@ -142,6 +145,60 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
+		// Contacts sélectionnés
+		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+
+        $linkedContacts = $object->liste_contact(); // External par défaut
+        $TCounts = array();
+
+        $TContactTypes = $object->liste_type_contact('external', 'position', 1);
+        $atLeastOneContact = false;
+
+		$contactKey = 'cust_contactclient_';
+        foreach ($linkedContacts as $TContactRef)
+        {
+            $code = $TContactRef['code']; // Code
+            if(empty($TCounts[$code])) // Index
+            {
+                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
+            }
+
+            $object->fetch_contact($TContactRef['id']);
+
+	        $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
+            $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
+            $resarray = array_merge($resarray, $contactarray);
+
+            $atLeastOneContact = true;
+
+            $TCounts[$code]++;
+        }
+
+        // Types de contacts non sélectionnés mais disponibles
+        $i = 0;
+        foreach($TContactTypes as $code => $label)
+        {
+	        $contactPrefix = $contactKey . $code . '_1';
+
+	        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
+	        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
+	        if (empty($atLeastOneContact) && $i == 0)
+	        {
+		        $contactstatic = new Contact($db);
+		        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
+		        $contactstatic->statut = ''; // Champ prérempli par le constructeur
+		        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
+		        $resarray = array_merge($resarray, $contactarray);
+	        }
+	        elseif (empty($TCounts[$code]))
+	        {
+	        	$resarray[$contactPrefix . '_[...]'] = '';
+	        }
+
+	        $i++;
+        }
+
+        // Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 
 		return $resarray;
@@ -413,6 +470,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
+		$resarray['line_rang'] = $line->rang;
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))

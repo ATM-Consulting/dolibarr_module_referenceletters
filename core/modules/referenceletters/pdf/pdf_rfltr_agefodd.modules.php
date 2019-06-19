@@ -286,10 +286,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
     					$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
 
 					}
-
 					if(count($test_array) > 1) {
-						//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
-						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP)) $this->pdf->deletePage($this->pdf->getPage());
+						//Do not apply this stuff for trainee docuement( générated from Document per trainee, if there is a @beakpage@ in this models, the last page should not be removes
+						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP) && substr($this->instance_letter->element_type, -8)!=='_trainee') $this->pdf->deletePage($this->pdf->getPage());
 					}
 				}
 

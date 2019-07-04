@@ -1264,7 +1264,7 @@ Tableau des participants au sein d&#39;une convention <span style="color:#ff0000
 	</tbody>
 </table>
 <br />
-Note : il existe également TStagiairesSessionSocPresent pour lister les participant présent ou partiellmenet présent et TStagiairesSessionSocConfirm pour lister les participants confirmé
+Note : il existe également TStagiairesSessionSocPresent pour lister les participant du client présent ou partiellement présent et TStagiairesSessionSocConfirm pour lister les participants du client confirmé
 <br />
 <br />
 <u>Liste des formateurs :</u><br />

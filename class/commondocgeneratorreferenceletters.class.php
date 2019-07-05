@@ -709,7 +709,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
 			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
 			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
-			$resarray['formation_lieu_acces'] = $agf_place->acces_site;
+			// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
+			// fix TK9760
+			$resarray['formation_lieu_acces'] = str_replace('&amp;','&',$agf_place->acces_site);
 			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
 			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);

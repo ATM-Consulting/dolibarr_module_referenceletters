@@ -376,20 +376,60 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 
 			// Traduction des conditions de règlement
-			if(!empty($substitution_array['{objvar_object_cond_reglement_code}'])) {
+			if(! empty($substitution_array['{objvar_object_cond_reglement_code}']))
+			{
 				$cond_reg_lib = $substitution_array['{objvar_object_cond_reglement_code}'];
-				$outputlangs->load("bills");
-				$key=$outputlangs->trans("PaymentConditionShort".strtoupper($cond_reg_lib));
-				$substitution_array['{objvar_object_cond_reglement_doc}']=($cond_reg_lib && $key != "PaymentConditionShort".strtoupper($cond_reg_lib)?$key:$obj->{$fieldlist[$field]});
+				$outputlangs->load('bills');
+				$translationKey = 'PaymentConditionShort' . strtoupper($cond_reg_lib);
+
+				$label = $outputlangs->trans($translationKey);
+
+				if($label == $translationKey)
+				{
+					$sql = 'SELECT libelle_facture
+                            FROM ' . MAIN_DB_PREFIX . 'c_payment_term
+                            WHERE code = "' . $object->db->escape($cond_reg_lib) . '"
+                            LIMIT 1';
+
+                    $resql = $object->db->query($sql);
+
+                    if($resql && $object->db->num_rows($resql) > 0)
+                    {
+                        $obj = $object->db->fetch_object($resql);
+	                    $label = $obj->libelle_facture;
+                    }
+				}
+
+				$substitution_array['{objvar_object_cond_reglement_doc}'] = $label;
 			}
 
-                        // Traduction des conditions de règlement
-                        if(!empty($substitution_array['{objvar_object_mode_reglement_code}'])) {
-                                $mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
-                                $outputlangs->load("bills");
-                                $key=$outputlangs->trans("PaymentType".strtoupper($mod_reg_lib));
-                                $substitution_array['{objvar_object_mode_reglement}']=($mod_reg_lib && $key != "PaymentType".strtoupper($mod_reg_lib)?$key:$obj->{$fieldlist[$field]});
-                        }
+            // Traduction des modes de règlement
+            if(! empty($substitution_array['{objvar_object_mode_reglement_code}']))
+            {
+                $mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
+                $outputlangs->load('bills');
+                $translationKey = 'PaymentType' . strtoupper($mod_reg_lib);
+
+	            $label = $outputlangs->trans($translationKey);
+
+                if($label == $translationKey)
+                {
+                    $sql = 'SELECT libelle
+                            FROM ' . MAIN_DB_PREFIX . 'c_paiement
+                            WHERE code = "' . $object->db->escape($mod_reg_lib) . '"
+                            LIMIT 1';
+
+                    $resql = $object->db->query($sql);
+
+                    if($resql && $object->db->num_rows($resql) > 0)
+                    {
+                        $obj = $object->db->fetch_object($resql);
+                        $label = $obj->libelle;
+                    }
+                }
+
+                $substitution_array['{objvar_object_mode_reglement}'] = $label;
+            }
 
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}

@@ -122,7 +122,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
 					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
 							'text' => $object->name,
-							'url' => dol_buildpath('societe/soc.php',1).'?socid='.$object->id);
+							'url' => dol_buildpath('societe/card.php',1).'?socid='.$object->id);
 				} else {
 					$this->info_box_contents[$key][3] = array('td' => 'align="left" width="15"',
 						'text' => $object->ref,
@@ -132,11 +132,11 @@ class box_referenceletter_elements extends ModeleBoxes {
 				if ($object_ref->element_type_list[$line->element_type]['objectclass']=='Societe') {
 					$this->info_box_contents[$key][4] = array('td' => 'align="left" width="15"',
 							'text' => $object->name,
-							'url' => dol_buildpath('societe/soc.php',1).'?socid='.$object->id);
+							'url' => dol_buildpath('societe/card.php',1).'?socid='.$object->id);
 				} else {
 					$this->info_box_contents[$key][4] = array('td' => 'align="left" width="15"',
 							'text' => $object->thirdparty->name,
-							'url' => dol_buildpath('societe/soc.php',1).'?socid='.$object->thirdparty->id);
+							'url' => dol_buildpath('societe/card.php',1).'?socid='.$object->thirdparty->id);
 				}
 				$this->info_box_contents[$key][5] = array('td' => 'align="left" width="15"',
 						'text' => dol_print_date($line->datec,'daytext'));

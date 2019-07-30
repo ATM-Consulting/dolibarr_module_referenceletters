@@ -707,10 +707,15 @@ class ReferenceLetters extends CommonObject
 				,'formation_ref'=>'Référence de la formation'
 				,'formation_statut'=>'Statut de la formation'
 		        ,'formation_date_debut' => 'Date de début de la formation'
+		        ,'formation_date_debut_formated' => 'Date de début de la formation mise en forme'
 		        ,'formation_date_fin' => 'Date de fin de la formation'
+		        ,'formation_date_fin_formated' => 'Date de fin de la formation mise en forme'
 				,'objvar_object_date_text'=>'Date de la session'
 		        ,'formation_duree' => 'Durée de la formation'
+		        ,'formation_duree_session' => 'Durée de la session'
 				,'formation_commercial'=>'commercial en charge de la formation'
+				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
+				,'formation_commercial_mail'=>'email commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'
 		        ,'formation_but'=>'But de la formation'
 		        ,'formation_methode'=>'Methode de formation'
@@ -758,6 +763,7 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
 				'line_formateur_nom'=>'Nom du formateur'
 				,'line_formateur_prenom'=>'Prénom du formateur'
+				,'line_formateur_phone'=>'Téléphone du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);

@@ -584,6 +584,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// Substitutions tableau des formateurs :
 		$resarray['line_formateur_nom'] = $line->lastname;
 		$resarray['line_formateur_prenom'] = $line->firstname;
+		$resarray['line_formateur_phone'] = $line->phone;
 		$resarray['line_formateur_mail'] = $line->email;
 		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
@@ -658,6 +659,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;
 		$resarray['formation_commercial'] = $object->commercialname;
+		$resarray['formation_commercial_phone'] = $object->commercialemail;
+		$resarray['formation_commercial_mail'] = $object->commercialphone;
 		$resarray['formation_societe'] = $object->thirdparty->nom;
 		$resarray['formation_commentaire'] = nl2br($object->notes);
 		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
@@ -669,8 +672,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['session_nb_days'] = $object->session_nb_days;
 		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
 		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
-                $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
-                $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
+        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
+        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
 
 		if (! empty($object->fk_formation_catalogue)) {
 

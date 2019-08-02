@@ -324,7 +324,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				)
 			);
 
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'adddocpdf_confirm', $formquestion, 0, 1);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrAddPDFDoc'), $langs->trans('RefLtrAddPDFDoc'), 'adddocpdf_confirm', $formquestion, 0, 1);
 		}
 	}
 

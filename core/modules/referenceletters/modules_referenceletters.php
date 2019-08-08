@@ -169,6 +169,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// Annule la modification de la méthode preOdfToOdf() de la class Odf (htdocs/includes/odtphp/odf.php) si on passe dans une boucle
 		$chapter_text = str_replace("<text:line-break/>", "<br />", $chapter_text);
 
+		// Transforme les <tr> pour éviter les saut de page en plein milieu
+		$chapter_text = strtr($chapter_text, array('<tr' => '<tr nobr="true"'));
+
 		return $chapter_text;
 	}
 	/**

@@ -303,8 +303,37 @@ class pdf_rfltr_invoice extends ModelePDFReferenceLetters
 
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
-						$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />')); // Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
-						$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+						// Pas trouvé d'autre moyen de remplacer les sauts de lignes généras par l'objet odf dans merge_array()...
+						$chapter_text = strtr($chapter_text, array('<text:line-break/>'=>'<br />'));
+
+						//If chapter is "Same Page" with try to fin if we need to add page
+						if (!empty($line_chapter['same_page']))	{
+							$this->pdf->startTransaction();
+							$curent_page=$this->pdf->getPage();
+							$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+							$next_page=$this->pdf->getPage();
+
+							if ($next_page>$curent_page) {
+								$this->pdf->rollbackTransaction(true);
+								if (method_exists($this->pdf, 'AliasNbPages'))
+									$this->pdf->AliasNbPages();
+
+								$this->pdf->AddPage(empty($use_landscape_format) ? 'P' : 'L',$this->format, true);
+								if (! empty($tplidx)) {
+									$this->pdf->useTemplate($tplidx);
+								}
+
+								$this->pdf->setPrintFooter(true);
+
+								$posX = $this->pdf->getX();
+								$posY = $this->pdf->getY();
+								$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+							} else {
+								$this->pdf->commitTransaction();
+							}
+						} else {
+							$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
+						}
 						// var_dump($test);
 						if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
 							foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {

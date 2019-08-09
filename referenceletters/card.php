@@ -450,6 +450,8 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 						print '<span class="docedit_infos_icon docedit_shortcode classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
 
+			            print '<span class="docedit_infos_icon docedit_setbool classfortooltip" data-field="readonly" data-id="'.$line_chapter->id.'" data-valtoset="'.(!$line_chapter->readonly).'" ><span class="fa '.(empty($line_chapter->readonly)?'fa-toggle-off':'fa-toggle-on').' marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('RefLtrReadOnly').'" title="'.$langs->trans('RefLtrReadOnly').'"></span></span>';
+			            print '<span class="docedit_infos_icon docedit_setbool classfortooltip" data-field="same_page" data-id="'.$line_chapter->id.'" data-valtoset="'.(!$line_chapter->same_page).'"  ><span class="fa '.(empty($line_chapter->same_page)?'fa-toggle-off':'fa-toggle-on').' marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('RefLtrUnsecable').'" title="'.$langs->trans('RefLtrUnsecable').'"></span></span>';
 		            }
 		            
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
@@ -477,7 +479,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        $editInline = '';
 		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
 
-			    print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
+			    print '<div class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 			    print $line_chapter->content_text;
 			    print '</div><!-- END docedit_document_body_text -->';
 
@@ -775,6 +777,32 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
                          $("#item-filter").focus();
                     });
                     
+                     $(".docedit_setbool").click(function() {
+                        
+						//Get the Chapter Id
+						var chapter=$(this);
+						
+						$.ajax({
+						  method: "POST",
+						  url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+						  dataType: "json",
+						  data: { set: "setfield" , id: chapter.data("id") , field: chapter.data("field"), value: chapter.data("valtoset") }
+						})
+						.done(function( data ) {
+						    if(data.status){
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+						        if (chapter.children("span").first().hasClass(\'fa-toggle-on\')) {
+						            chapter.children("span").first().removeClass(\'fa-toggle-on\').addClass(\'fa-toggle-off\');
+						            chapter.data("valtoset",1);
+						        } else {
+						            chapter.children("span").first().removeClass(\'fa-toggle-off\').addClass(\'fa-toggle-on\');
+						            chapter.data("valtoset",0);
+						        }
+						    }else{
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+						    }
+						});
+                    }); 
                     
                    $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
 

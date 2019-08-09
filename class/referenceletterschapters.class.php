@@ -55,6 +55,7 @@ class ReferenceLettersChapters extends CommonObject
 	public $fk_user_mod;
 	public $tms='';
 	public $readonly='';
+	public $same_page=0;
 
 	/** @var ReferenceLettersChapters[]  */
 	public $lines_chapters = array();
@@ -98,6 +99,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
+		if (isset($this->same_page)) $this->same_page=trim($this->same_page);
 
 
 		// Check parameters
@@ -127,6 +129,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= "content_text,";
 		$sql.= "options_text,";
 		$sql.= "readonly,";
+		$sql.= "same_page,";
 		$sql.= "status,";
 		$sql.= "import_key,";
 		$sql.= "fk_user_author,";
@@ -141,6 +144,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " ".(! isset($this->content_text)?'NULL':"'".$this->db->escape($this->content_text)."'").",";
 		$sql.= " ".(empty($option_text)?'NULL':"'".$this->db->escape($option_text)."'").",";
 		$sql.= " ".(empty($this->readonly)?'0':$this->readonly).",";
+		$sql.= " ".(empty($this->same_page)?'0':$this->same_page).",";
 		$sql.= " ".(! isset($this->status)?'0':$this->status).",";
 		$sql.= " ".(! isset($this->import_key)?'NULL':"'".$this->db->escape($this->import_key)."'").",";
 		$sql.= " ".$user->id.",";
@@ -210,6 +214,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
 		$sql.= " t.readonly,";
+		$sql.= " t.same_page,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -237,14 +242,13 @@ class ReferenceLettersChapters extends CommonObject
 				$this->content_text = $obj->content_text;
 				$this->options_text = unserialize($obj->options_text);
 				$this->readonly = $obj->readonly;
+				$this->same_page = $obj->same_page;
 				$this->status = $obj->status;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
-
-
             }
             $this->db->free($resql);
 
@@ -278,6 +282,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
 		$sql.= " t.readonly,";
+		$sql.= " t.same_page,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -313,6 +318,7 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->content_text = $obj->content_text;
 					$chapter->options_text = unserialize($obj->options_text);
 					$chapter->readonly = $obj->readonly;
+					$chapter->same_page = $obj->same_page;
 					$chapter->status = $obj->status;
 					$chapter->import_key = $obj->import_key;
 					$chapter->fk_user_author = $obj->fk_user_author;
@@ -350,7 +356,6 @@ class ReferenceLettersChapters extends CommonObject
 		$error=0;
 
 		// Clean parameters
-
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->lang)) $this->lang=trim($this->lang);
@@ -359,6 +364,7 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->content_text)) $this->content_text=trim($this->content_text);
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
+		if (isset($this->same_page)) $this->same_page=trim($this->same_page);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 
 
@@ -377,7 +383,7 @@ class ReferenceLettersChapters extends CommonObject
 			$this->lang=$langs->defaultlang;
 		}
 
-
+		dol_syslog('TEstReadonly'.$this->readonly);
 
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."referenceletters_chapters SET";
@@ -389,6 +395,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " content_text=".(isset($this->content_text)?"'".$this->db->escape($this->content_text)."'":"null").",";
 		$sql.= " options_text=".(!empty($option_text)?"'".$this->db->escape($option_text)."'":"null").",";
 		$sql.= " readonly=".(!empty($this->readonly)?$this->readonly:"0").",";
+		$sql.= " same_page=".(!empty($this->same_page)?$this->same_page:"0").",";
 		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id;
@@ -569,6 +576,7 @@ class ReferenceLettersChapters extends CommonObject
 		$this->content_text='';
 		$this->options_text='';
 		$this->readonly='';
+		$this->same_page='';
 		$this->status='';
 		$this->import_key='';
 		$this->fk_user_author='';

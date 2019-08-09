@@ -86,6 +86,7 @@ if ($action == "add") {
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
+	$object->same_page=GETPOST('refltrsame_page','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -116,6 +117,7 @@ if ($action == "add") {
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
+	$object->same_page=GETPOST('refltrsame_page','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -190,8 +192,6 @@ if ($action=='create') {
 			setEventMessage($object->error, 'errors');
 		}
 	}
-
-
 
 	$subtitle=$langs->trans("RefLtrChapters").' - '.$object_refletter->title;
 
@@ -330,6 +330,14 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		print '</td>';
 		print '<td>';
 		print '<input type="checkbox" name="refltrreadonly" size="20"  ' . (!empty($object->readonly) ? 'checked="checked"' : '') . ' value="1"/>';
+		print '</td>';
+		print '</tr>';
+		print '<tr>';
+		print '<td width="20%">';
+		print $langs->trans('RefLtrUnsecable');
+		print '</td>';
+		print '<td>';
+		print '<input type="checkbox" name="refltrsame_page" size="20"  ' . (!empty($object->same_page) ? 'checked="checked"' : '') . ' value="1"/>';
 		print '</td>';
 		print '</tr>';
 	} else  {

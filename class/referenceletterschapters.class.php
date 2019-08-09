@@ -383,8 +383,6 @@ class ReferenceLettersChapters extends CommonObject
 			$this->lang=$langs->defaultlang;
 		}
 
-		dol_syslog('TEstReadonly'.$this->readonly);
-
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."referenceletters_chapters SET";
 

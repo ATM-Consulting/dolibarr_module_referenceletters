@@ -379,6 +379,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * Permet de gérer les données de types listes ou tableaux (données pour lesquelles il est nécessaire de boucler)
 	 *
 	 * @param $TElementArray : Tableau qui va contenir les différents éléments agefodd sur lesquels on peut boucler (lignes, participants, horaires)
+	 * @return string
 	 */
 	function merge_array(&$object, $chapter_text, $TElementArray = array()) {
 		global $hookmanager, $conf;
@@ -475,6 +476,11 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									// var_dump($listlines->xml);exit;
 								}
 							}
+
+							$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+								'<tr' => '<tr nobr="true" '
+							));
+
 							$res = $listlines->merge();
 
 							$listlines->xml = $listlines->savxml = $oldline;
@@ -533,6 +539,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	function _pagefootCustom($object, $typeprint = '') {
 
+		global $conf;
+
 		// Conversion des tags
 		$this->instance_letter->footer = $this->setSubstitutions($object, $this->instance_letter->footer);
 
@@ -564,6 +572,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 *
 	 * @param stdClass $object
 	 * @param string $txt
+	 * @param Translate $outputlangs Translate langs
 	 * @return mixed
 	 */
 	function setSubstitutions(&$object, $txt='', $outputlangs=null) {
@@ -769,8 +778,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	}
 
 	/**
+	 * Caculate the real (in px) height of a printed string
 	 *
-	 * @param string $txt
+	 * @param string $type type of calc head or foot
+	 * @return int
 	 */
 	public function getRealHeightLine($type = '') {
 		global $conf;
@@ -951,8 +962,8 @@ abstract class ModeleNumRefrReferenceLetters
  *
  * @param DoliDB $db Database handler
  * @param object $object Object proposal
- * @param object $this->instance_letter Instance letter
- * @param Translate $this->outputlangs Object langs to use for output
+ * @param object $instance_letter Instance letter
+ * @param Translate $outputlangs Object langs to use for output
  * @param string $element_type element type
  * @return int 0 if KO, 1 if OK
  */

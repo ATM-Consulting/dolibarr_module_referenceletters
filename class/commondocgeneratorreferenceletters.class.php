@@ -37,8 +37,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $referenceletters
-	 * @param stdClass $outputlangs
+	 * @param ReferenceLetters $referenceletters reference letter
+	 * @param Translate $outputlangs Translate instance
 	 * @return NULL[]
 	 */
 	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
@@ -274,8 +274,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object pointer
+	 * @param Translate $outputlangs Translate instance
+	 * @param stdClass $element Element
 	 * @return string
 	 */
 	static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
@@ -308,8 +309,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instalce
 	 * @return number|array[]|number[][]
 	 */
 	static function get_detail_tva(&$object, &$outputlangs) {
@@ -371,8 +372,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate instance
 	 * @return number|array[]|number[][]
 	 */
 	static function get_liste_reglements(&$object, &$outputlangs) {
@@ -459,8 +460,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
 	function get_substitutionarray_lines($line, $outputlangs)
@@ -496,6 +497,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Object $object Dolibarr Object
 	 * @param Translate $outputlangs Language object for output
 	 * @param boolean $recursive Want to fetch child array or child object
+	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '')
@@ -555,9 +557,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {
-					$sub = strtr('object_' . $sub_element_label . $key, array(
-							'object_' . $sub_element_label => ''
-					)) . '_';
+					$sub = strtr('object_' . $sub_element_label . $key, array('object_' . $sub_element_label => '')) . '_';
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
@@ -569,11 +569,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 * Override de la fonction ExtraFields::showOutputField()
 	 *
-	 * @param ExtraFields	$extrafields
-	 * @param string		$key
-	 * @param mixed			$value
-	 * @param string		$moreparam
-	 * @param string		$extrafieldsobjectkey
+	 * @param ExtraFields	$extrafields Extrafields Object
+	 * @param string		$key Key
+	 * @param mixed			$value Value
+	 * @param string		$moreparam moreparam
+	 * @param string		$extrafieldsobjectkey Extrafields keys
 	 * @return string
 	 * @throws Exception
 	 */
@@ -597,7 +597,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
 			
-			if( (float)DOL_VERSION < 7 ){
+			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
@@ -621,7 +621,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
 			
-			if( (float)DOL_VERSION < 7 ){
+			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{

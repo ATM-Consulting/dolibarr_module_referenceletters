@@ -37,8 +37,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $referenceletters
-	 * @param stdClass $outputlangs
+	 * @param ReferenceLetters $referenceletters reference letter
+	 * @param Translate $outputlangs Translate instance
 	 * @return NULL[]
 	 */
 	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
@@ -274,8 +274,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object pointer
+	 * @param Translate $outputlangs Translate instance
+	 * @param stdClass $element Element
 	 * @return string
 	 */
 	static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
@@ -308,8 +309,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instalce
 	 * @return number|array[]|number[][]
 	 */
 	static function get_detail_tva(&$object, &$outputlangs) {
@@ -371,8 +372,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate instance
 	 * @return number|array[]|number[][]
 	 */
 	static function get_liste_reglements(&$object, &$outputlangs) {
@@ -459,8 +460,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
 	function get_substitutionarray_lines($line, $outputlangs)
@@ -551,15 +552,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		                    $minutes = floor($seconds / 60);
 
     		                    $hPresenceTotal+= $heures->heures;
-    		                    
-    		                    
+
+
     		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
     		                    // return the time formatted HH:MM
     		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
     		                }
     		            }
     		        }
-    		        
+
     		        // TOTAL DES HEURES PASSEES
     		        // start by converting to seconds
     		        $seconds = floor($hPresenceTotal * 3600);
@@ -570,7 +571,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		        // calculate minutes left
     		        $minutes = floor($seconds / 60);
     		        $resarray['line_presence_total']= $hours."H".sprintf("%02u",$minutes);
-    		        
+
     		    }
 		    }
 
@@ -636,8 +637,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param CommonObject $object
-	 * @param LangTest $outputlangs
+	 * @param CommonObject $object Object
+	 * @param Translate $outputlangs Translate instance
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
 	function get_substitutionsarray_agefodd(&$object, $outputlangs) {
@@ -730,6 +731,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Object $object Dolibarr Object
 	 * @param Translate $outputlangs Language object for output
 	 * @param boolean $recursive Want to fetch child array or child object
+	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '')
@@ -789,9 +791,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {
-					$sub = strtr('object_' . $sub_element_label . $key, array(
-							'object_' . $sub_element_label => ''
-					)) . '_';
+					$sub = strtr('object_' . $sub_element_label . $key, array('object_' . $sub_element_label => '')) . '_';
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
@@ -803,11 +803,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 * Override de la fonction ExtraFields::showOutputField()
 	 *
-	 * @param ExtraFields	$extrafields
-	 * @param string		$key
-	 * @param mixed			$value
-	 * @param string		$moreparam
-	 * @param string		$extrafieldsobjectkey
+	 * @param ExtraFields	$extrafields Extrafields Object
+	 * @param string		$key Key
+	 * @param mixed			$value Value
+	 * @param string		$moreparam moreparam
+	 * @param string		$extrafieldsobjectkey Extrafields keys
 	 * @return string
 	 * @throws Exception
 	 */
@@ -830,14 +830,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
-
-			if( (float)DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 1 ?  1 : 0);
+			
+			if( (float) DOL_VERSION < 7 ) {
+			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
-
+			
 		}
 		else
 		{
@@ -854,9 +854,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
-
-			if( (float)DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 1 ?  1 : 0);
+			
+			if( (float) DOL_VERSION < 7 ){
+			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
@@ -1132,4 +1132,3 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		return $out;
 	}
 }
-

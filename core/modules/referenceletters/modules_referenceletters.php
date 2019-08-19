@@ -538,7 +538,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param string $typeprint
 	 */
 	function _pagefootCustom($object, $typeprint = '', $usePageNumber=1) {
-		global $conf
 
 		global $conf;
 

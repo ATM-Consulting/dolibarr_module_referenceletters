@@ -576,7 +576,8 @@ class ReferenceLetters extends CommonObject
 	public function displayElement($mode = 0) {
 		global $langs;
 
-		$langs->load($this->element_type_list[$this->element_type]['trans']);
+		if(!empty($this->element_type_list[$this->element_type]['trans'])) $langs->load($this->element_type_list[$this->element_type]['trans']);
+
 		if (empty($mode)) {
 			$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
 		} else {
@@ -604,6 +605,8 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
+
+        complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
 
 		foreach ( $this->element_type_list as $type => $item ) {
 			if ($this->element_type == $type) {

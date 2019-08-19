@@ -45,6 +45,8 @@ restrictedArea($user, 'referenceletters');
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
+$langs->load("refflettersubtitution@referenceletters");
+
 
 $object = new ReferenceLetters($db);
 $object_chapters = new ReferenceLettersChapters($db);
@@ -222,7 +224,7 @@ if ($action == "add") {
  * VIEW
 */
 $title = $langs->trans('Module103258Name');
-$arrayofcss = array('referenceletters/css/view_documents.css');
+$arrayofcss = array('referenceletters/css/view_documents.css?v='.time());
 $arrayofjs = array();
 llxHeader('',$title, '', '', 0, 0, $arrayofjs, $arrayofcss);
 
@@ -322,7 +324,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 				)
 			);
 
-			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrDelete'), $langs->trans('RefLtrConfirmDelete'), 'adddocpdf_confirm', $formquestion, 0, 1);
+			$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id, $langs->trans('RefLtrAddPDFDoc'), $langs->trans('RefLtrAddPDFDoc'), 'adddocpdf_confirm', $formquestion, 0, 1);
 		}
 	}
 
@@ -436,23 +438,28 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 		        
 		        // Button and infos
-		        print '<div class="docedit_infos docedit_infos_left">';
+		        print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
 
 		        if ($user->rights->referenceletters->write) {
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
-		                print '<span class="docedit_infos_icon handle" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
+		                print '<span class="docedit_infos_icon handle classfortooltip" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
 		            }
 		            
 		            if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){ 
-		                print '<span class="docedit_infos_icon docedit_save" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+		                print '<span class="docedit_infos_icon docedit_save classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
+
+						print '<span class="docedit_infos_icon docedit_shortcode classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+
+			            print '<span class="docedit_infos_icon docedit_setbool classfortooltip" data-field="readonly" data-id="'.$line_chapter->id.'" data-valtoset="'.(!$line_chapter->readonly).'" ><span class="fa '.(empty($line_chapter->readonly)?'fa-toggle-off':'fa-toggle-on').' marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('RefLtrReadOnly').'" title="'.$langs->trans('RefLtrReadOnly').'"></span></span>';
+			            print '<span class="docedit_infos_icon docedit_setbool classfortooltip" data-field="same_page" data-id="'.$line_chapter->id.'" data-valtoset="'.(!$line_chapter->same_page).'"  ><span class="fa '.(empty($line_chapter->same_page)?'fa-toggle-off':'fa-toggle-on').' marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('RefLtrUnsecable').'" title="'.$langs->trans('RefLtrUnsecable').'"></span></span>';
 		            }
 		            
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-		            print '<a class="docedit_infos_icon" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		            
 		        }
 		        
-		        print '</div><!-- END docedit_infos -->';
+		        print '</div></div><!-- END docedit_infos -->';
 
 		        print '<div class="docedit_infos docedit_infos_top">';
 		        print '<span class="docedit_title_type" >';
@@ -472,7 +479,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        $editInline = '';
 		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
 
-			    print '<div  class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
+			    print '<div class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 			    print $line_chapter->content_text;
 			    print '</div><!-- END docedit_document_body_text -->';
 
@@ -673,7 +680,193 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
                    });
             ';
+
 		    print '} );</script>';
+
+            print '<div id="subtitutionkey" style="display: none;" >';
+
+            print '<div class="search-filter-wrap"  >';
+            print '<i class="fa fa-search"></i>';
+            print '<input type="text" id="item-filter" class="search-filter" data-target="'.$target.'" value="" placeholder="'.$langs->trans('Search').'" ';
+            print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+            print '</div>';
+
+
+            $subs_array=$object->getSubtitutionKey($user);
+
+            $html='<div id="accordion-refltertags" >';
+
+            if (is_array($subs_array) && count($subs_array)>0) {
+                foreach($subs_array as $block=>$data) {
+                    $html .= '<h3 class="accordion-refltertags-title">' . $block . '<span class="h3-element-count badge" data-element-count=""></span></h3>';
+
+                    $html .= '<div class="accordion-refltertags-body" >';
+                    $html .= '<table>';
+                    $html .= '<tr class="liste_titre">';
+                    $html .= '<th>'.$langs->trans('Description').'</th>';
+                    $html .= '<th width="50px">'.$langs->trans('RefLtrTag').'</th>';
+                    $html .= '<th>'.$langs->trans('Value').'</th>';
+                    $html .= '</tr>';
+                    if (is_array($data) && count($data) > 0) {
+                        $var = true;
+                        foreach ($data as $key => $value) {
+                            $html .= '<tr class="oddeven searchable search-match">';
+                            $html .= '    <td class="referenceletter-subtitutionkey-desc">';
+                            if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
+
+                                $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
+                                $html .= $langs->trans('reflettershortcode_' . $key);
+                                $html .= '</span>';
+                            }
+                            $html .= '    </td>';
+                            $html .= '    <td class="referenceletter-subtitutionkey-col">';
+                            $html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '"  data-shortcode="{' . $key . '}"  >{' . $key . '}</span>';
+                            $html .= '    </td>';
+                            $html .= '    <td>';
+							$html .= dol_escape_htmltag($value);// to prevent js execution like redirect...
+                            $html .= '    </td>';
+                            $html .= '</tr>';
+                        }
+                    }
+                    $html .= '</table>';
+                    $html .= '</div>';
+                }
+
+                // Generate traduction for dev only
+                /*print '<pre>';
+                foreach($subs_array as $block=>$data) {
+                    print '#' . $block."\n";
+                    if (is_array($data) && count($data) > 0) {
+                        $var = true;
+                        foreach ($data as $key => $value) {
+                            print 'reflettershortcode_' . $key."=\n";
+                        }
+                    }
+                }
+                print '</pre>';*/
+            }
+
+            $html.='</div>';
+            $html.= '</div>';
+            $html.=  '<script>
+                $( function() {
+                    
+                    $("#accordion-refltertags" ).accordion({
+                            collapsible: true,
+                            heightStyle: "content",
+                            navigation: true ,
+                            active: false
+                    });
+                    
+                    $( "#subtitutionkey" ).dialog({
+                      title: "'.$langs->transnoentities('RefSubtitutionTable').'",
+                      width: $( document ).width() * 0.9,
+                      modal: true,
+                      autoOpen: false,
+                      maxHeight: $( window ).height() * 0.9,
+                      height: $( window ).height() * 0.9
+                    });
+                    
+                    $(".docedit_shortcode").click(function() {
+                        
+                         // open dialog and add target key
+                         $( "#subtitutionkey" ).data("target", $(this).data("target"));
+                         $( "#subtitutionkey" ).dialog( "open" );
+                         
+                         // Focus on search input
+                         $("#item-filter").focus();
+                    });
+                    
+                     $(".docedit_setbool").click(function() {
+                        
+						//Get the Chapter Id
+						var chapter=$(this);
+						
+						$.ajax({
+						  method: "POST",
+						  url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+						  dataType: "json",
+						  data: { set: "setfield" , id: chapter.data("id") , field: chapter.data("field"), value: chapter.data("valtoset") }
+						})
+						.done(function( data ) {
+						    if(data.status){
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+						        if (chapter.children("span").first().hasClass(\'fa-toggle-on\')) {
+						            chapter.children("span").first().removeClass(\'fa-toggle-on\').addClass(\'fa-toggle-off\');
+						            chapter.data("valtoset",1);
+						        } else {
+						            chapter.children("span").first().removeClass(\'fa-toggle-off\').addClass(\'fa-toggle-on\');
+						            chapter.data("valtoset",0);
+						        }
+						    }else{
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+						    }
+						});
+                    }); 
+                    
+                   $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
+
+                        var shortcodeTarget = $($("#subtitutionkey").data("target"));
+                        
+                        if(CKEDITOR.instances[shortcodeTarget.attr("id")] != undefined)
+                        {
+                            var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
+
+                            try {
+                                evt.insertHtml( $(this).data("shortcode")  );
+                                
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + $(this).data("shortcode"),"3000","false",{ remove: function (){}})  ;
+
+                            }catch (err) {
+                                console.log("Unable to copy ckeditor not ready ?.");
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
+
+                            }
+                            
+                            $( "#subtitutionkey" ).dialog( "close" );
+                        }
+                        else{
+                            console.log("shortcodeTarget notfound");
+                        }
+                   });
+                    
+                   $( document ).on("keyup", "#item-filter", function () {
+
+                        var filter = $(this).val(), count = 0;
+                        $("#subtitutionkey tr.searchable").each(function () {
+                       
+                            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                                $(this).removeClass("search-match").hide();
+                            } else {
+                                $(this).addClass("search-match").show();
+                                count++;
+                            }
+                        });
+                        
+                        $("#filter-count").text(count);
+                        
+                        updateBadgeCount();
+                    });
+                    
+                   
+                   updateBadgeCount = function () {
+                       $("#subtitutionkey .h3-element-count").each(function(i, item) {
+                            let divId = $(item).parent().attr("id");
+                            let nb = $("div[aria-labelledby="+divId+"]").find("tr.searchable.search-match").length;
+                            item.dataset.elementCount = nb;
+                            
+                            if (nb > 0) $(this).addClass("badge-primary").removeClass("badge-secondary");
+                            else $(this).addClass("badge-secondary").removeClass("badge-primary");
+                        });
+                   }
+                   updateBadgeCount();
+                   
+                });
+                </script>
+                
+                <style>.ui-dialog { z-index: 1000 !important ;}</style>
+                ';
+            print $html;
 		}
 	}
     print '<style>.ui-state-highlight::before { content: "'.$langs->trans('PlaceHere').'"; }</style>';
@@ -732,11 +925,11 @@ function _print_docedit_footer($object){
     
     
     // Button and infos
-    print '<div class="docedit_infos docedit_infos_left">';
+    print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
-    print '</div><!-- END docedit_infos -->';
+    print '</div></div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';
@@ -763,12 +956,12 @@ function _print_docedit_header($object, $norepeat=false){
     print '<div class="docedit_document_head docedit_document_bloc">';
     
     // Button and infos
-    print '<div class="docedit_infos docedit_infos_left">';
+    print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
     if ($user->rights->referenceletters->write) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
     
-    print '</div><!-- END docedit_infos -->';
+    print '</div></div><!-- END docedit_infos -->';
     
     
     print '<div class="docedit_infos docedit_infos_top">';

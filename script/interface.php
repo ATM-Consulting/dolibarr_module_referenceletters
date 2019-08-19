@@ -62,8 +62,7 @@ switch ($set) {
 	    );
 	    
 	    //$Tjson = array_merge($Tjson, $_POST);
-	    
-	    if (!empty($user->rights->referenceletters->write)) 
+	    if (!empty($user->rights->referenceletters->write))
 	    {
     	    if( $type == 'chapter_text'){
     	        $object_chapters = new ReferenceLettersChapters($db);
@@ -89,6 +88,33 @@ switch ($set) {
 	    print json_encode($Tjson);
 	    exit();
 	    
+		break;
+	case 'setfield':
+
+		$Tjson = array(
+			'status' => 0
+			,'message' => ''
+		);
+
+		if (!empty($user->rights->referenceletters->write))	{
+			$id=GETPOST('id','int');
+			$field=GETPOST('field','alpha');
+			$value=GETPOST('value','int');
+			$object_chapters = new ReferenceLettersChapters($db);
+			if($object_chapters->fetch($id)>0)
+			{
+				$object_chapters->$field = $value;
+
+				if($object_chapters->update($user)>0) {
+					$Tjson['status'] = true;
+				} else {
+					$Tjson['message'] = $object_chapters->error;
+				}
+			}
+		}
+
+		print json_encode($Tjson);
+		exit();
 		break;
 	default:
 		break;

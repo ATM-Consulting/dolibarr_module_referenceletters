@@ -121,7 +121,8 @@ RefLtrDoc=Document
 RefLtrErrorCopyFile=Erreur durant la copie du document PDF du document sur l'événement de l'agenda
 RefLtrBackground=Image de fond
 RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
-RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
+RefLtrReadOnly=Lecture seule (invisible lors de la création d'une instance de document (Onglet modéle de docuement sur les devis/commandes/....), pas d'impact sur la création 'simple' (via le bouton générer le document des devis/commandes/....)
+RefLtrUnsecable=Essaye de mettre ce chapitre sur une seule page
 RefLtrTitleModel=Titre modèle de document
 RefLtrDefaultDoc=Document par defaut
 RefLtrModifyAndStay=Sauver et rester
@@ -150,6 +151,11 @@ RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier générer, il reste dispobile dans les documents.
 
+RefSubtitutionTable=Table des subtitutions
+DisplaySubtitutionTable=Afficher la table des subtitutions
+ClickToAddOnEditor=cliquer pour ajouter au texte
+ClickToCopy=Cliquer pour copier
+
 #
 # Tags lignes
 #
@@ -162,4 +168,6 @@ doceditinfo_viewlimit=Ceci est une vue du gabarit (template), elle permet une vi
 PlaceHere=Placer le chapitre ici
 MoveChapter=Déplacer / réorganiser
 Saved=Sauvegardé
+RefLtrShortCodeAdded=Code ajouté
+RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
 

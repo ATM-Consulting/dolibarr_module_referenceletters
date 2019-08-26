@@ -163,6 +163,15 @@ class ActionsReferenceLetters
 		}
 	}
 
+	/**
+     * Overloading the doActions function : replacing the parent's function with the one below
+     *
+     * @param   array()         $parameters     Hook metadatas (context, etc...)
+     * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+     * @param   string          &$action        Current action (if set). Generally create or edit or null
+     * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+     * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+     */
 	function doActions($parameters, &$object, &$action, $hookmanager) {
 
 		global $db, $conf, $user, $langs;
@@ -186,13 +195,27 @@ class ActionsReferenceLetters
 					
 					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier' && $object->element !== 'shipping') ? $object->element : $object->table_element);
 					
-				}
+				} else {
+                    			$object->array_options['options_rfltr_model_id'] = '';
+                    			$object->insertExtraFields();
+                		}
 			}
 
 		}
+		
+		return 0;
 
 	}
 
+	/**
+     * Overloading the formBuilddocOptions function : replacing the parent's function with the one below
+     *
+     * @param   array()         $parameters     Hook metadatas (context, etc...)
+     * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+     * @param   string          &$action        Current action (if set). Generally create or edit or null
+     * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+     * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+     */
 	function formBuilddocOptions($parameters, &$object, &$action, $hookmanager) {
 
 		global $db;
@@ -260,6 +283,8 @@ class ActionsReferenceLetters
 
 		</script>
 		<?php
+		
+		return 0;
 	}
 
 }

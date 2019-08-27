@@ -31,20 +31,13 @@ $langs->load('referenceletters@referenceletters');
 $rfltr = new ReferenceLetters($db);
 
 /**
- * ********************************
- */
-/**
  * *********** Propal *************
  */
-/**
- * ********************************
- */
-
 $title = $langs->transnoentities('RefLtrPropal');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -104,7 +97,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		$chapter->lang = 'fr_FR';
 		$chapter->sort_order = 1;
 		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
-		$chapter->title = 'Contenu';
+		$chapter->title = 'Header';
 		$chapter->content_text = '<table cellpadding="1" cellspacing="1" style="width:550px">
 	<tbody>
 		<tr>
@@ -143,21 +136,30 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 			</td>
 		</tr>
 	</tbody>
-</table>
-&nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+</table>';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text = '&nbsp;<br />&nbsp;<br /><div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
 		<tr>
-			<td style="width:50%">D&eacute;signation</td>
-			<td style="width:10%">TVA</td>
-			<td style="width:10%">P.U. HT</td>
-			<td style="width:10%">Qt&eacute;</td>
-			<td style="width:10%">R&eacute;duc.</td>
-			<td style="width:10%">Total HT[!-- BEGIN lines --]</td>
+			<td style="width:50%"><strong>D&eacute;signation</strong></td>
+			<td style="width:10%"><strong>TVA</strong></td>
+			<td style="width:10%"><strong>P.U. HT</strong></td>
+			<td style="width:10%"><strong>Qt&eacute;</strong></td>
+			<td style="width:10%"><strong>R&eacute;duc.</strong></td>
+			<td style="width:10%"><strong>Total HT</strong>[!-- BEGIN lines --]</td>
 		</tr>
 		<tr>
 			<td>{line_fulldesc}</td>
@@ -167,11 +169,24 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 			<td style="text-align:right">{line_discount_percent}</td>
 			<td style="text-align:right">{line_price_ht_locale}[!-- END lines --]</td>
 		</tr>
-	</tbody>
-</table>
+	</tbody></table>';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->same_page=1;
+		$chapter->title = 'Footer';
+		$chapter->content_text = '&nbsp;<br />
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
+
 <table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
 		<tr>
@@ -225,7 +240,7 @@ $title = $langs->transnoentities('RefLtrInvoice');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -277,14 +292,13 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	} else {
 
 		// Instanciation du contenu
-
 		$chapter = new ReferenceLettersChapters($db);
 		$chapter->entity = $conf->entity;
 		$chapter->fk_referenceletters = $id_rfltr;
 		$chapter->lang = 'fr_FR';
 		$chapter->sort_order = 1;
 		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
-		$chapter->title = 'Contenu';
+		$chapter->title = 'Header';
 		$chapter->content_text = '<table cellpadding="1" cellspacing="1" style="width:550px">
 	<tbody>
 		<tr>
@@ -325,9 +339,21 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+&nbsp;<br />';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
@@ -350,8 +376,22 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
+&nbsp;<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->same_page = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Footer';
+		$chapter->content_text ='&nbsp;
 <table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
 		<tr>
@@ -384,7 +424,6 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>
 &nbsp;<br />
 &nbsp;<br />
-&nbsp;
 <table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
 		<tr>
@@ -405,6 +444,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		if ($result < 0) {
 			setEventMessages(null, $chapter->errors, 'errors');
 		}
+
 	}
 }
 
@@ -415,7 +455,7 @@ $title = $langs->transnoentities('RefLtrOrder');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -512,9 +552,21 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+&nbsp;<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
@@ -537,7 +589,23 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
+&nbsp;<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->same_page = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Footer';
+		$chapter->content_text ='&nbsp;
+
 &nbsp;
 <table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
@@ -571,7 +639,7 @@ $title = $langs->transnoentities('RefLtrContract');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -668,9 +736,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<table border="1" style="width:530px">
+&nbsp;<br />';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<table border="1" style="width:530px">
 	<tbody>
 		<tr>
 			<td>[!-- BEGIN lines --]{line_product_ref} -&nbsp;{line_product_label}<br />
@@ -687,9 +766,22 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 &nbsp;<br />
 <br />
 <br />
-<br />
-&nbsp;
-<table cellpadding="1" cellspacing="1" style="width:530px">
+<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->same_page = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Footer';
+		$chapter->content_text ='<table cellpadding="1" cellspacing="1" style="width:530px">
 	<tbody>
 		<tr>
 			<td style="width:55%"><br />
@@ -717,6 +809,7 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>';
+
 		$result = $chapter->create($user);
 		if ($result < 0) {
 			setEventMessages(null, $chapter->errors, 'errors');
@@ -731,7 +824,7 @@ $title = $langs->transnoentities('RefLtrSupplierProposals');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -828,9 +921,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+&nbsp;<br />';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
@@ -851,9 +955,21 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<table cellpadding="1" cellspacing="1" style="width:500px">
+&nbsp;<br />';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->same_page = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Footer';
+		$chapter->content_text ='<table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
 		<tr>
 			<td rowspan="3" style="width:60%"><strong>Date pr&egrave;vue de livraison</strong> : {object_date_livraison}<br />
@@ -875,7 +991,7 @@ $title = $langs->transnoentities('RefLtrSupplierOrders');
 if ($reinstalltemplate) {
 	$result = $rfltr->fetch('', $title);
 	if ($result > 0) {
-		$result = $rfltr->delete($user);
+		$result = $rfltr->delete($user, 0, true);
 		if ($result < 0) {
 			setEventMessages(null, $rfltr->errors, 'errors');
 		}
@@ -976,8 +1092,20 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 </table>
 &nbsp;<br />
 &nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
@@ -1000,8 +1128,21 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
+&nbsp;<br />';
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 3;
+		$chapter->same_page = 1;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Footer';
+		$chapter->content_text ='&nbsp;
 <table cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
 		<tr>

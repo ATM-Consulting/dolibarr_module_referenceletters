@@ -42,6 +42,8 @@ class ReferenceLetters extends CommonObject
 	public $title;
 	public $element_type;
 	public $use_landscape_format;
+	public $use_custom_header;
+	public $use_custom_footer;
 	public $status;
 	public $default_doc;
 	public $import_key;
@@ -52,6 +54,8 @@ class ReferenceLetters extends CommonObject
 	public $element_type_list = array ();
 	public $lines = array ();
 	public $TStatus=array();
+	public $header;
+	public $footer;
 
 	/**
 	 * Draft status
@@ -341,10 +345,10 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
-		$sql .= " " . (int)$this->use_landscape_format . ",";
-		$sql .= " " . (int)$this->use_custom_header . ",";
+		$sql .= " " . (int) $this->use_landscape_format . ",";
+		$sql .= " " . (int) $this->use_custom_header . ",";
 		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
-		$sql .= " " . (int)$this->use_custom_footer . ",";
+		$sql .= " " . (int) $this->use_custom_footer . ",";
 		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
 		$sql .= " " . (! isset($this->status) ? '1' : $this->status ) . ",";
 		$sql .= " " . (! isset($this->default_doc) ? '0' : $this->default_doc ) . ",";
@@ -916,9 +920,11 @@ class ReferenceLetters extends CommonObject
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @param bool $forceDeleteElements Force delete element generated with this model
 	 * @return int <0 if KO, >0 if OK
 	 */
-	public function delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0, $forceDeleteElements = false)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -935,6 +941,18 @@ class ReferenceLetters extends CommonObject
 				// $result=$interface->run_triggers('MYOBJECT_DELETE',$this,$user,$langs,$conf);
 				// if ($result < 0) { $error++; $this->errors=$interface->errors; }
 				// // End call triggers
+			}
+		}
+
+		if (! $error && $forceDeleteElements) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
+			$sql .= " WHERE fk_referenceletters=" . $this->id;
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 
@@ -976,7 +994,7 @@ class ReferenceLetters extends CommonObject
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}

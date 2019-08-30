@@ -239,7 +239,7 @@ class RfltrTools {
 										idform = adresse.substr(adresse.indexOf('idform=')+7);
 										path = path + '&idform=' + idform;
 									} else if($(this).attr('model') == 'courrier'){
-										adresse = $(this).prev().prev().attr('href');
+										adresse = $(this).prev().prev().prev().attr('href');
 										cour = adresse.substr(adresse.indexOf('&cour=')+6);
 										if(cour.indexOf('&') !== -1){
 											courrier = cour.substr(0, cour.indexOf('&'));

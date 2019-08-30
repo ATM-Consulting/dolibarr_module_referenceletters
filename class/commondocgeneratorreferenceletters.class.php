@@ -830,14 +830,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
-			
+
 			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
-			
+
 		}
 		else
 		{
@@ -854,7 +854,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
-			
+
 			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
@@ -1130,5 +1130,103 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$out=$value;
 
 		return $out;
+	}
+
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	/**
+	 *	Fill array with couple extrafield key => extrafield value
+	 *
+	 *	@param  Object			$object				Object with extrafields (must have $object->array_options filled)
+	 *	@param  array			$array_to_fill      Substitution array
+	 *  @param  Extrafields		$extrafields        Extrafields object
+	 *  @param  string			$array_key	        Prefix for name of the keys into returned array
+	 *  @param  Translate		$outputlangs        Lang object to use for output
+	 *	@return	array								Substitution array
+	 */
+	public function fill_substitutionarray_with_extrafields($object, $array_to_fill, $extrafields, $array_key, $outputlangs)
+	{
+
+		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
+
+		// phpcs:enable
+		global $conf;
+		foreach($extrafields->attribute_label as $key=>$label)
+		{
+			if($extrafields->attribute_type[$key] == 'price')
+			{
+				$object->array_options['options_'.$key] = price2num($object->array_options['options_'.$key]);
+				$object->array_options['options_'.$key.'_currency'] = price($object->array_options['options_'.$key], 0, $outputlangs, 0, 0, -1, $conf->currency);
+				//Add value to store price with currency
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_currency' => $object->array_options['options_'.$key.'_currency']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'select')
+			{
+				$object->array_options['options_'.$key] = $extrafields->attribute_param[$key]['options'][$object->array_options['options_'.$key]];
+			}
+			elseif($extrafields->attribute_type[$key] == 'checkbox') {
+				$valArray=explode(',', $object->array_options['options_'.$key]);
+				$output=array();
+				foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+					if  (in_array($keyopt, $valArray)) {
+						$output[]=$valopt;
+					}
+				}
+				$object->array_options['options_'.$key] = implode(', ', $output);
+			}
+			elseif($extrafields->attribute_type[$key] == 'date')
+			{
+				if (strlen($object->array_options['options_'.$key])>0)
+				{
+					$date = $object->array_options['options_'.$key];
+					$object->array_options['options_'.$key] = dol_print_date($date, 'day');                                       // using company output language
+					$object->array_options['options_'.$key.'_locale'] = dol_print_date($date, 'day', 'tzserver', $outputlangs);     // using output language format
+					$object->array_options['options_'.$key.'_rfc'] = dol_print_date($date, 'dayrfc');                             // international format
+				}
+				else
+				{
+					$object->array_options['options_'.$key] = '';
+					$object->array_options['options_'.$key.'_locale'] = '';
+					$object->array_options['options_'.$key.'_rfc'] = '';
+				}
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'datetime')
+			{
+				$datetime = $object->array_options['options_'.$key];
+				$object->array_options['options_'.$key] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour'):'');                            // using company output language
+				$object->array_options['options_'.$key.'_locale'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour', 'tzserver', $outputlangs):'');    // using output language format
+				$object->array_options['options_'.$key.'_rfc'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhourrfc'):'');                             // international format
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'link')
+			{
+				$id = $object->array_options['options_'.$key];
+				if ($id != "")
+				{
+					$param = $extrafields->attribute_param[$key];
+					$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
+					$InfoFieldList = explode(":", $param_list[0]);
+					$classname=$InfoFieldList[0];
+					$classpath=$InfoFieldList[1];
+					if (! empty($classpath))
+					{
+						dol_include_once($InfoFieldList[1]);
+						if ($classname && class_exists($classname))
+						{
+							$tmpobject = new $classname($this->db);
+							$tmpobject->fetch($id);
+							// completely replace the id with the linked object name
+							$object->array_options['options_'.$key] = $tmpobject->name;
+						}
+					}
+				}
+			}
+
+			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+		}
+
+		return $array_to_fill;
 	}
 }

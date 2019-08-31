@@ -512,8 +512,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_prenom'] = $line->prenom;
 		$resarray['line_type'] = $line->type;
 		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
-		$resarray['line_mail'] = $line->mail;
+		$resarray['line_phone'] = implode('/', array($line->tel1,$line->tel2));
+		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;
 		$resarray['line_code_societe'] = $line->soccode;
@@ -553,10 +555,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
     		                    $hPresenceTotal+= $heures->heures;
 
-
     		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
     		                    // return the time formatted HH:MM
-    		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u",$minutes).')';
+    		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u", $minutes).')';
     		                }
     		            }
     		        }
@@ -570,11 +571,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     		        $seconds -= $hours * 3600;
     		        // calculate minutes left
     		        $minutes = floor($seconds / 60);
-    		        $resarray['line_presence_total']= $hours."H".sprintf("%02u",$minutes);
-
+    		        $resarray['line_presence_total']= $hours."H".sprintf("%02u", $minutes);
     		    }
 		    }
-
 		}
 
 		// Substitutions tableau d'horaires
@@ -741,8 +740,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$array_other = array();
 
 		if (! empty($object)) {
-
-
 
 			foreach ( $object as $key => $value ) {
 

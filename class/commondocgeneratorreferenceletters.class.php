@@ -640,7 +640,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
-	function get_substitutionsarray_agefodd(&$object, $outputlangs) {
+	function get_substitutionsarray_agefodd(&$object, $outputlangs)
+	{
 		global $db;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
@@ -650,17 +651,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = array();
 		$resarray['formation_nom'] = $object->formintitule;
 		$resarray['formation_nom_custo'] = $object->intitule_custo;
-		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$langs);
-		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'daytextshort','tzserver',$langs);
-		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$langs);
-		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'daytextshort','tzserver',$langs);
+		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$outputlangs);
+		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'daytextshort','tzserver',$outputlangs);
+		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
+		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'daytextshort','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;
 		$resarray['formation_commercial'] = $object->commercialname;
-		$resarray['formation_commercial_phone'] = $object->commercialemail;
-		$resarray['formation_commercial_mail'] = $object->commercialphone;
+		$resarray['formation_commercial_phone'] = $object->commercialphone;
+		$resarray['formation_commercial_mail'] = $object->commercialemail;
 		$resarray['formation_societe'] = $object->thirdparty->nom;
 		$resarray['formation_commentaire'] = nl2br($object->notes);
 		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];

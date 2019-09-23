@@ -55,6 +55,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		return $liste;
 	}
 
+	function _pagefoot(&$pdf,$object,$outputlangs,$hidefreetext=0)
+	{
+		global $conf;
+		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
+		return pdf_pagefoot($pdf,$outputlangs,strtoupper($object->element).'_FREE_TEXT',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
+	}
+
 	/**
 	 * Function to build pdf onto disk
 	 *
@@ -827,7 +834,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			if (empty($use_custom_footer)) {
 				// HEre standard _pagefoot method return bottom margin
-				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
+				$height = $this->_pagefoot($this->pdf,$this->pdf->ref_object, $this->outputlangs);
 			} else {
 				$margins = $this->pdf->getMargins();
 				$bottom_margin = $margins['bottom'];

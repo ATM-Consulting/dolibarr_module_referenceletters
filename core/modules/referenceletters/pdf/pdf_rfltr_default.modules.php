@@ -136,8 +136,11 @@ class pdf_rfltr_default extends CommonDocGenerator
 		    if (empty($dir_dest)) {
 		        setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
 		    } else {
-		        $dir_dest .= '/' . $objectref;
-		        if (! file_exists($dir_dest))
+                if (!empty($object->context['propale_history']['original_ref'])) {
+                    $objectref = $object->context['propale_history']['original_ref'];
+                }
+                $dir_dest .= '/' . dol_sanitizeFileName($objectref);
+                if (! file_exists($dir_dest))
 		        {
 		            dol_mkdir($dir_dest);
 		        }

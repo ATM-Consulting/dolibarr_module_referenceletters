@@ -652,9 +652,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_nom'] = $object->formintitule;
 		$resarray['formation_nom_custo'] = $object->intitule_custo;
 		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$outputlangs);
-		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'%A %b %d, %Y','tzserver',$outputlangs);
+		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
-		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %b %d, %Y','tzserver',$outputlangs);
+		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;

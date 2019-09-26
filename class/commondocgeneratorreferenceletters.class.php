@@ -660,6 +660,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;
 		$resarray['formation_commercial'] = $object->commercialname;
+		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
 		$resarray['formation_commercial_phone'] = $object->commercialphone;
 		$resarray['formation_commercial_mail'] = $object->commercialemail;
 		$resarray['formation_societe'] = $object->thirdparty->nom;

@@ -354,7 +354,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 				$this->pdf->Close();
 
-				$this->pdf->Output($file, 'F');
+                $this->pdf->Output($file, 'F');
+                // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
+                dol_delete_file($filepdf);
+                dol_delete_dir(dirname($filepdf));
 
 				$parameters = array(
 					'file' => $file,

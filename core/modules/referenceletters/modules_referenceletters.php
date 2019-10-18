@@ -451,7 +451,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									$tmparray['line_price_ht_locale'] = '';
 								}
 								if (TSubtotal::isSubtotal($line)) {
-									$tmparray['line_price_ht_locale'] = price($tmparray['line_price_ht'], 0);
+									$tmparray['line_price_ht_locale'] = $tmparray['line_price_ht'];
 								}
 							}
 							$oldline = $listlines->xml;

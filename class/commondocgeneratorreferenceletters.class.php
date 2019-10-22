@@ -514,7 +514,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_birthday'] = dol_print_date($line->date_birth);
 		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
-		$resarray['line_phone'] = implode('/', array($line->tel1,$line->tel2));
+		$tel = $line->tel1;
+		if (empty($tel) && !empty($line->tel2)) {
+			$tel = $line->tel2;
+		} else {
+			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
+		}
+		$resarray['line_phone'] = $tel;
 		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;

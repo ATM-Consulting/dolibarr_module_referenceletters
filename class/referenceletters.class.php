@@ -813,7 +813,7 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
 			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',
 			'objvar_object_signataire_intra_poste'=>'Poste du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_inter'=>'Nom du signataire des inter-entreprise (signataire sur le participants)'
+			'objvar_object_signataire_inter'=>'Nom du signataire des inter-entreprise (signataire sur le participants)',
 			'objvar_object_signataire_inter_poste'=>'Poste du signataire des inter-entreprise (signataire sur le participants)'
 		);
 

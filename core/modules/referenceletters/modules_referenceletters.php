@@ -55,6 +55,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		return $liste;
 	}
 
+	function _pagefoot(&$pdf,$object,$outputlangs,$hidefreetext=0)
+	{
+		global $conf;
+		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
+		return pdf_pagefoot($pdf,$outputlangs,strtoupper($object->element).'_FREE_TEXT',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
+	}
+
 	/**
 	 * Function to build pdf onto disk
 	 *
@@ -347,7 +354,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 				$this->pdf->Close();
 
-				$this->pdf->Output($file, 'F');
+                $this->pdf->Output($file, 'F');
+                // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
+                dol_delete_file($filepdf);
+                dol_delete_dir(dirname($filepdf));
 
 				$parameters = array(
 					'file' => $file,
@@ -450,7 +460,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									$tmparray['line_price_ht_locale'] = '';
 								}
 								if (TSubtotal::isSubtotal($line)) {
-									$tmparray['line_price_ht_locale'] = price($tmparray['line_price_ht'], 0);
+									$tmparray['line_price_ht_locale'] = $tmparray['line_price_ht'];
 								}
 							}
 							$oldline = $listlines->xml;
@@ -827,7 +837,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			if (empty($use_custom_footer)) {
 				// HEre standard _pagefoot method return bottom margin
-				$height = $this->_pagefoot($this->pdf->ref_object, $this->outputlangs);
+				$height = $this->_pagefoot($this->pdf,$this->pdf->ref_object, $this->outputlangs);
 			} else {
 				$margins = $this->pdf->getMargins();
 				$bottom_margin = $margins['bottom'];

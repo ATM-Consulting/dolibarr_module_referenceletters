@@ -648,7 +648,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db;
+		global $db, $conf;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -728,6 +728,21 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
 			$resarray['formation_lieu_divers'] = $agf_place->note1;
 		}
+
+		// Add ICS link replacement to mails
+        	$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
+		$documentLinkLabel = "ICS";
+
+        	if(!empty($object->trainer_session))
+        	{
+                	$resarray['formation_agenda_ics'] = '<a href="'.$downloadIcsLink.'&amp;agftrainerid='.$object->trainer_session->id;
+                	$resarray['formation_agenda_ics'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftrainerid'.$object->trainer_session->id).'">'.$documentLinkLabel.'</a>';
+        	}
+        	elseif(!empty($object->stagiaire))
+        	{
+                	$resarray['formation_agenda_ics'] = '<a href="'.$downloadIcsLink.'&amp;agftraineeid='.$object->stagiaire->id;
+                	$resarray['formation_agenda_ics'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->stagiaire->id).'">'.$documentLinkLabel.'</a>';
+        	}
 
 		return $resarray;
 	}

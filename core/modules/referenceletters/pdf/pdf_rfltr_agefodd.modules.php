@@ -289,7 +289,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 					if(count($test_array) > 1) {
 						//Do not apply this stuff for trainee docuement( générated from Document per trainee, if there is a @beakpage@ in this models, the last page should not be removes
-						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP) && substr($this->instance_letter->element_type, -8)!=='_trainee') $this->pdf->deletePage($this->pdf->getPage());
+						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP) && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
+							$this->pdf->deletePage($this->pdf->getPage());
+						}
 					}
 				}
 

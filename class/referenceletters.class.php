@@ -717,6 +717,7 @@ class ReferenceLetters extends CommonObject
 				,'objvar_object_date_text'=>'Date de la session'
 		        ,'formation_duree' => 'Durée de la formation'
 		        ,'formation_duree_session' => 'Durée de la session'
+		        ,'session_nb_days' => 'Nombre de jours dans le calendrier de la session'
 				,'formation_commercial'=>'commercial en charge de la formation'
 				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
 				,'formation_commercial_mail'=>'email commercial en charge de la formation'
@@ -735,10 +736,12 @@ class ReferenceLetters extends CommonObject
 		        ,'formation_lieu_horaires'=>'Horaires du lieu de formation'
 		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
 		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
-		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules'
+		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules (Nom prenom)'
+		        ,'objvar_object_trainer_text_invert'=>'Tous les foramteurs séparés par des virgules (Prenom nom)'
 		        ,'objvar_object_id'=>'Id de la session'
 		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
 		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
+
 		);
 
 		// Liste de données - Participants
@@ -772,7 +775,7 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
 
-		$subst_array['RefLtrSubstAgefoddStagiaire'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(
 		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
@@ -807,10 +810,42 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
 
+		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
+			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_poste'=>'Poste du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_mail'=>'Mail du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_phone'=>'Téléphone du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_inter'=>'Nom des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_poste'=>'Poste des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_mail'=>'Mail des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_phone'=>'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_convention_notes'=>'commentaire de la convention'
+		);
+
+		$subst_array[$langs->trans('RefLtrTStagiairesSessionConvention')]=array(
+			'line_civilite'=>'Civilité'
+			,'line_nom'=>'Nom participant'
+			,'line_prenom'=>'Prénom participant'
+			,'line_nom_societe'=>'Société du participant'
+			,'line_poste'=>'Poste occupé au sein de sa société'
+			,'line_type'=>'Type de financement'
+		);
+
+		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
+			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
+			,'trainer_datetextline'=>'Date(s) calendrier formateur'
+		);
+
+		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
+			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
+			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+		);
+
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
+
 
 	}
 

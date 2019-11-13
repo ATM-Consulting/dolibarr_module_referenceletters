@@ -514,7 +514,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_birthday'] = dol_print_date($line->date_birth);
 		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
-		$resarray['line_phone'] = implode('/', array($line->tel1,$line->tel2));
+		$tel = $line->tel1;
+		if (empty($tel) && !empty($line->tel2)) {
+			$tel = $line->tel2;
+		} else {
+			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
+		}
+		$resarray['line_phone'] = $tel;
 		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;
@@ -652,14 +658,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_nom'] = $object->formintitule;
 		$resarray['formation_nom_custo'] = $object->intitule_custo;
 		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$outputlangs);
-		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'daytextshort','tzserver',$outputlangs);
+		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
-		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'daytextshort','tzserver',$outputlangs);
+		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;
 		$resarray['formation_commercial'] = $object->commercialname;
+		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
 		$resarray['formation_commercial_phone'] = $object->commercialphone;
 		$resarray['formation_commercial_mail'] = $object->commercialemail;
 		$resarray['formation_societe'] = $object->thirdparty->nom;

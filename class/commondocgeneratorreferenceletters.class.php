@@ -1243,6 +1243,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					}
 				}
 			}
+                        elseif($extrafields->attribute_type[$key] == 'sellist') {
+                                $object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $object->array_options['options_'.$key]);
+                        }
 
 			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 		}

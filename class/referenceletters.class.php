@@ -834,11 +834,15 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
 			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
 			,'trainer_datetextline'=>'Date(s) calendrier formateur'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda du formateur'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda du formateur'
 		);
 
 		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
 			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
 			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
 		);
 
 		// Réservé aux lignes de contrats

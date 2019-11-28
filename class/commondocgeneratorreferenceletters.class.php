@@ -730,19 +730,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Add ICS link replacement to mails
-        	$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2).'?format=ical&type=event';
+		$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2) . '?format=ical&type=event';
 		$documentLinkLabel = "ICS";
 
-        	if(!empty($object->trainer_session))
-        	{
-                	$resarray['formation_agenda_ics'] = '<a href="'.$downloadIcsLink.'&amp;agftrainerid='.$object->trainer_session->id;
-                	$resarray['formation_agenda_ics'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftrainerid'.$object->trainer_session->id).'">'.$documentLinkLabel.'</a>';
-        	}
-        	elseif(!empty($object->stagiaire))
-        	{
-                	$resarray['formation_agenda_ics'] = '<a href="'.$downloadIcsLink.'&amp;agftraineeid='.$object->stagiaire->id;
-                	$resarray['formation_agenda_ics'].= '&exportkey='.md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY.'agftraineeid'.$object->stagiaire->id).'">'.$documentLinkLabel.'</a>';
-        	}
+		if (!empty($object->trainer_session))
+		{
+			$url = $downloadIcsLink . '&amp;agftrainerid=' . $object->trainer_session->id;
+			$url .= '&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftrainerid' . $object->trainer_session->id);
+			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
+			$resarray['formation_agenda_ics_url'] = $url;
+		}
+		elseif (!empty($object->stagiaire))
+		{
+			$url = $downloadIcsLink . '&amp;agftraineeid=' . $object->stagiaire->id;
+			$url .='&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftraineeid' . $object->stagiaire->id);
+			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
+			$resarray['formation_agenda_ics_url'] = $url;
+		}
 
 		return $resarray;
 	}

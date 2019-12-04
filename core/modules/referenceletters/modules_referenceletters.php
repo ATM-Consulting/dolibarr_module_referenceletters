@@ -356,8 +356,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
                 $this->pdf->Output($file, 'F');
                 // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
-                if (is_file($filepdf))dol_delete_file($filepdf);
-                if (is_dir(dirname($filepdf))) dol_delete_dir(dirname($filepdf));
+				if(!empty($filepdf)) {
+					if (is_file($filepdf)) dol_delete_file($filepdf);
+					if (is_dir(dirname($filepdf))) dol_delete_dir(dirname($filepdf));
+				}
 
 				$parameters = array(
 					'file' => $file,
@@ -426,15 +428,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if (! empty($object->{$element_array})) {
 
 						foreach ( $object->{$element_array} as $line ) {
-                            if(! empty($line->socid)) {
-                                if(! class_exists('Societe')) dol_include_once('/societe/class/societe.class.php');
-                                $s = new Societe($object->db);
-                                $s->fetch($line->socid);
-
-                                if(empty($line->societe_address)) $line->societe_address = $s->address;
-                                if(empty($line->societe_zip)) $line->societe_zip = $s->zip;
-                                if(empty($line->societe_town)) $line->societe_town = $s->town;
-                            }
 
 							if (method_exists($this, 'get_substitutionarray_lines_agefodd')) {
 								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
@@ -535,7 +528,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$height = $end_y;
 
 		$nb=0;
-		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
 			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
 			if(is_array($tmp_array) && !empty($tmp_array)) {
 				foreach($tmp_array as $v) {
@@ -702,8 +695,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
-
-		$tmparray['object_incoterms']='';
+	$tmparray['object_incoterms']='';
         if($conf->incoterm->enabled){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
@@ -713,7 +705,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                     $obj = $this->db->fetch_object($resql);
                     if ($obj->code) {
                         $tmparray['object_code_incoterms'] = $obj->code;
-						$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
+			$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
                     }
                 }
             }

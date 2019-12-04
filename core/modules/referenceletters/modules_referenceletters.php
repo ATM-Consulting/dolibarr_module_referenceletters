@@ -357,8 +357,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                 $this->pdf->Output($file, 'F');
                 // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
 				if(!empty($filepdf)) {
-					dol_delete_file($filepdf);
-					dol_delete_dir(dirname($filepdf));
+					if (is_file($filepdf)) dol_delete_file($filepdf);
+					if (is_dir(dirname($filepdf))) dol_delete_dir(dirname($filepdf));
 				}
 
 				$parameters = array(
@@ -528,7 +528,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$height = $end_y;
 
 		$nb=0;
-		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {
 			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
 			if(is_array($tmp_array) && !empty($tmp_array)) {
 				foreach($tmp_array as $v) {

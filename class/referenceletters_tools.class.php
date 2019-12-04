@@ -48,17 +48,15 @@ class RfltrTools {
 			}
 
 			if(get_class($object) === 'Contrat') {
-		        $lines = $object->getLinesArray();
-		        if (!empty($lines))
-		        {
-						$object->lines_active = array();
+				$lines = $object->getLinesArray();
+				if (!empty($lines)) {
+					$object->lines_active = array();
 
-		            foreach ($lines as $line)
-		            {
-		                if ($line->statut == 4) $object->lines_active[] = $line;
-		            }
-		        }
-
+					foreach ($lines as $line) {
+						if ($line->statut == 4) $object->lines_active[] = $line;
+					}
+				}
+			}
 		}
 		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
 

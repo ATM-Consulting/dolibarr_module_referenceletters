@@ -287,9 +287,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
 
 					// Merge arrays
-					$chapter_text = $this->merge_array($object, $chapter_text, array(
-						'lines'
-					));
+					$tabToMerge = array('lines');
+					if (get_class($object) === 'Contrat') $tabToMerge[] = 'lines_active';
+
+					$chapter_text = $this->merge_array($object, $chapter_text, $tabToMerge);
 
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){

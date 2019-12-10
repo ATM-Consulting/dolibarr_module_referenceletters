@@ -167,8 +167,13 @@ class ActionsReferenceLetters
 				$srcfilePath = $parameters['file'];
 				$srcfileName = basename($srcfilePath);
 				$destdir = DOL_DATA_ROOT . '/' . $document_dir . '/' . $instance_letter->srcobject->ref;
-				$destfileName = $instance_letter->srcobject->ref . '.pdf';
-				$destfilePath = $destdir . '/' . $destfileName;
+				if (!empty($instance_letter->srcobject->last_main_doc) && is_file(DOL_DATA_ROOOT . '/' . $instance_letter->srcobject->last_main_doc)) {
+					$destfilePath = DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc;
+					$destfileName = basename($destfilePath);
+				} else {
+					$destfileName = $instance_letter->srcobject->ref . '.pdf';
+					$destfilePath = $destdir . '/' . $destfileName;
+				}
 				$isOverwrite = is_file($destfilePath);
 				if (!is_dir($destdir) && !mkdir($destdir)) {
 					$this->error = $langs->trans('RefLtrCannotCreateDir', $destdir);

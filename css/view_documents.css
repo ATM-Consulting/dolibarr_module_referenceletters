@@ -125,6 +125,13 @@
 	background: #fff;
 	padding:5px;
 	text-align: center;
+	height:100%
+}
+
+.docedit_infos_left .docedit_sticky{
+	top: 50px;
+  	position: -webkit-sticky;
+  	position: sticky;
 }
 
 .docedit_infos_icon{
@@ -172,9 +179,11 @@
 	cursor: move;
 }
 
-.docedit_save{
+.docedit_save,.docedit_shortcode,.referenceletter-subtitutionkey{
 	cursor: pointer;
 }
+
+
 
 .ui-state-highlight{
 	height:100px;
@@ -187,3 +196,9 @@
 	font-size:2.5em;
 }
 
+.h3-element-count {
+	margin-left: 8px;
+}
+.h3-element-count::after {
+	content: attr(data-element-count);
+}

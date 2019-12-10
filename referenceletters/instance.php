@@ -227,7 +227,8 @@ if ($action == 'buildoc') {
 
 				$content_letter[$line_chapter->id] = array (
 						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
-						'options' => $options
+						'options' => $options,
+						'same_page' => $line_chapter->same_page
 				);
 			}
 		}

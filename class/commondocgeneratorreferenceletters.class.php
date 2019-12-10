@@ -37,8 +37,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $referenceletters
-	 * @param stdClass $outputlangs
+	 * @param ReferenceLetters $referenceletters reference letter
+	 * @param Translate $outputlangs Translate instance
 	 * @return NULL[]
 	 */
 	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
@@ -54,7 +54,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
-	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object') {
+	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
+	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
 		if ($object->element == 'facture' || $object->element == 'propal') {
@@ -69,7 +70,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if (count($agf_se->lines) > 1) {
 					$TSessions = array();
-					foreach ( $agf_se->lines as $line )
+					foreach ($agf_se->lines as $line)
 						$TSessions[] = $line->fk_session_agefodd;
 					$resarray['object_references'] = implode(', ', $TSessions);
 				} elseif (! empty($agf_se->lines)) {
@@ -84,9 +85,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $idsale ) {
+			foreach ($arrayidcontact as $idsale) {
 				$object->fetch_user($idsale);
-				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs)) . "\n";
+				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -96,9 +97,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['cust_contactclient'] = '';
 		if (count($arrayidcontact) > 0) {
-			foreach ( $arrayidcontact as $id ) {
+			foreach ($arrayidcontact as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 			}
 		}
 
@@ -107,10 +108,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact_inv = $object->getIdContact('external', 'BILLING');
 
 		$resarray['cust_contactclientfact'] = '';
+		$resarray['cust_contactclientfacttel'] = '';
+		$resarray['cust_contactclientfactmail'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientfacttel'] .= ($resarray['cust_contactclientfacttel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientfactmail'] .= ($resarray['cust_contactclientfactmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
@@ -129,9 +132,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientlivrtown'] = '';
 		$resarray['cust_contactclientlivrcountry'] = '';
 		if (count($arrayidcontact_inv) > 0) {
-			foreach ( $arrayidcontact_inv as $id ) {
+			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
-				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs)) . "\n";
+				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientlivrtel'] .= ($resarray['cust_contactclientlivrtel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
 				'')) . "\n";
 				$resarray['cust_contactclientlivrmail'] .= ($resarray['cust_contactclientlivrmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
@@ -142,6 +145,60 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
+		// Contacts sélectionnés
+		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
+
+        $linkedContacts = $object->liste_contact(); // External par défaut
+        $TCounts = array();
+
+        $TContactTypes = $object->liste_type_contact('external', 'position', 1);
+        $atLeastOneContact = false;
+
+		$contactKey = 'cust_contactclient_';
+        foreach ($linkedContacts as $TContactRef)
+        {
+            $code = $TContactRef['code']; // Code
+            if(empty($TCounts[$code])) // Index
+            {
+                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
+            }
+
+            $object->fetch_contact($TContactRef['id']);
+
+	        $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
+            $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
+            $resarray = array_merge($resarray, $contactarray);
+
+            $atLeastOneContact = true;
+
+            $TCounts[$code]++;
+        }
+
+        // Types de contacts non sélectionnés mais disponibles
+        $i = 0;
+        foreach($TContactTypes as $code => $label)
+        {
+	        $contactPrefix = $contactKey . $code . '_1';
+
+	        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
+	        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
+	        if (empty($atLeastOneContact) && $i == 0)
+	        {
+		        $contactstatic = new Contact($db);
+		        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
+		        $contactstatic->statut = ''; // Champ prérempli par le constructeur
+		        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
+		        $resarray = array_merge($resarray, $contactarray);
+	        }
+	        elseif (empty($TCounts[$code]))
+	        {
+	        	$resarray[$contactPrefix . '_[...]'] = '';
+	        }
+
+	        $i++;
+        }
+
+        // Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 
 		return $resarray;
@@ -217,8 +274,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object pointer
+	 * @param Translate $outputlangs Translate instance
+	 * @param stdClass $element Element
 	 * @return string
 	 */
 	static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
@@ -251,8 +309,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instalce
 	 * @return number|array[]|number[][]
 	 */
 	static function get_detail_tva(&$object, &$outputlangs) {
@@ -314,8 +372,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate instance
 	 * @return number|array[]|number[][]
 	 */
 	static function get_liste_reglements(&$object, &$outputlangs) {
@@ -402,17 +460,34 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object
-	 * @param stdClass $outputlangs
+	 * @param stdClass $object Object
+	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
-	function get_substitutionarray_lines($line, $outputlangs) {
+	function get_substitutionarray_lines($line, $outputlangs)
+	{
+		global $conf;
+
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
+		$resarray['line_rang'] = $line->rang;
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
+
+		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
+		{
+			dol_include_once('/subtotal/class/subtotal.class.php');
+
+			if(TSubtotal::isModSubtotalLine($line) && ! empty($line->label))
+			{
+				$resarray['line_desc'] = $line->label;
+			}
+		}
+
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
 		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+
 		return $resarray;
 	}
 
@@ -422,6 +497,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Object $object Dolibarr Object
 	 * @param Translate $outputlangs Language object for output
 	 * @param boolean $recursive Want to fetch child array or child object
+	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
 	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '')
@@ -481,9 +557,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {
-					$sub = strtr('object_' . $sub_element_label . $key, array(
-							'object_' . $sub_element_label => ''
-					)) . '_';
+					$sub = strtr('object_' . $sub_element_label . $key, array('object_' . $sub_element_label => '')) . '_';
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
@@ -495,11 +569,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 * Override de la fonction ExtraFields::showOutputField()
 	 *
-	 * @param ExtraFields	$extrafields
-	 * @param string		$key
-	 * @param mixed			$value
-	 * @param string		$moreparam
-	 * @param string		$extrafieldsobjectkey
+	 * @param ExtraFields	$extrafields Extrafields Object
+	 * @param string		$key Key
+	 * @param mixed			$value Value
+	 * @param string		$moreparam moreparam
+	 * @param string		$extrafieldsobjectkey Extrafields keys
 	 * @return string
 	 * @throws Exception
 	 */
@@ -523,7 +597,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
 			
-			if( (float)DOL_VERSION < 7 ){
+			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
@@ -547,7 +621,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
 			
-			if( (float)DOL_VERSION < 7 ){
+			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{

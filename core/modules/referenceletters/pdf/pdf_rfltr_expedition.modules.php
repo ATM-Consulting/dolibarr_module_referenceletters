@@ -18,54 +18,113 @@
  */
 
 /**
- * \file referenceletters/core/modules/referenceletters/pdf_rfltr_contract.modules.php
+ * \file referenceletters/core/modules/referenceletters/pdf_rfltr_exepdition.modules.php
  * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */
-dol_include_once('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_invoice.modules.php');
-require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 
+
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_default extends CommonDocGenerator
+class pdf_rfltr_expedition extends ModelePDFReferenceLetters
 {
-	public $db;
-	public $name;
-	public $description;
-	public $type;
-	public $version = 'dolibarr';
-	public $page_largeur;
-	public $page_hauteur;
-	public $format;
-	public $marge_gauche;
-	public $marge_droite;
-	public $marge_haute;
-	public $marge_basse;
-	public $emetteur; // Objet societe qui emet
+    /**
+     * @var DoliDb Database handler
+     */
+    public $db;
+
+    /**
+     * @var string model name
+     */
+    public $name;
+
+    /**
+     * @var string model description (short text)
+     */
+    public $description;
 
 	/**
-	 * Constructor
-	 *
-	 * @param DoliDB $db Database handler
+     * @var string document type
+     */
+    public $type;
+
+	/**
+     * @var array() Minimum version of PHP required by module.
+	 * e.g.: PHP ≥ 5.4 = array(5, 4)
+     */
+	public $phpmin = array(5, 4);
+
+	/**
+     * Dolibarr version of the loaded document
+     * @public string
+     */
+	public $version = 'dolibarr';
+
+	/**
+     * @var int page_largeur
+     */
+    public $page_largeur;
+
+	/**
+     * @var int page_hauteur
+     */
+    public $page_hauteur;
+
+	/**
+     * @var array format
+     */
+    public $format;
+
+	/**
+     * @var int marge_gauche
+     */
+	public $marge_gauche;
+
+	/**
+     * @var int marge_droite
+     */
+	public $marge_droite;
+
+	/**
+     * @var int marge_haute
+     */
+	public $marge_haute;
+
+	/**
+     * @var int marge_basse
+     */
+	public $marge_basse;
+
+	/**
+	 * Issuer
+	 * @var Company object that emits
 	 */
-	function __construct($db) {
-		global $conf, $langs, $mysoc, $object;
+	public $emetteur;
+
+
+	/**
+	 *	Constructor
+	 *
+	 *	@param	DoliDB	$db		Database handler
+	 */
+	function __construct($db=0)
+	{
+		global $conf,$langs,$mysoc;
 
 		$langs->load("main");
 		$langs->load("bills");
 		$langs->load("referenceletters@referenceletters");
 
 		$this->db = $db;
-		$this->name = "";
+		$this->name = "referenceletter_expedition";
 		$this->description = $langs->trans('Module103258Name');
 
-		// Dimension page pour format A4
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
@@ -82,101 +141,76 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$this->option_logo = 1; // Affiche logo
 
 		// Get source company
-		$this->emetteur = $mysoc;
-		if (empty($this->emetteur->country_code))
-			$this->emetteur->country_code = substr($langs->defaultlang, - 2); // By default, if was not defined
+		$this->emetteur=$mysoc;
+		if (! $this->emetteur->country_code) $this->emetteur->country_code=substr($langs->defaultlang,-2);    // By default if not defined
+
+		// Define position of columns
+		$this->posxdesc=$this->marge_gauche+1;
+		$this->posxweightvol=$this->page_largeur - $this->marge_droite - 78;
+		$this->posxqtyordered=$this->page_largeur - $this->marge_droite - 56;
+		$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 28;
+		$this->posxpuht=$this->page_largeur - $this->marge_droite;
+
+		if (!empty($conf->global->SHIPPING_PDF_DISPLAY_AMOUNT_HT)) {	// Show also the prices
+			$this->posxweightvol=$this->page_largeur - $this->marge_droite - 118;
+			$this->posxqtyordered=$this->page_largeur - $this->marge_droite - 96;
+			$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 68;
+			$this->posxpuht=$this->page_largeur - $this->marge_droite - 40;
+			$this->posxtotalht=$this->page_largeur - $this->marge_droite - 20;
+		}
+
+		$this->posxpicture=$this->posxweightvol - (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH);	// width of images
+
+		if ($this->page_largeur < 210) // To work with US executive format
+		{
+		    $this->posxweightvol-=20;
+		    $this->posxpicture-=20;
+		    $this->posxqtyordered-=20;
+		    $this->posxqtytoship-=20;
+		}
+
+		if (! empty($conf->global->SHIPPING_PDF_HIDE_ORDERED))
+		{
+		    $this->posxweightvol += ($this->posxqtytoship - $this->posxqtyordered);
+		    $this->posxpicture += ($this->posxqtytoship - $this->posxqtyordered);
+		    $this->posxqtyordered = $this->posxqtytoship;
+		}
 	}
 
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.NotCamelCaps
 	/**
 	 * Function to build pdf onto disk
 	 *
 	 * @param Object $object Object to generate
 	 * @param Object $instance_letter Object to generate
 	 * @param Translate $outputlangs Lang output object
+	 * @param string $doctype DocType
+	 * @param string $doctypedir DocType Directory
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file(&$object, $instance_letter, $outputlangs) {
-		global $user, $langs, $conf, $object, $db;
-
-		$this->outputlangs=$outputlangs;
-		$this->instance_letter = $instance_letter;
-
-        $object->fetch_optionals();
-		$id_model = $object->array_options['options_rfltr_model_id'];
-		
-		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
-		/** @var ReferenceLettersElements $instance_letter */
-		$instance_letter = $instances[0];
-		
-		if(empty($instance_letter->ref_int)) $instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
-		$instance_letter->create($user);
-		// Création du PDF
-		$result = referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $instance_letter->element_type);
-		
-		if($result > 0) {
-		    
-		    // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-		    $objectref = dol_sanitizeFileName($instance_letter->ref_int);
-		    $dir = $conf->referenceletters->dir_output . '/' .$instance_letter->element_type . '/' . $objectref;
-		    $file = $dir . '/' . $objectref . ".pdf";
-		    
-		    $objectref = dol_sanitizeFileName($object->ref);
-		    $classname = get_class($object);
-		    if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
-		    $dir_dest = $conf->{strtolower($classname)}->dir_output;
-			if($classname === 'Expedition') $dir_dest .= '/sending';
-		    if (empty($dir_dest)) {
-		        dol_include_once('/referenceletters/class/referenceletters.class.php');
-		        $refstatic = new ReferenceLetters($this->db);
-		        if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_letter->element_type])) {
-		            $dir_dest = $refstatic->element_type_list[$instance_letter->element_type]['dir_output'];
-		        }
-		    }
-		    if (empty($dir_dest)) {
-		        setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
-		    } else {
-                if (!empty($object->context['propale_history']['original_ref'])) {
-                    $objectref = $object->context['propale_history']['original_ref'];
-                }
-                $dir_dest .= '/' . dol_sanitizeFileName($objectref);
-                if (! file_exists($dir_dest))
-		        {
-		            dol_mkdir($dir_dest);
-		        }
-		        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
-		        $test=$conf->{strtolower(get_class($object))}->dir_output;
-
-		        dol_copy($file, $file_dest);
-		    }
-		    
-// 		    // Header sur la même page pour annuler le traitement standard de génération de PDF
-// 		    $field_id = 'id';
-// 		    if(get_class($object) === 'Facture') $field_id = 'facid';
-// 		    header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
-		    return 1;
-		}
+	public function write_file($object, $instance_letter, $outputlangs, $doctype='', $doctypedir='') {
+		return parent::write_file($object, $instance_letter, $outputlangs, 'expedition', 'commande');
 	}
 
 	/**
 	 * Show top header of page.
 	 *
-	 * @param Object $object to show
+	 * @param Object $object Object to show
 	 * @param int $showaddress 0=no, 1=yes
-	 * @param Translate $outputlangs Object lang for output
+	 * @param object $instaance_letter instanceletters
 	 * @return void
 	 */
-	function _pagehead($object, $showaddress, $outputlangs) {
-		global $conf, $langs;
+	function _pagehead($object, $showaddress, $instance_letter) {
+		global $conf;
 
-		$outputlangs->load("main");
-		$outputlangs->load("bills");
-		$outputlangs->load("propal");
-		$outputlangs->load("companies");
+		$this->outputlangs->load("main");
+		$this->outputlangs->load("bills");
+		$this->outputlangs->load("propal");
+		$this->outputlangs->load("companies");
 
-		$default_font_size = pdf_getPDFFontSize($outputlangs);
+		$default_font_size = pdf_getPDFFontSize($this->outputlangs);
 
-		pdf_pagehead($this->pdf, $outputlangs, $this->page_hauteur);
+		pdf_pagehead($this->pdf, $this->outputlangs, $this->page_hauteur);
 
 		$this->pdf->SetTextColor(0, 0, 60);
 		$this->pdf->SetFont('', 'B', $default_font_size + 3);
@@ -195,19 +229,19 @@ class pdf_rfltr_default extends CommonDocGenerator
 			} else {
 				$this->pdf->SetTextColor(200, 0, 0);
 				$this->pdf->SetFont('', 'B', $default_font_size - 2);
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
-				$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorLogoFileNotFound", $logo), 0, 'L');
+				$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("ErrorGoToGlobalSetup"), 0, 'L');
 			}
 		} else {
 			$text = $this->emetteur->name;
-			$this->pdf->MultiCell(100, 4, $outputlangs->convToOutputCharset($text), 0, 'L');
+			$this->pdf->MultiCell(100, 4, $this->outputlangs->convToOutputCharset($text), 0, 'L');
 		}
 
-		if (! empty($this->instance_letter->outputref)) {
+		if (! empty($instance_letter->outputref)) {
 			$this->pdf->SetFont('', 'B', $default_font_size + 3);
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$title = $outputlangs->convToOutputCharset($this->instance_letter->title_referenceletters);
+			$title = $this->outputlangs->convToOutputCharset($instance_letter->title_referenceletters);
 			$this->pdf->MultiCell(100, 4, $title, '', 'R');
 			$posy += 5;
 		}
@@ -216,13 +250,13 @@ class pdf_rfltr_default extends CommonDocGenerator
 
 		$this->pdf->SetXY($posx, $posy);
 		$this->pdf->SetTextColor(0, 0, 60);
-		$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("Ref") . " : " . $outputlangs->convToOutputCharset($object->ref), '', 'R');
+		$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("Ref") . " : " . $this->outputlangs->convToOutputCharset($object->ref), '', 'R');
 
-		if (! empty($this->instance_letter->outputref)) {
+		if (! empty($instance_letter->outputref)) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("RefLtrRef") . " : " . $this->outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
 		}
 
 		$posy += 1;
@@ -232,14 +266,14 @@ class pdf_rfltr_default extends CommonDocGenerator
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("RefCustomer") . " : " . $outputlangs->convToOutputCharset($object->ref_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("RefCustomer") . " : " . $this->outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 
 		if ($object->thirdparty->code_client) {
 			$posy += 4;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 3, $outputlangs->transnoentities("CustomerCode") . " : " . $outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
+			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("CustomerCode") . " : " . $this->outputlangs->transnoentities($object->thirdparty->code_client), '', 'R');
 		}
 
 		$posy += 2;
@@ -258,7 +292,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			 $carac_emetteur .= ($carac_emetteur ? "\n" : '' ).$outputlangs->transnoentities("Name").": ".$outputlangs->convToOutputCharset($object->user->getFullName($outputlangs))."\n";
 			 }*/
 
-			$carac_emetteur .= pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty);
+			$carac_emetteur .= pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty);
 
 			// Show sender
 			$posy = 42;
@@ -271,7 +305,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx, $posy - 5);
-			$this->pdf->MultiCell(66, 5, $outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
+			$this->pdf->MultiCell(66, 5, $this->outputlangs->transnoentities("BillFrom") . ":", 0, 'L');
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetFillColor(230, 230, 230);
 			$this->pdf->MultiCell(82, $hautcadre, "", 0, 'R', 1);
@@ -280,7 +314,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			// Show sender name
 			$this->pdf->SetXY($posx + 2, $posy + 3);
 			$this->pdf->SetFont('', 'B', $default_font_size);
-			$this->pdf->MultiCell(80, 4, $outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
+			$this->pdf->MultiCell(80, 4, $this->outputlangs->convToOutputCharset($this->emetteur->name), 0, 'L');
 			$posy = $this->pdf->getY();
 
 			// Show sender information
@@ -294,6 +328,9 @@ class pdf_rfltr_default extends CommonDocGenerator
 			if (count($arrayidcontact) > 0) {
 				$usecontact = true;
 				$result = $object->fetch_contact($arrayidcontact[0]);
+				if ($result<0) {
+					setEventMessage($object->contact->error,'errors');
+				}
 			}
 
 			// Recipient name
@@ -303,12 +340,12 @@ class pdf_rfltr_default extends CommonDocGenerator
 					$socname = $object->contact->socname;
 				else
 					$socname = $object->thirdparty->nom;
-				$carac_client_name = $outputlangs->convToOutputCharset($socname);
+				$carac_client_name = $this->outputlangs->convToOutputCharset($socname);
 			} else {
-				$carac_client_name = $outputlangs->convToOutputCharset($object->thirdparty->nom);
+				$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 			}
 
-			$carac_client = pdf_build_address($outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
+			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 
 			// Show recipient
 			$widthrecbox = 100;
@@ -319,11 +356,11 @@ class pdf_rfltr_default extends CommonDocGenerator
 			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
 				$posx = $this->marge_gauche;
 
-				// Show recipient frame
+			// Show recipient frame
 			$this->pdf->SetTextColor(0, 0, 0);
 			$this->pdf->SetFont('', '', $default_font_size - 2);
 			$this->pdf->SetXY($posx + 2, $posy - 5);
-			$this->pdf->MultiCell($widthrecbox, 5, $outputlangs->transnoentities("BillTo") . ":", 0, 'L');
+			$this->pdf->MultiCell($widthrecbox, 5, $this->outputlangs->transnoentities("BillTo") . ":", 0, 'L');
 			$this->pdf->Rect($posx, $posy, $widthrecbox, $hautcadre);
 
 			// Show recipient name
@@ -340,18 +377,5 @@ class pdf_rfltr_default extends CommonDocGenerator
 		}
 
 		$this->pdf->SetTextColor(0, 0, 0);
-	}
-
-	/**
-	 * Show footer of page.
-	 * Need this->emetteur object
-	 *
-	 * @param Object $object show
-	 * @param int $hidefreetext text
-	 * @return int height of bottom margin including footer text
-	 */
-	function _pagefoot($object, $hidefreetext = 0) {
-		$this->pdf->SetX($this->marge_gauche);
-		return pdf_pagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}
 }

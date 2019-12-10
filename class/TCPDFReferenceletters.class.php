@@ -55,7 +55,7 @@ class TCPDFRefletters extends TCPDI
 		$use_custom_footer = $this->instance_letter->use_custom_footer;
 
 		if(empty($use_custom_footer)) {
-			$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
+			$this->model->_pagefoot($this, $this->ref_object, $this->model->outputlangs);
 		}
 		else {
 			$this->model->_pagefootCustom($this->ref_object);

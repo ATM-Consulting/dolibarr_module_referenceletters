@@ -141,6 +141,7 @@ class ActionsReferenceLetters
 						$srcfile = $srcdir . '/' . $objectref . ".pdf";
 						$destdir = $conf->agenda->dir_output . '/' . $ret;
 						$destfile = $destdir . '/' . $objectref . ".pdf";
+
 						if (dol_mkdir($destdir) >= 0) {
 							$result = dol_copy($srcfile, $destfile);
 							if ($result < 0) {
@@ -190,11 +191,20 @@ class ActionsReferenceLetters
 		}
 	}
 
+	/**
+     * Overloading the doActions function : replacing the parent's function with the one below
+     *
+     * @param   array()         $parameters     Hook metadatas (context, etc...)
+     * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+     * @param   string          &$action        Current action (if set). Generally create or edit or null
+     * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+     * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+     */
 	function doActions($parameters, &$object, &$action, $hookmanager) {
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard'))) {
+		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard','expeditioncard'))) {
 
 		    if($action === 'builddoc') {
 
@@ -211,15 +221,29 @@ class ActionsReferenceLetters
 					$object->array_options['options_rfltr_model_id'] = intval($id_model);
 					$object->insertExtraFields();
 					
-					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier') ? $object->element : $object->table_element);
+					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier' && $object->element !== 'shipping') ? $object->element : $object->table_element);
 					
-				}
+				} else {
+                    			$object->array_options['options_rfltr_model_id'] = '';
+                    			$object->insertExtraFields();
+                		}
 			}
 
 		}
+		
+		return 0;
 
 	}
 
+	/**
+     * Overloading the formBuilddocOptions function : replacing the parent's function with the one below
+     *
+     * @param   array()         $parameters     Hook metadatas (context, etc...)
+     * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+     * @param   string          &$action        Current action (if set). Generally create or edit or null
+     * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+     * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+     */
 	function formBuilddocOptions($parameters, &$object, &$action, $hookmanager) {
 
 		global $db;
@@ -231,6 +255,7 @@ class ActionsReferenceLetters
 		if($element === 'facture') $element = 'invoice';
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
+		if($element === 'shipping') $element = 'expedition';
 
 		$TModelsID=array();
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
@@ -286,6 +311,8 @@ class ActionsReferenceLetters
 
 		</script>
 		<?php
+		
+		return 0;
 	}
 
 }

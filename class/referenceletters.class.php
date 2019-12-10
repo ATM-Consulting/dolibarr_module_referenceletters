@@ -94,7 +94,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
-				'listmodelclass' => 'ModelePDFContract'
+				'listmodelclass' => 'ModelePDFContract',
+                'document_dir' => 'contract'
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -110,7 +111,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_thirdparty',
 				'picto' => 'company',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
-				'listmodelclass' => 'ModeleThirdPartyDoc'
+				'listmodelclass' => 'ModeleThirdPartyDoc',
+                'document_dir' => 'societe'
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
@@ -123,7 +125,8 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/card.php',
-				'substitution_method' => 'get_substitutionarray_contact'
+				'substitution_method' => 'get_substitutionarray_contact',
+                'document_dir' => 'societe/contact'
 		);
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
@@ -139,7 +142,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/propale/modules_propale.php',
-				'listmodelclass' => 'ModelePDFPropales'
+				'listmodelclass' => 'ModelePDFPropales',
+                'document_dir' => 'propale'
 
 		);
 		$this->element_type_list['invoice'] = array (
@@ -156,7 +160,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
-				'listmodelclass' => 'ModelePDFFactures'
+				'listmodelclass' => 'ModelePDFFactures',
+                'document_dir' => 'facture'
 		);
 		$this->element_type_list['order'] = array (
 				'class' => 'commande.class.php',
@@ -172,7 +177,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
-				'listmodelclass' => 'ModelePDFCommandes'
+				'listmodelclass' => 'ModelePDFCommandes',
+                'document_dir' => 'commande'
 		);
 		$this->element_type_list['order_supplier'] = array (
 				'class' => 'fournisseur.commande.class.php',
@@ -189,7 +195,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
-				'listmodelclass' => 'ModelePDFSuppliersOrders'
+				'listmodelclass' => 'ModelePDFSuppliersOrders',
+                'document_dir' => 'fournisseur/commande'
 		);
 		$this->element_type_list['supplier_proposal'] = array (
 				'class' => 'supplier_proposal.class.php',
@@ -206,7 +213,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
-				'listmodelclass' => 'ModelePDFSupplierProposal'
+				'listmodelclass' => 'ModelePDFSupplierProposal',
+                'document_dir' => 'supplier_proposal'
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';

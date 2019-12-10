@@ -71,8 +71,8 @@ class ActionsReferenceLetters
 		$error = 0; // Error counter
 		dol_syslog("Hook '" . get_class($this) . "' for action '" . __METHOD__ . "' launched by " . __FILE__);
 		if (in_array('referencelettersinstacecard', explode(':', $parameters['context']))) {
+            $instance_letter = $parameters['instance_letter'];
 			if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
-				$instance_letter = $parameters['instance_letter'];
 				dol_syslog("Hook '" . get_class($this) . " id=" . $instance_letter->id);
 				// var_dump($instance_letter);
 				$langs->load('referenceletters@referenceletters');
@@ -155,7 +155,35 @@ class ActionsReferenceLetters
 					}
 				}
 			}
-
+			$copyToStdDir = GETPOST('overwrite_std_doc', 'int');
+			$referenceLetters = new ReferenceLetters($this->db);
+			if (isset($referenceLetters->element_type_list[$instance_letter->element_type]['document_dir'])) {
+				$document_dir = $referenceLetters->element_type_list[$instance_letter->element_type]['document_dir'];
+			} else {
+			$document_dir = null;
+			}
+			if (! empty($copyToStdDir) && $document_dir !== null) {
+				$srcfilePath = $parameters['file'];
+				$srcfileName = basename($srcfilePath);
+				$destdir = DOL_DATA_ROOT . '/' . $document_dir . '/' . $instance_letter->srcobject->ref;
+				$destfileName = $instance_letter->srcobject->ref . '.pdf';
+				$destfilePath = $destdir . '/' . $destfileName;
+				$isOverwrite = is_file($destfilePath);
+				if (!is_dir($destdir) && !mkdir($destdir)) {
+					$this->error = $langs->trans('RefLtrCannotCreateDir', $destdir);
+					setEventMessage($this->error, 'errors');
+					dol_syslog(get_class($this) . $this->error, LOG_ERR);
+					return - 1;
+				}
+				if (!copy($srcfilePath, $destfilePath)) {
+					$this->error = $langs->trans('RefLtrCannotCopyFile');
+					setEventMessage($this->error, 'errors');
+					dol_syslog(get_class($this) . $this->error, LOG_ERR);
+					return - 1;
+				} else {
+					setEventMessage($langs->trans($isOverwrite ? 'RefLtrStdDocOverwritten' : 'RefLtrCopiedInStdDocLocation', $destfileName, $srcfileName));
+				}
+			}
 			// $this->results = array('myreturn' => $myvalue);
 			// $this->resprints = 'A text to show';
 			return 0; // or return 1 to replace standard code

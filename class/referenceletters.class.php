@@ -819,7 +819,8 @@ class ReferenceLetters extends CommonObject
 			'objvar_object_signataire_inter_poste'=>'Poste des signataires des inter-entreprise (signataire sur le participants)',
 			'objvar_object_signataire_inter_mail'=>'Mail des signataires des inter-entreprise (signataire sur le participants)',
 			'objvar_object_signataire_inter_phone'=>'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_convention_notes'=>'commentaire de la convention'
+			'objvar_object_convention_notes'=>'commentaire de la convention',
+			'objvar_object_convention_id'=>'identifiant unique de la convention'
 		);
 
 		$subst_array[$langs->trans('RefLtrTStagiairesSessionConvention')]=array(

@@ -99,7 +99,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
 				'listmodelclass' => 'ModelePDFContract',
-                'document_dir' => 'contract'
+                'document_dir' => $conf->contrat->dir_output
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -116,7 +116,7 @@ class ReferenceLetters extends CommonObject
 				'picto' => 'company',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
 				'listmodelclass' => 'ModeleThirdPartyDoc',
-                'document_dir' => 'societe'
+                'document_dir' => $conf->societe->dir_output
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
@@ -129,8 +129,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/card.php',
-				'substitution_method' => 'get_substitutionarray_contact',
-                'document_dir' => 'societe/contact'
+				'substitution_method' => 'get_substitutionarray_contact'
 		);
 		$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
@@ -147,7 +146,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/propale/modules_propale.php',
 				'listmodelclass' => 'ModelePDFPropales',
-                'document_dir' => 'propale'
+                'document_dir' => $conf->propal->dir_output
 
 		);
 		$this->element_type_list['invoice'] = array (
@@ -165,7 +164,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
 				'listmodelclass' => 'ModelePDFFactures',
-                'document_dir' => 'facture'
+                'document_dir' => $conf->facture->dir_output
 		);
 		$this->element_type_list['order'] = array (
 				'class' => 'commande.class.php',
@@ -182,7 +181,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
 				'listmodelclass' => 'ModelePDFCommandes',
-                'document_dir' => 'commande'
+                'document_dir' => $conf->commande->dir_output
 		);
 		$this->element_type_list['order_supplier'] = array (
 				'class' => 'fournisseur.commande.class.php',
@@ -200,7 +199,7 @@ class ReferenceLetters extends CommonObject
 				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
 				'listmodelclass' => 'ModelePDFSuppliersOrders',
-                'document_dir' => 'fournisseur/commande'
+                'document_dir' => $conf->fournisseur->commande->dir_output
 		);
 		$this->element_type_list['supplier_proposal'] = array (
 				'class' => 'supplier_proposal.class.php',
@@ -218,7 +217,7 @@ class ReferenceLetters extends CommonObject
 				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
 				'listmodelclass' => 'ModelePDFSupplierProposal',
-                'document_dir' => 'supplier_proposal'
+                'document_dir' => $conf->supplier_proposal->dir_output
 		);
 		$this->element_type_list['expedition'] = array (
 				'class' => 'expedition.class.php',
@@ -235,7 +234,8 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
-				'listmodelclass' => 'ModelePdfExpedition'
+				'listmodelclass' => 'ModelePdfExpedition',
+                'document_dir' => $conf->expedition->dir_output
 		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';

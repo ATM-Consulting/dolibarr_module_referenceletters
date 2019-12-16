@@ -161,12 +161,12 @@ class ActionsReferenceLetters
 			if (isset($referenceLetters->element_type_list[$instance_letter->element_type]['document_dir'])) {
 				$document_dir = $referenceLetters->element_type_list[$instance_letter->element_type]['document_dir'];
 			} else {
-			$document_dir = null;
+				$document_dir = null;
 			}
 			if (! empty($copyToStdDir) && $document_dir !== null) {
 				$srcfilePath = $parameters['file'];
 				$srcfileName = basename($srcfilePath);
-				$destdir = DOL_DATA_ROOT . '/' . $document_dir . '/' . $instance_letter->srcobject->ref;
+				$destdir = $document_dir . '/' . $instance_letter->srcobject->ref;
 				if (!empty($instance_letter->srcobject->last_main_doc) && is_file(DOL_DATA_ROOOT . '/' . $instance_letter->srcobject->last_main_doc)) {
 					$destfilePath = DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc;
 					$destfileName = basename($destfilePath);

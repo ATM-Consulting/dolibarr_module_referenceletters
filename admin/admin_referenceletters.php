@@ -378,6 +378,17 @@ print '<td align="center">';
 print '</td>';
 print '</tr>';
 
+print '<tr>'
+    .'<td>'.$form->textwithpicto($langs->trans('RefLtrDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT'), $langs->trans('RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT')) . '</td>'
+    .'<td align="left" colspan="2">'.(
+        $conf->use_javascript_ajax ?
+            ajax_constantonoff('DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT')
+        : $form->selectarray(
+            'DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT',
+            array('0' => $langs->trans('No'), '1' => $langs->trans('Yes')),
+            $conf->global->DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT)).'</td>'
+    .'</tr>';
+
 print "</table><br>\n";
 if (! $conf->use_javascript_ajax) {
 	print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';

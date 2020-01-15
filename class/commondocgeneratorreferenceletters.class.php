@@ -84,7 +84,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// contact emetteur
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';
-		if (count($arrayidcontact) > 0) {
+		if (!empty($arrayidcontact)) {
 			foreach ($arrayidcontact as $idsale) {
 				$object->fetch_user($idsale);
 				$resarray[$array_key . '_contactsale'] .= ($resarray[$array_key . '_contactsale'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->user->getFullName($outputlangs, 1)) . "\n";
@@ -96,7 +96,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 
 		$resarray['cust_contactclient'] = '';
-		if (count($arrayidcontact) > 0) {
+		if (!empty($arrayidcontact)) {
 			foreach ($arrayidcontact as $id) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclient'] .= ($resarray['cust_contactclient'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
@@ -110,7 +110,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientfact'] = '';
 		$resarray['cust_contactclientfacttel'] = '';
 		$resarray['cust_contactclientfactmail'] = '';
-		if (count($arrayidcontact_inv) > 0) {
+		if (!empty($arrayidcontact)) {
 			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
@@ -131,7 +131,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientlivrzip'] = '';
 		$resarray['cust_contactclientlivrtown'] = '';
 		$resarray['cust_contactclientlivrcountry'] = '';
-		if (count($arrayidcontact_inv) > 0) {
+		if (!empty($arrayidcontact)) {
 			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
@@ -148,55 +148,59 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// Contacts sélectionnés
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 
-        $linkedContacts = $object->liste_contact(); // External par défaut
+        if(!empty($object->id)) $linkedContacts = $object->liste_contact(); // External par défaut
         $TCounts = array();
 
-        $TContactTypes = $object->liste_type_contact('external', 'position', 1);
+        if(!empty($object->id)) $TContactTypes = $object->liste_type_contact('external', 'position', 1);
         $atLeastOneContact = false;
 
 		$contactKey = 'cust_contactclient_';
-        foreach ($linkedContacts as $TContactRef)
-        {
-            $code = $TContactRef['code']; // Code
-            if(empty($TCounts[$code])) // Index
-            {
-                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
-            }
+	if(!empty($linkedContacts)) {
+	        foreach ($linkedContacts as $TContactRef)
+	        {
+	            $code = $TContactRef['code']; // Code
+	            if(empty($TCounts[$code])) // Index
+	            {
+	                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
+	            }
 
-            $object->fetch_contact($TContactRef['id']);
+        	    $object->fetch_contact($TContactRef['id']);
 
-	        $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
-            $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
-            $resarray = array_merge($resarray, $contactarray);
+		    $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
+	            $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
+	            $resarray = array_merge($resarray, $contactarray);
 
-            $atLeastOneContact = true;
+	            $atLeastOneContact = true;
 
-            $TCounts[$code]++;
-        }
+        	    $TCounts[$code]++;
+	        }
+	}
 
         // Types de contacts non sélectionnés mais disponibles
         $i = 0;
-        foreach($TContactTypes as $code => $label)
-        {
-	        $contactPrefix = $contactKey . $code . '_1';
-
-	        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
-	        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
-	        if (empty($atLeastOneContact) && $i == 0)
+	if(!empty($TContactTypes)) {
+	        foreach($TContactTypes as $code => $label)
 	        {
-		        $contactstatic = new Contact($db);
-		        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
-		        $contactstatic->statut = ''; // Champ prérempli par le constructeur
-		        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
-		        $resarray = array_merge($resarray, $contactarray);
-	        }
-	        elseif (empty($TCounts[$code]))
-	        {
-	        	$resarray[$contactPrefix . '_[...]'] = '';
-	        }
+		        $contactPrefix = $contactKey . $code . '_1';
 
-	        $i++;
-        }
+		        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
+		        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
+		        if (empty($atLeastOneContact) && $i == 0)
+		        {
+			        $contactstatic = new Contact($db);
+			        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
+			        $contactstatic->statut = ''; // Champ prérempli par le constructeur
+			        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
+			        $resarray = array_merge($resarray, $contactarray);
+		        }
+		        elseif (empty($TCounts[$code]))
+		        {
+		        	$resarray[$contactPrefix . '_[...]'] = '';
+		        }
+
+		        $i++;
+	        }
+	}
 
         // Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);

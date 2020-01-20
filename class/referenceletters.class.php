@@ -1133,6 +1133,56 @@ class ReferenceLetters extends CommonObject
 			return - 1;
 		}
 	}
+
+    /**
+     * Re-order chapters in document
+     *
+     * @return  int <0 if KO, >0 if OK
+     */
+    public function reOrderChapters()
+    {
+        global $user;
+
+        $error = 0;
+        require_once 'referenceletterschapters.class.php';
+        $chapters = new ReferenceLettersChapters($this->db);
+        $result = $chapters->fetch_byrefltr($this->id);
+        if ($result < 0) {
+            $error++;
+            $this->error    = $chapters->errorsToString();
+            $this->errors[] = $this->error;
+        } else {
+            if (is_array($chapters->lines_chapters) && count($chapters->lines_chapters) > 0) {
+                $sortOrder = 1;
+                $this->db->begin();
+
+                foreach ($chapters->lines_chapters as $chapter) {
+                    $chapter->sort_order = $sortOrder;
+                    $res = $chapter->update($user);
+                    if ($res < 0) {
+                        $error++;
+                        $this->error    = $chapter->errorsToString();
+                        $this->errors[] = $this->error;
+                        break;
+                    }
+
+                    $sortOrder++;
+                }
+
+                if ($error) {
+                    $this->db->rollback();
+                } else {
+                    $this->db->commit();
+                }
+            }
+        }
+
+        if ($error) {
+            return -1;
+        } else {
+            return 1;
+        }
+    }
 }
 class ReferenceLettersLine
 {

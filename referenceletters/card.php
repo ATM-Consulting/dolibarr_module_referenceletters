@@ -218,6 +218,14 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
+} elseif ($action == "reorder_chapters") {
+    $result = $object->reOrderChapters();
+    if ($result < 0) {
+        setEventMessage($object->error, 'errors');
+    } else {
+        setEventMessage($langs->trans('RefLtrSuccessReorderChapters'), 'mesgs');
+        header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
+    }
 }
 
 /*
@@ -884,6 +892,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
         }
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
+        print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=reorder_chapters&id='.$object->id.'">' . $langs->trans("RefLtrReorderChapters") . '</a>';
 	    print "</div><br>";
 		//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";
 		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone">' . $langs->trans("Clone") . "</a></div>\n";

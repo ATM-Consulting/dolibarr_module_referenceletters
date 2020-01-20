@@ -92,6 +92,7 @@ RefLtrDeleteChapter=Delete chapter
 RefLtrConfirmDeleteChapter=Are you sure to delete this chapter ?
 RefLtrChapters=Chapters
 RefLtrNewChaters=New chapter
+RefLtrReorderChapters=Re-order chapters
 RefLtrNew=New document templates
 RefLtrOptionHelp=Each line will be outputted as a new checkbox line on the document
 RefLtrBackToRefLtr=Back to letter template
@@ -141,3 +142,8 @@ RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.
+
+#
+# Success
+#
+RefLtrSuccessReorderChapters = Re-order chapters succeeded

@@ -93,6 +93,7 @@ RefLtrDeleteChapter=Supprimer un chapitre
 RefLtrConfirmDeleteChapter=Êtes-vous sûr(e) de supprimer le chapitre ?
 RefLtrChapters=Chapitres
 RefLtrNewChaters=Nouveau chapitre
+RefLtrReorderChapters=Re-numéroter les chapitres
 RefLtrNew=Nouveau modèle de document
 RefLtrOptionHelp=Chaque ligne produira un alinéa sur le documents
 RefLtrBackToRefLtr=Retour au modèle de document
@@ -171,3 +172,7 @@ Saved=Sauvegardé
 RefLtrShortCodeAdded=Code ajouté
 RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
 
+#
+# Success
+#
+RefLtrSuccessReorderChapters = Re-numérotation réalisée

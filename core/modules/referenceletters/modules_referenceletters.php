@@ -420,7 +420,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				}
 
 				if (strpos($chapter_text, '[!-- BEGIN') !== false) {
-					
+
 					$listlines = $odfHandler->setSegment($element_array);
 
 					if (! empty($object->{$element_array})) {
@@ -526,7 +526,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$height = $end_y;
 
 		$nb=0;
-		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {	
+		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {
 			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
 			if(is_array($tmp_array) && !empty($tmp_array)) {
 				foreach($tmp_array as $v) {

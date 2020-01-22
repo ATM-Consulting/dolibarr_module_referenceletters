@@ -539,7 +539,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$array_other['object_array_options_options_'.$key_opt] = $val;
 						}
 					}
-					
+
 					// Si les clés des extrafields ne sont pas remplacé, c'est que fetch_name_optionals_label() un poil plus haut retour vide (pas la bonne valeur passé en param)
 					continue;
 				}
@@ -555,6 +555,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
 						$value = price($value);
 
+					// Fix display vars according object
+					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
+	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
+					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
+					if (is_callable($methodVariable, false, $callable_name)){
+						$value = $object->referenceletter_showPublicOutputField($key,$value);
+					}
+
+
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {
 					$sub = strtr('object_' . $sub_element_label . $key, array('object_' . $sub_element_label => '')) . '_';
@@ -562,7 +571,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 		}
-
 		return $array_other;
 	}
 
@@ -596,14 +604,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
-			
+
 			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
-			
+
 		}
 		else
 		{
@@ -620,7 +628,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
-			
+
 			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}

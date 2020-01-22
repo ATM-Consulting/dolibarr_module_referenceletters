@@ -30,9 +30,9 @@ class RfltrTools {
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
 
-		if(empty($object->thirdparty)) $object->fetch_thirdparty();
+		if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) $object->fetch_thirdparty();
 
-		if(get_class($object) === 'Contrat') {
+        if(is_object($object) && get_class($object) === 'Contrat') {
                 $lines = $object->getLinesArray();
                 if (!empty($lines))
                 {

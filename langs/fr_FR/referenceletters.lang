@@ -52,8 +52,10 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
-RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard
+RefLtrReInstallTemplate=Ré-installer les modèles de documents standard
 RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Utiliser le mode "Edition dans le texte" d'un document
+RefLtrDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Par défaut, copier le document généré à l’emplacement du document standard
+RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Si cette option est activée, la case « Copier le document généré à l’emplacement du document standard » de l’onglet Modèle de document sera cochée par défaut.
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION
@@ -149,7 +151,13 @@ RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
-RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier générer, il reste dispobile dans les documents.
+RefLtrOverwriteStdDoc=Copier le document généré à l’emplacement du document standard
+RefLtrOverwriteStdDocHelp=Si le document standard existe déjà, il sera remplacé
+
+RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier généré, il reste disponible dans les documents.
+RefLtrCannotCreateDir=Impossible de créer le répertoire : "%s"
+RefLtrStdDocOverwritten=Le document standard (%s) a bien été remplacé par le document DocEdit généré (%s).
+RefLtrCopiedInStdDocLocation=Le document standard (%s) a bien été créé comme copie du document DocEdit généré (%s).
 
 RefSubtitutionTable=Table des subtitutions
 DisplaySubtitutionTable=Afficher la table des subtitutions

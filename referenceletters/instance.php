@@ -538,6 +538,14 @@ if (! empty($idletter)) {
 			print '</td>';
 			print '</tr>';
 
+            print '<tr style="background-color:#ffff88;">';
+            print '<td><label for="overwrite_std_doc">'.$form->textwithpicto(
+                    $langs->trans('RefLtrOverwriteStdDoc'),
+                    $langs->trans('RefLtrOverwriteStdDocHelp')).'</label></td>';
+            $checkedStatus = isset($conf->global->DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT) ? 'checked="checked"' : '';
+            print '<td><input type="checkbox" name="overwrite_std_doc" id="overwrite_std_doc" value="1" '.$checkedStatus.' /></td>';
+            print '</tr>';
+
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
 			print '</td>';

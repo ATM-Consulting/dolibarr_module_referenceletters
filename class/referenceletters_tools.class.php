@@ -1,51 +1,65 @@
 <?php
 
 class RfltrTools {
-	
+
 	static function setImgLinkToUrl($txt) {
-		
+
 		return strtr($txt, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
-		
+
 	}
-	
+
 	static function setImgLinkToUrlWithArray($Tab) {
-		
+
 		foreach($Tab as $id_chapter=>&$TData) {
 			$TData['content_text'] = self::setImgLinkToUrl($TData['content_text']);
 		}
 		return $Tab;
 	}
-	
+
 	/**
 	 * charge le modèle référence letter choisi
 	 */
 	static function load_object_refletter($id_object, $id_model, &$object, $socid='', $lang_id='') {
-		
+
 		global $db, $conf, $langs;
-		
+
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
 		dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
-		
+
 		$object_refletter = new Referenceletters($db);
 		$object_refletter->fetch($id_model);
-		
+
 		if(empty($object->thirdparty)) $object->fetch_thirdparty();
-		
+
+		if(get_class($object) === 'Contrat') {
+                $lines = $object->getLinesArray();
+                if (!empty($lines))
+                {
+					$object->lines_active = array();
+
+                    foreach ($lines as $line)
+                    {
+                        if ($line->statut == 4) $object->lines_active[] = $line;
+                    }
+                }
+        }
+
+
 		if (!empty($lang_id)) $langs_chapter = $lang_id;
 		else {
 			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
 			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
 		}
-		
+
 		$object_chapters = new ReferencelettersChapters($db);
 		$result = $object_chapters->fetch_byrefltr($id_model, $langs_chapter);
-		
+
 		$content_letter = array();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-			
+
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-				
+
 				$options = array();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ( $line_chapter->options_text as $key => $option_text ) {
@@ -55,7 +69,7 @@ class RfltrTools {
 						);
 					}
 				}
-				
+
 				$content_letter[$line_chapter->id] = array (
 						'content_text' => $line_chapter->content_text,
 						'options' => $options,
@@ -63,7 +77,7 @@ class RfltrTools {
 				);
 			}
 		}
-		
+
 		// On load le modèle
 		$instance_letter = new ReferenceLettersElements($db);
 		$instance_letter->srcobject=$object;
@@ -80,9 +94,9 @@ class RfltrTools {
 		$instance_letter->footer = self::setImgLinkToUrl($object_refletter->footer);
 		$instance_letter->use_landscape_format= $object_refletter->use_landscape_format;
 		$instance_letter->title_referenceletters = $object_refletter->title;
-		
+
 		return array($instance_letter, $object);
-		
+
 	}
-	
+
 }

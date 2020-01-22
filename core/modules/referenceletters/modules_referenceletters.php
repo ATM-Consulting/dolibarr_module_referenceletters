@@ -287,9 +287,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					$chapter_text = $this->setSubstitutions($object, $chapter_text, $this->outputlangs);
 
 					// Merge arrays
-					$chapter_text = $this->merge_array($object, $chapter_text, array(
-						'lines'
-					));
+					$tabToMerge = array('lines');
+					if (get_class($object) === 'Contrat') $tabToMerge[] = 'lines_active';
+
+					$chapter_text = $this->merge_array($object, $chapter_text, $tabToMerge);
 
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
@@ -356,8 +357,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
                 $this->pdf->Output($file, 'F');
                 // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
-                dol_delete_file($filepdf);
-                dol_delete_dir(dirname($filepdf));
+				if(!empty($filepdf)) {
+					if (is_file($filepdf)) dol_delete_file($filepdf);
+					if (is_dir(dirname($filepdf))) dol_delete_dir(dirname($filepdf));
+				}
 
 				$parameters = array(
 					'file' => $file,
@@ -451,7 +454,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									$tmparray['line_price_ht_locale'] = '';
 								}
 								if (TSubtotal::isSubtotal($line)) {
-									$tmparray['line_price_ht_locale'] = price($tmparray['line_price_ht'], 0);
+									$tmparray['line_price_ht_locale'] = $tmparray['line_price_ht'];
 								}
 							}
 							$oldline = $listlines->xml;

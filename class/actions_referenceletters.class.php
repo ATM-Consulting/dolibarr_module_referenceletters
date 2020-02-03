@@ -167,7 +167,7 @@ class ActionsReferenceLetters
 				$srcfilePath = $parameters['file'];
 				$srcfileName = basename($srcfilePath);
 				$destdir = $document_dir . '/' . $instance_letter->srcobject->ref;
-				if (!empty($instance_letter->srcobject->last_main_doc) && is_file(DOL_DATA_ROOOT . '/' . $instance_letter->srcobject->last_main_doc)) {
+				if (!empty($instance_letter->srcobject->last_main_doc) && is_file(DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc)) {
 					$destfilePath = DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc;
 					$destfileName = basename($destfilePath);
 				} else {

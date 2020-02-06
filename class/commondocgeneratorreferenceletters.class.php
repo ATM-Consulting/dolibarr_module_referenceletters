@@ -167,7 +167,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         	    $object->fetch_contact($TContactRef['id']);
 
 		    $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
-	            $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
+	            if(!empty($object->contact->id)) $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
 	            $resarray = array_merge($resarray, $contactarray);
 
 	            $atLeastOneContact = true;

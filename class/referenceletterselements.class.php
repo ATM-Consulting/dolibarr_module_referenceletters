@@ -285,7 +285,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " ,p.title as title_referenceletters";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
-		$sql .= " WHERE t.entity IN (".getEntity("referenceletter", 1).")";
+		$sql .= " WHERE t.entity IN (".getEntity("referenceletters", 1).")";
 		$sql .= " AND t.fk_element = " . $element_id;
 		$sql .= " AND t.element_type = '" . $this->db->escape($element_type) . "'";
 
@@ -368,7 +368,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " ,p.title as title_referenceletters";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
-		$sql .= " WHERE t.entity IN (" . getEntity('referenceletter') . ")";
+		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
 
 		if (is_array($filter)) {
 			foreach ( $filter as $key => $value ) {

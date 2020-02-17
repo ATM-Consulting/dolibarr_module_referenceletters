@@ -166,12 +166,21 @@ class ActionsReferenceLetters
 			if (! empty($copyToStdDir) && $document_dir !== null) {
 				$srcfilePath = $parameters['file'];
 				$srcfileName = basename($srcfilePath);
-				$destdir = $document_dir . '/' . $instance_letter->srcobject->ref;
+				$srcobjRef = $instance_letter->srcobject->ref;
+
+				$parameters = array();
+				$reshook = $hookmanager->executeHooks('overrideRefForFileName', $parameters, $instance_letter->srcobject, $action);
+				if ($reshook > 0) {
+					// override default behaviour with hook results
+					$srcobjRef = $hookmanager->resPrint;
+				}
+
+				$destdir = $document_dir . '/' . $srcobjRef;
 				if (!empty($instance_letter->srcobject->last_main_doc) && is_file(DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc)) {
 					$destfilePath = DOL_DATA_ROOT . '/' . $instance_letter->srcobject->last_main_doc;
 					$destfileName = basename($destfilePath);
 				} else {
-					$destfileName = $instance_letter->srcobject->ref . '.pdf';
+					$destfileName = $srcobjRef . '.pdf';
 					$destfilePath = $destdir . '/' . $destfileName;
 				}
 				$isOverwrite = is_file($destfilePath);
@@ -221,13 +230,13 @@ class ActionsReferenceLetters
  					// Récupération l'id du modèle sélectionné
 					$models = explode('rfltr_', $model);
 					$id_model = $models[1];
-					
+
 					// MAJ de l'extrafield
 					$object->array_options['options_rfltr_model_id'] = intval($id_model);
 					$object->insertExtraFields();
-					
+
 					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier' && $object->element !== 'shipping') ? $object->element : $object->table_element);
-					
+
 				} else {
                     			$object->array_options['options_rfltr_model_id'] = '';
                     			$object->insertExtraFields();
@@ -235,31 +244,31 @@ class ActionsReferenceLetters
 			}
 
 		}
-		
+
 		return 0;
 
 	}
-	
+
 	function commonGenerateDocument($parameters, &$object, &$action)
 	{
 	    global $db, $langs, $conf;
-	    
+
 	    dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 	    dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-	    
+
 	    // 1 - On récupère les modèles disponibles pour ce type de document
 	    $element = $object->element;
 	    if($element === 'facture') $element = 'invoice';
 	    if($element === 'commande') $element = 'order';
 	    if($element === 'contrat') $element = 'contract';
-	    
+
 	    $id_model = 0;
-	    
+
 	    if(strpos($parameters['modele'], 'rfltr_') !== false) {
 		$models = explode('rfltr_', $parameters['modele']);
 	        $id_model = (int)$models[1];
 	    } else {
-	    
+
     	    dol_include_once('/referenceletters/class/referenceletters.class.php');
     	    $object_refletters = new Referenceletters($db);
     	    $result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
@@ -274,33 +283,33 @@ class ActionsReferenceLetters
     	        }
     	    }
 	    }
-	    
+
 	    if (!empty($id_model))
 	    {
-	        
+
 	        // Création et chargement d'une nouvelle instance de modèle
 		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
 	        $instance_rfltr = $instances[0];
 	        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 	        $instance_rfltr->create($user);
-	        
+
 	        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
 	        if (! empty($newlang))
 	        {
 	            $outputlangs = new Translate("",$conf);
 	            $outputlangs->setDefaultLang($newlang);
 	        }
-	        
+
 	        // Création du PDF
 	        $result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
-	        
+
 	        if($result > 0) {
-	            
+
 	            // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
 	            $objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
 	            $dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
 	            $file = $dir . '/' . $objectref . ".pdf";
-	            
+
 	            $objectref = dol_sanitizeFileName($object->ref);
 	            $classname = get_class($object);
 	            if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
@@ -322,17 +331,17 @@ class ActionsReferenceLetters
 	                }
 	                $file_dest = $dir_dest . '/' . $objectref . '.pdf';
 	                $test=$conf->{strtolower(get_class($object))}->dir_output;
-	                
+
 	                dol_copy($file, $file_dest);
 	            }
-	            
+
 	            // Header sur la même page pour annuler le traitement standard de génération de PDF
 	            $field_id = 'id';
 	            if(get_class($object) === 'Facture') $field_id = 'facid';
 	            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
 	        }
 	    }
-	    
+
 // 	    var_dump($TModelsID, $parameters['modele'], $object->element);
 	    //exit('la');
 	    return 1;
@@ -388,7 +397,7 @@ class ActionsReferenceLetters
 				{
 					modelgeneric[0].remove();
 				}
-				
+
 				<?php
 				$defaultset=0;
 				foreach($TModelsID as &$TData) {
@@ -407,14 +416,14 @@ class ActionsReferenceLetters
     				<?php
 						$defaultset=1;
 				    }
-				} 
+				}
 				?>
-				
+
 			});
 
 		</script>
 		<?php
-		
+
 		return 0;
 	}
 

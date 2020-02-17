@@ -101,10 +101,16 @@ if (method_exists($object, 'fetch_thirdparty')) {
 $object_element->srcobject=$object;
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
-$hookmanager->initHooks(array (
-		'referencelettersinstacecard'
-));
+$hookContexts = array (
+	'referencelettersinstacecard',
+);
 
+// add a card context according to the object to enable the same hooks as on the card
+if     ($object->element === 'commande') $hookContexts[] = 'ordercard';
+elseif ($object->element === 'facture')  $hookContexts[] = 'invoicecard';
+elseif ($object->element === 'propal')   $hookContexts[] = 'propalcard';
+
+$hookmanager->initHooks($hookContexts);
 /*
  * Actions
  */

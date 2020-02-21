@@ -850,6 +850,9 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
 			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
 			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+			,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
+			,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
+			,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
 			,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
 			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
 		);

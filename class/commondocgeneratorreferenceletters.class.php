@@ -686,6 +686,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
         $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
         $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
+        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
+        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
+        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
+        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
+        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
+        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
 
 		if (! empty($object->fk_formation_catalogue)) {
 

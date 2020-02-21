@@ -752,6 +752,15 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		$chapter->content_text ='<table border="1" style="width:530px">
 	<tbody>
 		<tr>
+			<td>[!-- BEGIN lines_active --]{line_product_ref} -&nbsp;{line_product_label}<br />
+			Quantit&eacute; :&nbsp;<strong>{line_qty}</strong> - Prix unitaire :&nbsp;<strong>{line_price_ht_locale}</strong><br />
+			Date d&eacute;but pr&eacute;vue : <strong>{date_ouverture_prevue}</strong> - Date pr&eacute;vue fin de service : <strong>{date_fin_validite}</strong><br />
+			Date d&eacute;but : <strong>{date_ouverture}</strong><br />
+			{line_desc}<br />
+			<br />
+			[!-- END lines_active --]</td>
+		</tr>
+		<tr>
 			<td>[!-- BEGIN lines --]{line_product_ref} -&nbsp;{line_product_label}<br />
 			Quantit&eacute; :&nbsp;<strong>{line_qty}</strong> - Prix unitaire :&nbsp;<strong>{line_price_ht_locale}</strong><br />
 			Date d&eacute;but pr&eacute;vue : <strong>{date_ouverture_prevue}</strong> - Date pr&eacute;vue fin de service : <strong>{date_fin_validite}</strong><br />

@@ -262,18 +262,18 @@ class ActionsReferenceLetters
 	    if($element === 'commande') $element = 'order';
 	    if($element === 'contrat') $element = 'contract';
 
-	    $id_model = 0;
+        $id_model = 0;
+        $TMatches = array();
 
-	    if(strpos($parameters['modele'], 'rfltr_') !== false) {
-		$models = explode('rfltr_', $parameters['modele']);
-	        $id_model = (int)$models[1];
+        if(preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches)) {
+            $id_model = intval($TMatches[1]);
 	    } else {
-
     	    dol_include_once('/referenceletters/class/referenceletters.class.php');
     	    $object_refletters = new Referenceletters($db);
     	    $result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
     	    if ($result<0) {
-    	        setEventMessages(null,$object_refletters->errors,'errors');
+                setEventMessages(null,$object_refletters->errors,'errors');
+                return -1;
     	    } else {
     	        if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
     	            foreach($object_refletters->lines as $line) {
@@ -339,12 +339,14 @@ class ActionsReferenceLetters
 	            $field_id = 'id';
 	            if(get_class($object) === 'Facture') $field_id = 'facid';
 	            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
-	        }
+            }
+
+            return -1;
 	    }
 
 // 	    var_dump($TModelsID, $parameters['modele'], $object->element);
 	    //exit('la');
-	    return 1;
+	    return 0;
 	}
 
 	/**

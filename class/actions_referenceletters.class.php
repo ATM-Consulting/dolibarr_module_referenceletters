@@ -264,9 +264,22 @@ class ActionsReferenceLetters
         $id_model = 0;
         $TMatches = array();
 
-        if(preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches)) {
+        $matchReturn = preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches);
+
+        // Erreur de regex, on ne peut pas trouver de modèle
+        if ($matchReturn === false)
+		{
+			return -1;
+		}
+
+		// Le modèle DocEdit est directement renseigné (rfltr_<id>)
+        if ($matchReturn === 1)
+        {
             $id_model = intval($TMatches[1]);
-	    } else {
+	    }
+		// On cherche le modèle DocEdit par défaut pour ce type de document
+        else
+		{
     	    dol_include_once('/referenceletters/class/referenceletters.class.php');
 
 			$TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
@@ -288,72 +301,71 @@ class ActionsReferenceLetters
 			$id_model = $object_refletters->lines[0]->id;
 	    }
 
-	    if (!empty($id_model))
+        // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
+	    if (empty($id_model))
 	    {
+			return 0;
+		}
 
-	        // Création et chargement d'une nouvelle instance de modèle
+		// Création et chargement d'une nouvelle instance de modèle
 		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
-	        $instance_rfltr = $instances[0];
-	        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
-	        $instance_rfltr->create($user);
+		$instance_rfltr = $instances[0];
+		if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
+		$instance_rfltr->create($user);
 
-			$outputlangs = $parameters['outputlangs'];
+		$outputlangs = $parameters['outputlangs'];
 
-	        // Création du PDF
-	        $result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
+		// Création du PDF
+		$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
 
-	        if($result > 0) {
+		// La génération a échoué (le message d'erreur est déjà géré)
+		if ($result < 0)
+		{
+			return -1;
+		}
 
-	            // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-	            $objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
-	            $dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
-	            $file = $dir . '/' . $objectref . ".pdf";
+		// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
+		$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
+		$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
+		$file = $dir . '/' . $objectref . ".pdf";
 
-	            $objectref = dol_sanitizeFileName($object->ref);
-	            $classname = get_class($object);
-	            if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
-	            $dir_dest = $conf->{strtolower($classname)}->dir_output;
-	            if (empty($dir_dest)) {
-	                dol_include_once('/referenceletters/class/referenceletters.class.php');
-	                $refstatic = new ReferenceLetters($this->db);
-	                if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
-	                    $dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
-	                }
-	            }
-	            if (empty($dir_dest)) {
-	                setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
-	            } else {
-	                $dir_dest .= '/' . $objectref;
-	                if (! file_exists($dir_dest))
-	                {
-	                    dol_mkdir($dir_dest);
-	                }
-	                $file_dest = $dir_dest . '/' . $objectref . '.pdf';
-	                $test=$conf->{strtolower(get_class($object))}->dir_output;
+		$objectref = dol_sanitizeFileName($object->ref);
+		$classname = get_class($object);
+		if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
+		$dir_dest = $conf->{strtolower($classname)}->dir_output;
+		if (empty($dir_dest)) {
+			dol_include_once('/referenceletters/class/referenceletters.class.php');
+			$refstatic = new ReferenceLetters($this->db);
+			if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
+				$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
+			}
+		}
+		if (empty($dir_dest)) {
+			setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
+		} else {
+			$dir_dest .= '/' . $objectref;
+			if (! file_exists($dir_dest))
+			{
+				dol_mkdir($dir_dest);
+			}
+			$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+			$test=$conf->{strtolower(get_class($object))}->dir_output;
 
-	                dol_copy($file, $file_dest);
-	            }
+			dol_copy($file, $file_dest);
+		}
 
-				/* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
-				 * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
-				 * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
-				 * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se
-				 * termine bien, je mets un return 1 à la place - MdLL, 31/03/2020
-					// Header sur la même page pour annuler le traitement standard de génération de PDF
-					$field_id = 'id';
-					if(get_class($object) === 'Facture') $field_id = 'facid';
-					header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
-					exit;
-				 */
-				return 1;
-            }
-
-            return -1;
-	    }
-
-// 	    var_dump($TModelsID, $parameters['modele'], $object->element);
-	    //exit('la');
-	    return 0;
+		/* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
+		 * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
+		 * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
+		 * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se
+		 * termine bien, je mets un return 1 à la place - MdLL, 31/03/2020
+			// Header sur la même page pour annuler le traitement standard de génération de PDF
+			$field_id = 'id';
+			if(get_class($object) === 'Facture') $field_id = 'facid';
+			header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
+			exit;
+		 */
+		return 1;
 	}
 
 	/**

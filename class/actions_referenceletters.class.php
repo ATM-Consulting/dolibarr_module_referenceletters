@@ -259,136 +259,136 @@ class ActionsReferenceLetters
      * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
      * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
      */
-	function commonGenerateDocument($parameters, &$object, &$action, $hookmanager)
-	{
-	    global $db, $langs, $conf, $user;
+    function commonGenerateDocument($parameters, &$object, &$action, $hookmanager)
+    {
+        global $db, $langs, $conf, $user;
 
-	    dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
-	    dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+        dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+        dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
         dol_include_once('/referenceletters/class/referenceletters.class.php');
 
-	    $element = $object->element;
-	    if($element === 'facture') $element = 'invoice';
-	    if($element === 'commande') $element = 'order';
-	    if($element === 'contrat') $element = 'contract';
+        $element = $object->element;
+        if($element === 'facture') $element = 'invoice';
+        if($element === 'commande') $element = 'order';
+        if($element === 'contrat') $element = 'contract';
         $TMatches = array();
 
         $matchReturn = preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches);
 
         // Erreur de regex, on ne peut pas déterminer le type de modèle
         if ($matchReturn === false)
-		{
-		    setEventMessage('RefLtrErrorCannotRecognizeModel', 'errors');
-			return -1;
-		}
+        {
+            setEventMessage('RefLtrErrorCannotRecognizeModel', 'errors');
+            return -1;
+        }
 
 
         $staticRefLtr = new Referenceletters($db);
 
-		// Le modèle DocEdit est directement renseigné (rfltr_<id>)
+        // Le modèle DocEdit est directement renseigné (rfltr_<id>)
         if ($matchReturn === 1)
         {
             $id_model = intval($TMatches[1]);
-	    }
-		// On cherche le modèle DocEdit par défaut pour ce type de document
+        }
+        // On cherche le modèle DocEdit par défaut pour ce type de document
         else
         {
-			$TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
+            $TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
 
-			$result = $staticRefLtr->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
+            $result = $staticRefLtr->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
 
-			if ($result < 0)
-			{
+            if ($result < 0)
+            {
                 setEventMessages(null, $staticRefLtr->errors, 'errors');
                 return -1;
-    	    }
+            }
 
             // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-			if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
-			{
-				return 0;
-			}
+            if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
+            {
+                return 0;
+            }
 
-			$id_model = $staticRefLtr->lines[0]->id;
-	    }
+            $id_model = $staticRefLtr->lines[0]->id;
+        }
 
-		// Création et chargement d'une nouvelle instance de modèle
-		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
-		$instance_rfltr = $instances[0];
-		if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
-		$instance_rfltr->create($user);
+        // Création et chargement d'une nouvelle instance de modèle
+        $instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
+        $instance_rfltr = $instances[0];
+        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
+        $instance_rfltr->create($user);
 
-		$outputlangs = $parameters['outputlangs'];
+        $outputlangs = $parameters['outputlangs'];
 
-		// Création du PDF
-		$result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
+        // Création du PDF
+        $result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);
 
-		// La génération a échoué (le message d'erreur est déjà géré)
-		if ($result < 0)
-		{
-			return -1;
-		}
+        // La génération a échoué (le message d'erreur est déjà géré)
+        if ($result < 0)
+        {
+            return -1;
+        }
 
-		// Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-		$objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
-		$dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
-		$file = $dir . '/' . $objectref . ".pdf";
+        // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
+        $objectref = dol_sanitizeFileName($instance_rfltr->ref_int);
+        $dir = $conf->referenceletters->dir_output . '/' .$instance_rfltr->element_type . '/' . $objectref;
+        $file = $dir . '/' . $objectref . ".pdf";
 
-		$objectref = dol_sanitizeFileName($object->ref);
-		$classname = get_class($object);
-		if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
-		$dir_dest = $conf->{strtolower($classname)}->dir_output;
-		if($classname === 'Expedition') $dir_dest .= '/sending';
+        $objectref = dol_sanitizeFileName($object->ref);
+        $classname = get_class($object);
+        if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
+        $dir_dest = $conf->{strtolower($classname)}->dir_output;
+        if($classname === 'Expedition') $dir_dest .= '/sending';
 
-		if (empty($dir_dest))
-		{
-			if (array_key_exists('dir_output', $staticRefLtr->element_type_list[$instance_rfltr->element_type]))
-			{
-				$dir_dest = $staticRefLtr->element_type_list[$instance_rfltr->element_type]['dir_output'];
-			}
-		}
+        if (empty($dir_dest))
+        {
+            if (array_key_exists('dir_output', $staticRefLtr->element_type_list[$instance_rfltr->element_type]))
+            {
+                $dir_dest = $staticRefLtr->element_type_list[$instance_rfltr->element_type]['dir_output'];
+            }
+        }
 
-		if (empty($dir_dest))
-		{
-			setEventMessage($langs->trans('RefLtrCannotCopyFile'), 'errors');
-			return -1;
-		}
+        if (empty($dir_dest))
+        {
+            setEventMessage($langs->trans('RefLtrCannotCopyFile'), 'errors');
+            return -1;
+        }
 
-		$dir_dest .= '/' . $objectref;
-		if (! file_exists($dir_dest))
-		{
-			$mkDirRet = dol_mkdir($dir_dest);
+        $dir_dest .= '/' . $objectref;
+        if (! file_exists($dir_dest))
+        {
+            $mkDirRet = dol_mkdir($dir_dest);
 
-			if ($mkDirRet < 0)
+            if ($mkDirRet < 0)
             {
                 setEventMessage($langs->trans('ErrorCanNotCreateDir', $dir_dest), 'errors');
                 return -1;
             }
-		}
+        }
 
-		$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
 
-		$copyRet = dol_copy($file, $file_dest);
+        $copyRet = dol_copy($file, $file_dest);
 
-		if ($copyRet < 0)
+        if ($copyRet < 0)
         {
             setEventMessage($langs->trans('ErrorFailToCopyFile', $file, $file_dest), 'errors');
             return -1;
         }
 
-		/* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
-		 * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
-		 * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
-		 * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se
-		 * termine bien, je mets un return 1 à la place - MdLL, 31/03/2020
-			// Header sur la même page pour annuler le traitement standard de génération de PDF
-			$field_id = 'id';
-			if(get_class($object) === 'Facture') $field_id = 'facid';
-			header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
-			exit;
-		 */
-		return 1;
-	}
+        /* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
+         * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
+         * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
+         * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se
+         * termine bien, je mets un return 1 à la place - MdLL, 31/03/2020
+            // Header sur la même page pour annuler le traitement standard de génération de PDF
+            $field_id = 'id';
+            if(get_class($object) === 'Facture') $field_id = 'facid';
+            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
+            exit;
+         */
+        return 1;
+    }
 
 	/**
      * Overloading the formBuilddocOptions function : replacing the parent's function with the one below

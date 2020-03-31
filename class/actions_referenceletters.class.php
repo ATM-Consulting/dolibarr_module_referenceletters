@@ -88,7 +88,7 @@ class ActionsReferenceLetters
 					dol_include_once('/referenceletters/class/referenceletters.class.php');
 					$object_refletter = new Referenceletters($this->db);
 					$result = $object_refletter->fetch($instance_letter->fk_referenceletters);
-					if ($ret < 0) {
+					if ($result < 0) {
 						$this->error = $object_refletter->error;
 						$this->errors[] = $object_refletter->errors;
 
@@ -190,10 +190,9 @@ class ActionsReferenceLetters
 					setEventMessage($langs->trans($isOverwrite ? 'RefLtrStdDocOverwritten' : 'RefLtrCopiedInStdDocLocation', $destfileName, $srcfileName));
 				}
 			}
-			// $this->results = array('myreturn' => $myvalue);
-			// $this->resprints = 'A text to show';
-			return 0; // or return 1 to replace standard code
 		}
+
+        return 0;
 	}
 
 	/**

@@ -195,3 +195,9 @@ Saved=Sauvegardé
 RefLtrShortCodeAdded=Code ajouté
 RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
 
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=Erreur technique DocEdit : impossible de déterminer le type de modèle
+

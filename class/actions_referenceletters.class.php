@@ -248,29 +248,42 @@ class ActionsReferenceLetters
 
 	}
 
-	function commonGenerateDocument($parameters, &$object, &$action)
+
+    /**
+     * Overloading the commonGenerateDocument function : replacing the parent's function with the one below
+     * On récupère les modèles disponibles pour ce type de document dans DocEdit pour overrider si besoin
+     *
+     * @param   array()         $parameters     Hook metadatas (context, etc...)
+     * @param   CommonObject    &$object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
+     * @param   string          &$action        Current action (if set). Generally create or edit or null
+     * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
+     * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
+     */
+	function commonGenerateDocument($parameters, &$object, &$action, $hookmanager)
 	{
 	    global $db, $langs, $conf, $user;
 
 	    dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 	    dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+        dol_include_once('/referenceletters/class/referenceletters.class.php');
 
-	    // 1 - On récupère les modèles disponibles pour ce type de document
 	    $element = $object->element;
 	    if($element === 'facture') $element = 'invoice';
 	    if($element === 'commande') $element = 'order';
 	    if($element === 'contrat') $element = 'contract';
-
-        $id_model = 0;
         $TMatches = array();
 
         $matchReturn = preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches);
 
-        // Erreur de regex, on ne peut pas trouver de modèle
+        // Erreur de regex, on ne peut pas déterminer le type de modèle
         if ($matchReturn === false)
 		{
+		    setEventMessage('RefLtrErrorCannotRecognizeModel', 'errors');
 			return -1;
 		}
+
+
+        $staticRefLtr = new Referenceletters($db);
 
 		// Le modèle DocEdit est directement renseigné (rfltr_<id>)
         if ($matchReturn === 1)
@@ -279,33 +292,25 @@ class ActionsReferenceLetters
 	    }
 		// On cherche le modèle DocEdit par défaut pour ce type de document
         else
-		{
-    	    dol_include_once('/referenceletters/class/referenceletters.class.php');
-
+        {
 			$TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
 
-    	    $object_refletters = new Referenceletters($db);
-			$result = $object_refletters->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
+			$result = $staticRefLtr->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
 
 			if ($result < 0)
 			{
-                setEventMessages(null,$object_refletters->errors,'errors');
+                setEventMessages(null, $staticRefLtr->errors, 'errors');
                 return -1;
     	    }
 
-			if (empty($result) || ! is_array($object_refletters) || empty($object_refletters->lines))
+            // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
+			if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
 			{
 				return 0;
 			}
 
-			$id_model = $object_refletters->lines[0]->id;
+			$id_model = $staticRefLtr->lines[0]->id;
 	    }
-
-        // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-	    if (empty($id_model))
-	    {
-			return 0;
-		}
 
 		// Création et chargement d'une nouvelle instance de modèle
 		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
@@ -334,26 +339,42 @@ class ActionsReferenceLetters
 		if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
 		$dir_dest = $conf->{strtolower($classname)}->dir_output;
 		if($classname === 'Expedition') $dir_dest .= '/sending';
-		if (empty($dir_dest)) {
-			dol_include_once('/referenceletters/class/referenceletters.class.php');
-			$refstatic = new ReferenceLetters($this->db);
-			if (array_key_exists('dir_output', $refstatic->element_type_list[$instance_rfltr->element_type])) {
-				$dir_dest = $refstatic->element_type_list[$instance_rfltr->element_type]['dir_output'];
-			}
-		}
-		if (empty($dir_dest)) {
-			setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
-		} else {
-			$dir_dest .= '/' . $objectref;
-			if (! file_exists($dir_dest))
-			{
-				dol_mkdir($dir_dest);
-			}
-			$file_dest = $dir_dest . '/' . $objectref . '.pdf';
-			$test=$conf->{strtolower(get_class($object))}->dir_output;
 
-			dol_copy($file, $file_dest);
+		if (empty($dir_dest))
+		{
+			if (array_key_exists('dir_output', $staticRefLtr->element_type_list[$instance_rfltr->element_type]))
+			{
+				$dir_dest = $staticRefLtr->element_type_list[$instance_rfltr->element_type]['dir_output'];
+			}
 		}
+
+		if (empty($dir_dest))
+		{
+			setEventMessage($langs->trans('RefLtrCannotCopyFile'), 'errors');
+			return -1;
+		}
+
+		$dir_dest .= '/' . $objectref;
+		if (! file_exists($dir_dest))
+		{
+			$mkDirRet = dol_mkdir($dir_dest);
+
+			if ($mkDirRet < 0)
+            {
+                setEventMessage($langs->trans('ErrorCanNotCreateDir', $dir_dest), 'errors');
+                return -1;
+            }
+		}
+
+		$file_dest = $dir_dest . '/' . $objectref . '.pdf';
+
+		$copyRet = dol_copy($file, $file_dest);
+
+		if ($copyRet < 0)
+        {
+            setEventMessage($langs->trans('ErrorFailToCopyFile', $file, $file_dest), 'errors');
+            return -1;
+        }
 
 		/* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
 		 * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en

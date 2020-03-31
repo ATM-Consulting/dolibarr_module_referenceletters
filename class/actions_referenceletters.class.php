@@ -268,19 +268,24 @@ class ActionsReferenceLetters
             $id_model = intval($TMatches[1]);
 	    } else {
     	    dol_include_once('/referenceletters/class/referenceletters.class.php');
+
+			$TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
+
     	    $object_refletters = new Referenceletters($db);
-    	    $result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
-    	    if ($result<0) {
+			$result = $object_refletters->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
+
+			if ($result < 0)
+			{
                 setEventMessages(null,$object_refletters->errors,'errors');
                 return -1;
-    	    } else {
-    	        if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
-    	            foreach($object_refletters->lines as $line) {
-    	                if($line->default_doc) $id_model = $line->id;
-    	                break;
-    	            }
-    	        }
     	    }
+
+			if (empty($result) || ! is_array($object_refletters) || empty($object_refletters->lines))
+			{
+				return 0;
+			}
+
+			$id_model = $object_refletters->lines[0]->id;
 	    }
 
 	    if (!empty($id_model))

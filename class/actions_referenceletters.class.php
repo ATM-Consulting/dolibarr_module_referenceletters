@@ -329,10 +329,18 @@ class ActionsReferenceLetters
 	                dol_copy($file, $file_dest);
 	            }
 
-	            // Header sur la même page pour annuler le traitement standard de génération de PDF
-	            $field_id = 'id';
-	            if(get_class($object) === 'Facture') $field_id = 'facid';
-	            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
+				/* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
+				 * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
+				 * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
+				 * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se
+				 * termine bien, je mets un return 1 à la place - MdLL, 31/03/2020
+					// Header sur la même page pour annuler le traitement standard de génération de PDF
+					$field_id = 'id';
+					if(get_class($object) === 'Facture') $field_id = 'facid';
+					header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
+					exit;
+				 */
+				return 1;
             }
 
             return -1;

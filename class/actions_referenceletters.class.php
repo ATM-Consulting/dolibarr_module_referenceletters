@@ -250,7 +250,7 @@ class ActionsReferenceLetters
 
 	function commonGenerateDocument($parameters, &$object, &$action)
 	{
-	    global $db, $langs, $conf;
+	    global $db, $langs, $conf, $user;
 
 	    dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 	    dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -292,12 +292,7 @@ class ActionsReferenceLetters
 	        if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
 	        $instance_rfltr->create($user);
 
-	        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id','aZ09')) $newlang=GETPOST('lang_id','aZ09');
-	        if (! empty($newlang))
-	        {
-	            $outputlangs = new Translate("",$conf);
-	            $outputlangs->setDefaultLang($newlang);
-	        }
+			$outputlangs = $parameters['outputlangs'];
 
 	        // Création du PDF
 	        $result = referenceletters_pdf_create($db, $object, $instance_rfltr, $outputlangs, $instance_rfltr->element_type);

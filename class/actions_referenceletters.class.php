@@ -278,7 +278,7 @@ class ActionsReferenceLetters
         // Erreur de regex, on ne peut pas déterminer le type de modèle
         if ($matchReturn === false)
         {
-            setEventMessage('RefLtrErrorCannotRecognizeModel', 'errors');
+            setEventMessage($langs->trans('RefLtrErrorCannotRecognizeModel'), 'errors');
             return -1;
         }
 

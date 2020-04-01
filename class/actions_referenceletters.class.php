@@ -376,7 +376,7 @@ class ActionsReferenceLetters
             return -1;
         }
 
-        /* Je commente la rediction qui était là à l'origine : la forcer empêche le script de se finir
+        /* Je commente la redirection qui était là à l'origine : la forcer empêche le script de se finir
          * correctement (je suis tombé sur un cas où on se trouve en plein enchevêtrement de transations en
          * base de données...). Dans l'écransante majorité des cas, les occurrences du hook
          * commonGenerateDocument débouchent de toute façon sur une 301 vers la bonne page. Donc pour que ça se

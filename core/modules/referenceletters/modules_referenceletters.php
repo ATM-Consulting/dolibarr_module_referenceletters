@@ -469,22 +469,72 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							if (! empty($conf->subtotal->enabled))
 							{
 								if (TSubtotal::isTitle($line)) {
+                                    if (!empty($conf->global->SUBTOTAL_TITLE_STYLE))
+                                    {
+                                        $style_start = $style_end = '';
+                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'B') !== false)
+                                        {
+                                            $style_start.= '<strong>';
+                                            $style_end = '</strong>'.$style_end;
+                                        }
+                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'U') !== false)
+                                        {
+                                            $style_start.= '<u>';
+                                            $style_end = '</u>'.$style_end;
+                                        }
+                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'I') !== false)
+                                        {
+                                            $style_start.= '<i>';
+                                            $style_end = '</i>'.$style_end;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $style_start = '<strong><u>';
+                                        $style_end = '</u></strong>';
+                                    }
+
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_fulldesc}' => '<strong><u>{line_fulldesc}</u></strong>'
-											,'{line_product_label}' => '<strong><u>{line_product_label}</u></strong>'
-											,'{line_desc}' => '<strong><u>{line_desc}</u></strong>'
+											'{line_fulldesc}' => $style_start.'{line_fulldesc}'.$style_end
+											,'{line_product_label}' => $style_start.'{line_product_label}'.$style_end
+											,'{line_desc}' => '{line_desc}'
 									));
 								} else if (TSubtotal::isSubtotal($line)) {
+                                    if (!empty($conf->global->SUBTOTAL_SUBTOTAL_STYLE))
+                                    {
+                                        $style_start = $style_end = '';
+                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'B') !== false)
+                                        {
+                                            $style_start.= '<strong>';
+                                            $style_end = '</strong>'.$style_end;
+                                        }
+                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'U') !== false)
+                                        {
+                                            $style_start.= '<u>';
+                                            $style_end = '</u>'.$style_end;
+                                        }
+                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'I') !== false)
+                                        {
+                                            $style_start.= '<i>';
+                                            $style_end = '</i>'.$style_end;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        $style_start = '<strong><i>';
+                                        $style_end = '</i></strong>';
+                                    }
+
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
 									));
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_fulldesc}' => '<strong><i>{line_fulldesc}</i></strong>'
-											,'{line_product_label}' => '<strong><i>{line_product_label}</i></strong>'
-											,'{line_desc}' => '<strong><i>{line_desc}</i></strong>'
+											'{line_fulldesc}' => $style_start.'{line_fulldesc}'.$style_end
+											,'{line_product_label}' => $style_start.'{line_product_label}'.$style_end
+											,'{line_desc}' => '{line_desc}'
 									));
 									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_price_ht_locale}' => '<strong>{line_price_ht_locale}</strong>'
+											'{line_price_ht_locale}' => $style_start.'{line_price_ht_locale}'.$style_end
 									));
 									// var_dump($listlines->xml);exit;
 								}

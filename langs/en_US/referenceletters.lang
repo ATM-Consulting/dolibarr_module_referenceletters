@@ -152,3 +152,10 @@ RefLtrOverwriteStdDocHelp=The standard document will be overwritten if it exists
 RefLtrCannotCreateDir=Unable to create directory: "%s"
 RefLtrStdDocOverwritten=The standard document (%s) was successfully replaced with the DocEdit-generated document(%s).
 RefLtrCopiedInStdDocLocation=The standard document (%s) was successfully created as a copy of the DocEdit-generated one (%s).
+
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=DocEdit technical error : cannot recognize model type
+

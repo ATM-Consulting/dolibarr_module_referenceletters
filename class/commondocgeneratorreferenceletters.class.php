@@ -482,7 +482,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		{
 			dol_include_once('/subtotal/class/subtotal.class.php');
 
-			if(TSubtotal::isModSubtotalLine($line) && ! empty($line->label))
+			if(TSubtotal::isTitle($line) && ! empty($line->label))
 			{
 				$resarray['line_desc'] = $line->label;
 			}

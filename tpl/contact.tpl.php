@@ -1,7 +1,7 @@
 <?php
 print '<table class="border" width="100%">';
 
-$linkback = '<a href="' . DOL_URL_ROOT . '/contact/list.php">' . $langs->trans("BackToList") . '</a>';
+$linkback = '<a href="' . DOL_URL_ROOT . '/contact/list.php?restore_lastsearch_values=1">' . $langs->trans("BackToList") . '</a>';
 
 // Ref
 print '<tr><td width="20%">' . $langs->trans("Ref") . '</td><td colspan="3">';

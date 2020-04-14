@@ -96,7 +96,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file(&$object, $instance_letter, $outputlangs) {
-		global $user, $langs, $conf, $object, $db;
+		global $user, $langs, $conf, $db;
 
 		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;

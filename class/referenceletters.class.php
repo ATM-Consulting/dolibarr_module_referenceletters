@@ -283,7 +283,7 @@ class ReferenceLetters extends CommonObject
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
-			    ,'courrier'=>'RefLtrLetters'
+			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
 			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
@@ -708,20 +708,27 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
-		unset($subst_array['Agsession']);
+		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
 
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
+				,'formation_nom_custo'=>'Intitulé formation (pour les documents PDF)'
 				,'formation_ref'=>'Référence de la formation'
 				,'formation_statut'=>'Statut de la formation'
 		        ,'formation_date_debut' => 'Date de début de la formation'
+		        ,'formation_date_debut_formated' => 'Date de début de la formation mise en forme'
 		        ,'formation_date_fin' => 'Date de fin de la formation'
+		        ,'formation_date_fin_formated' => 'Date de fin de la formation mise en forme'
 				,'objvar_object_date_text'=>'Date de la session'
 		        ,'formation_duree' => 'Durée de la formation'
+		        ,'formation_duree_session' => 'Durée de la session'
+		        ,'session_nb_days' => 'Nombre de jours dans le calendrier de la session'
 				,'formation_commercial'=>'commercial en charge de la formation'
+				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
+				,'formation_commercial_mail'=>'email commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'
 		        ,'formation_but'=>'But de la formation'
 		        ,'formation_methode'=>'Methode de formation'
@@ -737,10 +744,12 @@ class ReferenceLetters extends CommonObject
 		        ,'formation_lieu_horaires'=>'Horaires du lieu de formation'
 		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
 		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
-		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules'
+		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules (Nom prenom)'
+		        ,'objvar_object_trainer_text_invert'=>'Tous les foramteurs séparés par des virgules (Prenom nom)'
 		        ,'objvar_object_id'=>'Id de la session'
 		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
 		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
+
 		);
 
 		// Liste de données - Participants
@@ -769,11 +778,12 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
 				'line_formateur_nom'=>'Nom du formateur'
 				,'line_formateur_prenom'=>'Prénom du formateur'
+				,'line_formateur_phone'=>'Téléphone du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
 
-		$subst_array['RefLtrSubstAgefoddStagiaire'] = array(
+		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(
 		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
@@ -815,10 +825,50 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
 
+		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
+			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_poste'=>'Poste du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_mail'=>'Mail du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_phone'=>'Téléphone du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_inter'=>'Nom des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_poste'=>'Poste des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_mail'=>'Mail des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_phone'=>'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_convention_notes'=>'commentaire de la convention',
+			'objvar_object_convention_id'=>'identifiant unique de la convention'
+		);
+
+		$subst_array[$langs->trans('RefLtrTStagiairesSessionConvention')]=array(
+			'line_civilite'=>'Civilité'
+			,'line_nom'=>'Nom participant'
+			,'line_prenom'=>'Prénom participant'
+			,'line_nom_societe'=>'Société du participant'
+			,'line_poste'=>'Poste occupé au sein de sa société'
+			,'line_type'=>'Type de financement'
+		);
+
+		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
+			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
+			,'trainer_datetextline'=>'Date(s) calendrier formateur'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda du formateur'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda du formateur'
+		);
+
+		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
+			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
+			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+			,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
+			,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
+			,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
+		);
+
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
+
 
 	}
 

@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Brief-Vorlagen
+Module103258Name = Brief-Vorlagen - Agefodd
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Briefe und Brief-Vorlagen verwalten
@@ -60,6 +60,8 @@ RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrSupplierProposals=Sample template of PRICE REQUEST
 RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
+RefLtrAgefodd=Sample template of Training Module
+RefLtrAgefoddConvention=Sample template of training contract
 
 #
 # About page

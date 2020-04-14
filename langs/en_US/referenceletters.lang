@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = DocEdit
+Module103258Name = DocEdit - Training center
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Manage DocEdit (document template to send)
@@ -65,6 +65,8 @@ RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrSupplierProposals=Sample template of PRICE REQUEST
 RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
+RefLtrAgefodd=Sample template of Training Module
+RefLtrAgefoddConvention=Sample template of training contract
 
 #
 # About page
@@ -150,3 +152,10 @@ RefLtrOverwriteStdDocHelp=The standard document will be overwritten if it exists
 RefLtrCannotCreateDir=Unable to create directory: "%s"
 RefLtrStdDocOverwritten=The standard document (%s) was successfully replaced with the DocEdit-generated document(%s).
 RefLtrCopiedInStdDocLocation=The standard document (%s) was successfully created as a copy of the DocEdit-generated one (%s).
+
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=DocEdit technical error : cannot recognize model type
+

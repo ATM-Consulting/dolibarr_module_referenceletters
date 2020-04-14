@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = DocEdit
+Module103258Name = DocEdit - Formation
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Gère des modèles de document
@@ -64,6 +64,9 @@ RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
 RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
 RefLtrSupplierOrders=Exemple de modèle de COMMANDE FOURNISSEUR
+RefLtrAgefodd=Exemple de modèle pour le module Formation
+RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
+RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 
 #
 # Page À propos
@@ -165,6 +168,19 @@ ClickToAddOnEditor=cliquer pour ajouter au texte
 ClickToCopy=Cliquer pour copier
 
 #
+# Substitutions Agefodd
+#
+RefLtrSubstAgefodd=Sessions de formation module Agefodd
+RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession" ou "TStagiairesSessionSoc" ou "TStagiairesSessionPresent" ou "TStagiairesSessionSocConfirm")
+RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
+RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")
+RefLtrSubstAgefoddStagiaire=Stagiaire (pour les documents par participants)
+RefLtrSubstConvention=Convention (uniquement dans un modéle de type convention)
+RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de type convention) (Liste de données Agefodd "TStagiairesSessionConvention")
+RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
+RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
+
+#
 # Tags lignes
 #
 RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)
@@ -178,4 +194,10 @@ MoveChapter=Déplacer / réorganiser
 Saved=Sauvegardé
 RefLtrShortCodeAdded=Code ajouté
 RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
+
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=Erreur technique DocEdit : impossible de déterminer le type de modèle
 

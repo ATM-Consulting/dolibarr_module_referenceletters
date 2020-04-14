@@ -130,7 +130,10 @@ class FormReferenceLetters extends Form
 				$option_selected='';
 			}
 
-			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
+			$module = '';
+			if(strpos($element_type, 'rfltr_agefodd_') !== false) $module = $langs->trans('Module103000Name') . ' - ';
+
+			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $module . $langs->trans($array_data['title']) . '</option>';
 		}
 
 		$select_elemnt .= '</select>';
@@ -140,7 +143,7 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
+	 * @param string $selected
 	 * @param string $htmlname
 	 * @return select HTML
 	 */

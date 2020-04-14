@@ -496,6 +496,272 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
+	 * Define array with couple substitution key => substitution value
+	 *
+	 * @param array $line Array of lines
+	 * @param Translate $outputlangs Lang object to use for output
+	 * @return array Return a substitution array
+	 */
+	function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
+		global $db, $conf, $langs;
+
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
+
+		// Substitutions tableau de participants :
+		$resarray = array();
+		$resarray['line_poste'] = $line->poste;
+		$resarray['line_civilite'] = $line->civilitel;
+		$resarray['line_civilite_short'] = $line->civilite;
+		$resarray['line_nom'] = $line->nom;
+		$resarray['line_prenom'] = $line->prenom;
+		$resarray['line_type'] = $line->type;
+		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_place_birth'] = $line->place_birth;
+		$resarray['line_birthdayformated'] = $line->datebirthformated;
+		$tel = $line->tel1;
+		if (empty($tel) && !empty($line->tel2)) {
+			$tel = $line->tel2;
+		} else {
+			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
+		}
+		$resarray['line_phone'] = $tel;
+		$resarray['line_email'] = $line->email;
+		$resarray['line_siret'] = $line->thirdparty->idprof2;
+		$resarray['line_birthplace'] = $line->place_birth;
+		$resarray['line_code_societe'] = $line->soccode;
+		$resarray['line_nom_societe'] = $line->socname;
+
+		$resarray['line_societe_address'] = $line->societe_address;
+		$resarray['line_societe_zip'] = $line->societe_zip;
+		$resarray['line_societe_town'] = $line->societe_town;
+		$resarray['line_presence_bloc'] = '';
+		$resarray['line_presence_total'] = '';
+
+		// Display session stagiaire heure
+		if(!empty($line->sessid) && !empty($line->id))
+		{
+		    dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
+		    dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+		    if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
+		    {
+    		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
+    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->id);
+    		    if(!empty($agefoddsessionstagiaireheures->lines)){
+    		        $hPresenceTotal = 0;
+    		        foreach ($agefoddsessionstagiaireheures->lines as $heures)
+    		        {
+    		            $agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+    		            if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0)
+    		            {
+    		                if(!empty($heures->heures)){
+    		                    // start by converting to seconds
+    		                    $seconds = floor($heures->heures * 3600);
+    		                    // we're given hours, so let's get those the easy way
+    		                    $hours = floor($heures->heures);
+    		                    // since we've "calculated" hours, let's remove them from the seconds variable
+    		                    $seconds -= $hours * 3600;
+    		                    // calculate minutes left
+    		                    $minutes = floor($seconds / 60);
+
+    		                    $hPresenceTotal+= $heures->heures;
+
+    		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
+    		                    // return the time formatted HH:MM
+    		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u", $minutes).')';
+    		                }
+    		            }
+    		        }
+
+    		        // TOTAL DES HEURES PASSEES
+    		        // start by converting to seconds
+    		        $seconds = floor($hPresenceTotal * 3600);
+    		        // we're given hours, so let's get those the easy way
+    		        $hours = floor($hPresenceTotal);
+    		        // since we've "calculated" hours, let's remove them from the seconds variable
+    		        $seconds -= $hours * 3600;
+    		        // calculate minutes left
+    		        $minutes = floor($seconds / 60);
+    		        $resarray['line_presence_total']= $hours."H".sprintf("%02u", $minutes);
+    		    }
+		    }
+		}
+
+		// Substitutions tableau d'horaires
+		$resarray['line_date_session'] = dol_print_date($line->date_session);
+		$resarray['line_heure_debut_session'] = dol_print_date($line->heured, 'hour');
+		$resarray['line_heure_fin_session'] = dol_print_date($line->heuref, 'hour');
+
+		// Substitutions tableau des formateurs :
+		$resarray['line_formateur_nom'] = $line->lastname;
+		$resarray['line_formateur_prenom'] = $line->firstname;
+		$resarray['line_formateur_phone'] = $line->phone;
+		$resarray['line_formateur_mail'] = $line->email;
+		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
+
+		// Substitutions tableau des objectif :
+		$resarray['line_objpeda_rang'] = $line->priorite;
+		$resarray['line_objpeda_description'] = $line->intitule;
+
+		// Substitutions tableau des élément financier :
+//		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
+        $resarray['line_fin_desciption'] = $line->description;
+		$resarray['line_fin_desciption_light'] = $line->form_label;
+		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
+		$resarray['line_fin_qty'] = $line->qty;
+		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);
+		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);
+		$resarray['line_fin_amount_ttc'] = price($line->total_ttc, 0, $outputlangs, 1, - 1, 2);
+		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent, $outputlangs);
+		$resarray['line_fin_pu_ht'] = price($line->price, 0, $outputlangs, 1, - 1, 2);
+
+		// Retrieve extrafields
+		$extrafieldkey = $line->element;
+		$array_key = "line";
+		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+		$extrafields = new ExtraFields($this->db);
+		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
+		if ($fetchoptionnals) {
+			$line->fetch_optionals($line->rowid, $extralabels);
+		}
+
+		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
+			$extrafields = new ExtraFields($this->db);
+			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+			$line->array_options=$line->agefodd_stagiaire->array_options;
+		}
+
+		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
+
+		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
+		if (get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne' || get_class($line) === 'CommandeFournisseurLigne')
+			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
+		// Spé pour les contrats
+		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
+		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
+		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+
+		return $resarray;
+	}
+
+	/**
+	 *
+	 * @param CommonObject $object Object
+	 * @param Translate $outputlangs Translate instance
+	 * @return string[]|NULL[]|mixed[]|array[]
+	 */
+	function get_substitutionsarray_agefodd(&$object, $outputlangs)
+	{
+		global $db, $conf;
+
+		dol_include_once('/agefodd/class/html.formagefodd.class.php');
+
+		$formAgefodd = new FormAgefodd($db);
+
+		$resarray = array();
+		$resarray['formation_nom'] = $object->formintitule;
+		$resarray['formation_nom_custo'] = $object->intitule_custo;
+		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$outputlangs);
+		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'%A %d %B %Y','tzserver',$outputlangs);
+		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
+		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
+		$resarray['formation_ref'] = $object->formref;
+		$resarray['formation_statut'] = $object->statuslib;
+		$resarray['formation_duree'] = $object->duree;
+		$resarray['formation_duree_session'] = $object->duree_session;
+		$resarray['formation_commercial'] = $object->commercialname;
+		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
+		$resarray['formation_commercial_phone'] = $object->commercialphone;
+		$resarray['formation_commercial_mail'] = $object->commercialemail;
+		$resarray['formation_societe'] = $object->thirdparty->nom;
+		$resarray['formation_commentaire'] = nl2br($object->notes);
+		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
+		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
+		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention;
+		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention;
+		$resarray['formation_prix'] = price($object->sell_price);
+		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
+		$resarray['session_nb_days'] = $object->session_nb_days;
+		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
+		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
+        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
+        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
+        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
+        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
+        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
+        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
+        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
+        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
+
+		if (! empty($object->fk_formation_catalogue)) {
+
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+
+			if (class_exists('Agefodd')) {
+				$catalogue = new Agefodd($db);
+			} elseif (class_exists('Formation')) {
+				$catalogue = new Formation($db);
+			}
+
+			$catalogue->fetch($object->fk_formation_catalogue);
+			$resarray['formation_but'] = strip_tags($catalogue->but);
+			$resarray['formation_ref'] = strip_tags($catalogue->ref_obj);
+			$resarray['formation_refint'] = strip_tags($catalogue->ref_interne);
+			$resarray['formation_methode'] = strip_tags($catalogue->methode);
+			$resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
+			$resarray['formation_sanction'] = strip_tags($catalogue->sanction);
+			$resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
+			$resarray['formation_programme'] = $catalogue->programme;
+			$resarray['formation_documents'] = $catalogue->note1;
+			$resarray['formation_equipements'] = $catalogue->note2;
+
+			foreach($catalogue->array_options as $key=>$val) {
+				$resarray['formation_'.$key]=$val;
+			}
+
+		}
+
+		if (! empty($object->placeid)) {
+			dol_include_once('/agefodd/class/agefodd_place.class.php');
+			$agf_place = new Agefodd_place($db);
+			$agf_place->fetch($object->placeid);
+
+			$resarray['formation_lieu'] = $object->placecode;
+			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
+			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
+			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+			// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
+			// fix TK9760
+			$resarray['formation_lieu_acces'] = str_replace('&amp;','&',$agf_place->acces_site);
+			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
+			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
+			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
+			$resarray['formation_lieu_divers'] = $agf_place->note1;
+		}
+
+		// Add ICS link replacement to mails
+		$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2) . '?format=ical&type=event';
+		$documentLinkLabel = "ICS";
+
+		if (!empty($object->trainer_session))
+		{
+			$url = $downloadIcsLink . '&amp;agftrainerid=' . $object->trainer_session->id;
+			$url .= '&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftrainerid' . $object->trainer_session->id);
+			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
+			$resarray['formation_agenda_ics_url'] = $url;
+		}
+		elseif (!empty($object->stagiaire))
+		{
+			$url = $downloadIcsLink . '&amp;agftraineeid=' . $object->stagiaire->id;
+			$url .='&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftraineeid' . $object->stagiaire->id);
+			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
+			$resarray['formation_agenda_ics_url'] = $url;
+		}
+
+		return $resarray;
+	}
+
+	/**
 	 * Define array with couple subtitution key => subtitution value
 	 *
 	 * @param Object $object Dolibarr Object
@@ -511,8 +777,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$array_other = array();
 
 		if (! empty($object)) {
-
-
 
 			foreach ( $object as $key => $value ) {
 
@@ -543,7 +807,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$array_other['object_array_options_options_'.$key_opt] = $val;
 						}
 					}
-					
+
 					// Si les clés des extrafields ne sont pas remplacé, c'est que fetch_name_optionals_label() un poil plus haut retour vide (pas la bonne valeur passé en param)
 					continue;
 				}
@@ -556,7 +820,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 
 				if (! is_array($value) && ! is_object($value)) {
-					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id')
+					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
 					$array_other['object_' . $sub_element_label . $key] = $value;
@@ -600,14 +864,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
-			
+
 			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
-			
+
 		}
 		else
 		{
@@ -624,7 +888,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key];
 			$list=$extrafields->attribute_list[$key];
 			$ishidden=$extrafields->attribute_hidden[$key];
-			
+
 			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
@@ -900,5 +1164,111 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$out=$value;
 
 		return $out;
+	}
+
+	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	/**
+	 *	Fill array with couple extrafield key => extrafield value
+	 *
+	 *	@param  Object			$object				Object with extrafields (must have $object->array_options filled)
+	 *	@param  array			$array_to_fill      Substitution array
+	 *  @param  Extrafields		$extrafields        Extrafields object
+	 *  @param  string			$array_key	        Prefix for name of the keys into returned array
+	 *  @param  Translate		$outputlangs        Lang object to use for output
+	 *	@return	array								Substitution array
+	 */
+	public function fill_substitutionarray_with_extrafields($object, $array_to_fill, $extrafields, $array_key, $outputlangs)
+	{
+
+		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
+
+		// phpcs:enable
+		global $conf;
+		foreach($extrafields->attribute_label as $key=>$label)
+		{
+			if($extrafields->attribute_type[$key] == 'price')
+			{
+				$object->array_options['options_'.$key] = price2num($object->array_options['options_'.$key]);
+				$object->array_options['options_'.$key.'_currency'] = price($object->array_options['options_'.$key], 0, $outputlangs, 0, 0, -1, $conf->currency);
+				//Add value to store price with currency
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_currency' => $object->array_options['options_'.$key.'_currency']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'select')
+			{
+				$object->array_options['options_'.$key] = $extrafields->attribute_param[$key]['options'][$object->array_options['options_'.$key]];
+			}
+			elseif($extrafields->attribute_type[$key] == 'checkbox') {
+				$valArray=explode(',', $object->array_options['options_'.$key]);
+				$output=array();
+				foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+					if  (in_array($keyopt, $valArray)) {
+						$output[]=$valopt;
+					}
+				}
+				$object->array_options['options_'.$key] = implode(', ', $output);
+			}
+			elseif($extrafields->attribute_type[$key] == 'date')
+			{
+				if (strlen($object->array_options['options_'.$key])>0)
+				{
+					$date = $object->array_options['options_'.$key];
+					$object->array_options['options_'.$key] = dol_print_date($date, 'day');                                       // using company output language
+					$object->array_options['options_'.$key.'_locale'] = dol_print_date($date, 'day', 'tzserver', $outputlangs);     // using output language format
+					$object->array_options['options_'.$key.'_rfc'] = dol_print_date($date, 'dayrfc');                             // international format
+				}
+				else
+				{
+					$object->array_options['options_'.$key] = '';
+					$object->array_options['options_'.$key.'_locale'] = '';
+					$object->array_options['options_'.$key.'_rfc'] = '';
+				}
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'datetime')
+			{
+				$datetime = $object->array_options['options_'.$key];
+				$object->array_options['options_'.$key] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour'):'');                            // using company output language
+				$object->array_options['options_'.$key.'_locale'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour', 'tzserver', $outputlangs):'');    // using output language format
+				$object->array_options['options_'.$key.'_rfc'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhourrfc'):'');                             // international format
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
+			}
+			elseif($extrafields->attribute_type[$key] == 'link')
+			{
+				$id = $object->array_options['options_'.$key];
+				if ($id != "")
+				{
+					$param = $extrafields->attribute_param[$key];
+					$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
+					$InfoFieldList = explode(":", $param_list[0]);
+					$classname=$InfoFieldList[0];
+					$classpath=$InfoFieldList[1];
+					if (! empty($classpath))
+					{
+						dol_include_once($InfoFieldList[1]);
+						if ($classname && class_exists($classname))
+						{
+							$tmpobject = new $classname($this->db);
+							$tmpobject->fetch($id);
+							// completely replace the id with the linked object name
+							$object->array_options['options_'.$key] = $tmpobject->name;
+						}
+					}
+				}
+			}
+			elseif($extrafields->attribute_type[$key] == 'sellist') {
+				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $object->array_options['options_'.$key]);
+			}
+			elseif($extrafields->attribute_type[$key] == 'chkbxlst')
+			{
+				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $object->array_options['options_'.$key]);
+			}
+
+			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+		}
+
+
+		return $array_to_fill;
 	}
 }

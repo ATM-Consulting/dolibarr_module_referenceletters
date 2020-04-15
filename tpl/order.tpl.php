@@ -1,14 +1,14 @@
 <?php
 print '<table class="border" width="100%">';
 
-$linkback = '<a href="' . DOL_URL_ROOT . '/comm/propal/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
+$linkback = '<a href="' . DOL_URL_ROOT . '/commande/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 $soc = $object->thirdparty;
 
 // Ref
 print '<tr><td width="20%">' . $langs->trans('Ref') . '</td>';
 print '<td colspan="5">';
-print $form->showrefnav($object, 'ref', $linkback, 1, 'facnumber', 'ref', $morehtmlref);
+print $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref);
 print '</td></tr>';
 
 // Ref customer
@@ -31,17 +31,7 @@ print '</tr></table>';
 print '</td><td>';
 print ' &nbsp;' . $soc->getNomUrl(1, 'compta');
 print ' &nbsp; ';
-print '(<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $object->socid . '">' . $langs->trans('OtherBills') . '</a>';
-// Outstanding Bill
-$outstandigBills = $soc->get_OutstandingBill();
-print ' - ' . $langs->trans('CurrentOutstandingBill') . ': ';
-print price($outstandigBills, '', $langs, 0, 0, - 1, $conf->currency);
-if ($soc->outstanding_limit != '') {
-	if ($outstandigBills > $soc->outstanding_limit)
-		print img_warning($langs->trans("OutstandingBillReached"));
-	print ' / ' . price($soc->outstanding_limit);
-}
-print ')';
+print '(<a href="' . DOL_URL_ROOT . '/commande/list.php?socid=' . $object->socid . '">' . $langs->trans('OtherOrders') . '</a>)';
 print '</tr>';
 
 // Date

@@ -1,21 +1,21 @@
 <?php
-	
+
 	require '../config.php';
 	require_once '../class/referenceletters.class.php';
 	require_once '../class/referenceletterschapters.class.php';
 	require_once '../class/html.formreferenceletters.class.php';
 	require_once '../class/referenceletterselements.class.php';
-	
+
 	require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 
 	require_once '../lib/referenceletters.lib.php';
 	dol_include_once('/compta/facture/class/facture.class.php');
-	
+
 	$refltrelement_type=GETPOST('refltrelement_type','alpha');
 	$idletter=GETPOST('idletter','int');
-	
+
 	$formrefleter = new FormReferenceLetters($db);
-	
+
 	llxHeader();
 	$head = referenceletterMassPrepareHead();
 	dol_fiche_head($head, 'card', $langs->trans('Module103258Name'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
@@ -23,60 +23,60 @@
 	echo '<form name="addreferenceletters" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 	echo '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 	echo '<input type="hidden" name="action" value="choice">';
-	
+
 	echo '<tr>';
 	echo '<td class="fieldrequired"  width="20%">';
 	echo $langs->trans('RefLtrElement');
 	echo '</td>';
 	echo '<td>';
 	echo $formrefleter->selectElementType($refltrelement_type, 'refltrelement_type',0,array('invoice','thirdparty','contact'));
-	
+
 	if($refltrelement_type) print $formrefleter->selectReferenceletters($idletter, 'idletter', $refltrelement_type);
-	
+
 	echo '<input class="butAction" type="submit" name="ok_type" value="'.$langs->trans('Ok').'" />';
-		
+
 	echo '</td>';
 	echo '</tr>';
-	
+
 	echo '</table>';
-	
+
 	if(!empty($refltrelement_type) && $idletter) {
-		
+
 		_show_ref_letter($idletter);
-		
+
 		if($refltrelement_type == 'invoice') {
-			
+
 			_list_invoice();
-			
+
 		}else if($refltrelement_type == 'thirdparty') {
 			_list_thirdparty();
 		}
 		else if($refltrelement_type == 'contact') {
 			_list_contact();
 		}
-		
+
 	}
-	
-	
+
+
 	echo '</form>';
-	
+
 	dol_fiche_end();
-	
+
 	llxFooter();
 
 function _show_ref_letter($idletter) {
-	
+
 	global $db, $langs, $conf, $user;
-	
+
 	$object_chapters = new ReferencelettersChapters($db);
 	$object_element = new ReferenceLettersElements($db);
 	$object_refletter = new Referenceletters($db);
 	$object_refletter->fetch($idletter);
 	$result = $object_chapters->fetch_byrefltr($idletter, '');
-	
+
 	print '<table class="border" width="100%" id="ref-letter">';
 	if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('RefLtrTitle');
@@ -85,7 +85,7 @@ function _show_ref_letter($idletter) {
 		print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
 		print '</td>';
 		print '</tr>';
-		
+
 		print '<tr>';
 		print '<td  width="20%">';
 		print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
@@ -94,7 +94,7 @@ function _show_ref_letter($idletter) {
 		print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 		print '</td>';
 		print '</tr>';
-		
+
 			print '<tr style="background-color:#CEECF5;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomHeader');
@@ -102,7 +102,7 @@ function _show_ref_letter($idletter) {
 			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_refletter->use_custom_header) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 			print '<td>'.$langs->trans('RefLtrHeaderContent');
 			print '</td>';
@@ -111,7 +111,7 @@ function _show_ref_letter($idletter) {
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
-		
+
 		foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 			if ($line_chapter->content_text == '@breakpage@') {
 				print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -129,7 +129,7 @@ function _show_ref_letter($idletter) {
 				print $langs->trans('RefLtrText').' ('.$langs->trans($line_chapter->lang).')';
 				print '</td>';
 				print '<td>';
-				
+
 				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 				$nbrows = ROWS_2;
 				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
@@ -139,7 +139,7 @@ function _show_ref_letter($idletter) {
 					$doleditor->Create();
 					print '</td>';
 					print '</tr>';
-					
+
 					print '<tr style="'.(!empty($line_chapter->readonly)?'display:none':'').'">';
 					print '<td  width="20%">';
 					print $langs->trans('RefLtrOption');
@@ -156,7 +156,7 @@ function _show_ref_letter($idletter) {
 					print '</tr>';
 			}
 		}
-		
+
 		print '<tr style="background-color:#CEF6CE;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomFooter');
@@ -164,7 +164,7 @@ function _show_ref_letter($idletter) {
 			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
 			print '<td>'.$langs->trans('RefLtrFooterContent');
 			print '</td>';
@@ -175,32 +175,39 @@ function _show_ref_letter($idletter) {
 			print '</tr>';
 	}
 	else {
-		
+
 		echo '<tr><td>'.$langs->trans('NoChapterIntoYourModel').'</td></td>';
-		
+
 	}
-	
+
 	print '</table>';
-	
+
 }
-	
+
 function _list_invoice() {
 	global $conf,$db,$user,$langs,$refltrelement_type,$idletter;
-	
+
 	//J'ai essayé, mais le copier/coller était trop dur
 	$l=new Listview($db, 'listInvoice');
-	
-	$sql="SELECT DISTINCT f.rowid,f.type, f.facnumber, f.datef,f.date_lim_reglement,p.datep, s.nom,s.town,s.zip,f.fk_statut, '' as 'action'
-		FROM ".MAIN_DB_PREFIX."facture as f 
+
+	$sql="SELECT DISTINCT f.rowid,f.type, ";
+	if(floatval(DOL_VERSION) > 9) {
+		$sql .= " f.ref as facnumber,";
+	}
+	else{
+		$sql .= " f.facnumber,";
+	}
+	$sql.="f.datef,f.date_lim_reglement,p.datep, s.nom,s.town,s.zip,f.fk_statut, '' as 'action'
+		FROM ".MAIN_DB_PREFIX."facture as f
 			LEFT JOIN ".MAIN_DB_PREFIX."societe as s ON (f.fk_soc = s.rowid)
 			LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture pf ON (pf.fk_facture=f.rowid)
 			LEFT JOIN ".MAIN_DB_PREFIX."paiement p ON (p.rowid=pf.fk_paiement)
 		WHERE f.entity IN (".getEntity('invoice',1).") ";
 	//var_dump($sql);
 	$liststatus=array('0'=>$langs->trans("BillShortStatusDraft"), '1'=>$langs->trans("BillShortStatusNotPaid"), '2'=>$langs->trans("BillShortStatusPaid"), '3'=>$langs->trans("BillShortStatusCanceled"));
-	
+
 	echo $l->render($sql,array(
-		
+
 			'title'=>array(
 					'facnumber'=>$langs->trans("Ref"),
 					'datef'=>$langs->trans("DateInvoice"),
@@ -223,7 +230,7 @@ function _list_invoice() {
 					,'datep'=>'date'
 			)
 			,'search'=>array(
-					
+
 					'date_lim_reglement'=>array('search_type'=>'calendars')
 					,'datep'=>array('search_type'=>'calendars','table'=>'p')
 					,'fk_statut'=>$liststatus
@@ -231,28 +238,28 @@ function _list_invoice() {
 			,'list'=>array(
 					'param_url'=>'refltrelement_type=invoice'
 			)
-			,'limit'=>array( 
+			,'limit'=>array(
 					'nbLine'=>(GETPOST('limit','int') ? GETPOST('limit') : $conf->liste_limit )
 			)
-			
+
 	));
-	
+
 	if($refltrelement_type) {
-		
+
 		echo '<div class="tabsAction">';
 		echo '<input type="button" class="butAction" name="bt_generate" value="'.$langs->trans('Generate').'"> ';
-		
+
 		echo '</div>';
-		
+
 	}
-	
-	
+
+
 	?>
 	<script type="text/javascript">
 	$("#check-all").change(function() {
 
 		$("input[rel=invoicetogen]").prop("checked", $(this).prop("checked"));
-		
+
 	});
 
 	$('input[name=bt_generate]').click(function() {
@@ -269,16 +276,16 @@ function _list_invoice() {
 			else{
 				data[$item.attr('name')]=$item.val();
 			}
-			
-			
-			
+
+
+
 		});
 		console.log(data);
 		var $togen = $('input[rel=invoicetogen]:checked');
 		var nb = $togen.length;
 		var cpt = 0;
 		var error = 0;
-		
+
 		var $bar = $('<div id="progressbar"></div>').progressbar({
 		      max : nb
 		      ,value : 0
@@ -287,17 +294,17 @@ function _list_invoice() {
 		var $div = $('<div />');
 		$div.append($bar);
 		$div.append('<div class="info"></div>');
-		
+
 		$div.dialog({
 			'title':"<?php echo $langs->transnoentities('GenerationInProgress') ?>"
 			,'modal':true
-			
+
 		});
 
-		
+
 		$togen.each(function(i,item) {
 			var $item = $(item);
-			
+
 			var $td = $item.closest('td');
 
 			data["id"] = $item.val();
@@ -315,7 +322,7 @@ function _list_invoice() {
 
 				$bar.progressbar( "value", cpt );
 				$div.find('.info').html(cpt+' / '+nb);
-				
+
 				if(res == 1) {
 
 					$td.html('<?php echo img_picto('','on'); ?>');
@@ -333,28 +340,28 @@ function _list_invoice() {
 					else{
 						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGenerated')) ?>');
 					}
-					
-					
+
+
 				}
 
 
-				
+
 			});
-			
-			
+
+
 		});
-		
+
 	});
-	
+
 	</script>
-	<?php 
-	
+	<?php
+
 }
 
 function _get_check($id) {
-	
+
 	return '<input type="checkbox" value="'.$id.'" name="TInvoice[]" rel="invoicetogen" checked="checked" >';
-	
+
 }
 
 function _get_status_invoice($id) {
@@ -362,16 +369,16 @@ function _get_status_invoice($id) {
 	$facture = new Facture($db);
 	$facture->fetch($id); // TODO improve perf
 	return $facture->LibStatut($facture->paye,$facture->fk_statut,5,$facture->getSommePaiement(),$facture->type);
-	
+
 }
 
 function _get_link_invoice($id) {
 
 	global $conf,$db,$user,$langs;
-	
+
 	$facture = new Facture($db);
 	$facture->fetch($id); // TODO improve perf
-	
+
 	return $facture->getNomUrl(1,'',200,0,'',0,1)
 		.' '.img_picto('','object_referenceletters.png@referenceletters').' <a href="'.dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$id.'&element_type=invoice">'.$langs->trans('RefLtrLetters').'</a>' ;
 }
@@ -382,10 +389,10 @@ function _list_thirdparty()
 	global $conf, $db, $user, $langs, $refltrelement_type, $idletter, $hookmanager;
 
 	/*
-	 * 
+	 *
 	 * ATTENTION GROS COPIER COLLER INCOMING
 	 * From thirdparty/list.php
-	 * 
+	 *
 	 */
 
 	include_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
@@ -1409,6 +1416,7 @@ function _list_thirdparty()
 	print '</td>';
 
 	print "</tr>\n";
+	$param.='&action='.$action.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter;
 
 	print '<tr class="liste_titre">';
 	if (!empty($arrayfields['s.rowid']['checked']))
@@ -1806,44 +1814,44 @@ function _list_thirdparty()
 	print "</table>";
 	print "</div>";
 if($refltrelement_type) {
-		
+
 		echo '<div class="tabsAction">';
 		echo '<input type="button" class="butAction" name="bt_generate" value="'.$langs->trans('Generate').'"> ';
-		
+
 		echo '</div>';
-		
+
 	}
 	print '</form>';
 
 	$db->close();
-	
-	
+
+
 
 
 	/*
-	 * 
-	 * ATTENTION FIN GROS COPIER COLLER 
+	 *
+	 * ATTENTION FIN GROS COPIER COLLER
 	 * From thirdparty/list.php
-	 * 
+	 *
 	 */
-	
+
 	?>
 	<script type="text/javascript">
-		
+
 		$('[name*=use_custom]').click(function() {
-		
+
 		var is_checked = $(this).prop('checked');
 		var name_checkbox = $(this).attr('name');
 		var type_checkbox = name_checkbox.replace('use_custom_', '');
-		
+
 		if(is_checked) {
 			$('.wysiwyg_' + type_checkbox).show();
 		} else {
 			$('.wysiwyg_' + type_checkbox).hide();
 		}
-		
+
 	});
-		
+
 	$('input[name=bt_generate]').click(function() {
 
 		var data = { langs_chapter:"<?php echo $langs->defaultlang; ?>", justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter?>" };
@@ -1858,17 +1866,17 @@ if($refltrelement_type) {
 			else{
 				if ($item.is("textarea")) data[$item.attr('name')]=CKEDITOR.instances[$item.attr('name')].getData();
 				else data[$item.attr('name')]=$item.val();
-				
+
 			}
-			
-			
+
+
 		});
-		
+
 		var $togen = $('.checkforselect:checked');
 		var nb = $togen.length;
 		var cpt = 0;
 		var error = 0;
-	
+
 		var $bar = $('<div id="progressbar"></div>').progressbar({
 		      max : nb
 		      ,value : 0
@@ -1877,17 +1885,17 @@ if($refltrelement_type) {
 		var $div = $('<div />');
 		$div.append($bar);
 		$div.append('<div class="info"></div>');
-		
+
 		$div.dialog({
 			'title':"<?php echo $langs->transnoentities('GenerationInProgress') ?>"
 			,'modal':true
-			
+
 		});
 
-		
+
 		$togen.each(function(i,item) {
 			var $item = $(item);
-			
+
 			var $td = $item.closest('td');
 
 			data["id"] = $item.val();
@@ -1906,7 +1914,7 @@ if($refltrelement_type) {
 
 				$bar.progressbar( "value", cpt );
 				$div.find('.info').html(cpt+' / '+nb);
-				
+
 				if(res == 1) {
 
 					$td.html('<?php echo img_picto('','on'); ?>');
@@ -1924,21 +1932,21 @@ if($refltrelement_type) {
 					else{
 						$div.find('.info').html('<?php echo  addslashes($langs->transnoentities('AllDocumentsGenerated')) ?>');
 					}
-					
-					
+
+
 				}
 
 
-				
+
 			});
-			
-			
+
+
 		});
-		
+
 	});
-	
+
 	</script>
-	<?php 
+	<?php
 }
 
 function _list_contact()
@@ -1946,10 +1954,10 @@ function _list_contact()
 	global $conf, $db, $user, $langs, $refltrelement_type, $idletter, $hookmanager;
 
 	/*
-	 * 
+	 *
 	 * ATTENTION GROS COPIER COLLER INCOMING
 	 * From contact/list.php
-	 * 
+	 *
 	 */
 
 	require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
@@ -2152,6 +2160,8 @@ function _list_contact()
 			$search_categ_thirdparty = '';
 			$search_categ_supplier = '';
 			$search_import_key = '';
+			$search_town = '';
+			$search_zip='';
 			$toselect = '';
 			$search_array_options = array();
 		}
@@ -2238,7 +2248,6 @@ function _list_contact()
 		$sql .= " AND cs2.fk_categorie = ".$db->escape($search_categ_supplier);
 	if ($search_categ_supplier == -2)
 		$sql .= " AND cs2.fk_categorie IS NULL";
-
 	if ($sall)
 		$sql .= natural_search(array_keys($fieldstosearchall), $sall);
 	if (strlen($search_phone))
@@ -2252,6 +2261,10 @@ function _list_contact()
 		$sql .= natural_search("p.rowid", $search_id, 1);
 	if ($search_lastname)
 		$sql .= natural_search('p.lastname', $search_lastname);
+	if ($search_zip)
+		$sql .= natural_search('p.zip', $search_zip);
+	if ($search_town)
+		$sql .= natural_search('p.town', $search_town);
 	if ($search_firstname)
 		$sql .= natural_search('p.firstname', $search_firstname);
 	if ($search_societe)
@@ -2261,7 +2274,7 @@ function _list_contact()
 	if (strlen($search_phone_perso))
 		$sql .= natural_search('p.phone_perso', $search_phone_perso);
 	if (strlen($search_phone_pro))
-		$sql .= natural_search('p.phone', $search_phone);
+		$sql .= natural_search('p.phone', $search_phone_pro);
 	if (strlen($search_phone_mobile))
 		$sql .= natural_search('p.phone_mobile', $search_phone_mobile);
 	if (strlen($search_fax))
@@ -2604,8 +2617,9 @@ function _list_contact()
 	print '</td>';
 
 	print '</tr>';
-
 // Ligne des titres
+	$param.='&action='.$action.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter;
+	//var_dump($_REQUEST, $action, $refltrelement_type, $idletter);exit;
 	print '<tr class="liste_titre">';
 	if (!empty($arrayfields['p.rowid']['checked']))
 		print_liste_field_titre($arrayfields['p.rowid']['label'], $_SERVER["PHP_SELF"], "p.rowid", "", $param, "", $sortfield, $sortorder);
@@ -2873,28 +2887,28 @@ function _list_contact()
 	}
 
 	/*
-	 * 
-	 * ATTENTION FIN GROS COPIER COLLER 
+	 *
+	 * ATTENTION FIN GROS COPIER COLLER
 	 * From contact/list.php
-	 * 
+	 *
 	 */
 	?>
 		<script type="text/javascript">
-			
+
 			$('[name*=use_custom]').click(function() {
-			
+
 			var is_checked = $(this).prop('checked');
 			var name_checkbox = $(this).attr('name');
 			var type_checkbox = name_checkbox.replace('use_custom_', '');
-			
+
 			if(is_checked) {
 				$('.wysiwyg_' + type_checkbox).show();
 			} else {
 				$('.wysiwyg_' + type_checkbox).hide();
 			}
-			
+
 		});
-			
+
 		$('input[name=bt_generate]').click(function() {
 
 			var data = { langs_chapter:"<?php echo $langs->defaultlang; ?>", justinformme:1, element_type: "<?php echo $refltrelement_type ?>", action: "buildoc", idletter:"<?php echo $idletter ?>" };
@@ -2909,17 +2923,17 @@ function _list_contact()
 				else{
 					if ($item.is("textarea")) data[$item.attr('name')]=CKEDITOR.instances[$item.attr('name')].getData();
 					else data[$item.attr('name')]=$item.val();
-					
+
 				}
-				
-				
+
+
 			});
-			
+
 			var $togen = $('.checkforselect:checked');
 			var nb = $togen.length;
 			var cpt = 0;
 			var error = 0;
-		
+
 			var $bar = $('<div id="progressbar"></div>').progressbar({
 			      max : nb
 			      ,value : 0
@@ -2928,24 +2942,22 @@ function _list_contact()
 			var $div = $('<div />');
 			$div.append($bar);
 			$div.append('<div class="info"></div>');
-			
+
 			$div.dialog({
 				'title':"<?php echo $langs->transnoentities('GenerationInProgress') ?>"
 				,'modal':true
-				
+
 			});
 
-			
+
 			$togen.each(function(i,item) {
 				var $item = $(item);
-				
+
 				var $td = $item.closest('td');
 
 				data["id"] = $item.val();
 
 				$td.html('...');
-				console.log(data);
-
 				$.ajax({
 					url:"instance.php"
 					,data:data
@@ -2957,7 +2969,7 @@ function _list_contact()
 
 					$bar.progressbar( "value", cpt );
 					$div.find('.info').html(cpt+' / '+nb);
-					
+
 					if(res == 1) {
 
 						$td.html('<?php echo img_picto('', 'on'); ?>');
@@ -2975,19 +2987,19 @@ function _list_contact()
 						else{
 							$div.find('.info').html('<?php echo addslashes($langs->transnoentities('AllDocumentsGenerated')) ?>');
 						}
-						
-						
+
+
 					}
 
 
-					
+
 				});
-				
-				
+
+
 			});
-			
+
 		});
-		
+
 		</script>
 	<?php
 }

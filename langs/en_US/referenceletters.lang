@@ -53,6 +53,10 @@ RefLtrREF_LETTER_OUTPUTREFLET=On PDF output title and ref in header
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Use a custom model of header and footer
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Define a custom model of header and footer to use for your letters
 RefLtrReInstallTemplate=Replace sample template by default template
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Use "Inline Editor" mode
+RefLtrDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=By default, copy the generated document into the standard directory location
+RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Activating this option simply causes the checkbox “copy the generated document into the standard directory location” of the “Documents” tab to be checked by default.
+
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
@@ -61,6 +65,8 @@ RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrSupplierProposals=Sample template of PRICE REQUEST
 RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
+RefLtrAgefodd=Sample template of Training Module
+RefLtrAgefoddConvention=Sample template of training contract
 RefLtrShipping=Sample template of SENDING SHEET
 
 #
@@ -121,18 +127,36 @@ RefLtrErrorCopyFile=Error during copying letter PDF into event
 RefLtrBackground=Background image
 RefLtrBackgroundHelp=Only PDF files will be use for backgound, and only first on will be use. Link (URL) will be ignore. <BR> Only page with "manual" break page will use background image
 RefLtrReadOnly=Read only (chapter invisible during letter edition)
+RefLtrUnsecable=Try to put this chapter on one page if possible (auto page break if needed)
 RefLtrTitleModel=Document template title
+RefLtrDefaultDoc=Default Document
+RefLtrModifyAndStay=Save and stay
+RefLtrAddPDFDoc=Add PDF document of this element
+RefLtrPDFDoc=PDF document of this element
 
 RefLtrListMassGen=Mass Generation
 RefLtrSelectModelToGen=Model to use
 GenerationInProgress=Generation in progress
 AllDocumentsGenerated=All documents were generated
 NoChapterIntoYourModel=There is no chapter in your model
-AllDocumentsGeneratedButError=Documents generation is finish but there is somes errors
+AllDocumentsGeneratedButError=Documents generation is finished but there are some errors
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
-RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.
+RefLtrCannotCopyFile=Cannot replace standard PDF. It remains available in the document generated list.
+
+RefLtrOverwriteStdDoc=Copy the generated document into the standard directory location
+RefLtrOverwriteStdDocHelp=The standard document will be overwritten if it exists.
+RefLtrCannotCreateDir=Unable to create directory: "%s"
+RefLtrStdDocOverwritten=The standard document (%s) was successfully replaced with the DocEdit-generated document(%s).
+RefLtrCopiedInStdDocLocation=The standard document (%s) was successfully created as a copy of the DocEdit-generated one (%s).
+
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=DocEdit technical error : cannot recognize model type
+

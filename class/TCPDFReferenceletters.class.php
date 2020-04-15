@@ -38,7 +38,6 @@ class TCPDFRefletters extends TCPDI
 	//Page header
 	public function Header() {
 		
-		
 		importImageBackground($this, $this->instance_letter->fk_referenceletters);
 
 		$use_custom_header = $this->instance_letter->use_custom_header;
@@ -56,7 +55,7 @@ class TCPDFRefletters extends TCPDI
 		$use_custom_footer = $this->instance_letter->use_custom_footer;
 
 		if(empty($use_custom_footer)) {
-			$this->model->_pagefoot($this->ref_object, $this->model->outputlangs);
+			$this->model->_pagefoot($this, $this->ref_object, $this->model->outputlangs);
 		}
 		else {
 			$this->model->_pagefootCustom($this->ref_object);

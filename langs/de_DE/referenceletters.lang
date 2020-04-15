@@ -51,6 +51,7 @@ RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Neue Briefvorlage  {ref_int}>
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{model title} - {customer name}>
 RefLtrREF_LETTER_OUTPUTREFLET=Füge Titel und Referenznummer im Kopf der PDF ein
 RefLtrReInstallTemplate=Replace sample template by default template
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Use "Inline Editor" mode
 
 #Models
 RefLtrPropal=Sample template of PROPOSAL
@@ -59,6 +60,8 @@ RefLtrOrder=Sample template of ORDER
 RefLtrContract=Sample template of CONTRACT
 RefLtrSupplierProposals=Sample template of PRICE REQUEST
 RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
+RefLtrAgefodd=Sample template of Training Module
+RefLtrAgefoddConvention=Sample template of training contract
 
 #
 # About page
@@ -118,7 +121,12 @@ RefLtrErrorCopyFile=Fehler beim kopieren der PDF in den Termin
 RefLtrBackground=Hintergrund
 RefLtrBackgroundHelp=Nur PDF Dateien können für Hintergründe verwendet werden. URLs funktionieren nicht. <BR> Nur Seiten mit manuellem Seitenumbruch verwenden den Hintergrund. 
 RefLtrReadOnly=Schreibgeschützt (wird beim erstellen des Briefs nicht angezeigt)
+RefLtrUnsecable=Try to put this chapter on one page if possible (auto page break if needed)
 RefLtrTitleModel=Brief Titel
+RefLtrDefaultDoc=Default Document
+RefLtrModifyAndStay=Save and stay
+RefLtrAddPDFDoc=Add PDF document of this element
+RefLtrPDFDoc=PDF document of this element
 
 RefLtrActive = Activer
 RefLtrAvailable = Disponible

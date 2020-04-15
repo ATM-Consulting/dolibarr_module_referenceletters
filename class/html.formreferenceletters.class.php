@@ -130,7 +130,10 @@ class FormReferenceLetters extends Form
 				$option_selected='';
 			}
 
-			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $langs->trans($array_data['title']) . '</option>';
+			$module = '';
+			if(strpos($element_type, 'rfltr_agefodd_') !== false) $module = $langs->trans('Module103000Name') . ' - ';
+
+			$select_elemnt .= '<option value="' . $element_type . '" '.$option_selected.'>' . $module . $langs->trans($array_data['title']) . '</option>';
 		}
 
 		$select_elemnt .= '</select>';
@@ -140,7 +143,7 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
+	 * @param string $selected
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
@@ -172,6 +175,41 @@ class FormReferenceLetters extends Form
 		return $select_elemnt;
 	}
 
+	/**
+	 * Return a Select Element
+	 *
+	 * @param strint $selected
+	 * @param string $htmlname
+	 * @return select HTML
+	 */
+	public function selectDefaultDoc($selected='',$htmlname='defaultdoc',$showempty=1) {
+		global $langs;
+
+		$status_array=array();
+
+		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
+		if (!empty($showempty)) {
+			$status_array[-1]='';
+		}
+		require_once 'referenceletters.class.php';
+		$refletter = new Referenceletters($this->db);
+
+		$status_array+=$refletter->TDefaultDoc;
+
+		foreach($status_array as $key=>$val) {
+			if ($selected==$key) {
+				$option_selected=' selected="selected" ';
+			}else {
+				$option_selected='';
+			}
+
+			$select_elemnt .= '<option value="' . $key . '" '.$option_selected.'>' . $langs->trans($val) . '</option>';
+		}
+
+		$select_elemnt .= '</select>';
+		return $select_elemnt;
+	}
+
 
 	/**
 	 * Return a Select Element
@@ -186,7 +224,7 @@ class FormReferenceLetters extends Form
 		require_once 'referenceletters.class.php';
 
 		$refletter = new Referenceletters($this->db);
-		$filter=array('t.element_type'=>$element_type);
+		$filter=array('t.element_type'=>$element_type, 't.status'=>1);
 		$refletter->fetch_all('ASC','t.title',0,0,$filter);
 		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
 		if (!empty($showempty)) {
@@ -208,54 +246,295 @@ class FormReferenceLetters extends Form
 	}
 
 	/**
+	 * Helper display tag selector
 	 *
-	 *
-	 * @param unknown $user
-	 * @param unknown $object
+	 * @param User $user user
+	 * @param CommonObject $reflettersobject reference letters model
+	 * @return string HTML to print
 	 */
+
 	public function displaySubtitutionKey($user,$reflettersobject) {
 		global $langs,$bc;
 
+        $form = new Form($this->db);
+		$html=$this->getSubtitutionKeyTable($user,$reflettersobject);
+
+		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
+	}
+
+	/**
+	 *
+	 *
+	 * @param User $user
+	 * @param CommonObject $object
+	 */
+	public function displaySubtitutionKeyAdvanced($user,$reflettersobject) {
+		global $langs;
+
+		print '<div id="subtitutionkey" style="display: none;" >';
+
+		print '<div class="search-filter-wrap"  >';
+		print '<i class="fa fa-search"></i>';
+		print '<input type="text" id="item-filter" class="search-filter" data-target="" value="" placeholder="'.$langs->trans('Search').'" ';
+		print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+		print '</div>';
 
 		$subs_array=$reflettersobject->getSubtitutionKey($user);
 
-		$html='<table witdh="100%" id="refltertags" style="display:none">';
-
+		$html='<div id="accordion-refltertags" >';
 
 		if (is_array($subs_array) && count($subs_array)>0) {
 			foreach($subs_array as $block=>$data) {
-				$html.='<tr class="liste_titre">';
-				$html.='<td colspan="2">';
-				$html.=$block;
-				$html.='</td>';
-				$html.='</tr>';
-				$html.='<tr class="liste_titre">';
-				$html.='<td>';
-				$html.=$langs->trans('RefLtrTag');
-				$html.='</td>';
-				$html.='<td>';
-				$html.=$langs->trans('Value');
-				$html.='</td>';
-				$html.='</tr>';
-				if (count($data)>0) {
-					$var=true;
-					foreach($data as $key=>$value) {
-						$var = ! $var;
-						$html.="<tr $bc[$var]>";
-						$html.='<td>';
-						$html.='{'.$key.'}';
-						$html.='</td>';
-						$html.='<td>';
-						$html.=$value;
-						$html.='</td>';
-						$html.='</tr>';
+				$html .= '<h3 class="accordion-refltertags-title">' . $block . '<span class="h3-element-count badge" data-element-count=""></span></h3>';
+
+				$html .= '<div class="accordion-refltertags-body" >';
+				$html .= '<table>';
+				$html .= '<tr class="liste_titre">';
+				$html .= '<th>'.$langs->trans('Description').'</th>';
+				$html .= '<th width="50px">'.$langs->trans('RefLtrTag').'</th>';
+				$html .= '<th>'.$langs->trans('Value').'</th>';
+				$html .= '</tr>';
+				if (is_array($data) && count($data) > 0) {
+					$var = true;
+					foreach ($data as $key => $value) {
+						$html .= '<tr class="oddeven searchable search-match">';
+						$html .= '    <td class="referenceletter-subtitutionkey-desc">';
+						if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
+
+							$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
+							$html .= $langs->trans('reflettershortcode_' . $key);
+							$html .= '</span>';
+						}
+						$html .= '    </td>';
+						$html .= '    <td class="referenceletter-subtitutionkey-col">';
+						$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '"  data-shortcode="{' . $key . '}"  >{' . $key . '}</span>';
+						$html .= '    </td>';
+						$html .= '    <td>';
+						$html .= dol_escape_htmltag($value);// to prevent js execution like redirect...
+						$html .= '    </td>';
+						$html .= '</tr>';
+					}
+				}
+				$html .= '</table>';
+				$html .= '</div>';
+			}
+
+			// Generate traduction for dev only
+			/*print '<pre>';
+			foreach($subs_array as $block=>$data) {
+				print '#' . $block."\n";
+				if (is_array($data) && count($data) > 0) {
+					$var = true;
+					foreach ($data as $key => $value) {
+						print 'reflettershortcode_' . $key."=\n";
 					}
 				}
 			}
+			print '</pre>';*/
 		}
 
-		$html.='</table>';
+		$html.='</div>';
+		$html.= '</div>';
+		$html.=  '<script>
+                $( function() {
 
+                    $("#accordion-refltertags" ).accordion({
+                            collapsible: true,
+                            heightStyle: "content",
+                            navigation: true ,
+                            active: false
+                    });
+
+                    $( "#subtitutionkey" ).dialog({
+                      title: "'.$langs->transnoentities('RefSubtitutionTable').'",
+                      width: $( document ).width() * 0.9,
+                      modal: true,
+                      autoOpen: false,
+                      maxHeight: $( window ).height() * 0.9,
+                      height: $( window ).height() * 0.9
+                    });
+
+                    $(".docedit_shortcode").click(function() {
+
+                         // open dialog and add target key
+                         $( "#subtitutionkey" ).data("target", $(this).data("target"));
+                         $( "#subtitutionkey" ).dialog( "open" );
+
+                         // Focus on search input
+                         $("#item-filter").focus();
+                    });
+
+                     $(".docedit_setbool").click(function() {
+
+						//Get the Chapter Id
+						var chapter=$(this);
+
+						$.ajax({
+						  method: "POST",
+						  url: "'.dol_buildpath('referenceletters/script/interface.php',1).'",
+						  dataType: "json",
+						  data: { set: "setfield" , id: chapter.data("id") , field: chapter.data("field"), value: chapter.data("valtoset") }
+						})
+						.done(function( data ) {
+						    if(data.status){
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Saved')).'");
+						        if (chapter.children("span").first().hasClass(\'fa-toggle-on\')) {
+						            chapter.children("span").first().removeClass(\'fa-toggle-on\').addClass(\'fa-toggle-off\');
+						            chapter.data("valtoset",1);
+						        } else {
+						            chapter.children("span").first().removeClass(\'fa-toggle-off\').addClass(\'fa-toggle-on\');
+						            chapter.data("valtoset",0);
+						        }
+						    }else{
+						        $.jnotify("'.dol_escape_js($langs->transnoentities('Error')).' : " + data.message, "error", 3000);
+						    }
+						});
+                    });
+
+                   $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
+
+                        var shortcodeTarget = $($("#subtitutionkey").data("target"));
+
+                        if(CKEDITOR.instances[shortcodeTarget.attr("id")] != undefined)
+                        {
+                            var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
+
+                            try {
+                                evt.insertHtml( $(this).data("shortcode")  );
+
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + $(this).data("shortcode"),"3000","false",{ remove: function (){}})  ;
+
+                            }catch (err) {
+                                console.log("Unable to copy ckeditor not ready ?.");
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
+
+                            }
+
+                            $( "#subtitutionkey" ).dialog( "close" );
+                        }
+                        else{
+                            console.log("shortcodeTarget notfound");
+                        }
+                   });
+
+                   $( document ).on("keyup", "#item-filter", function () {
+
+                        var filter = $(this).val(), count = 0;
+                        $("#subtitutionkey tr.searchable").each(function () {
+
+                            if ($(this).text().search(new RegExp(filter, "i")) < 0) {
+                                $(this).removeClass("search-match").hide();
+                            } else {
+                                $(this).addClass("search-match").show();
+                                count++;
+                            }
+                        });
+
+                        $("#filter-count").text(count);
+
+                        updateBadgeCount();
+                    });
+
+
+                   updateBadgeCount = function () {
+                       $("#subtitutionkey .h3-element-count").each(function(i, item) {
+                            let divId = $(item).parent().attr("id");
+                            let nb = $("div[aria-labelledby="+divId+"]").find("tr.searchable.search-match").length;
+                            item.dataset.elementCount = nb;
+
+                            if (nb > 0) $(this).addClass("badge-primary").removeClass("badge-secondary");
+                            else $(this).addClass("badge-secondary").removeClass("badge-primary");
+                        });
+                   }
+                   updateBadgeCount();
+
+                });
+                </script>
+
+                <style>.ui-dialog { z-index: 1000 !important ;}</style>
+                ';
 		return $html;
+	}
+
+
+    /**
+     *
+     *
+     * @param User $user
+     * @param CommonObject $object
+     */
+    public function getSubtitutionKeyTable($user,$reflettersobject){
+        global $langs,$bc;
+
+
+        $subs_array=$reflettersobject->getSubtitutionKey($user);
+
+        $html='<table id="refltertags" >';
+
+        if (is_array($subs_array) && count($subs_array)>0) {
+            foreach($subs_array as $block=>$data) {
+                $html.='<tr class="liste_titre">';
+                $html.='<td colspan="2">';
+                $html.=$block;
+                $html.='</td>';
+                $html.='</tr>';
+                $html.='<tr class="liste_titre">';
+                $html.='<td width="50px">';
+                $html.=$langs->trans('RefLtrTag');
+                $html.='</td>';
+                $html.='<td>';
+                $html.=$langs->trans('Value');
+                $html.='</td>';
+                $html.='</tr>';
+                if (count($data)>0) {
+                    $var=true;
+                    foreach($data as $key=>$value) {
+                        $html.="<tr class=\"oddeven\">";
+                        $html.='<td class="referenceletter-subtitutionkey">';
+                        $html.='{'.$key.'}';
+                        $html.='</td>';
+                        $html.='<td>';
+                        $html.= dol_escape_htmltag($value);// to prevent js execution like redirect...
+                        $html.='</td>';
+                        $html.='</tr>';
+                    }
+                }
+            }
+        }
+
+        $html.='</table>';
+
+        return $html;
+    }
+
+	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
+		global $langs;
+
+		if ($chapter->content_text=='@breakpagenohead@')
+		{
+			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out.= $langs->trans('RefLtrAddPageBreakWithoutHeader');
+			if ($mode=='view') {
+				$out.= '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		elseif ($chapter->content_text=='@breakpage@')
+		{
+			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out.= $langs->trans('RefLtrPageBreak');
+			if ($mode=='view') {
+				$out.= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		elseif (strpos($chapter->content_text,'@pdfdoc')===0) {
+			$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter->content_text));
+			$out = '<div class="sortable sortabledisable docedit_pdfmodel"  data-sortable-chapter="'.$chapter->id.'" >';
+			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
+			if ($mode == 'view') {
+				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+			}
+		}
+		$out .=  '</div>';
+		return $out;
 	}
 }

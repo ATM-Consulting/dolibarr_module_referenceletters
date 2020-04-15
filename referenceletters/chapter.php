@@ -86,6 +86,7 @@ if ($action == "add") {
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
+	$object->same_page=GETPOST('refltrsame_page','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -116,6 +117,7 @@ if ($action == "add") {
 	$object->content_text = GETPOST('content_text');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
+	$object->same_page=GETPOST('refltrsame_page','int');
 	$chapter_lang=GETPOST('chapter_lang');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
@@ -133,7 +135,12 @@ if ($action == "add") {
 		$action = 'edit';
 		setEventMessage($object->error, 'errors');
 	} else {
-		header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
+		$saveandstay=GETPOST('saveandstay');
+		if (! empty($saveandstay)) {
+			header('Location:' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id='.$id.'&action=edit');
+		} else {
+			header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
+		}
 	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
 	$result = $object->fetch($id);
@@ -170,6 +177,7 @@ if ($action=='create') {
 	$subtitle=$langs->trans("RefLtrNewChaters").' - '.$object_refletter->title;
 	$button_text='Create';
 	$action_next='add';
+	$button_text_stay='';
 
 
 } elseif ($action=='edit' || $action == 'delete') {
@@ -185,15 +193,14 @@ if ($action=='create') {
 		}
 	}
 
-
-
 	$subtitle=$langs->trans("RefLtrChapters").' - '.$object_refletter->title;
 
 	$button_text='Modify';
+	$button_text_stay='RefLtrModifyAndStay';
 	$action_next='update';
 }
-
-llxHeader('',$title . ' - ' . $subtitle);
+$arrayofcss = array('/referenceletters/css/view_documents.css?v='.time());
+llxHeader('',$title . ' - ' . $subtitle, '', '', 0, 0, array(), $arrayofcss);
 
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
@@ -202,19 +209,6 @@ $formadmin = new FormAdmin($db);
 $now = dol_now();
 // Add new proposal
 if (($action == 'create' || $action=='edit' || $action=='delete') && $user->rights->referenceletters->write) {
-
-	print '<script>';
-	print 'function DivStatus( tbl_){' . "\n";
-	print '	var Obj = document.getElementById( tbl_);' . "\n";
-	print '	if( Obj.style.display=="none"){' . "\n";
-	print '		Obj.style.display ="block";' . "\n";
-	print '	}' . "\n";
-	print '	else{' . "\n";
-	print '		Obj.style.display="none";' . "\n";
-	print '	}' . "\n";
-	print '}' . "\n";
-	print '</script>';
-
 
 	// Confirm form
 	$formconfirm = '';
@@ -243,8 +237,8 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '<input type="hidden" name="id" value="'.$id.'">';
 
 	print '<table class="border" width="100%">';
-	print '<tr>';
 
+	print '<tr>';
 	if (! empty($conf->global->MAIN_MULTILANGS))
 	{
 		print '<td class="fieldrequired"  width="20%">';
@@ -256,10 +250,11 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		}
 		print $formadmin->select_language($object->lang,'chapter_lang');
 		print '</td>';
-		print '</tr>';
+
 	}
+	print '</tr>';
 
-
+	print '<tr>';
 	print '<td class="fieldrequired"  width="20%">';
 	print $langs->trans('RefLtrPosition');
 	print '</td>';
@@ -276,69 +271,93 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '</td>';
 	print '</tr>';
 
-	print '<td width="20%">';
-	print $langs->trans('RefLtrTag');
-	print '</td>';
-	print '<td>';
-	print '<a href="javascript:DivStatus(\'refltertags\');" title="'.$langs->trans('RefLtrDisplayTag').'" style="font-size:14px;">+</a>';
-	print $formrefleter->displaySubtitutionKey($user,$object_refletter);
-	print '</td>';
-	print '</tr>';
+	if (count($object->isSpecialChapters())==0) {
+		print '<tr>';
+		print '<td width="20%">';
+		print $langs->trans('RefLtrTag');
+		print '</td>';
+		print '<td>';
+		print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+		print $formrefleter->displaySubtitutionKeyAdvanced($user, $object_refletter);
+		print '</td>';
+		print '</tr>';
 
-	print '<td class="fieldrequired"  width="20%">';
-	print $langs->trans('RefLtrTitle');
-	print '</td>';
-	print '<td>';
-	print '<input type="text" name="refltrtitle" size="20" value="' . $object->title . '"/>';
-	print '</td>';
-	print '</tr>';
+		print '<tr>';
+		print '<td class="fieldrequired"  width="20%">';
+		print $langs->trans('RefLtrTitle');
+		print '</td>';
+		print '<td>';
+		print '<input type="text" name="refltrtitle" size="20" value="' . $object->title . '"/>';
+		print '</td>';
+		print '</tr>';
 
-	print '<tr>';
-	print '<td class="fieldrequired"  width="20%">';
-	print $langs->trans('RefLtrText');
-	print '</td>';
-	print '<td>';
-	require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
-	$nbrows=ROWS_2;
-	if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT)) $nbrows=$conf->global->MAIN_INPUT_DESC_HEIGHT;
-	$enable=(isset($conf->global->FCKEDITOR_ENABLE_SOCIETE)?$conf->global->FCKEDITOR_ENABLE_SOCIETE:0);
-	$doleditor=new DolEditor('content_text', $object->content_text, '', 700, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
-	$doleditor->Create();
-	print '</td>';
-	print '</tr>';
+		print '<tr>';
+		print '<td class="fieldrequired"  width="20%">';
+		print $langs->trans('RefLtrText');
+		print '</td>';
+		print '<td>';
+		require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+		$nbrows = ROWS_2;
+		if (!empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+			$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+		$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+		$doleditor = new DolEditor('content_text', $object->content_text, '', 700, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+		$doleditor->Create();
+		print '</td>';
+		print '</tr>';
 
-	print '<td width="20%">';
-	print $langs->trans('RefLtrOption');
-	print '</td>';
-	print '<td>';
-	print '<table class="nobordernopadding"><tr><td>';
-	print '<textarea name="option_text" id="option_text" rows="4" cols="50">';
-	if (is_array($object->options_text) && count($object->options_text)>0) {
-		foreach($object->options_text as $key=>$option_text) {
-			print $option_text."\n";
+		print '<tr>';
+		print '<td width="20%">';
+		print $langs->trans('RefLtrOption');
+		print '</td>';
+		print '<td>';
+		print '<table class="nobordernopadding"><tr><td>';
+		print '<textarea name="option_text" id="option_text" rows="4" cols="50">';
+		if (is_array($object->options_text) && count($object->options_text) > 0) {
+			foreach ($object->options_text as $key => $option_text) {
+				print $option_text . "\n";
+			}
 		}
-	}
-	print '</textarea>';
-	print '</td><td>';
-	print $form->textwithpicto('', $langs->trans("RefLtrOptionHelp".$type),1,0);
-	print '</td></tr></table>';
-	print '</td>';
-	print '</tr>';
+		print '</textarea>';
+		print '</td><td>';
+		print $form->textwithpicto('', $langs->trans("RefLtrOptionHelp" . $type), 1, 0);
+		print '</td></tr></table>';
+		print '</td>';
+		print '</tr>';
 
-	print '<td width="20%">';
-	print $langs->trans('RefLtrReadOnly');
-	print '</td>';
-	print '<td>';
-	print '<input type="checkbox" name="refltrreadonly" size="20"  '.(!empty($object->readonly)?'checked="checked"':'').' value="1"/>';
-	print '</td>';
-	print '</tr>';
+		print '<tr>';
+		print '<td width="20%">';
+		print $langs->trans('RefLtrReadOnly');
+		print '</td>';
+		print '<td>';
+		print '<input type="checkbox" name="refltrreadonly" size="20"  ' . (!empty($object->readonly) ? 'checked="checked"' : '') . ' value="1"/>';
+		print '</td>';
+		print '</tr>';
+		print '<tr>';
+		print '<td width="20%">';
+		print $langs->trans('RefLtrUnsecable');
+		print '</td>';
+		print '<td>';
+		print '<input type="checkbox" name="refltrsame_page" size="20"  ' . (!empty($object->same_page) ? 'checked="checked"' : '') . ' value="1"/>';
+		print '</td>';
+		print '</tr>';
+	} else  {
+		print '<tr>';
+		print '<td>';
+		print $formrefleter->renderChapterHTML($object,'edit');
+		print '</td>';
+		print '</tr>';
+	}
 
 	print '</table>';
 
-	print '<center>';
-	print '<input type="submit" class="button" value="' . $langs->trans($button_text) . '">';
-	print '&nbsp;<input type="button" class="button" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
-	print '</center>';
+	print '<div class="tabsAction">';
+	print '<input type="submit" class="butAction" value="' . $langs->trans($button_text) . '">';
+	if (!empty($button_text_stay)) {
+		print '<input type="submit" class="butAction" name="saveandstay" value="' . $langs->trans($button_text_stay) . '">';
+	}
+	print '&nbsp;<input type="button" class="butAction" value="' . $langs->trans("Cancel") . '" onClick="javascript:history.go(-1)">';
+	print '</div>';
 
 	print '</form>';
 }

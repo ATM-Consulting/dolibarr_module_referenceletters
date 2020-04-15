@@ -52,7 +52,10 @@ RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
 RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER=Permet de définir un modèle d'entête et de pied de page à utiliser pour vos modèles de documents
-RefLtrReInstallTemplate=Ré-intaller les modéles de documents standard
+RefLtrReInstallTemplate=Ré-installer les modèles de documents standard
+RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Utiliser le mode "Edition dans le texte" d'un document
+RefLtrDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Par défaut, copier le document généré à l’emplacement du document standard
+RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Si cette option est activée, la case « Copier le document généré à l’emplacement du document standard » de l’onglet Modèle de document sera cochée par défaut.
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION
@@ -61,6 +64,9 @@ RefLtrOrder=Exemple de modèle de COMMANDE
 RefLtrContract=Exemple de modèle de CONTRAT
 RefLtrSupplierProposals=Exemple de modèle de DEMANDE DE PRIX
 RefLtrSupplierOrders=Exemple de modèle de COMMANDE FOURNISSEUR
+RefLtrAgefodd=Exemple de modèle pour le module Formation
+RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
+RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 RefLtrShipping=Exemple de modèle de BON DE LIVRAISON
 
 #
@@ -120,9 +126,14 @@ RefLtrListInstance=Liste des documents
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Erreur durant la copie du document PDF du document sur l'événement de l'agenda
 RefLtrBackground=Image de fond
-RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond
-RefLtrReadOnly=Lecture seule (invisible lors de la création du document)
+RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
+RefLtrReadOnly=Lecture seule (invisible lors de la création d'une instance de document (Onglet modéle de docuement sur les devis/commandes/....), pas d'impact sur la création 'simple' (via le bouton générer le document des devis/commandes/....)
+RefLtrUnsecable=Essaye de mettre ce chapitre sur une seule page
 RefLtrTitleModel=Titre modèle de document
+RefLtrDefaultDoc=Document par defaut
+RefLtrModifyAndStay=Sauver et rester
+RefLtrAddPDFDoc=Ajouter le document PDF standard de l'élément
+RefLtrPDFDoc=PDF standard de l'élément
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer
@@ -144,9 +155,50 @@ RefLtrAvailable = Disponible
 RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
-RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier générer, il reste dispobile dans les documents.
+RefLtrOverwriteStdDoc=Copier le document généré à l’emplacement du document standard
+RefLtrOverwriteStdDocHelp=Si le document standard existe déjà, il sera remplacé
+
+RefLtrCannotCopyFile=Impossible de remplacer le standard par le fichier généré, il reste disponible dans les documents.
+RefLtrCannotCreateDir=Impossible de créer le répertoire : "%s"
+RefLtrStdDocOverwritten=Le document standard (%s) a bien été remplacé par le document DocEdit généré (%s).
+RefLtrCopiedInStdDocLocation=Le document standard (%s) a bien été créé comme copie du document DocEdit généré (%s).
+
+RefSubtitutionTable=Table des subtitutions
+DisplaySubtitutionTable=Afficher la table des subtitutions
+ClickToAddOnEditor=cliquer pour ajouter au texte
+ClickToCopy=Cliquer pour copier
+
+#
+# Substitutions Agefodd
+#
+RefLtrSubstAgefodd=Sessions de formation module Agefodd
+RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession" ou "TStagiairesSessionSoc" ou "TStagiairesSessionPresent" ou "TStagiairesSessionSocConfirm")
+RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
+RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")
+RefLtrSubstAgefoddStagiaire=Stagiaire (pour les documents par participants)
+RefLtrSubstConvention=Convention (uniquement dans un modéle de type convention)
+RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de type convention) (Liste de données Agefodd "TStagiairesSessionConvention")
+RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
+RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
 
 #
 # Tags lignes
 #
 RefLtrLines=Lignes de documents (propal, commandes, factures et contrats)
+
+#
+# Doc preview
+#
+doceditinfo_viewlimit=Ceci est une vue du gabarit (template), elle permet une vision d'ensemble de votre document. Il ne s'agit pas d'une prévisualisation du rendu final converti en PDF.
+PlaceHere=Placer le chapitre ici
+MoveChapter=Déplacer / réorganiser
+Saved=Sauvegardé
+RefLtrShortCodeAdded=Code ajouté
+RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
+
+
+#
+# Erreurs
+#
+RefLtrErrorCannotRecognizeModel=Erreur technique DocEdit : impossible de déterminer le type de modèle
+

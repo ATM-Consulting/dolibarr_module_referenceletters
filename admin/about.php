@@ -26,7 +26,7 @@
 $res = @include ("../../main.inc.php"); // From htdocs directory
 if (! $res)
 	$res = @include ("../../../main.inc.php"); // From "custom" directory
-		                                          
+
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once "../lib/referenceletters.lib.php";
@@ -40,7 +40,7 @@ $langs->load("referenceletters@referenceletters");
 // Access control
 if (! $user->admin)
 	accessforbidden();
-	
+
 	// Parameters
 $action = GETPOST('action', 'alpha');
 
@@ -67,7 +67,7 @@ echo $langs->trans("ReferenceLettersAboutPage");
 
 
 print '<BR><BR><BR><BR>--------------------------------';
-print '<BR><a href="http://wiki.atm-consulting.fr/index.php/DocEdit/Documentation_utilisateur" target="_blanck">Lien Documentation Utilisateur Français</a>';
+print '<BR><a href="http://wiki.atm-consulting.fr/index.php/DocEdit_pour_Agefodd/Documentation_utilisateur" target="_blanck">Lien Documentation Utilisateur Français</a>';
 print '<BR><a href="http://www.open-concept.pro/images/doc/Letters%20Templates%20-%20User%20guide.pdf" target="_blanck">Link english user guide</a>';
 print '<BR><a href="http://www.open-concept.pro/images/doc/Plantillas%20de%20correos%20-%20Guia%20del%20usuario.pdf" target="_blanck">Link spanish Guía del usuario</a>';
 print '<BR>';

@@ -52,6 +52,7 @@ $arrayofselected=is_array($toselect)?$toselect:array();
 $sortorder = GETPOST('sortorder', 'alpha');
 $sortfield = GETPOST('sortfield', 'alpha');
 $page = GETPOST('page', 'int');
+$page = intval($page);
 
 // Search criteria
 $search_ref_int = GETPOST("search_ref_int");
@@ -149,20 +150,20 @@ if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massa
 
 
 if ($num != - 1) {
-	
+
 	print '<form enctype="multipart/form-data" method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 	include '../core/massactions.inc.php';
-	
-	
+
+
 	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords,'title_generic.png',0, '', '', $limit);
-	
+
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
 	if (! empty($sortorder))
 		print '<input type="hidden" name="sortorder" value="' . $sortorder . '"/>';
 	if (! empty($page))
 		print '<input type="hidden" name="page" value="' . $page . '"/>';
-	
+
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
@@ -172,54 +173,54 @@ if ($num != - 1) {
 	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $options, '', $sortfield, $sortorder);
-	
+
 	// edit button
 	print '<th style="width:70px" class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';
 	print '&nbsp; ';
 	print '<input type="image" class="liste_titre" name="button_removefilter" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/searchclear.png" value="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '" title="' . dol_escape_htmltag($langs->trans("RemoveFilter")) . '">';
 	print '</th>';
 	print "</tr>\n";
-	
+
 	print '<tr class="liste_titre">';
-	
+
 	print '<th><input type="text" class="flat" name="search_ref_int" value="' . $search_ref_int . '" size="10"></th>';
-	
+
 	print '<th>';
 	print $formrefleter->selectElementType($search_element_type, 'search_element_type', 1);
 	print '</th>';
-	
+
 	print '<th>';
 	print '<input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10">';
 	print '</th>';
-	
+
 	print '<th><input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="10"></td>';
-	
+
 	print '<th>';
 	print '<input type="text" class="flat" name="search_company" value="' . $search_company . '" size="10">';
 	print '</th>';
-	
+
 	print '<th></th>';
 	$selectedfields=$form->showCheckAddButtons('checkforselect', 1);
 	print_liste_field_titre($selectedfields, $_SERVER["PHP_SELF"],"",'','','align="center"',$sortfield,$sortorder,'maxwidthsearch ');
-	
+
 
 	print "</tr>\n";
 	print '</form>';
-	
+
 	$var = true;
 	foreach ( $object->lines as $line ) {
-		
+
 		// Affichage tableau des lead
 		$var = ! $var;
 		print "<tr $bc[$var]>";
-		
+
 		// Title
 		print '<td><a href="' . dol_buildpath('referenceletters/referenceletters/instance.php', 1) . '?id=' . $line->fk_element . '&element_type=' . $line->element_type . '">' . $line->ref_int . '</a></td>';
-		
+
 		// Element
 		require_once $object_ref->element_type_list[$line->element_type]['classpath'] . $object_ref->element_type_list[$line->element_type]['class'];
 		$object_src = new $object_ref->element_type_list[$line->element_type]['objectclass']($db);
-		
+
 		$result = $object_src->fetch($line->fk_element);
 		if ($result < 0) {
 			setEventMessage($object_src->error, 'errors');
@@ -230,26 +231,27 @@ if ($num != - 1) {
 				setEventMessage($object_src->error, 'errors');
 			}
 		}
-		
 		print '<td>' . $object_ref->displayElementElement(0, $line->element_type) . '</a></td>';
-		
+
 		print '<td>' . $line->title . '</a></td>';
-		
+
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
 			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' . $object_src->getNomUrl() . '</a></td>';
 		} else if($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Contact'){
 			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->getNomUrl() . '</a></td>';
 		}else {
-			
+
 			print '<td><a href="' . dol_buildpath($object_ref->element_type_list[$line->element_type]['card'], 1) . '?id=' . $line->fk_element . '">' . $object_src->ref . '</a></td>';
 		}
-		
+
 		if ($object_ref->element_type_list[$line->element_type]['objectclass'] == 'Societe') {
 			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->id . '">' .$object_src->getNomUrl() . '</a></td>';
-		} else {
+		} else if(!empty ($object_src->thirdparty)){
 			print '<td><a href="' . dol_buildpath('societe/soc.php', 1) . '?socid=' . $object_src->thirdparty->id . '">' . $object_src->thirdparty->getNomUrl() . '</a></td>';
+		}else {
+			print '<td></td>';
 		}
-		
+
 		print '<td>' . dol_print_date($line->datec) . '</a></td>';
 		// Action column
 	print '<td class="nowrap" align="center">';
@@ -257,13 +259,13 @@ if ($num != - 1) {
 	{
 		$selected=0;
 		if (in_array($line->id, $arrayofselected)) $selected=1;
-		
 		if($line->element_type == 'contact' && !empty($object_src->mail) || $line->element_type== 'thirdparty'&& !empty($object_src->email))print '<input id="cb'.$obj->rowid.'" class="flat checkforselect" type="checkbox" name="toselect[]" value="'.$line->id.'"'.($selected?' checked="checked"':'').'>';
+
 	}
 	print '</td>';
 		print "</tr>\n";
 	}
-	
+
 	print "</table>";
 } else {
 	setEventMessages($object->error, $object->errors, 'errors');

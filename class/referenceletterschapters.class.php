@@ -40,7 +40,7 @@ class ReferenceLettersChapters extends CommonObject
 	public $table_element='referenceletterschapters';		//!< Name of table without prefix where object is stored
 
     public $id;
-    
+
 	public $entity;
 	public $fk_referenceletters;
 	public $lang;
@@ -55,9 +55,13 @@ class ReferenceLettersChapters extends CommonObject
 	public $fk_user_mod;
 	public $tms='';
 	public $readonly='';
-	
+	public $same_page=0;
+
+	/** @var ReferenceLettersChapters[]  */
 	public $lines_chapters = array();
-    
+
+	private $special_pages = array();
+
 
 
     /**
@@ -65,27 +69,27 @@ class ReferenceLettersChapters extends CommonObject
      *
      *  @param	DoliDb		$db      Database handler
      */
-    function __construct($db)
-    {
-        $this->db = $db;
+	public function __construct($db)
+	{
+		$this->db = $db;
+
         return 1;
     }
 
-
-    /**
+	/**
      *  Create object into database
      *
      *  @param	User	$user        User that creates
      *  @param  int		$notrigger   0=launch triggers after, 1=disable triggers
      *  @return int      		   	 <0 if KO, Id of created object if OK
      */
-    function create($user, $notrigger=0)
+    public function create($user, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
 
 		// Clean parameters
-        
+
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->sort_order)) $this->sort_order=trim($this->sort_order);
@@ -95,8 +99,9 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
-		
-		
+		if (isset($this->same_page)) $this->same_page=trim($this->same_page);
+
+
 		// Check parameters
 		// Put here code to add a control on parameters values
         if (is_array($this->options_text) && count($this->options_text)>0) {
@@ -108,14 +113,14 @@ class ReferenceLettersChapters extends CommonObject
         } else {
         	$option_text=trim($this->options_text);
         }
-        
+
         if (empty($this->lang)) {
         	$this->lang=$langs->defaultlang;
         }
 
         // Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."referenceletters_chapters(";
-		
+
 		$sql.= "entity,";
 		$sql.= "fk_referenceletters,";
 		$sql.= "lang,";
@@ -124,6 +129,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= "content_text,";
 		$sql.= "options_text,";
 		$sql.= "readonly,";
+		$sql.= "same_page,";
 		$sql.= "status,";
 		$sql.= "import_key,";
 		$sql.= "fk_user_author,";
@@ -138,6 +144,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " ".(! isset($this->content_text)?'NULL':"'".$this->db->escape($this->content_text)."'").",";
 		$sql.= " ".(empty($option_text)?'NULL':"'".$this->db->escape($option_text)."'").",";
 		$sql.= " ".(empty($this->readonly)?'0':$this->readonly).",";
+		$sql.= " ".(empty($this->same_page)?'0':$this->same_page).",";
 		$sql.= " ".(! isset($this->status)?'0':$this->status).",";
 		$sql.= " ".(! isset($this->import_key)?'NULL':"'".$this->db->escape($this->import_key)."'").",";
 		$sql.= " ".$user->id.",";
@@ -147,7 +154,7 @@ class ReferenceLettersChapters extends CommonObject
 
 		$this->db->begin();
 
-	   	dol_syslog(get_class($this)."::create sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
     	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 
@@ -174,7 +181,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::create ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -194,7 +201,7 @@ class ReferenceLettersChapters extends CommonObject
      *  @param	int		$id    Id object
      *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch($id)
+    public function fetch($id)
     {
     	global $langs;
         $sql = "SELECT";
@@ -207,6 +214,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
 		$sql.= " t.readonly,";
+		$sql.= " t.same_page,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -216,7 +224,7 @@ class ReferenceLettersChapters extends CommonObject
         $sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
         $sql.= " WHERE t.rowid = ".$id;
 
-    	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+        dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -225,7 +233,7 @@ class ReferenceLettersChapters extends CommonObject
                 $obj = $this->db->fetch_object($resql);
 
                 $this->id    = $obj->rowid;
-                
+
 				$this->entity = $obj->entity;
 				$this->fk_referenceletters = $obj->fk_referenceletters;
 				$this->lang = $obj->lang;
@@ -234,14 +242,13 @@ class ReferenceLettersChapters extends CommonObject
 				$this->content_text = $obj->content_text;
 				$this->options_text = unserialize($obj->options_text);
 				$this->readonly = $obj->readonly;
+				$this->same_page = $obj->same_page;
 				$this->status = $obj->status;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
 				$this->fk_user_mod = $obj->fk_user_mod;
 				$this->tms = $this->db->jdate($obj->tms);
-
-                
             }
             $this->db->free($resql);
 
@@ -250,18 +257,19 @@ class ReferenceLettersChapters extends CommonObject
         else
         {
       	    $this->error="Error ".$this->db->lasterror();
-            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+      	    $this->errors[]="Error ".$this->db->lasterror();
+            dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
             return -1;
         }
     }
-    
-/**
+
+	/**
      *  Load object in memory from the database
      *
      *  @param	int		$id    Id object
      *  @return int          	<0 if KO, >0 if OK
      */
-    function fetch_byrefltr($id,$lang_chapter='')
+    public function fetch_byrefltr($id,$lang_chapter='')
     {
     	global $langs;
         $sql = "SELECT";
@@ -274,6 +282,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " t.content_text,";
 		$sql.= " t.options_text,";
 		$sql.= " t.readonly,";
+		$sql.= " t.same_page,";
 		$sql.= " t.status,";
 		$sql.= " t.import_key,";
 		$sql.= " t.fk_user_author,";
@@ -287,7 +296,7 @@ class ReferenceLettersChapters extends CommonObject
         }
         $sql.= " ORDER BY sort_order";
 
-    	dol_syslog(get_class($this)."::fetch sql=".$sql, LOG_DEBUG);
+    	dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql=$this->db->query($sql);
         if ($resql)
         {
@@ -296,11 +305,11 @@ class ReferenceLettersChapters extends CommonObject
             {
             	$this->lines_chapters=array();
                 while ($obj = $this->db->fetch_object($resql)) {
-                	
+
 	               	$chapter = new ReferenceLettersChapters($this->db);
-	
+
 	                $chapter->id    = $obj->rowid;
-	                
+
 					$chapter->entity = $obj->entity;
 					$chapter->fk_referenceletters = $obj->fk_referenceletters;
 					$chapter->lang = $obj->lang;
@@ -309,13 +318,14 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->content_text = $obj->content_text;
 					$chapter->options_text = unserialize($obj->options_text);
 					$chapter->readonly = $obj->readonly;
+					$chapter->same_page = $obj->same_page;
 					$chapter->status = $obj->status;
 					$chapter->import_key = $obj->import_key;
 					$chapter->fk_user_author = $obj->fk_user_author;
 					$chapter->datec = $this->db->jdate($obj->datec);
 					$chapter->fk_user_mod = $obj->fk_user_mod;
 					$chapter->tms = $this->db->jdate($obj->tms);
-					
+
 					$this->lines_chapters[]=$chapter;
                 }
             }
@@ -326,7 +336,8 @@ class ReferenceLettersChapters extends CommonObject
         else
         {
       	    $this->error="Error ".$this->db->lasterror();
-            dol_syslog(get_class($this)."::fetch ".$this->error, LOG_ERR);
+      	    $this->errors[]="Error ".$this->db->lasterror();
+      	    dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
             return -1;
         }
     }
@@ -339,13 +350,12 @@ class ReferenceLettersChapters extends CommonObject
      *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
      *  @return int     		   	 <0 if KO, >0 if OK
      */
-    function update($user=0, $notrigger=0)
+    public function update($user=0, $notrigger=0)
     {
     	global $conf, $langs;
 		$error=0;
 
 		// Clean parameters
-        
 		if (isset($this->entity)) $this->entity=trim($this->entity);
 		if (isset($this->fk_referenceletters)) $this->fk_referenceletters=trim($this->fk_referenceletters);
 		if (isset($this->lang)) $this->lang=trim($this->lang);
@@ -354,9 +364,10 @@ class ReferenceLettersChapters extends CommonObject
 		if (isset($this->content_text)) $this->content_text=trim($this->content_text);
 		if (isset($this->status)) $this->status=trim($this->status);
 		if (isset($this->readonly)) $this->readonly=trim($this->readonly);
+		if (isset($this->same_page)) $this->same_page=trim($this->same_page);
 		if (isset($this->import_key)) $this->import_key=trim($this->import_key);
 
-		
+
 		// Check parameters
 		// Put here code to add a control on parameters values
 		if (is_array($this->options_text) && count($this->options_text)>0) {
@@ -367,16 +378,14 @@ class ReferenceLettersChapters extends CommonObject
 		} else {
 			$option_text=trim($this->options_text);
 		}
-		
+
 		if (empty($this->lang)) {
 			$this->lang=$langs->defaultlang;
 		}
 
-		
-
         // Update request
         $sql = "UPDATE ".MAIN_DB_PREFIX."referenceletters_chapters SET";
-        
+
 		$sql.= " fk_referenceletters=".(isset($this->fk_referenceletters)?$this->fk_referenceletters:"null").",";
 		$sql.= " lang=".(!empty($this->lang)?"'".$this->db->escape($this->lang)."'":"null").",";
 		$sql.= " sort_order=".(isset($this->sort_order)?$this->sort_order:"null").",";
@@ -384,16 +393,17 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " content_text=".(isset($this->content_text)?"'".$this->db->escape($this->content_text)."'":"null").",";
 		$sql.= " options_text=".(!empty($option_text)?"'".$this->db->escape($option_text)."'":"null").",";
 		$sql.= " readonly=".(!empty($this->readonly)?$this->readonly:"0").",";
+		$sql.= " same_page=".(!empty($this->same_page)?$this->same_page:"0").",";
 		$sql.= " status=".(isset($this->status)?$this->status:"null").",";
 		$sql.= " import_key=".(isset($this->import_key)?"'".$this->db->escape($this->import_key)."'":"null").",";
 		$sql.= " fk_user_mod=".$user->id;
 
-        
+
         $sql.= " WHERE rowid=".$this->id;
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this)."::update sql=".$sql, LOG_DEBUG);
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
         $resql = $this->db->query($sql);
     	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 
@@ -418,7 +428,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::update ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this)."::".__METHOD__." ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -432,14 +442,14 @@ class ReferenceLettersChapters extends CommonObject
     }
 
 
- 	/**
+	/**
 	 *  Delete object in database
 	 *
-     *	@param  User	$user        User that deletes
-     *  @param  int		$notrigger	 0=launch triggers after, 1=disable triggers
-	 *  @return	int					 <0 if KO, >0 if OK
+	 * @param  User $user User that deletes
+	 * @param  int $notrigger 0=launch triggers after, 1=disable triggers
+	 * @return    int                     <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger=0)
+    public function delete($user, $notrigger=0)
 	{
 		global $conf, $langs;
 		$error=0;
@@ -467,7 +477,7 @@ class ReferenceLettersChapters extends CommonObject
     		$sql = "DELETE FROM ".MAIN_DB_PREFIX."referenceletters_chapters";
     		$sql.= " WHERE rowid=".$this->id;
 
-    		dol_syslog(get_class($this)."::delete sql=".$sql);
+    		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
     		$resql = $this->db->query($sql);
         	if (! $resql) { $error++; $this->errors[]="Error ".$this->db->lasterror(); }
 		}
@@ -477,7 +487,7 @@ class ReferenceLettersChapters extends CommonObject
 		{
 			foreach($this->errors as $errmsg)
 			{
-	            dol_syslog(get_class($this)."::delete ".$errmsg, LOG_ERR);
+				dol_syslog(get_class($this).__METHOD__." ".$errmsg, LOG_ERR);
 	            $this->error.=($this->error?', '.$errmsg:$errmsg);
 			}
 			$this->db->rollback();
@@ -498,7 +508,7 @@ class ReferenceLettersChapters extends CommonObject
 	 *	@param	int		$fromid     Id of object to clone
 	 * 	@return	int					New id of clone
 	 */
-	function createFromClone($fromid)
+	public function createFromClone($fromid)
 	{
 		global $user,$langs;
 
@@ -552,10 +562,10 @@ class ReferenceLettersChapters extends CommonObject
 	 *
 	 *	@return	void
 	 */
-	function initAsSpecimen()
+	public function initAsSpecimen()
 	{
 		$this->id=0;
-		
+
 		$this->entity='';
 		$this->fk_referenceletters='';
 		$this->lang='';
@@ -564,6 +574,7 @@ class ReferenceLettersChapters extends CommonObject
 		$this->content_text='';
 		$this->options_text='';
 		$this->readonly='';
+		$this->same_page='';
 		$this->status='';
 		$this->import_key='';
 		$this->fk_user_author='';
@@ -571,12 +582,12 @@ class ReferenceLettersChapters extends CommonObject
 		$this->fk_user_mod='';
 		$this->tms='';
 
-		
+
 	}
-	
+
 	/**
 	 * Retrun max +1 sort roder for a letters model
-	 * 
+	 *
 	 * @return int	max + 1
 	 */
 	public function findMaxSortOrder() {
@@ -585,8 +596,8 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= " MAX(t.sort_order) as maxsortorder";
 		$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
 		$sql.= " WHERE t.fk_referenceletters = ".$this->fk_referenceletters;
-		
-		dol_syslog(get_class($this)."::findMaxSortOrder sql=".$sql, LOG_DEBUG);
+
+		dol_syslog(get_class($this)."::".__METHOD__, LOG_DEBUG);
 		$resql=$this->db->query($sql);
 		$max=0;
 		if ($resql)
@@ -594,22 +605,104 @@ class ReferenceLettersChapters extends CommonObject
 			if ($this->db->num_rows($resql))
 			{
 				$obj = $this->db->fetch_object($resql);
-		
+
 				$max = $obj->maxsortorder;
-		
-		
+
+
 			}
 			$this->db->free($resql);
-			
+
 			return $max+1;
 		}
 		else
 		{
 			$this->error="Error ".$this->db->lasterror();
-			dol_syslog(get_class($this)."::findMaxSortOrder ".$this->error, LOG_ERR);
+			$this->errors[]="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
 			return -1;
 		}
 	}
-	
 
+	/**
+	 * Retrun max +1 sort roder for a letters model
+	 *
+	 * @return int	max + 1
+	 */
+	public function findPreviewsLanguage() {
+		global $langs;
+		$sql = "SELECT";
+		$sql.= " t.lang";
+		$sql.= " FROM ".MAIN_DB_PREFIX."referenceletters_chapters as t";
+		$sql.= " WHERE t.fk_referenceletters = ".$this->fk_referenceletters;
+		$sql.= " AND t.sort_order <".$this->sort_order;
+		$sql.= " LIMIT 1";
+
+
+		dol_syslog(get_class($this)."::".__METHOD__." sql=".$sql, LOG_DEBUG);
+		$resql=$this->db->query($sql);
+		$max=0;
+		if ($resql)
+		{
+			if ($this->db->num_rows($resql))
+			{
+				$obj = $this->db->fetch_object($resql);
+
+				$lang = $obj->lang;
+
+
+			}
+			$this->db->free($resql);
+
+			return $lang;
+		}
+		else
+		{
+			$this->error="Error ".$this->db->lasterror();
+			$this->errors[]="Error ".$this->db->lasterror();
+			dol_syslog(get_class($this)."::".__METHOD__." ".$this->error, LOG_ERR);
+			return -1;
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function isSpecialChapters() {
+
+		$this->special_pages = array(
+			array(
+				'keyword' => '@breakpage@',
+				'trans'   => 'RefLtrPageBreak'
+			), array(
+				'keyword' => '@breakpagenohead@',
+				'trans'   => 'RefLtrAddPageBreakWithoutHeader'
+			),
+			array(
+				'keyword' => '@pdfdoc@',
+				'trans'   => 'RefLtrPDFDoc',
+				'nohead' => 1
+			)
+		);
+
+		foreach ($this->special_pages as $special_page) {
+			foreach($special_page as $type=>$data) {
+				if ($type='keyword' && ($this->content_text==$data || ($data=='@pdfdoc@' && strpos($this->content_text,'@pdfdoc')===0))) {
+					return $special_page;
+				}
+			}
+		}
+		return array();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isNoRepeat()
+	{
+		if ($this->content_text == '@breakpagenohead@' || strpos($this->content_text,'@pdfdoc')===0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

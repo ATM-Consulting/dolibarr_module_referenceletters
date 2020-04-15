@@ -80,9 +80,9 @@ if (GETPOST('removAll', 'alpha'))
 
 
 /*
- * 
+ *
  * PRESEND
- * 
+ *
  */
 
 if ($massaction == 'presend')
@@ -104,8 +104,11 @@ if ($massaction == 'presend')
 				if ($objecttmp->element == 'societe'){
 					$thirdpartyid = $objecttmp->id;
 					$modelmail = 'thirdparty';
-				}else $modelmail = 'all';
-					
+
+				} else {
+					$modelmail = 'all';
+				}
+
 				if ($objecttmp->element == 'expensereport')
 					$thirdpartyid = $objecttmp->fk_user_author;
 
@@ -141,9 +144,7 @@ if ($massaction == 'presend')
 	$formmail->withfrom = 1;
 	//$formmail->withform = 1;
 	$liste = $langs->trans("AllRecipientSelected", count($arrayofselected));
-	
 	$formmail->withtoreadonly = 1;
-	
 	//$formmail->withoptiononeemailperrecipient = empty($liste)?0:((GETPOST('oneemailperrecipient')=='on')?1:-1);
 	$formmail->withto = empty($liste) ? (GETPOST('sendto', 'alpha') ? GETPOST('sendto', 'alpha') : array()) : $liste;
 	$formmail->withtofree = empty($liste) ? 1 : 0;
@@ -195,10 +196,10 @@ if ($massaction == 'presend')
 }
 
 /*
- * 
- * 
+ *
+ *
  * FIN PRESEND
- * 
+ *
  */
 
 

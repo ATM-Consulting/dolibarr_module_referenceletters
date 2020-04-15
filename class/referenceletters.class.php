@@ -42,7 +42,10 @@ class ReferenceLetters extends CommonObject
 	public $title;
 	public $element_type;
 	public $use_landscape_format;
+	public $use_custom_header;
+	public $use_custom_footer;
 	public $status;
+	public $default_doc;
 	public $import_key;
 	public $fk_user_author;
 	public $datec = '';
@@ -51,6 +54,8 @@ class ReferenceLetters extends CommonObject
 	public $element_type_list = array ();
 	public $lines = array ();
 	public $TStatus=array();
+	public $header;
+	public $footer;
 
 	/**
 	 * Draft status
@@ -60,6 +65,14 @@ class ReferenceLetters extends CommonObject
 	 * Validated status
 	 */
 	const STATUS_VALIDATED = 1;
+	/**
+	 * DefaultDoc status
+	 */
+	const DEFAULTDOC_YES= 1;
+	/**
+	 * DefaultDoc status
+	 */
+	const DEFAULTDOC_NO = 0;
 
 	/**
 	 * Constructor
@@ -84,6 +97,9 @@ class ReferenceLetters extends CommonObject
 				'card' => '/contrat/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
+				'listmodelclass' => 'ModelePDFContract',
+                'document_dir' => $conf->contrat->dir_output
 		);
 		$this->element_type_list['thirdparty'] = array (
 				'class' => 'societe.class.php',
@@ -97,11 +113,14 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'societe_prepare_head',
 				'card' => 'societe/soc.php',
 				'substitution_method' => 'get_substitutionarray_thirdparty',
-				'picto' => 'company'
+				'picto' => 'company',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
+				'listmodelclass' => 'ModeleThirdPartyDoc',
+                'document_dir' => $conf->societe->dir_output
 		);
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
-				'securityclass' => 'societe',
+				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
 				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
@@ -122,9 +141,13 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Proposal',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/propal.lib.php',
 				'menuloader_function' => 'propal_prepare_head',
-				'card' => 'comm/propal.php',
+				'card' => 'comm/propal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/propale/modules_propale.php',
+				'listmodelclass' => 'ModelePDFPropales',
+                'document_dir' => $conf->propal->dir_output
+
 		);
 		$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
@@ -136,9 +159,12 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Bill',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/invoice.lib.php',
 				'menuloader_function' => 'facture_prepare_head',
-				'card' => 'compta/facture.php',
+				'card' => 'compta/facture/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
+				'listmodelclass' => 'ModelePDFFactures',
+                'document_dir' => $conf->facture->dir_output
 		);
 		$this->element_type_list['order'] = array (
 				'class' => 'commande.class.php',
@@ -152,7 +178,10 @@ class ReferenceLetters extends CommonObject
 				'menuloader_function' => 'commande_prepare_head',
 				'card' => 'commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines'
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
+				'listmodelclass' => 'ModelePDFCommandes',
+                'document_dir' => $conf->commande->dir_output
 		);
 		$this->element_type_list['order_supplier'] = array (
 				'class' => 'fournisseur.commande.class.php',
@@ -167,7 +196,10 @@ class ReferenceLetters extends CommonObject
 				'card' => '/fourn/commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/'
+				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
+				'listmodelclass' => 'ModelePDFSuppliersOrders',
+                'document_dir' => $conf->fournisseur->commande->dir_output
 		);
 		$this->element_type_list['supplier_proposal'] = array (
 				'class' => 'supplier_proposal.class.php',
@@ -182,7 +214,28 @@ class ReferenceLetters extends CommonObject
 				'card' => '/supplier_proposal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/'
+				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
+				'listmodelclass' => 'ModelePDFSupplierProposal',
+                'document_dir' => $conf->supplier_proposal->dir_output
+		);
+		$this->element_type_list['expedition'] = array (
+				'class' => 'expedition.class.php',
+				'securityclass' => 'expedition',
+				'securityfeature' => '',
+				'objectclass' => 'Expedition',
+				'classpath' => DOL_DOCUMENT_ROOT . '/expedition/class/',
+				'trans' => 'sendings',
+				'title' => 'Shipment',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/sendings.lib.php',
+				'menuloader_function' => 'shipping_prepare_head',
+				'card' => '/exepedition/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
+				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
+				'listmodelclass' => 'ModelePdfExpedition',
+                'document_dir' => $conf->expedition->dir_output
 		);
 		$this->element_type_list['shipping'] = array (
 				'class' => 'expedition.class.php',
@@ -201,6 +254,62 @@ class ReferenceLetters extends CommonObject
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
+
+		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]='Yes';
+		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO]='No';
+
+		if(!empty($conf->agefodd->enabled)) {
+
+			// Convention de formation
+			$this->element_type_list['rfltr_agefodd_convention'] = array (
+					'class' => 'agsession.class.php',
+					'objectclass' => 'Agsession',
+					'classpath' => dol_buildpath('/agefodd/class/'),
+					'trans' => 'agefodd',
+					'title' => 'AgfConvention',
+					'card' => '/agefodd/session/card.php',
+					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
+			);
+
+
+			$Tab = array(
+			    'fiche_pedago'=>'AgfFichePedagogique'
+			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
+			    ,'conseils'=>'AgfConseilsPratique'
+			    ,'fiche_presence'=>'AgfFichePresence'
+			    ,'fiche_presence_direct'=>'AgfFichePresenceDirect'
+			    ,'fiche_presence_empty'=>'AgfFichePresenceEmpty'
+			    ,'fiche_presence_trainee'=>'AgfFichePresenceTrainee'
+			    ,'fiche_presence_trainee_direct'=>'AgfFichePresenceTraineeDirect'
+			    ,'fiche_presence_landscape'=>'AgfFichePresenceTraineeLandscape'
+			    ,'fiche_evaluation'=>'AgfFicheEval'
+			    ,'fiche_remise_eval'=>'AgfRemiseEval'
+			    ,'attestationendtraining_empty'=>'AgfAttestationEndTrainingEmpty'
+			    ,'chevalet'=>'AgfChevalet'
+			    ,'convocation'=>'AgfPDFConvocation'
+			    ,'attestationendtraining'=>'AgfAttestationEndTraining'
+			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
+			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
+			    ,'attestation'=>'AgfSendAttestation'
+			    ,'certificateA4'=>'AgfPDFCertificateA4'
+			    ,'certificatecard'=>'AgfPDFCertificateCard'
+			    ,'contrat_presta'=>'AgfContratPrestation'
+			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
+			    ,'contrat_trainer'=>'AgfContratTrainer'
+			    ,'courrier'=>'Courrier'
+			    ,'convocation_trainee'=>'Convocation Stagiaire'
+			    ,'attestation_trainee'=>'Attestation stagiaire'
+			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			);
+
+			foreach ($Tab as $key => $val){
+			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
+			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
+
+		}
+
 		return 1;
 	}
 
@@ -211,7 +320,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -230,6 +339,8 @@ class ReferenceLetters extends CommonObject
 			$this->element_type = trim($this->element_type);
 		if (isset($this->status))
 			$this->status = trim($this->status);
+		if (isset($this->default_doc))
+			$this->default_doc = trim($this->default_doc);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
 
@@ -245,6 +356,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= "use_landscape_format,";
 		$sql .= "use_custom_header,header,use_custom_footer,footer,";
 		$sql .= "status,";
+		$sql .= "default_doc,";
 		$sql .= "import_key,";
 		$sql .= "fk_user_author,";
 		$sql .= "datec,";
@@ -255,12 +367,13 @@ class ReferenceLetters extends CommonObject
 		$sql .= " " . $conf->entity . ",";
 		$sql .= " " . (! isset($this->title) ? 'NULL' : "'" . $this->db->escape($this->title) . "'") . ",";
 		$sql .= " " . (! isset($this->element_type) ? 'NULL' : "'" . $this->db->escape($this->element_type) . "'") . ",";
-		$sql .= " " . (int)$this->use_landscape_format . ",";
-		$sql .= " " . (int)$this->use_custom_header . ",";
+		$sql .= " " . (int) $this->use_landscape_format . ",";
+		$sql .= " " . (int) $this->use_custom_header . ",";
 		$sql .= " " . (! isset($this->header) ? 'NULL' : "'" . $this->header . "'") .",";
-		$sql .= " " . (int)$this->use_custom_footer . ",";
+		$sql .= " " . (int) $this->use_custom_footer . ",";
 		$sql .= " " . (! isset($this->footer) ? 'NULL' : "'" . $this->footer . "'") .",";
-		$sql .= " " . (! isset($this->status) ? '1' : "'" . $this->status . "'") . ",";
+		$sql .= " " . (! isset($this->status) ? '1' : $this->status ) . ",";
+		$sql .= " " . (! isset($this->default_doc) ? '0' : $this->default_doc ) . ",";
 		$sql .= " " . (! isset($this->import_key) ? 'NULL' : "'" . $this->db->escape($this->import_key) . "'") . ",";
 		$sql .= " " . $user->id . ",";
 		$sql .= " '" . $this->db->idate(dol_now()) . "',";
@@ -270,7 +383,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -306,7 +419,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -323,7 +436,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id, $title='') {
+	public function fetch($id, $title='') {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -332,6 +445,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
 		$sql .= " t.status,";
+		$sql .= " t.default_doc,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
@@ -346,10 +460,10 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
 		$sql .= " WHERE 1 ";
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
-		if(!empty($title)) $sql .= " AND t.title = '".$title."'";
+		if(!empty($title)) $sql .= " AND t.title = '".$this->db->escape($title)."'";
 		$sql.= ' AND entity IN (' . getEntity('referenceletters') . ')';
 
-		dol_syslog(get_class($this) . "::fetch sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__. ' ', LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -361,6 +475,7 @@ class ReferenceLetters extends CommonObject
 				$this->title = $obj->title;
 				$this->element_type = $obj->element_type;
 				$this->status = $obj->status;
+				$this->default_doc = $obj->default_doc;
 				$this->import_key = $obj->import_key;
 				$this->fk_user_author = $obj->fk_user_author;
 				$this->datec = $this->db->jdate($obj->datec);
@@ -379,11 +494,13 @@ class ReferenceLetters extends CommonObject
 				}
 				$this->db->free($resql);
 
-				return 1;
+				return $this->id;
+			} else {
+				return 0;
 			}
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__ . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -398,7 +515,7 @@ class ReferenceLetters extends CommonObject
 	 * @param array $filter output
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
+	public function fetch_all($sortorder, $sortfield, $limit, $offset, $filter = array()) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -407,6 +524,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.title,";
 		$sql .= " t.element_type,";
 		$sql .= " t.status,";
+		$sql .= " t.default_doc,";
 		$sql .= " t.import_key,";
 		$sql .= " t.fk_user_author,";
 		$sql .= " t.datec,";
@@ -421,23 +539,23 @@ class ReferenceLetters extends CommonObject
 			foreach ( $filter as $key => $value ) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
-				}if ($key == 't.status') {
+				}if ($key == 't.status' || $key == 't.default_doc') {
 					$sql .= ' AND ' . $key . '=' . $this->db->escape($value);
-				}else {
+				} else {
 					$sql .= ' AND ' . $key . ' LIKE \'%' . $this->db->escape($value) . '%\'';
 				}
 			}
 		}
 
 		if (! empty($sortfield)) {
-			$sql .= " ORDER BY " . $sortfield . ' ' . $sortorder;
+			$sql .= $this->db->order($sortfield,$sortorder);
 		}
 
 		if (! empty($limit)) {
 			$sql .= ' ' . $this->db->plimit($limit + 1, $offset);
 		}
 
-		dol_syslog(get_class($this) . "::fetch_all sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -453,6 +571,7 @@ class ReferenceLetters extends CommonObject
 					$line->title = $obj->title;
 					$line->element_type = $obj->element_type;
 					$line->status = $obj->status;
+					$line->default_doc = $obj->default_doc;
 					$line->import_key = $obj->import_key;
 					$line->fk_user_author = $obj->fk_user_author;
 					$line->datec = $this->db->jdate($obj->datec);
@@ -467,7 +586,8 @@ class ReferenceLetters extends CommonObject
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::fetch_all " . $this->error, LOG_ERR);
+			$this->errors[] = "Error " . $this->db->lasterror();
+			dol_syslog(get_class($this) . "::".__METHOD__ .' '.$this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -482,7 +602,8 @@ class ReferenceLetters extends CommonObject
 	public function displayElement($mode = 0) {
 		global $langs;
 
-		$langs->load($this->element_type_list[$this->element_type]['trans']);
+		if(!empty($this->element_type_list[$this->element_type]['trans'])) $langs->load($this->element_type_list[$this->element_type]['trans']);
+
 		if (empty($mode)) {
 			$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
 		} else {
@@ -504,12 +625,14 @@ class ReferenceLetters extends CommonObject
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
 
-		$subst_array = '';
+		$subst_array = array();
 		$docgen = new commondocgeneratorreferenceletters($this->db);
 		$docgen->db = $this->db;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
+
+        complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
 
 		foreach ( $this->element_type_list as $type => $item ) {
 			if ($this->element_type == $type) {
@@ -538,7 +661,7 @@ class ReferenceLetters extends CommonObject
 					$array_second_thirdparty_object = array ();
 
 					if($testObj->element == 'societe'){
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $outputlangs);
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
@@ -550,7 +673,7 @@ class ReferenceLetters extends CommonObject
 
 					if (! empty($testObj->thirdparty->id)) {
 
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $outputlangs);
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
@@ -589,32 +712,124 @@ class ReferenceLetters extends CommonObject
 			);
 		}
 
-		$this->completeSubstitution($subst_array);
+		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		return $subst_array;
 	}
 
-	function completeSubstitution(&$subst_array) {
+	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs;
 
+		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
+		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
+
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+
+		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
+				'formation_nom'=>'Intitulé de la formation'
+				,'formation_nom_custo'=>'Intitulé formation (pour les documents PDF)'
+				,'formation_ref'=>'Référence de la formation'
+				,'formation_statut'=>'Statut de la formation'
+		        ,'formation_date_debut' => 'Date de début de la formation'
+		        ,'formation_date_debut_formated' => 'Date de début de la formation mise en forme'
+		        ,'formation_date_fin' => 'Date de fin de la formation'
+		        ,'formation_date_fin_formated' => 'Date de fin de la formation mise en forme'
+				,'objvar_object_date_text'=>'Date de la session'
+		        ,'formation_duree' => 'Durée de la formation'
+		        ,'formation_duree_session' => 'Durée de la session'
+		        ,'session_nb_days' => 'Nombre de jours dans le calendrier de la session'
+				,'formation_commercial'=>'commercial en charge de la formation'
+				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
+				,'formation_commercial_mail'=>'email commercial en charge de la formation'
+				,'formation_societe'=>'Société concernée'
+		        ,'formation_but'=>'But de la formation'
+		        ,'formation_methode'=>'Methode de formation'
+		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
+		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
+		        ,'formation_documents'=>'Documents nécessaires à la formation'
+		        ,'formation_equipements'=>'Equipements nécessaires à la formation'
+		        ,'formation_lieu'=>'Lieu de la formation'
+		        ,'formation_lieu_adresse'=>'Adresse du lieu de formation'
+		        ,'formation_lieu_cp'=>'Code postal du lieu de formation'
+		        ,'formation_lieu_ville'=>'Ville du lieu de formation'
+		        ,'formation_lieu_acces'=>'Instruction d\'accès au lieu lieu de formation'
+		        ,'formation_lieu_horaires'=>'Horaires du lieu de formation'
+		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
+		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
+		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules (Nom prenom)'
+		        ,'objvar_object_trainer_text_invert'=>'Tous les foramteurs séparés par des virgules (Prenom nom)'
+		        ,'objvar_object_id'=>'Id de la session'
+		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
+		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
+
+		);
+
+		// Liste de données - Participants
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
+				'line_civilite'=>'Civilité'
+				,'line_nom'=>'Nom participant'
+				,'line_prenom'=>'Prénom participant'
+				,'line_nom_societe'=>'Société du participant'
+				,'line_poste'=>'Poste occupé au sein de sa société'
+				,'line_mail' => 'Email du participant'
+				,'line_siret' => 'SIRET de la société du participant'
+				,'line_birthday' => 'Date de naissance du participant'
+				,'line_birthplace'=>'Lieu de naissance du participant'
+				,'line_code_societe'=> 'Code de la société du participant'
+				,'line_nom_societe'=> 'Nom du client du participant'
+		);
+
+		// Liste de données - Horaires
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
+				'line_date_session'=>'Date de la session'
+				,'line_heure_debut_session'=>'Heure début session'
+				,'line_heure_fin_session'=>'Heure fin session'
+		);
+
+		// Liste de données - Formateurs
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
+				'line_formateur_nom'=>'Nom du formateur'
+				,'line_formateur_prenom'=>'Prénom du formateur'
+				,'line_formateur_phone'=>'Téléphone du formateur'
+				,'line_formateur_mail'=>'Adresse mail du formateur'
+				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
+		);
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(
+		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
+		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
+		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
+		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
+		);
+
+		// Tags des lignes
 		$subst_array[$langs->trans('RefLtrLines')] = array(
 				'line_fulldesc'=>'Description complète',
 				'line_product_ref'=>'Référence produit',
+				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
 				'line_product_label'=>'Libellé produit',
 				'line_product_type'=>'Type produit',
 				'line_desc'=>'Description',
 				'line_vatrate'=>'Taux de TVA',
 				'line_up'=>'Prix unitaire (format numérique)',
+				'line_multicurrency_subprice'=>'Prix unitaire devisé (format numérique)',
 				'line_up_locale'=>'Prix unitaire (format prix)',
+				'line_multicurrency_subprice_locale'=>'Prix unitaire devisé (format prix)',
 				'line_qty'=>'Qté ligne',
 				'line_discount_percent'=>'Remise ligne',
 				'line_price_ht'=>'Total HT ligne (format numérique)',
+				'line_multicurrency_total_ht'=>'Total HT ligne devisé (format numérique)',
 				'line_price_ttc'=>'Total TTC ligne (format numérique)',
-				'line_price_vat'=>'Montant TVA (format numérique)',
+				'line_multicurrency_total_ttc'=>'Total TTC ligne devisé (format numérique)',
 				'line_price_ht_locale'=>'Total HT ligne (format prix)',
+				'line_multicurrency_total_ht_locale'=>'Total HT ligne devisé (format prix)',
 				'line_price_ttc_locale'=>'Total TTC ligne (format prix)',
-				'line_price_vat_locale'=>'Montant TVA (format prix)',
+				'line_multicurrency_total_ttc_locale'=>'Total TTC ligne devisé (format prix)',
+                                'line_price_vat'=>'Montant TVA (format numérique)',
+                                'line_price_vat_locale'=>'Montant TVA (format prix)',
+
 				// Dates
 				'line_date_start'=>'Date début service',
 				'line_date_start_locale'=>'Date début service format 1',
@@ -624,10 +839,50 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
 
+		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
+			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_poste'=>'Poste du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_mail'=>'Mail du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_intra_phone'=>'Téléphone du signataire des intra-entreprise (contact session)',
+			'objvar_object_signataire_inter'=>'Nom des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_poste'=>'Poste des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_mail'=>'Mail des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_signataire_inter_phone'=>'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
+			'objvar_object_convention_notes'=>'commentaire de la convention',
+			'objvar_object_convention_id'=>'identifiant unique de la convention'
+		);
+
+		$subst_array[$langs->trans('RefLtrTStagiairesSessionConvention')]=array(
+			'line_civilite'=>'Civilité'
+			,'line_nom'=>'Nom participant'
+			,'line_prenom'=>'Prénom participant'
+			,'line_nom_societe'=>'Société du participant'
+			,'line_poste'=>'Poste occupé au sein de sa société'
+			,'line_type'=>'Type de financement'
+		);
+
+		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
+			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
+			,'trainer_datetextline'=>'Date(s) calendrier formateur'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda du formateur'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda du formateur'
+		);
+
+		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
+			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
+			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+			,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
+			,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
+			,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
+		);
+
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
+
 
 	}
 
@@ -652,7 +907,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $notrigger triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -666,6 +921,8 @@ class ReferenceLetters extends CommonObject
 			$this->element_type = trim($this->element_type);
 		if (isset($this->status))
 			$this->status = trim($this->status);
+		if (isset($this->default_doc))
+			$this->default_doc = trim($this->default_doc);
 		if (isset($this->import_key))
 			$this->import_key = trim($this->import_key);
 
@@ -677,7 +934,8 @@ class ReferenceLetters extends CommonObject
 
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
-		$sql .= " status=" . (isset($this->status) ? $this->status : "null") . ",";
+		$sql .= " status=" . (isset($this->status) ? $this->status : "0") . ",";
+		$sql .= " default_doc=" . (isset($this->default_doc) ? $this->default_doc : "0") . ",";
 		$sql .= " import_key=" . (isset($this->import_key) ? "'" . $this->db->escape($this->import_key) . "'" : "null") . ",";
 		$sql .= " header=" . (isset($this->header) ? "'" . $this->header . "'" : "null") . ",";
 		$sql .= " footer=" . (isset($this->footer) ? "'" . $this->footer. "'" : "null") . ",";
@@ -690,7 +948,7 @@ class ReferenceLetters extends CommonObject
 
 		$this->db->begin();
 
-		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
 			$error ++;
@@ -725,7 +983,7 @@ class ReferenceLetters extends CommonObject
 		// Commit or rollback
 		if ($error) {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -741,9 +999,11 @@ class ReferenceLetters extends CommonObject
 	 *
 	 * @param User $user that deletes
 	 * @param int $notrigger triggers after, 1=disable triggers
+	 * @param bool $forceDeleteElements Force delete element generated with this model
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0, $forceDeleteElements = false)
+	{
 		global $conf, $langs;
 		$error = 0;
 
@@ -763,11 +1023,23 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
+		if (! $error && $forceDeleteElements) {
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
+			$sql .= " WHERE fk_referenceletters=" . $this->id;
+
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
+			$resql = $this->db->query($sql);
+			if (! $resql) {
+				$error ++;
+				$this->errors[] = "Error " . $this->db->lasterror();
+			}
+		}
+
 		if (! $error) {
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_chapters";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -779,7 +1051,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -791,7 +1063,7 @@ class ReferenceLetters extends CommonObject
 			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
 
-			dol_syslog(get_class($this) . "::delete sql=" . $sql);
+			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
 				$error ++;
@@ -801,8 +1073,8 @@ class ReferenceLetters extends CommonObject
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+			foreach ($this->errors as $errmsg) {
+				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -819,7 +1091,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $fromid of object to clone
 	 * @return int id of clone
 	 */
-	function createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 
 		$error = 0;
@@ -831,6 +1103,7 @@ class ReferenceLetters extends CommonObject
 		// Load source object
 		$object->fetch($fromid);
 		$object->title = $object->title . ' (Clone)';
+
 		$clonedrefletterid = $object->create($user);
 
 		// Other options
@@ -860,6 +1133,7 @@ class ReferenceLetters extends CommonObject
 						$chaptersnew->content_text = $line->content_text;
 						$chaptersnew->options_text = $line->options_text;
 						$chaptersnew->status = $line->status;
+						$chaptersnew->default_doc = $line->default_doc;
 						$result = $chaptersnew->create($user);
 						if ($result < 0) {
 							$this->errors[] = $object->error;
@@ -876,7 +1150,7 @@ class ReferenceLetters extends CommonObject
 			return $object->id;
 		} else {
 			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
+				dol_syslog(get_class($this) . "::".__METHOD__ . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
@@ -890,13 +1164,14 @@ class ReferenceLetters extends CommonObject
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 
 		$this->entity = '';
 		$this->title = '';
 		$this->element_type = '';
 		$this->status = '';
+		$this->default_doc = '';
 		$this->import_key = '';
 		$this->fk_user_author = '';
 		$this->datec = '';
@@ -910,7 +1185,7 @@ class ReferenceLetters extends CommonObject
 	 * @param int $id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function info($id) {
+	public function info($id) {
 		global $langs;
 
 		$sql = "SELECT";
@@ -918,7 +1193,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
-		dol_syslog(get_class($this) . "::info sql=" . $sql, LOG_DEBUG);
+		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			if ($this->db->num_rows($resql)) {
@@ -933,7 +1208,7 @@ class ReferenceLetters extends CommonObject
 			return 1;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
-			dol_syslog(get_class($this) . "::info " . $this->error, LOG_ERR);
+			dol_syslog(get_class($this) . "::".__METHOD__. " " . $this->error, LOG_ERR);
 			return - 1;
 		}
 	}
@@ -945,6 +1220,7 @@ class ReferenceLettersLine
 	public $title;
 	public $element_type;
 	public $status;
+	public $default_doc;
 	public $import_key;
 	public $fk_user_author;
 	public $datec = '';

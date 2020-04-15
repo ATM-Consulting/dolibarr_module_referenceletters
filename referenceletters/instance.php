@@ -80,7 +80,7 @@ require_once $object_refletter->element_type_list[$element_type]['classpath'] . 
 require_once $object_refletter->element_type_list[$element_type]['menuloader_lib'];
 
 // Access control
-restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature']);
+restrictedArea($user, $object_refletter->element_type_list[$element_type]['securityclass'], $id, $object_refletter->element_type_list[$element_type]['securityfeature'], $element_type === 'order_supplier' ? 'commande' : '');
 
 // Load translation files required by the page
 $langs->load($object_refletter->element_type_list[$element_type]['trans']);
@@ -101,10 +101,16 @@ if (method_exists($object, 'fetch_thirdparty')) {
 $object_element->srcobject=$object;
 
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
-$hookmanager->initHooks(array (
-		'referencelettersinstacecard'
-));
+$hookContexts = array (
+	'referencelettersinstacecard',
+);
 
+// add a card context according to the object to enable the same hooks as on the card
+if     ($object->element === 'commande') $hookContexts[] = 'ordercard';
+elseif ($object->element === 'facture')  $hookContexts[] = 'invoicecard';
+elseif ($object->element === 'propal')   $hookContexts[] = 'propalcard';
+
+$hookmanager->initHooks($hookContexts);
 /*
  * Actions
  */
@@ -116,10 +122,10 @@ if ($action == 'buildoc') {
 
 	// New letter
 	if (empty($refletterelemntid)) {
-		
+
 		$ref_int = GETPOST('ref_int','alpha');
 		if(empty($ref_int)) $ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
-		
+
 		// Save data
 		$object_element->ref_int = $ref_int;
 		$object_element->title = GETPOST('title_instance');
@@ -132,14 +138,14 @@ if ($action == 'buildoc') {
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
 		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
 		$object_element->use_landscape_format = GETPOST('use_landscape_format');
-		
+
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter)) {
 			$langs_chapter = $langs->defaultlang;
 		}
-		
+
 		$result = $object_chapters->fetch_byrefltr($idletter, $langs_chapter);
 		if ($result < 0) {
 			if($justinformme) echo $object_element->error;
@@ -168,11 +174,11 @@ if ($action == 'buildoc') {
 			}
 		}
 		elseif($justinformme){
-			
+
 			echo $langs->trans('NoContentChapterForLang', $langs_chapter);
 			exit;
 		}
-		
+
 		$object_element->content_letter = $content_letter;
 
 		$result = $object_element->create($user);
@@ -180,7 +186,7 @@ if ($action == 'buildoc') {
 			if($justinformme) echo $object_element->error;
 			else setEventMessage($object_element->error, 'errors');
 		}
-		
+
 		$object_element->fetch($result);
 		$refletterelemntid = $object_element->id;
 
@@ -190,7 +196,7 @@ if ($action == 'buildoc') {
 		if ($result < 0) {
 			setEventMessage($object_element->error, 'errors');
 		}
-		
+
 		$object_element->title = GETPOST('title_instance');
 		$object_element->outputref = GETPOST('outputref','int');
 		$object_element->use_custom_header = GETPOST('use_custom_header');
@@ -198,8 +204,8 @@ if ($action == 'buildoc') {
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
 		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
 		$object_element->use_landscape_format = GETPOST('use_landscape_format');
-		
-		
+
+
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
@@ -227,7 +233,8 @@ if ($action == 'buildoc') {
 
 				$content_letter[$line_chapter->id] = array (
 						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
-						'options' => $options
+						'options' => $options,
+						'same_page' => $line_chapter->same_page
 				);
 			}
 		}
@@ -240,7 +247,7 @@ if ($action == 'buildoc') {
 	}
 
 	// Create document PDF
-	
+
 	// Define output language
 	$outputlangs = $langs;
 	if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -248,23 +255,23 @@ if ($action == 'buildoc') {
 		$newlang = $object->thridparty->default_lang;
 		$outputlangs->setDefaultLang($newlang);
 	}
-	
+
 	// Reload to get new records
 	$ret = $object_element->fetch($refletterelemntid);
 	$result = referenceletters_pdf_create($db, $object, $object_element, $outputlangs, $element_type);
-	
+
 	if ($result <= 0) {
 		dol_print_error($db, $result);
 		exit();
 	} else {
-		
+
 		if($justinformme) {
 			echo 1;
 		}
 		else{
 			header('Location: ' . $_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type);
 		}
-		
+
 		exit();
 	}
 } elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
@@ -302,13 +309,13 @@ if (array_key_exists('picto', $object_refletter->element_type_list[$element_type
 } else {
 	$picto=$element_type;
 }
-dol_fiche_head($head, 'tabReferenceLetters', $langs->trans($object_refletter->element_type_list[$element_type]['title']), 0, $picto);
+dol_fiche_head($head, 'tabReferenceLetters', $langs->trans($object_refletter->element_type_list[$element_type]['title']), -1, $picto);
 
 // Include a template to display the object
 include_once dol_buildpath('/referenceletters/tpl/' . $element_type . '.tpl.php');
 
 // Display existing letter already created
-print_fiche_titre($langs->trans('RefLtrExistingLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
+print load_fiche_titre($langs->trans('RefLtrExistingLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 // Confirm form
 $formconfirm = '';
@@ -395,6 +402,7 @@ print '</table>';
 
 print '</form>';
 
+
 // New letter
 if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
@@ -437,7 +445,7 @@ if (! empty($idletter)) {
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrUseLandscapeFormat');
@@ -455,7 +463,7 @@ if (! empty($idletter)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr style="background-color:#CEECF5;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomHeader');
@@ -463,7 +471,7 @@ if (! empty($idletter)) {
 			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_refletter->use_custom_header) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_header" '.(empty($object_refletter->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 			print '<td>'.$langs->trans('RefLtrHeaderContent');
 			print '</td>';
@@ -472,7 +480,7 @@ if (! empty($idletter)) {
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
-			
+
 			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
 				if ($line_chapter->content_text == '@breakpage@') {
 					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
@@ -516,9 +524,9 @@ if (! empty($idletter)) {
 					print '</tr>';
 				}
 			}
-			
-			
-			
+
+
+
 			print '<tr style="background-color:#CEF6CE;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomFooter');
@@ -526,7 +534,7 @@ if (! empty($idletter)) {
 			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_refletter->use_custom_footer) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_footer" '.(empty($object_refletter->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
 			print '<td>'.$langs->trans('RefLtrFooterContent');
 			print '</td>';
@@ -535,6 +543,14 @@ if (! empty($idletter)) {
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
+
+            print '<tr style="background-color:#ffff88;">';
+            print '<td><label for="overwrite_std_doc">'.$form->textwithpicto(
+                    $langs->trans('RefLtrOverwriteStdDoc'),
+                    $langs->trans('RefLtrOverwriteStdDocHelp')).'</label></td>';
+            $checkedStatus = isset($conf->global->DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT) ? 'checked="checked"' : '';
+            print '<td><input type="checkbox" name="overwrite_std_doc" id="overwrite_std_doc" value="1" '.$checkedStatus.' /></td>';
+            print '</tr>';
 
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
@@ -570,7 +586,7 @@ if (! empty($refletterelemntid)) {
 			print $object_element->ref_int;
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrTitle');
@@ -579,7 +595,7 @@ if (! empty($refletterelemntid)) {
 			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . $object_element->title . '">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td  width="20%">';
 			print $langs->trans('RefLtrUseLandscapeFormat');
@@ -597,7 +613,7 @@ if (! empty($refletterelemntid)) {
 			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($object_element->outputref)?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr style="background-color:#CEECF5;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomHeader');
@@ -605,7 +621,7 @@ if (! empty($refletterelemntid)) {
 			print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object_element->use_custom_header) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_header" '.(empty($object_element->use_custom_header) ? 'style="display:none;background-color:#CEECF5;"' : 'style="background-color:#CEECF5;"').'>';
 			print '<td>'.$langs->trans('RefLtrHeaderContent');
 			print '</td>';
@@ -664,8 +680,8 @@ if (! empty($refletterelemntid)) {
 					print '</tr>';
 				}
 			}
-			
-			
+
+
 			print '<tr style="background-color:#CEF6CE;">';
 			print '<td>';
 			print $langs->trans('RefLtrUseCustomFooter');
@@ -673,7 +689,7 @@ if (! empty($refletterelemntid)) {
 			print '<td><input type="checkbox" name="use_custom_footer" id="use_custom_footer" value="1" '.(!empty($object_element->use_custom_footer) ? 'checked="checked"' : '').' />';
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr class="wysiwyg_footer" '.(empty($object_element->use_custom_footer) ? 'style="display:none;background-color:#CEF6CE;"' : 'style="background-color:#CEF6CE;"').'>';
 			print '<td>'.$langs->trans('RefLtrFooterContent');
 			print '</td>';
@@ -682,7 +698,7 @@ if (! empty($refletterelemntid)) {
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
-			
+
 			print '<tr>';
 			print '<td colspan="2" align="center">';
 			print '<input type="submit" value="' . $langs->trans('RefLtrCreateDoc') . '" class="button" name="createdoc">';
@@ -699,23 +715,22 @@ if (! empty($refletterelemntid)) {
 <script type="text/javascript">
 
 	$('[name*=use_custom]').click(function() {
-		
+
 		var is_checked = $(this).prop('checked');
 		var name_checkbox = $(this).attr('name');
 		var type_checkbox = name_checkbox.replace('use_custom_', '');
-		
+
 		if(is_checked) {
 			$('.wysiwyg_' + type_checkbox).show();
 		} else {
 			$('.wysiwyg_' + type_checkbox).hide();
 		}
-		
+
 	});
 
 </script>
 
 <?php
-
 // Page end
 llxFooter();
 $db->close();

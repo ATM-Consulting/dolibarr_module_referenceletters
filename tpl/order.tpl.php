@@ -33,7 +33,11 @@ print ' &nbsp;' . $soc->getNomUrl(1, 'compta');
 print ' &nbsp; ';
 print '(<a href="' . DOL_URL_ROOT . '/compta/facture/list.php?socid=' . $object->socid . '">' . $langs->trans('OtherBills') . '</a>';
 // Outstanding Bill
-$outstandigBills = $soc->get_OutstandingBill();
+if(method_exists($soc, 'get_OutstandingBill')) $outstandigBills = $soc->get_OutstandingBill();
+else {
+	$TOutstandigBills = $soc->getOutstandingBills();
+	$outstandigBills = $TOutstandigBills['opened'];
+}
 print ' - ' . $langs->trans('CurrentOutstandingBill') . ': ';
 print price($outstandigBills, '', $langs, 0, 0, - 1, $conf->currency);
 if ($soc->outstanding_limit != '') {

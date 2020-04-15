@@ -110,7 +110,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$instance_letter = $instances[0];
 		
 		if(empty($instance_letter->ref_int)) $instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
-		$instance_letter->create($user);
+		//$instance_letter->create($user);
 		// Création du PDF
 		$result = referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $instance_letter->element_type);
 		

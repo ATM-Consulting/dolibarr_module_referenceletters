@@ -4,11 +4,16 @@
 	$linkback = '<a href="' . DOL_URL_ROOT . '/comm/propal/list.php' . (! empty($socid) ? '?socid=' . $socid : '') . '">' . $langs->trans("BackToList") . '</a>';
 
 	$soc=$object->thirdparty;
-	
+
 	// Ref
 	print '<tr><td width="20%">' . $langs->trans('Ref') . '</td>';
 	print '<td colspan="5">';
-	print $form->showrefnav($object, 'ref', $linkback, 1, 'facnumber', 'ref', $morehtmlref);
+	if (floatval(DOL_VERSION) > 9) {
+		$fieldfac .= "ref";
+	} else {
+		$fieldfac .= " facnumber";
+	}
+	print $form->showrefnav($object, 'ref', $linkback, 1, $fieldfac, 'ref', $morehtmlref);
 	print '</td></tr>';
 
 	// Ref customer
@@ -65,5 +70,5 @@
 	// Statut
 	print '<tr><td>' . $langs->trans('Status') . '</td>';
 	print '<td align="left" colspan="3">' . ($object->getLibStatut(4, $totalpaye)) . '</td></tr>';
-	
+
 	print '</table><br>';

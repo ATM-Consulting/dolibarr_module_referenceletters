@@ -43,7 +43,7 @@ class RfltrTools {
 
 		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' || get_class($obj) === 'SupplierProposal' || get_class($obj) === 'CommandeFournisseur'|| get_class($obj) === 'FactureFournisseur'))  {
 			$object = &$obj;
-			if(empty($object->thirdparty)) {
+			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
 				$object->fetch_thirdparty();
 			}
 

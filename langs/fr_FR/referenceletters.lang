@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = DocEdit - Formation
+Module103258Name = DocEdit
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Gère des modèles de document

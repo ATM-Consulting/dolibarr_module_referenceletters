@@ -20,7 +20,7 @@
 
 # Module label 'ModuleXXXName'
 # (where XXX is value of numeric property 'numero' of module)
-Module103258Name = Plantillas de correos - Agefodd
+Module103258Name = Plantillas de correos
 # Module description 'ModuleXXXDesc'
 # (where XXX is value of numeric property 'numero' of module)
 Module103258Desc = Gestionar las plantillas de correo

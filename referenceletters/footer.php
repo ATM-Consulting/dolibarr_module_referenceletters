@@ -83,7 +83,8 @@ if($action === 'save') {
 
 $title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrFooterTab');
 
-llxHeader('',$title);
+$arrayofcss = array('/referenceletters/css/view_documents.css?v='.time());
+llxHeader('',$title, '', '', 0, 0, array(), $arrayofcss);
 
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);
@@ -117,7 +118,8 @@ if(!empty($object->id)) {
 	print $langs->trans('RefLtrTag');
 	print '</td>';
 	print '<td>';
-	print $formrefleter->displaySubtitutionKey($user,$object);
+	print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#footer"><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+	print $formrefleter->displaySubtitutionKeyAdvanced($user, $object);
 	print '</td>';
 	print '</tr>';
 

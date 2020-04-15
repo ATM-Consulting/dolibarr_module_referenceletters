@@ -199,7 +199,7 @@ if ($action=='create') {
 	$button_text_stay='RefLtrModifyAndStay';
 	$action_next='update';
 }
-$arrayofcss = array('referenceletters/css/view_documents.css');
+$arrayofcss = array('/referenceletters/css/view_documents.css?v='.time());
 llxHeader('',$title . ' - ' . $subtitle, '', '', 0, 0, array(), $arrayofcss);
 
 $form = new Form($db);
@@ -277,7 +277,8 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		print $langs->trans('RefLtrTag');
 		print '</td>';
 		print '<td>';
-		print $formrefleter->displaySubtitutionKey($user,$object_refletter);
+		print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+		print $formrefleter->displaySubtitutionKeyAdvanced($user, $object_refletter);
 		print '</td>';
 		print '</tr>';
 

@@ -43,7 +43,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * Return list of active generation modules
 	 *
 	 * @param DoliDB $db handler
-	 * @param string $maxfilenamelength length of value to show
+	 * @param int $maxfilenamelength length of value to show
 	 * @return array of templates
 	 */
 	static function liste_modeles($db, $maxfilenamelength = 0) {
@@ -1036,18 +1036,10 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	$error = 0;
 	$filefound = 0;
 
-	// Search custom template files
-	$file = dol_buildpath('/referenceletters/core/modules/custom/pdf/pdf_rfltr_' . $element_type . '.modules.php');
+	// Search template files
+	$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
 	if (file_exists($file)) {
 		$filefound = 1;
-	}
-	else
-	// Search template files
-	{
-		$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
-		if (file_exists($file)) {
-			$filefound = 1;
-		}
 	}
 
 	$classname = 'pdf_rfltr_' . $element_type;

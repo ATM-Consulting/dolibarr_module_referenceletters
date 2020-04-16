@@ -103,24 +103,23 @@ class pdf_rfltr_default extends CommonDocGenerator
 
         $object->fetch_optionals();
 		$id_model = $object->array_options['options_rfltr_model_id'];
-		
+
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
 		/** @var ReferenceLettersElements $instance_letter */
 		$instance_letter = $instances[0];
-		
+
 		if(empty($instance_letter->ref_int)) $instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
 		//$instance_letter->create($user);
 		// Création du PDF
 		$result = referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $instance_letter->element_type);
-		
+
 		if($result > 0) {
-		    
 		    // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
 		    $objectref = dol_sanitizeFileName($instance_letter->ref_int);
 		    $dir = $conf->referenceletters->dir_output . '/' .$instance_letter->element_type . '/' . $objectref;
 		    $file = $dir . '/' . $objectref . ".pdf";
-		    
+
 		    $objectref = dol_sanitizeFileName($object->ref);
 		    $classname = get_class($object);
 		    if($classname === 'CommandeFournisseur') $classname = 'supplier_order';
@@ -134,7 +133,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		        }
 		    }
 		    if (empty($dir_dest)) {
-		        setEventMessage($langs->trans('RefLtrCannotCopyFile'),'errors');
+		        setEventMessage($langs->trans('RefLtrCannotCopyFile'), 'errors');
 		    } else {
                 if (!empty($object->context['propale_history']['original_ref'])) {
                     $objectref = $object->context['propale_history']['original_ref'];
@@ -149,7 +148,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 
 		        dol_copy($file, $file_dest);
 		    }
-		    
+
 // 		    // Header sur la même page pour annuler le traitement standard de génération de PDF
 // 		    $field_id = 'id';
 // 		    if(get_class($object) === 'Facture') $field_id = 'facid';

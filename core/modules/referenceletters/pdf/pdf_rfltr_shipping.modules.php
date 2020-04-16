@@ -189,7 +189,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 	 * @return int 1=OK, 0=KO
 	 */
 	public function write_file($object, $instance_letter, $outputlangs, $doctype='', $doctypedir='') {
-		return parent::write_file($object, $instance_letter, $outputlangs, 'expedition', 'commande');
+		return parent::write_file($object, $instance_letter, $outputlangs, 'expedition', 'shipping');
 	}
 
 	/**
@@ -279,7 +279,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 		$posy += 2;
 
 		// Show list of linked objects
-		// $posy = pdf_writeLinkedObjects($pdf, $object, $outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
+		//$posy = pdf_writeLinkedObjects($pdf, $object, $this->outputlangs, $posx, $posy, 100, 3, 'R', $default_font_size);
 
 		if ($showaddress) {
 			// Sender properties

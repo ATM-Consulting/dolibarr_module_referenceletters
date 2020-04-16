@@ -117,7 +117,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientfact'] = '';
 		$resarray['cust_contactclientfacttel'] = '';
 		$resarray['cust_contactclientfactmail'] = '';
-		if (!empty($arrayidcontact)) {
+		if (!empty($arrayidcontact_inv)) {
 			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
@@ -138,7 +138,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['cust_contactclientlivrzip'] = '';
 		$resarray['cust_contactclientlivrtown'] = '';
 		$resarray['cust_contactclientlivrcountry'] = '';
-		if (!empty($arrayidcontact)) {
+		if (!empty($arrayidcontact_inv)) {
 			foreach ($arrayidcontact_inv as $id) {
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
@@ -639,9 +639,28 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
 
 		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
-		if (get_class($line) === 'PropaleLigne' || get_class($line) === 'OrderLine' || get_class($line) === 'FactureLigne' || get_class($line) === 'ContratLigne' || get_class($line) === 'CommandeFournisseurLigne')
+		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');
+		if (in_array(get_class($line),$arrayTypeObj)) {
 			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+		}
 		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
+		if (get_class($line)=='ExpeditionLigne') {
+			$weighttxt = '';
+			if ($line->fk_product_type == 0 && $line->weight)
+			{
+				$weighttxt = round($line->weight * $line->qty_shipped, 5).' '.measuringUnitString(0, "weight", $line->weight_units, 1);
+			}
+			$voltxt = '';
+			if ($line->fk_product_type == 0 && $line->volume)
+			{
+				$voltxt = round($line->volume * $line->qty_shipped, 5).' '.measuringUnitString(0, "volume", $line->volume_units ? $line->volume_units : 0, 1);
+			}
+			$resarray['line_weight'] =$weighttxt;
+			$resarray['line_vol'] =$voltxt;
+			$resarray['line_qty_asked'] =$line->qty_asked;
+			$resarray['line_qty_shipped'] =$line->qty_shipped;
+		}
+
 		// Spé pour les contrats
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');

@@ -747,7 +747,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 		$tmparray['object_incoterms']='';
-        if($conf->incoterm->enabled){
+        if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
             if ($resql) {
@@ -761,6 +761,29 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                 }
             }
         }
+		// Tracking number for shipping
+		if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable($object,'getUrlTrackingStatus'))
+		{
+			$object->getUrlTrackingStatus($object->tracking_number);
+			if (!empty($object->tracking_url))
+			{
+				if ($object->shipping_method_id > 0)
+				{
+					// Get code using getLabelFromKey
+					$code = $outputlangs->getLabelFromKey($this->db, $object->shipping_method_id, 'c_shipment_mode', 'rowid', 'code');
+					$label = '';
+					if ($object->tracking_url != $object->tracking_number) $label .= $outputlangs->transnoentitiesnoconv("LinkToTrackYourPackage")."<br>";
+					$label .= $outputlangs->transnoentitiesnoconv("SendingMethod").": ".$outputlangs->transnoentitiesnoconv("SendingMethod".strtoupper($code));
+					//var_dump($object->tracking_url != $object->tracking_number);exit;
+					if ($object->tracking_url != $object->tracking_number)
+					{
+						$label .= " : ";
+						$label .= $object->tracking_url;
+					}
+					$tmparray['object_tracking_number'] = $label;
+				}
+			}
+		}
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -1047,7 +1070,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
 	if ($filefound) {
 		require_once $file;
 
-		/** @var pdf_rfltr_propal|pdf_rfltr_order|pdf_rfltr_invoice|pdf_rfltr_contract|pdf_rfltr_thirdparty|pdf_rfltr_contact|pdf_rfltr_supplier_proposal|pdf_rfltr_order_supplier $obj */
+		/** @var pdf_rfltr_propal|pdf_rfltr_order|pdf_rfltr_invoice|pdf_rfltr_contract|pdf_rfltr_thirdparty|pdf_rfltr_contact|pdf_rfltr_supplier_proposal|pdf_rfltr_order_supplier|pdf_rfltr_shipping $obj */
 		$obj = new $classname($db);
 		// We save charset_output to restore it because write_file can change it if needed for
 		// output format that does not support UTF8.

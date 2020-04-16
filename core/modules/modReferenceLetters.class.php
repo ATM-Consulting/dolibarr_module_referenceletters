@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.5.5';
+		$this->version = '2.6.0';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -426,13 +426,13 @@ class modReferenceLetters extends DolibarrModules
 	 */
 	function init($options = '') {
 	    global $db, $conf;
-	    
+
 		$sql = array ();
 
 		$result = $this->load_tables();
 
 		define('INC_FROM_DOLIBARR', true);
-		
+
 		$ext = new ExtraFields($db);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'facture', 0, 0, '', '', 1, '', 0, 1);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'thirdparty', 0, 0, '', '', 1, '', 0, 1);

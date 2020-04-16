@@ -32,8 +32,15 @@ require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
  */
 class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 {
-	var $error = '';
-	var $db;
+	/**
+	 * @var string Error code (or message)
+	 */
+	public $error = '';
+
+    /**
+     * @var string[]    Array of error strings
+     */
+    public $errors = array();
 
 	/**
 	 *
@@ -54,7 +61,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
-	function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
+	public function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
 	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
@@ -155,7 +162,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         $atLeastOneContact = false;
 
 		$contactKey = 'cust_contactclient_';
-	if(!empty($linkedContacts)) {
+		if(!empty($linkedContacts)) {
 	        foreach ($linkedContacts as $TContactRef)
 	        {
 	            $code = $TContactRef['code']; // Code
@@ -166,7 +173,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
         	    $object->fetch_contact($TContactRef['id']);
 
-		    $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
+		        $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
 	            if(!empty($object->contact->id)) $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
 	            $resarray = array_merge($resarray, $contactarray);
 
@@ -174,11 +181,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
         	    $TCounts[$code]++;
 	        }
-	}
+		}
 
         // Types de contacts non sélectionnés mais disponibles
         $i = 0;
-	if(!empty($TContactTypes)) {
+		if(!empty($TContactTypes)) {
 	        foreach($TContactTypes as $code => $label)
 	        {
 		        $contactPrefix = $contactKey . $code . '_1';
@@ -200,7 +207,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		        $i++;
 	        }
-	}
+		}
 
         // Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
@@ -213,7 +220,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_other()
 	 */
-	function get_substitutionarray_other($outputlangs, $object = '') {
+	public function get_substitutionarray_other($outputlangs, $object = '') {
 		global $conf;
 
 		$outputlangs->load('main');
@@ -283,7 +290,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param stdClass $element Element
 	 * @return string
 	 */
-	static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
+	public static function getLinkedObjects(&$object, &$outputlangs, $element=null) {
 		global $linkedobjects;
 
 		if (empty($linkedobjects))
@@ -317,7 +324,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate Instalce
 	 * @return number|array[]|number[][]
 	 */
-	static function get_detail_tva(&$object, &$outputlangs) {
+	public static function get_detail_tva(&$object, &$outputlangs) {
 		global $conf;
 
 		if (! is_array($object->lines))
@@ -380,7 +387,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return number|array[]|number[][]
 	 */
-	static function get_liste_reglements(&$object, &$outputlangs) {
+	public static function get_liste_reglements(&$object, &$outputlangs) {
 		global $db, $conf;
 
 		$TPayments = array();
@@ -432,7 +439,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
 				$sign = - 1;
 			while ( $row = $db->fetch_object($resql) ) {
-
 				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
 				$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
 				$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
@@ -450,9 +456,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (! empty($TPayments)) {
 			$res = '<font size="6">' . $outputlangs->trans('PaymentsAlreadyDone') . '<hr />';
 			$res .= '<table style="font-weight:bold;"><tr><td>' . $outputlangs->trans('Payment') . '</td><td>' . $outputlangs->trans('Amount') . '</td><td>' . $outputlangs->trans('Type') . '</td><td>' . $outputlangs->trans('Num') . '</td></tr></table><hr />';
-			foreach ( $TPayments as $k => $v ) {
+			foreach ($TPayments as $k => $v) {
 				$res .= '<table><tr>';
-				foreach ( $v as $val )
+				foreach ($v as $val)
 					$res .= '<td>' . $val . '</td>';
 				$res .= '</tr></table>';
 				$res .= '<hr />';
@@ -468,7 +474,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
-	function get_substitutionarray_lines($line, $outputlangs)
+	public function get_substitutionarray_lines($line, $outputlangs)
 	{
 		global $conf;
 
@@ -502,7 +508,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Lang object to use for output
 	 * @return array Return a substitution array
 	 */
-	function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
+	public function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
 		global $db, $conf, $langs;
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
@@ -650,7 +656,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
-	function get_substitutionsarray_agefodd(&$object, $outputlangs)
+	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
 		global $db, $conf;
 
@@ -770,7 +776,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
-	function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '')
+	public function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = true, $sub_element_label = '')
 	{
 		global $conf;
 
@@ -856,6 +862,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	public function showOutputFieldValue($extrafields, $key, $value, $moreparam='', $extrafieldsobjectkey='')
 	{
 		global $conf,$langs;
+
+		//TODO, Dolibarr deal it with diffrent way in commondocgenerator : why ?
 
 		if (! empty($extrafieldsobjectkey))
 		{
@@ -1189,6 +1197,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 
 		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
+
+		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 
 		// phpcs:enable
 		global $conf;

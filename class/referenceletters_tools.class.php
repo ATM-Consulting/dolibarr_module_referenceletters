@@ -41,7 +41,17 @@ class RfltrTools {
 			$outputlangs=$langs;
 		}
 
-		if(is_object($obj) && (get_class($obj) === 'Facture' || get_class($obj) === 'Commande' || get_class($obj) === 'Propal' || get_class($obj) === 'Contrat'|| get_class($obj) === 'Societe' || get_class($obj) === 'Contact' || get_class($obj) === 'SupplierProposal' || get_class($obj) === 'CommandeFournisseur'|| get_class($obj) === 'FactureFournisseur'))  {
+		$arrayObjectClass = array('Facture',
+								  'Commande',
+								  'Propal',
+								  'Contrat',
+								  'Societe',
+								  'Contact',
+								  'SupplierProposal',
+								  'CommandeFournisseur',
+								  'FactureFournisseur',
+								  'Expedition');
+		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass))  {
 			$object = &$obj;
 			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
 				$object->fetch_thirdparty();
@@ -67,16 +77,14 @@ class RfltrTools {
 		}
 
 		$object_chapters = new ReferencelettersChapters($db);
-		$result = $object_chapters->fetch_byrefltr($id_model, $langs_chapter);
+		$object_chapters->fetch_byrefltr($id_model, $langs_chapter);
 
 		$content_letter = array();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-
-			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-
+			foreach ($object_chapters->lines_chapters as $key => $line_chapter) {
 				$options = array();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
-					foreach ( $line_chapter->options_text as $key => $option_text ) {
+					foreach ($line_chapter->options_text as $key => $option_text) {
 						$options[$key] = array (
 								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
 								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
@@ -98,7 +106,6 @@ class RfltrTools {
 		$instance_letter->srcobject=$object;
 		$instance_letter->content_letter = self::setImgLinkToUrlWithArray($content_letter);
 		if(is_object($object) && empty($object->thirdparty)) $object->fetch_thirdparty();
-		$element_type='rfltr_agefodd_convention';
 		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODo pour l'instant on garde le même nom de pdf que fait agefodd
 		$instance_letter->title = $object_refletter->title;
 		$instance_letter->fk_element = $object->id;

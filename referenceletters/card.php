@@ -706,6 +706,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	/*
 	 * Barre d'actions
 	*/
+
 	print '<div class="tabsAction">';
 	if ($user->rights->referenceletters->write) {
         print '<div class="inline-block divButAction">';

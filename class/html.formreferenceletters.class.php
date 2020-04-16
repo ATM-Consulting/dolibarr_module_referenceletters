@@ -266,9 +266,9 @@ class FormReferenceLetters extends Form
 	 *
 	 *
 	 * @param User $user
-	 * @param CommonObject $object
+	 * @param ReferenceLetters $reflettersobject
 	 */
-	public function displaySubtitutionKeyAdvanced($user,$reflettersobject) {
+	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
 		global $langs;
 
 		print '<div id="subtitutionkey" style="display: none;" >';
@@ -300,7 +300,6 @@ class FormReferenceLetters extends Form
 						$html .= '<tr class="oddeven searchable search-match">';
 						$html .= '    <td class="referenceletter-subtitutionkey-desc">';
 						if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
-
 							$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
 							$html .= $langs->trans('reflettershortcode_' . $key);
 							$html .= '</span>';
@@ -465,7 +464,6 @@ class FormReferenceLetters extends Form
      */
     public function getSubtitutionKeyTable($user,$reflettersobject){
         global $langs,$bc;
-
 
         $subs_array=$reflettersobject->getSubtitutionKey($user);
 

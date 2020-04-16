@@ -626,8 +626,7 @@ class ReferenceLetters extends CommonObject
 		$langs->load('admin');
 
 		$subst_array = array();
-		$docgen = new commondocgeneratorreferenceletters($this->db);
-		$docgen->db = $this->db;
+		$docgen = new CommonDocGeneratorReferenceLetters($this->db);
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
@@ -639,6 +638,7 @@ class ReferenceLetters extends CommonObject
 
 				$langs->load($item['trans']);
 				//var_dump($item);exit;
+				/** @var $testObj CommonObject */
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 
@@ -663,23 +663,21 @@ class ReferenceLetters extends CommonObject
 					if($testObj->element == 'societe'){
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
-						foreach ( $array_first_thirdparty_object as $key => $value ) {
+						foreach ($array_first_thirdparty_object as $key => $value) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
-						$subst_array[$langs->trans($item['title'])] =  $array_second_thirdparty_object;
+						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
 					}else {
+						dol_syslog($item['substitution_method']);
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 					}
 
 					if (! empty($testObj->thirdparty->id)) {
-
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
 						foreach ( $array_first_thirdparty_object as $key => $value ) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
-
 					}
-
 
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
@@ -711,6 +709,8 @@ class ReferenceLetters extends CommonObject
 					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
 			);
 		}
+
+		//Todo  : a faire seulement sur les object agefodd
 
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 

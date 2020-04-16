@@ -217,16 +217,16 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if(in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard','expeditioncard'))) {
+		if (in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard', 'expeditioncard'))) {
 
-		    if($action === 'builddoc') {
+			if ($action === 'builddoc') {
 
 				$model = GETPOST('model');
 
 				// Récupération de l'id du modèle
-				if(strpos($model, 'rfltr_') !== false) {
+				if (strpos($model, 'rfltr_') !== false) {
 
- 					// Récupération l'id du modèle sélectionné
+					// Récupération l'id du modèle sélectionné
 					$models = explode('rfltr_', $model);
 					$id_model = $models[1];
 
@@ -234,12 +234,12 @@ class ActionsReferenceLetters
 					$object->array_options['options_rfltr_model_id'] = intval($id_model);
 					$object->insertExtraFields();
 
-					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier' && $object->element !== 'shipping') ? $object->element : $object->table_element);
+					$_POST['model'] = "rfltr_dol_" . (($object->element !== 'order_supplier') ? $object->element : $object->table_element);
 
 				} else {
-                    			$object->array_options['options_rfltr_model_id'] = '';
-                    			$object->insertExtraFields();
-                		}
+					$object->array_options['options_rfltr_model_id'] = '';
+					$object->insertExtraFields();
+				}
 			}
 
 		}
@@ -410,7 +410,7 @@ class ActionsReferenceLetters
 		if($element === 'facture') $element = 'invoice';
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';
-		if($element === 'shipping') $element = 'expedition';
+		if($element === 'expedition') $element = 'shipping';
 
 		$TModelsID=array();
 		dol_include_once('/referenceletters/class/referenceletters.class.php');

@@ -32,7 +32,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 /**
  * Class to generate PDF ModelePDFReferenceLetters
  */
-class pdf_rfltr_expedition extends ModelePDFReferenceLetters
+class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 {
     /**
      * @var DoliDb Database handler

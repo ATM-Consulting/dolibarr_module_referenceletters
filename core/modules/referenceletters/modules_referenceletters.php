@@ -752,6 +752,65 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 		}
 
+		if (get_class($object)=='Expedition') {
+			/** @var $object Expedition */
+			// Tracking number for shipping
+			if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable(array($object, 'getUrlTrackingStatus'))) {
+				$object->getUrlTrackingStatus($object->tracking_number);
+				if (!empty($object->tracking_url)) {
+					if ($object->shipping_method_id > 0) {
+						// Get code using getLabelFromKey
+						$code = $outputlangs->getLabelFromKey($this->db, $object->shipping_method_id, 'c_shipment_mode', 'rowid', 'code');
+						$label = '';
+						if ($object->tracking_url != $object->tracking_number)
+							$label .= $outputlangs->transnoentitiesnoconv("LinkToTrackYourPackage") . "<br>";
+						$label .= $outputlangs->transnoentitiesnoconv("SendingMethod") . ": " . $outputlangs->transnoentitiesnoconv("SendingMethod" . strtoupper($code));
+						//var_dump($object->tracking_url != $object->tracking_number);exit;
+						if ($object->tracking_url != $object->tracking_number) {
+							$label .= " : ";
+							$label .= $object->tracking_url;
+						}
+						$substitution_array['{object_tracking_number}'] = $label;
+					}
+				}
+			} else {
+				$substitution_array['{object_tracking_number}']='';
+			}
+			if (is_callable(array($object, 'getTotalWeightVolume'))){
+
+				// Set trueVolume and volume_units not currently stored into database
+				if ($object->trueWidth && $object->trueHeight && $object->trueDepth)
+				{
+					$object->trueVolume = price(($object->trueWidth * $object->trueHeight * $object->trueDepth), 0, $outputlangs, 0, 0);
+					$object->volume_units = $object->size_units * 3;
+				}
+
+				$tmparraytotal = $object->getTotalWeightVolume();
+				$substitution_array['{object_total_weight}'] = $tmparraytotal['weight'];
+				$substitution_array['{object_total_volume}'] = $tmparraytotal['volume'];
+				if (function_exists('showDimensionInBestUnit')) {
+					if ($substitution_array['{object_total_weight}'] != '') {
+						$substitution_array['{object_total_weight}'] = showDimensionInBestUnit($substitution_array['{object_total_weight}'], 0, "weight", $outputlangs);
+					}
+					if ($substitution_array['{object_total_volume}'] != '') {
+						$substitution_array['{object_total_volume}'] = showDimensionInBestUnit($substitution_array['{object_total_volume}'], 0, "volume", $outputlangs);
+					}
+					if ($object->trueWeight) $substitution_array['object_total_weight}'] = showDimensionInBestUnit($object->trueWeight, $object->weight_units, "weight", $outputlangs);
+					if ($object->trueVolume) $substitution_array['object_total_volume}'] = showDimensionInBestUnit($object->trueVolume, $object->volume_units, "volume", $outputlangs);
+				}
+				$substitution_array['{object_total_qty_ordered}'] = $tmparraytotal['ordered'];
+				$substitution_array['{object_total_qty_toship}'] = $tmparraytotal['toship'];
+			}
+			else {
+				$substitution_array['{object_total_weight}']='';
+				$substitution_array['{object_total_volume}']='';
+				$substitution_array['{object_total_qty_ordered}']='';
+				$substitution_array['{object_total_qty_toship}']='';
+			}
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
+
+
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 		$tmparray['object_incoterms']='';
         if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
@@ -768,29 +827,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                 }
             }
         }
-		// Tracking number for shipping
-		if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable(array($object,'getUrlTrackingStatus')))
-		{
-			$object->getUrlTrackingStatus($object->tracking_number);
-			if (!empty($object->tracking_url))
-			{
-				if ($object->shipping_method_id > 0)
-				{
-					// Get code using getLabelFromKey
-					$code = $outputlangs->getLabelFromKey($this->db, $object->shipping_method_id, 'c_shipment_mode', 'rowid', 'code');
-					$label = '';
-					if ($object->tracking_url != $object->tracking_number) $label .= $outputlangs->transnoentitiesnoconv("LinkToTrackYourPackage")."<br>";
-					$label .= $outputlangs->transnoentitiesnoconv("SendingMethod").": ".$outputlangs->transnoentitiesnoconv("SendingMethod".strtoupper($code));
-					//var_dump($object->tracking_url != $object->tracking_number);exit;
-					if ($object->tracking_url != $object->tracking_number)
-					{
-						$label .= " : ";
-						$label .= $object->tracking_url;
-					}
-					$tmparray['object_tracking_number'] = $label;
-				}
-			}
-		}
+
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {

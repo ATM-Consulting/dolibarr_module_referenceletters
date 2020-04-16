@@ -725,7 +725,9 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-<br />';
+<br />
+<p>&nbsp;<br />
+&nbsp;{object_tracking_number}</p>';
 
 		$result = $chapter->create($user);
 		if ($result < 0) {
@@ -761,6 +763,14 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 		</tr>
 	</tbody>
 </table>
+
+<p>Volume total: {object_total_volume}</p>
+
+<p>Poids total: {object_total_weight}</p>
+
+<p>Quantit&eacute; command&eacute;e totale: {object_total_qty_ordered}</p>
+
+<p>Quantit&eacute; exp&eacute;di&eacute; totale: {object_total_qty_toship}<br />
 &nbsp;<br />
 &nbsp;<br />';
 

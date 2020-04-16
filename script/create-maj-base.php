@@ -725,34 +725,51 @@ NAF-APE :&nbsp;{mycompany_idprof3} - Num VA :&nbsp;{mycompany_vatnumber}</span><
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;
-<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
+<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
+
+		$chapter = new ReferenceLettersChapters($db);
+		$chapter->entity = $conf->entity;
+		$chapter->fk_referenceletters = $id_rfltr;
+		$chapter->lang = 'fr_FR';
+		$chapter->sort_order = 2;
+		$chapter->fk_user_author = $chapter->fk_user_mod = $user->id;
+		$chapter->title = 'Lines';
+		$chapter->content_text ='<div style="text-align:right">Montants exprim&eacute;s en Euros</div>
 
 <table border="1" style="cellpadding:1; cellspacing:1; width:530px">
 	<tbody>
 		<tr>
 			<td style="width:50%">D&eacute;signation</td>
-			<td style="width:10%">Poids</td>
-			<td style="width:20%">Qt&eacute; command&eacute;e</td>
-			<td style="width:20%">Quantit&eacute; livr&eacute;e[!-- BEGIN lines --]</td>
+			<td style="width:10%">PU H.T.</td>
+			<td style="width:10%">Total H.T.</td>
+			<td style="width:10%">Poids/volume</td>
+			<td style="width:10%">Qt&eacute; command&eacute;e</td>
+			<td style="width:10%">Quantit&eacute; livr&eacute;e[!-- BEGIN lines --]</td>
 		</tr>
 		<tr>
 			<td>{line_fulldesc}</td>
-			<td style="text-align:right">{line_weight}</td>
+			<td style="text-align:right">{line_up_locale}</td>
+			<td style="text-align:right">{line_price_ht}</td>
+			<td style="text-align:right">{line_weight} {line_vol}</td>
 			<td style="text-align:right">{line_qty_asked}</td>
 			<td style="text-align:right">{line_qty_shipped}[!-- END lines --]</td>
 		</tr>
 	</tbody>
 </table>
 &nbsp;<br />
-&nbsp;<br />
-&nbsp;';
-		$chapter->create($user);
+&nbsp;<br />';
+
+		$result = $chapter->create($user);
+		if ($result < 0) {
+			setEventMessages(null, $chapter->errors, 'errors');
+		}
 	}
 }
-
-
 
 //
 // *********** Contrat *************

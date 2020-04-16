@@ -59,12 +59,15 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	/**
 	 * Function to build pdf onto disk
 	 *
-	 * @param Object $object generate
-	 * @param Object $instance_letter generate
-	 * @param Translate $this->outputlangs object
+	 * @param int $id_object id session or convention or trainer ...
+	 * @param int $id_model refleeters id
+	 * @param Translate $outputlangs object
+	 * @param string $file file path to save
+	 * @param string $obj_agefodd_convention convention object
+	 * @param string $socid socid
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '') {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '') {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');

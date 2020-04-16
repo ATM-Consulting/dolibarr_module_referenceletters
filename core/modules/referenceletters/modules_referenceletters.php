@@ -457,12 +457,14 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 									$tmparray['line_price_ht_locale'] = $tmparray['line_price_ht'];
 								}
 							}
-							$oldline = $listlines->xml;
-							foreach ( $tmparray as $key => $val ) {
-								try {
-									$listlines->setVars($key, $val, false, 'UTF-8');
-								} catch ( OdfException $e ) {
-								} catch ( SegmentException $e ) {
+							if (!empty($listlines)) {
+								$oldline = $listlines->xml;
+								foreach ($tmparray as $key => $val) {
+									try {
+										$listlines->setVars($key, $val, false, 'UTF-8');
+									} catch (OdfException $e) {
+									} catch (SegmentException $e) {
+									}
 								}
 							}
 
@@ -493,12 +495,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                                         $style_start = '<strong><u>';
                                         $style_end = '</u></strong>';
                                     }
-
-									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_fulldesc}' => $style_start.'{line_fulldesc}'.$style_end
-											,'{line_product_label}' => $style_start.'{line_product_label}'.$style_end
-											,'{line_desc}' => '{line_desc}'
-									));
+									if (!empty($listlines)) {
+										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
+											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
+											, '{line_desc}'          => '{line_desc}'
+										));
+									}
 								} else if (TSubtotal::isSubtotal($line)) {
                                     if (!empty($conf->global->SUBTOTAL_SUBTOTAL_STYLE))
                                     {
@@ -524,32 +527,36 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                                         $style_start = '<strong><i>';
                                         $style_end = '</i></strong>';
                                     }
-
-									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+									if (!empty($listlines)) {
+										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
-									));
-									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_fulldesc}' => $style_start.'{line_fulldesc}'.$style_end
-											,'{line_product_label}' => $style_start.'{line_product_label}'.$style_end
-											,'{line_desc}' => '{line_desc}'
-									));
-									$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'{line_price_ht_locale}' => $style_start.'{line_price_ht_locale}'.$style_end
-									));
+										));
+										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
+											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
+											, '{line_desc}'          => '{line_desc}'
+										));
+										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+											'{line_price_ht_locale}' => $style_start . '{line_price_ht_locale}' . $style_end
+										));
+									}
 									// var_dump($listlines->xml);exit;
 								}
 							}
+							if (!empty($listlines)) {
+								$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
+									'<tr' => '<tr nobr="true" '
+								));
 
-							$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-								'<tr' => '<tr nobr="true" '
-							));
+								$res = $listlines->merge();
 
-							$res = $listlines->merge();
-
-							$listlines->xml = $listlines->savxml = $oldline;
+								$listlines->xml = $listlines->savxml = $oldline;
+							}
 						}
 					}
-					$res = $odfHandler->mergeSegment($listlines);
+					if (!empty($listlines)) {
+						$res = $odfHandler->mergeSegment($listlines);
+					}
 					$chapter_text = $odfHandler->getContentXml();
 				}
 			}
@@ -762,7 +769,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
             }
         }
 		// Tracking number for shipping
-		if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable($object,'getUrlTrackingStatus'))
+		if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable(array($object,'getUrlTrackingStatus')))
 		{
 			$object->getUrlTrackingStatus($object->tracking_number);
 			if (!empty($object->tracking_url))

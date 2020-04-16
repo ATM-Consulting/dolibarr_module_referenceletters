@@ -66,7 +66,7 @@ class OdfRfltr extends Odf {
 
 		return $value;
 	}
-	
+
 	/**
 	 * Move segment tags for lines of tables
 	 * This function is called automatically within the constructor, so this->contentXml is clean before any other thing
@@ -108,7 +108,7 @@ class OdfRfltr extends Odf {
 	 * Extract the segment and store it into $this->segments[]. Return it for next call.
 	 *
 	 * @param  string      $segment        Segment
-	 * @throws OdfException
+	 * @throws Exception
 	 * @return Segment
 	 */
 	public function setSegment($segment)
@@ -124,10 +124,12 @@ class OdfRfltr extends Odf {
 		echo '</pre>';
 		exit;*/
 		if (preg_match($reg, html_entity_decode($this->contentXml), $m) == 0) {
-			throw new OdfException("'".$segment."' segment not found in the document. The tag [!-- BEGIN xxx --] or [!-- END xxx --] is not present into content file.");
+			dol_syslog(get_class($this).'::'.__METHOD__."'".$segment."' segment not found in the document. The tag [!-- BEGIN xxx --] or [!-- END xxx --] is not present into content file.");
+			return null;
+		} else {
+			$this->segments[$segment] = new SegmentRfltr($segment, $m[1], $this);
+			return $this->segments[$segment];
 		}
-		$this->segments[$segment] = new SegmentRfltr($segment, $m[1], $this);
-		return $this->segments[$segment];
 	}
 
 

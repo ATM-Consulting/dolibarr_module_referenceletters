@@ -475,7 +475,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
-	public function get_substitutionarray_lines($line, $outputlangs)
+	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0)
 	{
 		global $conf;
 

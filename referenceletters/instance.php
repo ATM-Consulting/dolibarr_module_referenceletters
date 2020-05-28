@@ -119,11 +119,9 @@ $parameters = array ();
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 if ($action == 'buildoc') {
-
 	// New letter
 	if (empty($refletterelemntid)) {
-
-		$ref_int = GETPOST('ref_int','alpha');
+		$ref_int = GETPOST('ref_int', 'alpha');
 		if(empty($ref_int)) $ref_int = $object_element->getNextNumRef($object->thirdparty, $user->id, $element_type);
 
 		// Save data
@@ -132,7 +130,7 @@ if ($action == 'buildoc') {
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
-		$object_element->outputref = GETPOST('outputref','int');
+		$object_element->outputref = GETPOST('outputref', 'int');
 		$object_element->use_custom_header = GETPOST('use_custom_header');
 		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer');
@@ -155,11 +153,10 @@ if ($action == 'buildoc') {
 		// Use a big array into class it is serialize
 		$content_letter = array ();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-			foreach ( $object_chapters->lines_chapters as $key => $line_chapter ) {
-
+			foreach ($object_chapters->lines_chapters as $key => $line_chapter) {
 				$options = array ();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
-					foreach ( $line_chapter->options_text as $key => $option_text ) {
+					foreach ($line_chapter->options_text as $key => $option_text) {
 						$options[$key] = array (
 								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
 								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
@@ -168,13 +165,12 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id, 'none')),
 						'options' => $options
 				);
 			}
 		}
-		elseif($justinformme){
-
+		elseif($justinformme) {
 			echo $langs->trans('NoContentChapterForLang', $langs_chapter);
 			exit;
 		}
@@ -232,7 +228,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id)),
+						'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id,'none')),
 						'options' => $options,
 						'same_page' => $line_chapter->same_page
 				);
@@ -335,10 +331,10 @@ $options='&amp;element_type='.$element_type.'&amp;id='.$id;
 
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
-print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("RefLtrTitleModel"), $_SERVEUR['PHP_SELF'], "p.title", "", $options, '', $sortfield, $sortorder);
-print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVER['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVER['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrTitleModel"), $_SERVER['PHP_SELF'], "p.title", "", $options, '', $sortfield, $sortorder);
+print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVER['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
 print '<th></th>';
 print '<th></th>';
 

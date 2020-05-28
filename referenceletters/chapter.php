@@ -83,7 +83,7 @@ if ($action == "add") {
 
 	$object->fk_referenceletters=$idletter;
 	$object->title = GETPOST('refltrtitle');
-	$object->content_text = GETPOST('content_text');
+	$object->content_text = GETPOST('content_text','none');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
 	$object->same_page=GETPOST('refltrsame_page','int');
@@ -114,7 +114,7 @@ if ($action == "add") {
 	}
 
 	$object->title = GETPOST('refltrtitle');
-	$object->content_text = GETPOST('content_text');
+	$object->content_text = GETPOST('content_text','none');
 	$object->sort_order=GETPOST('sort_order');
 	$object->readonly=GETPOST('refltrreadonly','int');
 	$object->same_page=GETPOST('refltrsame_page','int');

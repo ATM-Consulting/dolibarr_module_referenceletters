@@ -65,6 +65,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
+		$resarray['object_date_validation_no_hour'] = (!empty($object->date_validation) ?dol_print_date($object->date_validation, 'day') : '');
 		if ($object->element == 'facture' || $object->element == 'propal') {
 			dol_include_once('/agefodd/class/agefodd_session_element.class.php');
 			if (class_exists('Agefodd_session_element')) {
@@ -474,7 +475,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
-	public function get_substitutionarray_lines($line, $outputlangs)
+	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0)
 	{
 		global $conf;
 

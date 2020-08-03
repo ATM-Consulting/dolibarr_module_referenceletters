@@ -643,6 +643,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');
 		if (in_array(get_class($line),$arrayTypeObj)) {
 			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+			$resarray['line_rang'] = $line->rang;
 		}
 		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
 		if (get_class($line)=='ExpeditionLigne') {

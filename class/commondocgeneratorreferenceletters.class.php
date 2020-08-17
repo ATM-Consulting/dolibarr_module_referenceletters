@@ -537,6 +537,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_birthplace'] = $line->place_birth;
 		$resarray['line_code_societe'] = $line->soccode;
 		$resarray['line_nom_societe'] = $line->socname;
+		$resarray['line_stagiaire_presence_bloc'] = $line->stagiaire_presence_bloc;
+		$resarray['line_stagiaire_presence_total'] = $line->stagiaire_presence_total;
+		$resarray['line_time_stagiaire_temps_realise_total'] = $line->time_stagiaire_temps_realise_total;
+		$resarray['line_stagiaire_temps_realise_total'] = $line->stagiaire_temps_realise_total;
+		$resarray['line_time_stagiaire_temps_att_total'] = $line->time_stagiaire_temps_att_total;
+		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
+		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
+		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
 
 		$resarray['line_societe_address'] = $line->societe_address;
 		$resarray['line_societe_zip'] = $line->societe_zip;

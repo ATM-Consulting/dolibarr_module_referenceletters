@@ -48,6 +48,8 @@ class pdf_rfltr_dol_societe extends pdf_rfltr_default
 	public $marge_basse;
 	public $emetteur; // Objet societe qui emet
 
+	public $phpmin = array(7, 0);
+
 	/**
 	 * Constructor
 	 *

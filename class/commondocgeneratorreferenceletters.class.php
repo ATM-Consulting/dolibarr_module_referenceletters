@@ -701,6 +701,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+
+		if(!empty($object->fk_product)) {
+			$p = new Product($db);
+			$p->fetch($object->fk_product);
+			$resarray['formation_ref_produit'] = $p->ref;
+		}
+
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;

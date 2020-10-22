@@ -86,8 +86,8 @@ class RfltrTools {
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ($line_chapter->options_text as $key => $option_text) {
 						$options[$key] = array (
-								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
-								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key, 'none'),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key, 'none')
 						);
 					}
 				}
@@ -238,7 +238,7 @@ class RfltrTools {
 				// Sélection du modèle et génération du document
 				$(".id_external_model").change(function() {
 
-					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
+					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id', 'none'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
 					// On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
 					lignetitre = $(this).parent().parent();
 					while(!lignetitre.hasClass('liste_titre')) {

@@ -53,7 +53,7 @@ $idletter = GETPOST('idletter', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
-$justinformme = GETPOST('justinformme');
+$justinformme = GETPOST('justinformme', 'none');
 
 $sortfield=GETPOST('sortfield','alpha');
 $sortorder=GETPOST('sortorder','alpha');
@@ -126,16 +126,16 @@ if ($action == 'buildoc') {
 
 		// Save data
 		$object_element->ref_int = $ref_int;
-		$object_element->title = GETPOST('title_instance');
+		$object_element->title = GETPOST('title_instance', 'none');
 		$object_element->fk_element = $object->id;
 		$object_element->element_type = $element_type;
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref', 'int');
-		$object_element->use_custom_header = GETPOST('use_custom_header');
-		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
-		$object_element->use_custom_footer = GETPOST('use_custom_footer');
-		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
-		$object_element->use_landscape_format = GETPOST('use_landscape_format');
+		$object_element->use_custom_header = GETPOST('use_custom_header', 'none');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header', 'none'));
+		$object_element->use_custom_footer = GETPOST('use_custom_footer', 'none');
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer', 'none'));
+		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
 			$langs_chapter = $object->thirdparty->default_lang;
@@ -158,8 +158,8 @@ if ($action == 'buildoc') {
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ($line_chapter->options_text as $key => $option_text) {
 						$options[$key] = array (
-								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
-								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key, 'none'),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key, 'none')
 						);
 					}
 				}
@@ -193,13 +193,13 @@ if ($action == 'buildoc') {
 			setEventMessage($object_element->error, 'errors');
 		}
 
-		$object_element->title = GETPOST('title_instance');
+		$object_element->title = GETPOST('title_instance', 'none');
 		$object_element->outputref = GETPOST('outputref','int');
-		$object_element->use_custom_header = GETPOST('use_custom_header');
-		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header'));
-		$object_element->use_custom_footer = GETPOST('use_custom_footer');
-		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer'));
-		$object_element->use_landscape_format = GETPOST('use_landscape_format');
+		$object_element->use_custom_header = GETPOST('use_custom_header', 'none');
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header', 'none'));
+		$object_element->use_custom_footer = GETPOST('use_custom_footer', 'none');
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer', 'none'));
+		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
 
 		if (! empty($conf->global->MAIN_MULTILANGS)) {
@@ -221,8 +221,8 @@ if ($action == 'buildoc') {
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ( $line_chapter->options_text as $key => $option_text ) {
 						$options[$key] = array (
-								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key),
-								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key)
+								'use_content_option' => GETPOST('use_content_option_' . $line_chapter->id . '_' . $key, 'none'),
+								'text_content_option' => GETPOST('text_content_option_' . $line_chapter->id . '_' . $key, 'none')
 						);
 					}
 				}
@@ -438,7 +438,7 @@ if (! empty($idletter)) {
 			print $langs->trans('RefLtrTitle');
 			print '</td>';
 			print '<td>';
-			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
+			print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance', 'none') . '">';
 			print '</td>';
 			print '</tr>';
 

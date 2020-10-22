@@ -129,7 +129,7 @@ if ($massaction == 'presend')
 	include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
 	$formmail = new FormMail($db);
 	$formmail->withform = -1;
-	$formmail->fromtype = (GETPOST('fromtype') ? GETPOST('fromtype') : (!empty($conf->global->MAIN_MAIL_DEFAULT_FROMTYPE) ? $conf->global->MAIN_MAIL_DEFAULT_FROMTYPE : 'user'));
+	$formmail->fromtype = (GETPOST('fromtype', 'none') ? GETPOST('fromtype', 'none') : (!empty($conf->global->MAIN_MAIL_DEFAULT_FROMTYPE) ? $conf->global->MAIN_MAIL_DEFAULT_FROMTYPE : 'user'));
 
 	if ($formmail->fromtype === 'user')
 	{
@@ -145,7 +145,7 @@ if ($massaction == 'presend')
 	//$formmail->withform = 1;
 	$liste = $langs->trans("AllRecipientSelected", count($arrayofselected));
 	$formmail->withtoreadonly = 1;
-	//$formmail->withoptiononeemailperrecipient = empty($liste)?0:((GETPOST('oneemailperrecipient')=='on')?1:-1);
+	//$formmail->withoptiononeemailperrecipient = empty($liste)?0:((GETPOST('oneemailperrecipient', 'none')=='on')?1:-1);
 	$formmail->withto = empty($liste) ? (GETPOST('sendto', 'alpha') ? GETPOST('sendto', 'alpha') : array()) : $liste;
 	$formmail->withtofree = empty($liste) ? 1 : 0;
 	$formmail->withtocc = 1;

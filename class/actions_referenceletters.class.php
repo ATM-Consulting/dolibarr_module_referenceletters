@@ -221,7 +221,7 @@ class ActionsReferenceLetters
 
 			if ($action === 'builddoc') {
 
-				$model = GETPOST('model');
+				$model = GETPOST('model', 'none');
 
 				// Récupération de l'id du modèle
 				if (strpos($model, 'rfltr_') !== false) {
@@ -384,7 +384,7 @@ class ActionsReferenceLetters
             // Header sur la même page pour annuler le traitement standard de génération de PDF
             $field_id = 'id';
             if(get_class($object) === 'Facture') $field_id = 'facid';
-            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id));
+            header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id, 'none'));
             exit;
          */
         return 1;

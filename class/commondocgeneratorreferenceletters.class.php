@@ -537,6 +537,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_birthplace'] = $line->place_birth;
 		$resarray['line_code_societe'] = $line->soccode;
 		$resarray['line_nom_societe'] = $line->socname;
+		$resarray['line_stagiaire_presence_bloc'] = $line->stagiaire_presence_bloc;
+		$resarray['line_stagiaire_presence_total'] = $line->stagiaire_presence_total;
+		$resarray['line_time_stagiaire_temps_realise_total'] = $line->time_stagiaire_temps_realise_total;
+		$resarray['line_stagiaire_temps_realise_total'] = $line->stagiaire_temps_realise_total;
+		$resarray['line_time_stagiaire_temps_att_total'] = $line->time_stagiaire_temps_att_total;
+		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
+		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
+		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
 
 		$resarray['line_societe_address'] = $line->societe_address;
 		$resarray['line_societe_zip'] = $line->societe_zip;
@@ -643,6 +651,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');
 		if (in_array(get_class($line),$arrayTypeObj)) {
 			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+			$resarray['line_rang'] = $line->rang;
 		}
 		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
 		if (get_class($line)=='ExpeditionLigne') {
@@ -692,6 +701,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+
+		if(!empty($object->fk_product)) {
+			$p = new Product($db);
+			$p->fetch($object->fk_product);
+			$resarray['formation_ref_produit'] = $p->ref;
+		}
+
 		$resarray['formation_statut'] = $object->statuslib;
 		$resarray['formation_duree'] = $object->duree;
 		$resarray['formation_duree_session'] = $object->duree_session;

@@ -82,7 +82,7 @@ function _show_ref_letter($idletter) {
 		print $langs->trans('RefLtrTitle');
 		print '</td>';
 		print '<td>';
-		print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance') . '">';
+		print '<input type="text" class="flat" name="title_instance" id="title_instance" size="30" value="' . GETPOST('title_instance', 'none') . '">';
 		print '</td>';
 		print '</tr>';
 
@@ -239,7 +239,7 @@ function _list_invoice() {
 					'param_url'=>'refltrelement_type=invoice'
 			)
 			,'limit'=>array(
-					'nbLine'=>(GETPOST('limit','int') ? GETPOST('limit') : $conf->liste_limit )
+					'nbLine'=>(GETPOST('limit','int') ? GETPOST('limit', 'none') : $conf->liste_limit )
 			)
 
 	));
@@ -416,28 +416,28 @@ function _list_thirdparty()
 	$search_cti = preg_replace('/^0+/', '', preg_replace('/[^0-9]/', '', GETPOST('search_cti', 'alphanohtml'))); // Phone number without any special chars
 
 	$search_id = trim(GETPOST("search_id", "int"));
-	$search_nom = trim(GETPOST("search_nom"));
-	$search_alias = trim(GETPOST("search_alias"));
-	$search_nom_only = trim(GETPOST("search_nom_only"));
-	$search_barcode = trim(GETPOST("search_barcode"));
-	$search_customer_code = trim(GETPOST('search_customer_code'));
-	$search_supplier_code = trim(GETPOST('search_supplier_code'));
-	$search_account_customer_code = trim(GETPOST('search_account_customer_code'));
-	$search_account_supplier_code = trim(GETPOST('search_account_supplier_code'));
-	$search_town = trim(GETPOST("search_town"));
-	$search_zip = trim(GETPOST("search_zip"));
-	$search_state = trim(GETPOST("search_state"));
-	$search_region = trim(GETPOST("search_region"));
-	$search_email = trim(GETPOST('search_email'));
-	$search_phone = trim(GETPOST('search_phone'));
-	$search_url = trim(GETPOST('search_url'));
-	$search_idprof1 = trim(GETPOST('search_idprof1'));
-	$search_idprof2 = trim(GETPOST('search_idprof2'));
-	$search_idprof3 = trim(GETPOST('search_idprof3'));
-	$search_idprof4 = trim(GETPOST('search_idprof4'));
-	$search_idprof5 = trim(GETPOST('search_idprof5'));
-	$search_idprof6 = trim(GETPOST('search_idprof6'));
-	$search_vat = trim(GETPOST('search_vat'));
+	$search_nom = trim(GETPOST("search_nom", 'none'));
+	$search_alias = trim(GETPOST("search_alias", 'none'));
+	$search_nom_only = trim(GETPOST("search_nom_only", 'none'));
+	$search_barcode = trim(GETPOST("search_barcode", 'none'));
+	$search_customer_code = trim(GETPOST('search_customer_code', 'none'));
+	$search_supplier_code = trim(GETPOST('search_supplier_code', 'none'));
+	$search_account_customer_code = trim(GETPOST('search_account_customer_code', 'none'));
+	$search_account_supplier_code = trim(GETPOST('search_account_supplier_code', 'none'));
+	$search_town = trim(GETPOST("search_town", 'none'));
+	$search_zip = trim(GETPOST("search_zip", 'none'));
+	$search_state = trim(GETPOST("search_state", 'none'));
+	$search_region = trim(GETPOST("search_region", 'none'));
+	$search_email = trim(GETPOST('search_email', 'none'));
+	$search_phone = trim(GETPOST('search_phone', 'none'));
+	$search_url = trim(GETPOST('search_url', 'none'));
+	$search_idprof1 = trim(GETPOST('search_idprof1', 'none'));
+	$search_idprof2 = trim(GETPOST('search_idprof2', 'none'));
+	$search_idprof3 = trim(GETPOST('search_idprof3', 'none'));
+	$search_idprof4 = trim(GETPOST('search_idprof4', 'none'));
+	$search_idprof5 = trim(GETPOST('search_idprof5', 'none'));
+	$search_idprof6 = trim(GETPOST('search_idprof6', 'none'));
+	$search_vat = trim(GETPOST('search_vat', 'none'));
 	$search_sale = trim(GETPOST("search_sale", 'int'));
 	$search_categ_cus = trim(GETPOST("search_categ_cus", 'int'));
 	$search_categ_sup = trim(GETPOST("search_categ_sup", 'int'));
@@ -450,9 +450,9 @@ function _list_thirdparty()
 	$search_stcomm = GETPOST('search_stcomm', 'int');
 	$search_import_key = GETPOST("search_import_key", "alpha");
 
-	$type = GETPOST('type');
+	$type = GETPOST('type', 'none');
 	$optioncss = GETPOST('optioncss', 'alpha');
-	$mode = GETPOST("mode");
+	$mode = GETPOST("mode", 'none');
 
 	$diroutputmassaction = $conf->societe->dir_output.'/temp/massgeneration/'.$user->id;
 
@@ -666,7 +666,7 @@ function _list_thirdparty()
 		if ($action == 'setstcomm')
 		{
 			$object = new Client($db);
-			$result = $object->fetch(GETPOST('stcommsocid'));
+			$result = $object->fetch(GETPOST('stcommsocid', 'none'));
 			$object->stcomm_id = dol_getIdFromCode($db, GETPOST('stcomm', 'alpha'), 'c_stcomm');
 			$result = $object->update($object->id, $user);
 			if ($result < 0)
@@ -1042,9 +1042,9 @@ function _list_thirdparty()
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_list_search_param.tpl.php';
 
 // Show delete result message
-	if (GETPOST('delsoc'))
+	if (GETPOST('delsoc', 'none'))
 	{
-		setEventMessages($langs->trans("CompanyDeleted", GETPOST('delsoc')), null, 'mesgs');
+		setEventMessages($langs->trans("CompanyDeleted", GETPOST('delsoc', 'none')), null, 'mesgs');
 	}
 
 // List of mass actions available
@@ -2011,15 +2011,15 @@ function _list_contact()
 	$optioncss = GETPOST('optioncss', 'alpha');
 
 
-	$type = GETPOST("type");
-	$view = GETPOST("view");
+	$type = GETPOST("type", 'none');
+	$view = GETPOST("view", 'none');
 
 	$limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
 	$sortfield = GETPOST('sortfield', 'alpha');
 	$sortorder = GETPOST('sortorder', 'alpha');
 	$page = GETPOST('page', 'int');
 	$userid = GETPOST('userid', 'int');
-	$begin = GETPOST('begin');
+	$begin = GETPOST('begin', 'none');
 	if (!$sortorder)
 		$sortorder = "ASC";
 	if (!$sortfield)
@@ -2138,7 +2138,7 @@ function _list_contact()
 		include DOL_DOCUMENT_ROOT.'/core/actions_changeselectedfields.inc.php';
 
 		// Did we click on purge search criteria ?
-		if (GETPOST('button_removefilter_x') || GETPOST('button_removefilter.x') || GETPOST('button_removefilter')) // All tests are required to be compatible with all browsers
+		if (GETPOST('button_removefilter_x', 'none') || GETPOST('button_removefilter.x', 'none') || GETPOST('button_removefilter', 'none')) // All tests are required to be compatible with all browsers
 		{
 			$sall = "";
 			$search_id = '';

@@ -15,8 +15,8 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 
-$action = GETPOST('action');
-$confirm = GETPOST('confirm');
+$action = GETPOST('action', 'none');
+$confirm = GETPOST('confirm', 'none');
 $id = GETPOST('id', 'int');
 
 // Access control
@@ -62,11 +62,11 @@ if(empty($action)) $action = 'view';
 
 if($action === 'save') {
 
-	$object->header = GETPOST('header');
+	$object->header = GETPOST('header', 'none');
 	$object->update($user);
 
 } elseif($action === 'set_custom_header') {
-	$object->use_custom_header = GETPOST('use_custom_header');
+	$object->use_custom_header = GETPOST('use_custom_header','none');
 	echo $object->update($user);
 	exit;
 } elseif($action === 'predefheader'){
@@ -92,7 +92,7 @@ if(!empty($object->id)) {
 	$head = referenceletterPrepareHead($object);
 	dol_fiche_head($head, 'head', $langs->trans('RefLtrHeaderTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
-	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'">';
+	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id','none').'">';
 
 	print '<table class="border" width="100%">';
 	print '<tr>';
@@ -126,7 +126,7 @@ if(!empty($object->id)) {
 	print '</td>';
 	print '<td><input type="checkbox" name="use_custom_header" id="use_custom_header" value="1" '.(!empty($object->use_custom_header) ? 'checked="checked"' : '').' />';
 	if (!empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER) && !empty($conf->global->REF_LETTER_PREDEF_HEADER)){
-	    print '&nbsp;&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id').'&action=predefheader" class="button">' . $langs->trans('Fill') . '</a>';
+	    print '&nbsp;&nbsp;<a href="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id', 'none').'&action=predefheader" class="button">' . $langs->trans('Fill') . '</a>';
 	}
 	print '</td>';
 	print '</tr>';

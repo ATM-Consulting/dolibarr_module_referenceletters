@@ -6,8 +6,8 @@ require_once '../class/referenceletterschapters.class.php';
 require_once '../class/html.formreferenceletters.class.php';
 require_once '../lib/referenceletters.lib.php';
 
-$get=GETPOST('get');
-$set=GETPOST('set');
+$get=GETPOST('get', 'none');
+$set=GETPOST('set', 'none');
 
 switch ($get) {
 	default:
@@ -21,8 +21,8 @@ switch ($set) {
             ,'saved' => 0
             ,'message' => ''
         );
-	    //$object_id = GETPOST('object_id');
-	    $roworder  = GETPOST('roworder');
+	    //$object_id = GETPOST('object_id', 'none');
+	    $roworder  = GETPOST('roworder', 'none');
 
 	    $TOrder = explode(',', $roworder);
 	    if(is_array($TOrder)){
@@ -53,8 +53,8 @@ switch ($set) {
 
 		break;
 	case 'content':
-	    $id=GETPOST('id');
-	    $type=GETPOST('type');
+	    $id=GETPOST('id', 'none');
+	    $type=GETPOST('type', 'none');
 	    $content=GETPOST('content','none');
 	    $Tjson = array(
 	        'status' => 0

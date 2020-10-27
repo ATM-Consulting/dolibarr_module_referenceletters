@@ -47,13 +47,13 @@ $page = intval($page);
 
 
 // Search criteria
-$search_title = GETPOST("search_title");
-$search_element_type = GETPOST("search_element_type");
+$search_title = GETPOST("search_title", 'none');
+$search_element_type = GETPOST("search_element_type", 'none');
 $search_status = GETPOST("search_status",'int');
 $search_default_doc = GETPOST("search_default_doc",'int');
 
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_title = '';
 	$search_element_type = '';
 	$search_status=-1;

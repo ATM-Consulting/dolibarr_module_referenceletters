@@ -779,6 +779,8 @@ class ReferenceLetters extends CommonObject
 				,'line_birthplace'=>'Lieu de naissance du participant'
 				,'line_code_societe'=> 'Code de la société du participant'
 				,'line_nom_societe'=> 'Nom du client du participant'
+				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
+
 		);
 
 		// Liste de données - Horaires
@@ -802,6 +804,7 @@ class ReferenceLetters extends CommonObject
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
 		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
+			,'stagiaire_presence_total' => 'Temps de présence total',
 		);
 
 		// Tags des lignes

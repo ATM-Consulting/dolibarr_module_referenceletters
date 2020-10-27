@@ -82,18 +82,18 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 if ($action == "add") {
 
 	$object->fk_referenceletters=$idletter;
-	$object->title = GETPOST('refltrtitle');
+	$object->title = GETPOST('refltrtitle', 'none');
 	$object->content_text = GETPOST('content_text','none');
-	$object->sort_order=GETPOST('sort_order');
+	$object->sort_order=GETPOST('sort_order', 'none');
 	$object->readonly=GETPOST('refltrreadonly','int');
 	$object->same_page=GETPOST('refltrsame_page','int');
-	$chapter_lang=GETPOST('chapter_lang');
+	$chapter_lang=GETPOST('chapter_lang', 'none');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
 	}
 	$object->lang=$chapter_lang;
 
-	$options = GETPOST('option_text');
+	$options = GETPOST('option_text', 'none');
 	if (!empty($options)) {
 		 $option_array = explode("\r\n",$options);
 	}
@@ -113,18 +113,18 @@ if ($action == "add") {
 		setEventMessage($object->error, 'errors');
 	}
 
-	$object->title = GETPOST('refltrtitle');
+	$object->title = GETPOST('refltrtitle', 'none');
 	$object->content_text = GETPOST('content_text','none');
-	$object->sort_order=GETPOST('sort_order');
+	$object->sort_order=GETPOST('sort_order', 'none');
 	$object->readonly=GETPOST('refltrreadonly','int');
 	$object->same_page=GETPOST('refltrsame_page','int');
-	$chapter_lang=GETPOST('chapter_lang');
+	$chapter_lang=GETPOST('chapter_lang', 'none');
 	if (empty($chapter_lang)) {
 		$chapter_lang=$langs->defaultlang;
 	}
 	$object->lang=$chapter_lang;
 
-	$options = GETPOST('option_text');
+	$options = GETPOST('option_text', 'none');
 	if (!empty($options)) {
 		$option_array = explode("\r\n",$options);
 	}
@@ -135,7 +135,7 @@ if ($action == "add") {
 		$action = 'edit';
 		setEventMessage($object->error, 'errors');
 	} else {
-		$saveandstay=GETPOST('saveandstay');
+		$saveandstay=GETPOST('saveandstay', 'none');
 		if (! empty($saveandstay)) {
 			header('Location:' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id='.$id.'&action=edit');
 		} else {

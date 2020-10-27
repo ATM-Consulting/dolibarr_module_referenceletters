@@ -105,7 +105,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$id_model = $object->array_options['options_rfltr_model_id'];
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id'));
+		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id', 'none'));
 		/** @var ReferenceLettersElements $instance_letter */
 		$instance_letter = $instances[0];
 
@@ -152,7 +152,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 // 		    // Header sur la même page pour annuler le traitement standard de génération de PDF
 // 		    $field_id = 'id';
 // 		    if(get_class($object) === 'Facture') $field_id = 'facid';
-// 		    header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id)); exit;
+// 		    header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id, 'none')); exit;
 		    return 1;
 		}
 	}

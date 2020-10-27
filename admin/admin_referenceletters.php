@@ -69,8 +69,8 @@ if ($action == 'updateMask') {
 	dolibarr_set_const($db, "REF_LETTER_ADDON", $value, 'chaine', 0, '', $conf->entity);
 } else if ($action == 'setvar') {
 	dolibarr_set_const($db, "REF_LETTER_TYPEEVENTNAME", GETPOST('REF_LETTER_TYPEEVENTNAME', 'alpha'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, "REF_LETTER_PREDEF_HEADER", GETPOST('REF_LETTER_PREDEF_HEADER'), 'chaine', 0, '', $conf->entity);
-	dolibarr_set_const($db, "REF_LETTER_PREDEF_FOOTER", GETPOST('REF_LETTER_PREDEF_FOOTER'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_HEADER", GETPOST('REF_LETTER_PREDEF_HEADER', 'none'), 'chaine', 0, '', $conf->entity);
+	dolibarr_set_const($db, "REF_LETTER_PREDEF_FOOTER", GETPOST('REF_LETTER_PREDEF_FOOTER','none'), 'chaine', 0, '', $conf->entity);
 } else if ($action == 'replacetemplate') {
 	define('INC_FROM_DOLIBARR', true);
 	$reinstalltemplate=true;

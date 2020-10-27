@@ -43,7 +43,7 @@ if (! $user->rights->referenceletters->read)
 $langs->load("referenceletters@referenceletters");
 
 
-$action = GETPOST('action');
+$action = GETPOST('action', 'none');
 $massaction=GETPOST('massaction','alpha');
 $toselect = GETPOST('toselect', 'array');
 
@@ -55,16 +55,16 @@ $page = GETPOST('page', 'int');
 $page = intval($page);
 
 // Search criteria
-$search_ref_int = GETPOST("search_ref_int");
-$search_element_type = GETPOST("search_element_type");
-$search_title = GETPOST("search_title");
-$search_company = GETPOST("search_company");
-$search_ref = GETPOST("search_ref");
+$search_ref_int = GETPOST("search_ref_int", 'none');
+$search_element_type = GETPOST("search_element_type", 'none');
+$search_title = GETPOST("search_title", 'none');
+$search_company = GETPOST("search_company", 'none');
+$search_ref = GETPOST("search_ref", 'none');
 
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 if ($limit > 0 && $limit != $conf->liste_limit) $options.='&limit='.$limit;
 // Do we click on purge search criteria ?
-if (GETPOST("button_removefilter_x")) {
+if (GETPOST("button_removefilter_x", 'none')) {
 	$search_ref_int = '';
 	$search_element_type = '';
 	$search_company = '';

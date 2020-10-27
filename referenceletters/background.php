@@ -38,8 +38,8 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 $langs->load("companies");
 $langs->load('other');
 
-$action = GETPOST('action');
-$confirm = GETPOST('confirm');
+$action = GETPOST('action', 'none');
+$confirm = GETPOST('confirm', 'none');
 $id = GETPOST('id', 'int');
 
 // Access control
@@ -110,18 +110,18 @@ if ($object->id) {
 
 	$head = referenceletterPrepareHead($object);
 	dol_fiche_head($head, 'background', $langs->trans('RefLtrBackground'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
-	
-	
+
+
 	// Construit liste des fichiers
 	$filearray = dol_dir_list($upload_dir, "files", 0, '', '\.meta$', $sortfield, (strtolower($sortorder) == 'desc' ? SORT_DESC : SORT_ASC), 1);
 	$totalsize = 0;
 	foreach ( $filearray as $key => $file ) {
 		$totalsize += $file['size'];
 	}
-	
+
 	$linkback = '<a href="' . dol_buildpath('/referenceletters/referenceletters/list.php', 1) . '">' . $langs->trans("BackToList") . '</a>';
 	print $linkback;
-	
+
 	print '<table class="border" width="100%">';
 	print '<tr>';
 	print '<td  width="20%">';
@@ -130,7 +130,7 @@ if ($object->id) {
 	print $object->title;
 	print '</td>';
 	print '</tr>';
-	
+
 	print '<tr>';
 	print '<td width="20%">';
 	print $langs->trans('RefLtrElement');
@@ -139,19 +139,19 @@ if ($object->id) {
 	print $object->displayElement();
 	print '</td>';
 	print '</tr>';
-	
+
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
-	
+
 	if (empty($reshook) && ! empty($extrafields->attribute_label)) {
 		print $object->showOptionals($extrafields);
 	}
-	
+
 	print '</table>';
 
-	//print 
+	//print
 	print info_admin($langs->trans('RefLtrBackgroundHelp'));
-	
+
 	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
 		$modulepart = 'referenceletters';
 		$permission = ($user->rights->referenceletters->write);
@@ -160,9 +160,9 @@ if ($object->id) {
 	}else {
 		setEventMessages($langs->trans('MAIN_DISABLE_FPDI is on, this option cannot work, ask to your admnistrator'),null,'errors');
 	}
-	
-	
-	
+
+
+
 } else {
 	accessforbidden('', 0, 0);
 }

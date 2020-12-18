@@ -299,25 +299,25 @@ class modReferenceLetters extends DolibarrModules
 
 		$this->rights[$r][0] = 1032581;
 		$this->rights[$r][1] = 'See models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'read';
 		$r ++;
 
 		$this->rights[$r][0] = 1032582;
 		$this->rights[$r][1] = 'Modify models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'write';
 		$r ++;
 
 		$this->rights[$r][0] = 1032583;
 		$this->rights[$r][1] = 'Delete models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'delete';
 		$r ++;
 
 		$this->rights[$r][0] = 1032584;
 		$this->rights[$r][1] = 'Use models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0;
 		$this->rights[$r][4] = 'use';
 		$r ++;
 

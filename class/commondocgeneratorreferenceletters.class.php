@@ -552,6 +552,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
+                // Certificats
+                dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
+                $agf_certif = new Agefodd_stagiaire_certif($db);
+                if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
+                        $resarray['line_certif_code'] = $agf_certif->certif_code;
+                        $resarray['line_certif_label'] = $agf_certif->certif_label;
+                        $resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
+                        $resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
+                }
+
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->id))
 		{

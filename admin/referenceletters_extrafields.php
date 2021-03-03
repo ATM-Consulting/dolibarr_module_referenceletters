@@ -101,7 +101,7 @@ print "</tr>\n";
 
 $var = True;
 $urlToken = '';
-if (function_exists('newToken')) $urlToken = newToken();
+if (function_exists('newToken')) $urlToken = "&token=".newToken();
 
 foreach ($extrafields->attribute_type as $key => $value) {
 	$var = ! $var;
@@ -113,7 +113,7 @@ foreach ($extrafields->attribute_type as $key => $value) {
 	print '<td align="center">' . yn($extrafields->attribute_unique[$key]) . "</td>\n";
 	print '<td align="center">' . yn($extrafields->attribute_required[$key]) . "</td>\n";
 	print '<td align="right"><a href="' . $_SERVER["PHP_SELF"] . '?action=edit&attrname=' . $key . '">' . img_edit() . '</a>';
-	print "&nbsp; <a href=\"" . $_SERVER["PHP_SELF"] . "?action=delete&token=".$urlToken."&attrname=$key\">" . img_delete() . "</a></td>\n";
+	print "&nbsp; <a href=\"" . $_SERVER["PHP_SELF"] . "?action=delete".$urlToken."&attrname=$key\">" . img_delete() . "</a></td>\n";
 	print "</tr>";
 }
 

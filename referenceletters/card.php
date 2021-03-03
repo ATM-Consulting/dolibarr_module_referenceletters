@@ -448,7 +448,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    } else {
 		        $nbChapterInPage++;
                 $urlToken = '';
-                if (function_exists('newToken')) $urlToken = newToken();
+                if (function_exists('newToken')) $urlToken = "&token=".newToken();
 
 		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 
@@ -470,7 +470,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            }
 
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=delete&token='.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=delete'.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 
 		        }
 
@@ -737,7 +737,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	// Delete
 	if ($user->rights->referenceletters->delete) {
-		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete&token='.$urlToken.'">' . $langs->trans("Delete") . "</a></div>\n";
+		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete'.$urlToken.'">' . $langs->trans("Delete") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
 	}

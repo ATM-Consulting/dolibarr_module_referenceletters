@@ -298,7 +298,7 @@ $formfile = new FormFile($db);
 
 $now = dol_now();
 $urlToken = '';
-if (function_exists('newToken')) $urlToken = newToken();
+if (function_exists('newToken')) $urlToken = "&token=".newToken();
 
 // load menu according context (element_type)
 $head = call_user_func($object_refletter->element_type_list[$element_type]['menuloader_function'], $object);
@@ -373,7 +373,7 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		print '</td>';
 
 		print '<td>';
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete&token='.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete'.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		print '</td>';
 		print "</tr>\n";
 	}

@@ -508,12 +508,15 @@ class FormReferenceLetters extends Form
 	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
 		global $langs;
 
+		$urlToken = '';
+        if (function_exists('newToken')) $urlToken = newToken();
+
 		if ($chapter->content_text=='@breakpagenohead@')
 		{
 			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
 			$out.= $langs->trans('RefLtrAddPageBreakWithoutHeader');
 			if ($mode=='view') {
-				$out.= '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $chapter->id . '&action=delete&token='.newToken().'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+				$out.= '<a href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?id=' . $chapter->id . '&action=delete&token='.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			}
 		}
 		elseif ($chapter->content_text=='@breakpage@')
@@ -521,7 +524,7 @@ class FormReferenceLetters extends Form
 			$out = '<div class="sortable sortabledisable docedit_document_pagebreak"  data-sortable-chapter="'.$chapter->id.'" >';
 			$out.= $langs->trans('RefLtrPageBreak');
 			if ($mode=='view') {
-				$out.= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete&token='.newToken().'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+				$out.= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete&token='.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			}
 		}
 		elseif (strpos($chapter->content_text,'@pdfdoc')===0) {
@@ -529,7 +532,7 @@ class FormReferenceLetters extends Form
 			$out = '<div class="sortable sortabledisable docedit_pdfmodel"  data-sortable-chapter="'.$chapter->id.'" >';
 			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
 			if ($mode == 'view') {
-				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete&token='.newToken().'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete&token='.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			}
 		}
 		$out .=  '</div>';

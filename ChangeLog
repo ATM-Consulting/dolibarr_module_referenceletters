@@ -1,5 +1,10 @@
 English Reference Letters ChangeLog
 
+
+***** ChangeLog for 2.7.0 compared to 2.6.4 *****
+-New : Add idprof1 and idprof2 tag helper
+
+
 ***** ChangeLog for 2.0 compared to 1.9 *****
 -New : Add mass generation for invoice model letters
 

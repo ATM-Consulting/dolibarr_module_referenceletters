@@ -371,7 +371,7 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		print '</td>';
 
 		print '<td>';
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete&token='.newToken().'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		print '</td>';
 		print "</tr>\n";
 	}

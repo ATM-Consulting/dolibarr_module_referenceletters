@@ -467,7 +467,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		            }
 
 		            print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
-		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=delete">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		            print '<a class="docedit_infos_icon classfortooltip" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php', 1).'?id=' . $line_chapter->id . '&action=delete&token='.newToken().'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 
 		        }
 
@@ -734,7 +734,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 	// Delete
 	if ($user->rights->referenceletters->delete) {
-		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete">' . $langs->trans("Delete") . "</a></div>\n";
+		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete&token='.newToken().'">' . $langs->trans("Delete") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
 	}

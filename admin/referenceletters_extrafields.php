@@ -110,7 +110,7 @@ foreach ($extrafields->attribute_type as $key => $value) {
 	print '<td align="center">' . yn($extrafields->attribute_unique[$key]) . "</td>\n";
 	print '<td align="center">' . yn($extrafields->attribute_required[$key]) . "</td>\n";
 	print '<td align="right"><a href="' . $_SERVER["PHP_SELF"] . '?action=edit&attrname=' . $key . '">' . img_edit() . '</a>';
-	print "&nbsp; <a href=\"" . $_SERVER["PHP_SELF"] . "?action=delete&attrname=$key\">" . img_delete() . "</a></td>\n";
+	print "&nbsp; <a href=\"" . $_SERVER["PHP_SELF"] . "?action=delete&token=".newToken()."&attrname=$key\">" . img_delete() . "</a></td>\n";
 	print "</tr>";
 }
 

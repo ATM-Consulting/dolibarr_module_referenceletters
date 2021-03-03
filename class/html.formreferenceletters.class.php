@@ -509,7 +509,7 @@ class FormReferenceLetters extends Form
 		global $langs;
 
 		$urlToken = '';
-        if (function_exists('newToken')) $urlToken = newToken();
+        	if (function_exists('newToken')) $urlToken = newToken();
 
 		if ($chapter->content_text=='@breakpagenohead@')
 		{

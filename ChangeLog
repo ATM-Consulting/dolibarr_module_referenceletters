@@ -7,6 +7,7 @@ English Reference Letters ChangeLog
 
 ***** ChangeLog for 2.0 compared to 1.9 *****
 -New : Add mass generation for invoice model letters
+-FIX : V13 compatibility add newToken to some triggers links [2021-03-03]
 
 ***** ChangeLog for 1.9 compared to 1.8 *****
 -New : Only for 4.0

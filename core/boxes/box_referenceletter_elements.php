@@ -28,7 +28,7 @@ include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
  * Class to manage the box
  */
 class box_referenceletter_elements extends ModeleBoxes {
-	var $boxcode = "referenceletter_models";
+	var $boxcode = "referenceletter_elements";
 	var $boximg = "referenceletters@referenceletters";
 	var $boxlabel;
 	var $depends = array (
@@ -39,15 +39,19 @@ class box_referenceletter_elements extends ModeleBoxes {
 	var $info_box_head = array ();
 	var $info_box_contents = array ();
 
+
 	/**
 	 * Constructor
+	 *
+	 * @param DoliDB $db Database handler
+	 * @param string $param More parameters
 	 */
-	function __construct() {
+	function __construct(DoliDB $db, $param = '') {
 		global $langs, $user;
+		parent::__construct($db, $param);
+
 		$langs->load("boxes");
-
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrExistingLetters",10);
-
 		$this->hidden=! ($user->rights->referenceletters->read);
 	}
 
@@ -156,6 +160,6 @@ class box_referenceletter_elements extends ModeleBoxes {
 	 * @return void
 	 */
 	function showBox($head = null, $contents = null, $nooutput = 0) {
-		parent::showBox($this->info_box_head, $this->info_box_contents);
+		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 }

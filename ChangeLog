@@ -1,15 +1,20 @@
-English Reference Letters ChangeLog
+# Change Log
+All notable changes to this project will be documented in this file.
 
+# UNRELEASED
 
-***** ChangeLog for 2.7.0 compared to 2.6.4 *****
+- NEW : Dolibarr V13 Box compatibility
+
+## Version 2.7
+
 -New : Add idprof1 and idprof2 tag helper
 
+# Version 2.0 - 06/04/2017
 
-***** ChangeLog for 2.0 compared to 1.9 *****
 -New : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]
 
-***** ChangeLog for 1.9 compared to 1.8 *****
+## 1.9 - 14/11/2016
 -New : Only for 4.0
 
 ***** ChangeLog for 1.8 compared to 1.7 *****

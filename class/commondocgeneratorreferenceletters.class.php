@@ -768,7 +768,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_equipements'] = $catalogue->note2;
 			$resarray['formation_nb_place'] = $catalogue->nb_place;
 			$resarray['formation_type_public'] = $catalogue->category_lib;
-			$resarray['formation_modalite_pedagogique'] = $catalogue->pedago_usage;
+			$resarray['formation_moyens_pedagogique'] = $catalogue->pedago_usage;
 			$resarray['formation_sanction'] = $catalogue->sanction;
 
 			$e = new ExtraFields($db);

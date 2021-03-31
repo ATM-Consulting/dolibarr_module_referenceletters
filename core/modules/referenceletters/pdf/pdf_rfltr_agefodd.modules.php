@@ -67,10 +67,36 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param string $socid socid
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '') {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '') {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
+		dol_include_once('/referenceletters/class/referenceletters.class.php');
+
+		//ajout pansement pour le ticket #DA020165 : la fonction ne gérait pas le cas où "id_object" est l'id d'une formation
+		//TODO : gérer plus proprement le cas d'une formation en valeur du paramètre "$id_object" et uniformiser avec les différentes fonction whrite_file() comme celles du fichier pdf_fiche_pedago_modules.php
+
+		$object_refletter = new Referenceletters($db);
+		$object_refletter->fetch($id_model);
+
+		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago') {
+			$id = $id_object;
+			$agf = new Formation($db);
+			$agf->fetch($id);
+
+			// Vilain hack si !empty($courrier) alors c'est un id de session
+			$agf_session = new Agsession($db);
+			if (! empty($courrier)) {
+				$agf_session->fetch($courrier);
+			}
+
+			$id_object= $agf_session->id;
+
+			$object_modules = new Agefoddformationcataloguemodules($this->db);
+			$result = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array(
+				't.fk_formation_catalogue' => $id
+			));
+		}
 
 		// Chargement du modèle utilisé
 		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);

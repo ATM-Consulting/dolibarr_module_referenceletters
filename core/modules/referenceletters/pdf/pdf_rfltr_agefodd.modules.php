@@ -373,7 +373,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 						'instance_letter' => $instance_letter
 				);
 				global $action;
-//				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				if (! empty($conf->global->MAIN_UMASK))
 					@chmod($file, octdec($conf->global->MAIN_UMASK));

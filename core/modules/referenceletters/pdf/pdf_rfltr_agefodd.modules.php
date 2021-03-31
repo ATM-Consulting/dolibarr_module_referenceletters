@@ -65,6 +65,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param string $file file path to save
 	 * @param string $obj_agefodd_convention convention object
 	 * @param string $socid socid
+	 * @param int $courrier id session
 	 * @return int 1=OK, 0=KO
 	 */
 	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '') {
@@ -91,11 +92,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			}
 
 			$id_object= $agf_session->id;
-
-			$object_modules = new Agefoddformationcataloguemodules($this->db);
-			$result = $object_modules->fetchAll('ASC', 'sort_order', 0, 0, array(
-				't.fk_formation_catalogue' => $id
-			));
 		}
 
 		// Chargement du modèle utilisé
@@ -377,7 +373,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 						'instance_letter' => $instance_letter
 				);
 				global $action;
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
+//				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				if (! empty($conf->global->MAIN_UMASK))
 					@chmod($file, octdec($conf->global->MAIN_UMASK));

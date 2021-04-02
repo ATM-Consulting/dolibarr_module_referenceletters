@@ -157,7 +157,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 	 * @param array $head with properties of box title
 	 * @param array $contents with properties of box lines
 	 * @param integer $nooutput nooutput
-	 * @return void
+	 * @return string
 	 */
 	function showBox($head = null, $contents = null, $nooutput = 0) {
 		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);

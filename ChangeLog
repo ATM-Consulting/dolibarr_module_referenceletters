@@ -4,23 +4,23 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
-- NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
+-NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
 
 ## Version 2.7
 
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2
 -FIX : Generate "Fiche Pedago" custom for an agefodd session - 2.7.1
 
-
--New : Add idprof1 and idprof2 tag helper
+-NEW : Add idprof1 and idprof2 tag helper
 
 # Version 2.0 - 06/04/2017
 
--New : Add mass generation for invoice model letters
+-NEW : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]
 
 ## 1.9 - 14/11/2016
--New : Only for 4.0
+
+-NEW : Only for 4.0
 
 ***** ChangeLog for 1.8 compared to 1.7 *****
 -FIX : Add customer order letters

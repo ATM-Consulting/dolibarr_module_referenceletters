@@ -1,5 +1,10 @@
 English Reference Letters ChangeLog
 
+***** ChangeLog for 2.7.2 compared to 2.7.1 *****
+-FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect
+
+***** ChangeLog for 2.7.1 compared to 2.7.0 *****
+-FIX : Generate "Fiche Pedago" custom for an agefodd session
 
 ***** ChangeLog for 2.7.0 compared to 2.6.4 *****
 -New : Add idprof1 and idprof2 tag helper

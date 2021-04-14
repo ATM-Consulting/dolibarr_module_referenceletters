@@ -766,11 +766,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_programme'] = $catalogue->programme;
 			$resarray['formation_documents'] = $catalogue->note1;
 			$resarray['formation_equipements'] = $catalogue->note2;
+			$resarray['formation_nb_place'] = $catalogue->nb_place;
+			$resarray['formation_type_public'] = $catalogue->category_lib;
+			$resarray['formation_moyens_pedagogique'] = $catalogue->pedago_usage;
+			$resarray['formation_sanction'] = $catalogue->sanction;
 
-			foreach($catalogue->array_options as $key=>$val) {
-				$resarray['formation_'.$key]=$val;
+			$e = new ExtraFields($db);
+			$e->fetch_name_optionals_label($catalogue->table_element);
+
+			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
+				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
 			}
-
 		}
 
 		if (! empty($object->placeid)) {

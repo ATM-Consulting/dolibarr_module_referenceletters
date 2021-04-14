@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+## Version 2.8
+
+-FIX : Remove dead links *14/04/2021* - 2.8.1
 -NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
 
 ## Version 2.7

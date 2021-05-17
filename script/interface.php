@@ -1,5 +1,7 @@
 <?php
 
+if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', '1'); // Disable token renewal
+
 require '../config.php';
 require_once '../class/referenceletters.class.php';
 require_once '../class/referenceletterschapters.class.php';

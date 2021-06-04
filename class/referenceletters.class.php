@@ -763,7 +763,7 @@ class ReferenceLetters extends CommonObject
 		        ,'objvar_object_id'=>'Id de la session'
 		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
 		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
-			    ,'AgfMentorList'=>'Liste des réferents'
+			    ,'AgfMentorList'=>'Liste des référents'
 				,'Mentor_administrator'=>'Réferent Administratif'
 				,'Mentor_pedagogique'=>'Réferent pédagogique'
 				,'Mentor_handicap'=>'Réferent handicap'

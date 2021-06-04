@@ -250,7 +250,10 @@ class ActionsReferenceLetters
 
 
     /**
-     * Overloading the commonGenerateDocument function : replacing the parent's function with the one below
+     * Overloading the
+	 *
+	 *
+	 * function : replacing the parent's function with the one below
      * On récupère les modèles disponibles pour ce type de document dans DocEdit pour overrider si besoin
      *
      * @param   array()         $parameters     Hook metadatas (context, etc...)

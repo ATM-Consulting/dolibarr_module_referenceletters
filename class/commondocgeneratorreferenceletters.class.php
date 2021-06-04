@@ -697,7 +697,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db, $conf;
+		global $db, $conf, $langs;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -744,6 +744,33 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
         $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
         $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
+
+		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
+        if (!empty($conf->global->AGF_DEFAULT_MENTOR_ADMIN)){
+			$u = new User($this->db);
+			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_ADMIN));
+			if ($res){
+				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
+			}
+        }
+
+        if (!empty($conf->global->AGF_DEFAULT_MENTOR_PEDAGO)) {
+			$u = new User($this->db);
+			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_PEDAGO));
+			if ($res) {
+				$resarray['Mentor_pedagogique'] = ucfirst($langs->trans('MentorPedago') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
+			}
+		}
+
+
+		if (!empty($conf->global->AGF_DEFAULT_MENTOR_HANDICAP)) {
+			$u = new User($this->db);
+			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_HANDICAP));
+			if ($res) {
+				$resarray['Mentor_handicap'] = ucfirst($langs->trans('MentorHandicap') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
+			}
+		}
+
 
 		if (! empty($object->fk_formation_catalogue)) {
 

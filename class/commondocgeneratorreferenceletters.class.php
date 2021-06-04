@@ -697,7 +697,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db, $conf;
+		global $db, $conf,$langs;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 
@@ -770,7 +770,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_type_public'] = $catalogue->category_lib;
 			$resarray['formation_moyens_pedagogique'] = $catalogue->pedago_usage;
 			$resarray['formation_sanction'] = $catalogue->sanction;
-
+			$resarray['formation_Accessibility_Handicap_label'] = $langs->trans('RefLtrAccessHandicapTitle');
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
 
@@ -780,6 +780,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			// réecriture pour un oui / non au lieu de 1 / 0
 			if (!empty($catalogue->array_options['options_Accessibility_Handicap'])){
 				$resarray['formation_Accessibility_Handicap'] = $catalogue->array_options['options_Accessibility_Handicap'] == 1 ? 'oui':'non';
+			}else{
+				$resarray['formation_Accessibility_Handicap'] = 'non';
 			}
 
 		}

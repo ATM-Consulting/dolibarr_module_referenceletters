@@ -777,12 +777,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
 				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
 			}
-			// réecriture pour un oui / non au lieu de 1 / 0
-			if (!empty($catalogue->array_options['options_Accessibility_Handicap'])){
-				$resarray['formation_Accessibility_Handicap'] = $catalogue->array_options['options_Accessibility_Handicap'] == 1 ? 'oui':'non';
-			}else{
-				$resarray['formation_Accessibility_Handicap'] = 'non';
-			}
+			// surcharge pour le oui ou non à la place de 1 ou 0
+			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
+
 
 		}
 

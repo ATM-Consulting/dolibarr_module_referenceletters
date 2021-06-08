@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 
 # UNRELEASED
+- NEW : TK2003-0572 - Qualiopi Référents Ajouter les tags DocEdit qui permettent d'y avoir acces *04/06/2021* - 2.9
 
 ## Version 2.8
 

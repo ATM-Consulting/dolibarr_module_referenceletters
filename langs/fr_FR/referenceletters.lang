@@ -180,7 +180,7 @@ RefLtrSubstConvention=Convention (uniquement dans un modéle de type convention)
 RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de type convention) (Liste de données Agefodd "TStagiairesSessionConvention")
 RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
 RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
-
+RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
 #
 # Tags lignes
 #

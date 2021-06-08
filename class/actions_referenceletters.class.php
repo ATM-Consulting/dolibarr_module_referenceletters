@@ -250,7 +250,7 @@ class ActionsReferenceLetters
 
 
     /**
-     * Overloading the
+     *Overloading the commonGenerateDocument function : replacing the parent's function with the one below
 	 *
 	 *
 	 * function : replacing the parent's function with the one below

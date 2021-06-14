@@ -4,15 +4,19 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+
+
+## Version 2.9 - 14/06/2021
+
 - FIX - Compatibility V14 : Edit the descriptor: family - *2021-06-10* - 2.9.1
 - NEW : TK2003-0572 - Qualiopi Référents Ajouter les tags DocEdit qui permettent d'y avoir acces *04/06/2021* - 2.9
 
-## Version 2.8
+## Version 2.8 - 14/04/2021
 
 -FIX : Remove dead links *14/04/2021* - 2.8.1
 -NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
 
-## Version 2.7
+## Version 2.7 - 26/03/2021
 
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2
 -FIX : Generate "Fiche Pedago" custom for an agefodd session - 2.7.1

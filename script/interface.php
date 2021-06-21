@@ -1,4 +1,5 @@
 <?php
+if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK");
 
 if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', '1'); // Disable token renewal
 

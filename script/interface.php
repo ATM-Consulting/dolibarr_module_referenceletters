@@ -1,6 +1,6 @@
 <?php
-if (!defined("NOCSRFCHECK")) define("NOSCRFCHECK");
 
+if (!defined("NOCSRFCHECK")) define("NOCSRFCHECK", 1);
 if (!defined('NOTOKENRENEWAL')) define('NOTOKENRENEWAL', '1'); // Disable token renewal
 
 require '../config.php';

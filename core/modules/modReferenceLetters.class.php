@@ -62,7 +62,7 @@ class modReferenceLetters extends DolibarrModules
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
 
-		$this->version = '2.9.2';
+		$this->version = '2.9.3';
 
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
@@ -301,25 +301,25 @@ class modReferenceLetters extends DolibarrModules
 
 		$this->rights[$r][0] = 1032581;
 		$this->rights[$r][1] = 'See models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';
 		$r ++;
 
 		$this->rights[$r][0] = 1032582;
 		$this->rights[$r][1] = 'Modify models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'write';
 		$r ++;
 
 		$this->rights[$r][0] = 1032583;
 		$this->rights[$r][1] = 'Delete models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'delete';
 		$r ++;
 
 		$this->rights[$r][0] = 1032584;
 		$this->rights[$r][1] = 'Use models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'use';
 		$r ++;
 

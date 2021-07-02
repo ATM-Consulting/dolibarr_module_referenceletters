@@ -437,7 +437,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 						foreach ( $object->{$element_array} as $line ) {
 
-							if (method_exists($this, 'get_substitutionarray_lines_agefodd')) {
+							if (method_exists($this, 'get_substitutionarray_lines_agefodd') && strpos(get_class($this), 'agefodd') !== false) {
 								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
 							} else {
 								$tmparray = $this->get_substitutionarray_lines($line, $this->outputlangs, false);

@@ -912,7 +912,7 @@ function _list_thirdparty()
 		$sql .= " AND s.status = ".$db->escape($search_status);
 	if (!empty($conf->barcode->enabled) && $search_barcode)
 		$sql .= natural_search("s.barcode", $search_barcode);
-	if ($search_type_thirdparty)
+	if ($search_type_thirdparty > 0)
 		$sql .= " AND s.fk_typent IN (".$search_type_thirdparty.')';
 	if ($search_levels)
 		$sql .= " AND s.fk_prospectlevel IN (".$search_levels.')';
@@ -1020,7 +1020,7 @@ function _list_thirdparty()
 		$param .= '&search_idprof6='.urlencode($search_idprof6);
 	if ($search_vat != '')
 		$param .= '&search_vat='.urlencode($search_vat);
-	if ($search_type_thirdparty != '')
+	if ($search_type_thirdparty != '' && $search_type_thirdparty > 0)
 		$param .= '&search_type_thirdparty='.urlencode($search_type_thirdparty);
 	if ($search_type != '')
 		$param .= '&search_type='.urlencode($search_type);
@@ -1246,7 +1246,7 @@ function _list_thirdparty()
 	if (!empty($arrayfields['typent.code']['checked']))
 	{
 		print '<td class="liste_titre maxwidthonsmartphone" align="center">';
-		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 0, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT));
+		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 1, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT));
 		print '</td>';
 	}
 	if (!empty($arrayfields['s.email']['checked']))

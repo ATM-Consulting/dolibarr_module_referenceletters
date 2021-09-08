@@ -799,7 +799,7 @@ function _list_thirdparty()
 	$sql .= " state.code_departement as state_code, state.nom as state_name,";
 	$sql .= " region.code_region as region_code, region.nom as region_name";
 // We'll need these fields in order to filter by sale (including the case where the user can only see his prospects)
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= ", sc.fk_soc, sc.fk_user";
 // We'll need these fields in order to filter by categ
 	if ($search_categ_cus)
@@ -827,7 +827,7 @@ function _list_thirdparty()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs ON s.rowid = cs.fk_soc"; // We'll need this table joined to the select in order to filter by categ
 	$sql .= " ,".MAIN_DB_PREFIX."c_stcomm as st";
 // We'll need this table joined to the select in order to filter by sale
-	if ($search_sale || (!$user->rights->societe->client->voir && !$socid))
+	if (($search_sale && $search_sale > 0) || (!$user->rights->societe->client->voir && !$socid))
 		$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 	$sql .= " WHERE s.fk_stcomm = st.id";
 	$sql .= " AND s.entity IN (".getEntity('societe').")";
@@ -835,11 +835,11 @@ function _list_thirdparty()
 		$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".$user->id;
 	if ($socid)
 		$sql .= " AND s.rowid = ".$socid;
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
 	if (!$user->rights->fournisseur->lire)
 		$sql .= " AND (s.fournisseur <> 1 OR s.client <> 0)";	// client=0, fournisseur=0 must be visible
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= " AND sc.fk_user = ".$db->escape($search_sale);
 	if ($search_categ_cus > 0)
 		$sql .= " AND cc.fk_categorie = ".$db->escape($search_categ_cus);

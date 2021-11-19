@@ -1,5 +1,8 @@
 English Reference Letters ChangeLog
 
+***** ChangeLog for 2.7.3 compared to 2.7.2 *****
+-FIX : compatibity with Dolibarr V12 (supplier_order model path changed from "core/modules/supplier_order/pdf" to "core/modules/supplier_order/doc")
+
 ***** ChangeLog for 2.7.2 compared to 2.7.1 *****
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect
 

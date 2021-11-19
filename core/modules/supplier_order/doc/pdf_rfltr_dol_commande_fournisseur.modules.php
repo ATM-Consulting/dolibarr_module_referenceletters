@@ -18,7 +18,7 @@
  */
 
 /**
- * \file referenceletters/core/modules/referenceletters/supplier_order/pdf/pdf_rfltr_dol_commande_fournisseur.modules.php
+ * \file referenceletters/core/modules/referenceletters/supplier_order/doc/pdf_rfltr_dol_commande_fournisseur.modules.php
  * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */

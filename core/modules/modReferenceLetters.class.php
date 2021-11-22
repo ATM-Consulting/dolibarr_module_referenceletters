@@ -51,7 +51,7 @@ class modReferenceLetters extends DolibarrModules
 
 		// Family can be 'crm','financial','hr','projects','products','ecm','technic','other'
 		// It is used to group modules in module setup page
-		$this->family = "other";
+		$this->family = 'ATM Consulting – Autres';
 		// Module label (no space allowed)
 		// used if translation string 'ModuleXXXName' not found
 		// (where XXX is value of numeric property 'numero' of module)
@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.8.1';
+		$this->version = '2.9.4';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -79,7 +79,7 @@ class modReferenceLetters extends DolibarrModules
 		                                                    // for specific path of parts (eg: /referenceletters/core/modules/barcode)
 		                                                    // for specific css file (eg: /referenceletters/css/referenceletters.css.php)
 
-		$this->editor_name = 'ATM-Consulting';
+		$this->editor_name = 'ATM Consulting';
 		$this->editor_url = 'https://www.atm-consulting.fr';
 
 		$this->module_parts = array (
@@ -299,25 +299,25 @@ class modReferenceLetters extends DolibarrModules
 
 		$this->rights[$r][0] = 1032581;
 		$this->rights[$r][1] = 'See models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'read';
 		$r ++;
 
 		$this->rights[$r][0] = 1032582;
 		$this->rights[$r][1] = 'Modify models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'write';
 		$r ++;
 
 		$this->rights[$r][0] = 1032583;
 		$this->rights[$r][1] = 'Delete models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'delete';
 		$r ++;
 
 		$this->rights[$r][0] = 1032584;
 		$this->rights[$r][1] = 'Use models letters';
-		$this->rights[$r][3] = 1;
+		$this->rights[$r][3] = 0; 					// Permission by default for new user (0/1)
 		$this->rights[$r][4] = 'use';
 		$r ++;
 

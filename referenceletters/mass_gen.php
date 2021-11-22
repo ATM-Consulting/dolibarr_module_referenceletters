@@ -799,7 +799,7 @@ function _list_thirdparty()
 	$sql .= " state.code_departement as state_code, state.nom as state_name,";
 	$sql .= " region.code_region as region_code, region.nom as region_name";
 // We'll need these fields in order to filter by sale (including the case where the user can only see his prospects)
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= ", sc.fk_soc, sc.fk_user";
 // We'll need these fields in order to filter by categ
 	if ($search_categ_cus)
@@ -827,7 +827,7 @@ function _list_thirdparty()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs ON s.rowid = cs.fk_soc"; // We'll need this table joined to the select in order to filter by categ
 	$sql .= " ,".MAIN_DB_PREFIX."c_stcomm as st";
 // We'll need this table joined to the select in order to filter by sale
-	if ($search_sale || (!$user->rights->societe->client->voir && !$socid))
+	if (($search_sale && $search_sale > 0) || (!$user->rights->societe->client->voir && !$socid))
 		$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 	$sql .= " WHERE s.fk_stcomm = st.id";
 	$sql .= " AND s.entity IN (".getEntity('societe').")";
@@ -835,11 +835,11 @@ function _list_thirdparty()
 		$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".$user->id;
 	if ($socid)
 		$sql .= " AND s.rowid = ".$socid;
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
 	if (!$user->rights->fournisseur->lire)
 		$sql .= " AND (s.fournisseur <> 1 OR s.client <> 0)";	// client=0, fournisseur=0 must be visible
-	if ($search_sale)
+	if ($search_sale && $search_sale > 0)
 		$sql .= " AND sc.fk_user = ".$db->escape($search_sale);
 	if ($search_categ_cus > 0)
 		$sql .= " AND cc.fk_categorie = ".$db->escape($search_categ_cus);
@@ -912,7 +912,7 @@ function _list_thirdparty()
 		$sql .= " AND s.status = ".$db->escape($search_status);
 	if (!empty($conf->barcode->enabled) && $search_barcode)
 		$sql .= natural_search("s.barcode", $search_barcode);
-	if ($search_type_thirdparty)
+	if ($search_type_thirdparty > 0)
 		$sql .= " AND s.fk_typent IN (".$search_type_thirdparty.')';
 	if ($search_levels)
 		$sql .= " AND s.fk_prospectlevel IN (".$search_levels.')';
@@ -1020,7 +1020,7 @@ function _list_thirdparty()
 		$param .= '&search_idprof6='.urlencode($search_idprof6);
 	if ($search_vat != '')
 		$param .= '&search_vat='.urlencode($search_vat);
-	if ($search_type_thirdparty != '')
+	if ($search_type_thirdparty != '' && $search_type_thirdparty > 0)
 		$param .= '&search_type_thirdparty='.urlencode($search_type_thirdparty);
 	if ($search_type != '')
 		$param .= '&search_type='.urlencode($search_type);
@@ -1246,7 +1246,7 @@ function _list_thirdparty()
 	if (!empty($arrayfields['typent.code']['checked']))
 	{
 		print '<td class="liste_titre maxwidthonsmartphone" align="center">';
-		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 0, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT));
+		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 1, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT));
 		print '</td>';
 	}
 	if (!empty($arrayfields['s.email']['checked']))

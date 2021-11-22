@@ -3,12 +3,22 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
-## Version 2.8
+
+
+## Version 2.9 - 14/06/2021
+
+- FIX : In v14, select_salesrepresentatives uses -1 as empty value, sql filters adjusted accordingly *08/09/2021* - 2.9.4 
+- FIX : Change default rights to 0 *01/07/2021* - 2.9.3
+- FIX : Compatibility V13 *17/05/2021* - 2.9.2
+- FIX - Compatibility V14 : Edit the descriptor: family - *2021-06-10* - 2.9.1
+- NEW : TK2003-0572 - Qualiopi Référents Ajouter les tags DocEdit qui permettent d'y avoir acces *04/06/2021* - 2.9
+
+## Version 2.8 - 14/04/2021
 
 -FIX : Remove dead links *14/04/2021* - 2.8.1
 -NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
 
-## Version 2.7
+## Version 2.7 - 26/03/2021
 
 -FIX : compatibity with Dolibarr V12 (supplier_order model path changed from "core/modules/supplier_order/pdf" to "core/modules/supplier_order/doc")
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2

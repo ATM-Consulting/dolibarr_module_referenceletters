@@ -1,7 +1,6 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-
 # UNRELEASED
 
 ## Version 2.8
@@ -11,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.7
 
+-FIX : compatibity with Dolibarr V12 (supplier_order model path changed from "core/modules/supplier_order/pdf" to "core/modules/supplier_order/doc")
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2
 -FIX : Generate "Fiche Pedago" custom for an agefodd session - 2.7.1
 

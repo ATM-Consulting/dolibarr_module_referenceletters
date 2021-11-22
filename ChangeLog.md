@@ -1,25 +1,30 @@
-English Reference Letters ChangeLog
+# Change Log
+All notable changes to this project will be documented in this file.
 
-***** ChangeLog for 2.7.3 compared to 2.7.2 *****
+# UNRELEASED
+
+## Version 2.8
+
+-FIX : Remove dead links *14/04/2021* - 2.8.1
+-NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
+
+## Version 2.7
+
 -FIX : compatibity with Dolibarr V12 (supplier_order model path changed from "core/modules/supplier_order/pdf" to "core/modules/supplier_order/doc")
+-FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2
+-FIX : Generate "Fiche Pedago" custom for an agefodd session - 2.7.1
 
-***** ChangeLog for 2.7.2 compared to 2.7.1 *****
--FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect
+-NEW : Add idprof1 and idprof2 tag helper
 
-***** ChangeLog for 2.7.1 compared to 2.7.0 *****
--FIX : Generate "Fiche Pedago" custom for an agefodd session
+# Version 2.0 - 06/04/2017
 
-***** ChangeLog for 2.7.0 compared to 2.6.4 *****
--New : Add idprof1 and idprof2 tag helper
-
-
-***** ChangeLog for 2.0 compared to 1.9 *****
--FIX : Specify the condition that allows the use of agefodd substitution keys only in the case of an agefodd pdf
--New : Add mass generation for invoice model letters
+-FIX : Specify the condition that allows the use of agefodd substitution keys only in the case of an agefodd pdf *30/06/2021* - 2.6.5
+-NEW : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]
 
-***** ChangeLog for 1.9 compared to 1.8 *****
--New : Only for 4.0
+## 1.9 - 14/11/2016
+
+-NEW : Only for 4.0
 
 ***** ChangeLog for 1.8 compared to 1.7 *****
 -FIX : Add customer order letters

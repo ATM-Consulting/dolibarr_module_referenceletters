@@ -28,26 +28,62 @@ include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
  * Class to manage the box
  */
 class box_referenceletter_models_archive extends ModeleBoxes {
-	var $boxcode = "referenceletter_models";
+	/**
+	 * @var string Alphanumeric ID. Populated by the constructor.
+	 */
+	var $boxcode = "referenceletter_models_archive";
+
+	/**
+	 * @var string Box icon (in configuration page)
+	 * Automatically calls the icon named with the corresponding "object_" prefix
+	 */
 	var $boximg = "referenceletters@referenceletters";
-	var $boxlabel;
+
+	/**
+	 * @var string Box label (in configuration page)
+	 */
+	var $boxlabel = 'RefLtrLettersUnactiveListbox'; // rewrite by construct
+
+	/**
+	 * @var string[] Module dependencies
+	 */
 	var $depends = array (
 			"referenceletters"
 	);
+
+	/**
+	 * @var DoliDb Database handler
+	 */
 	var $db;
+
+	/**
+	 * @var mixed More parameters
+	 */
 	var $param;
+
+	/**
+	 * @var array Header informations. Usually created at runtime by loadBox().
+	 */
 	var $info_box_head = array ();
+
+	/**
+	 * @var array Contents informations. Usually created at runtime by loadBox().
+	 */
 	var $info_box_contents = array ();
 
 	/**
 	 * Constructor
+	 *
+	 * @param DoliDB $db Database handler
+	 * @param string $param More parameters
 	 */
-	function __construct() {
+	function __construct(DoliDB $db, $param = '') {
 		global $langs, $user;
+
+		parent::__construct($db, $param);
+
 		$langs->load("boxes");
-
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrLettersUnactiveListbox",15);
-
 		$this->hidden=! ($user->rights->referenceletters->read);
 	}
 
@@ -103,6 +139,6 @@ class box_referenceletter_models_archive extends ModeleBoxes {
 	 * @return void
 	 */
 	function showBox($head = null, $contents = null, $nooutput=0) {
-		parent::showBox($this->info_box_head, $this->info_box_contents);
+		return parent::showBox($this->info_box_head, $this->info_box_contents, $nooutput);
 	}
 }

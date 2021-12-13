@@ -629,8 +629,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// Substitutions tableau des élément financier :
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
-        $resarray['line_fin_desciption'] = $line->description;
-		$resarray['line_fin_desciption_light'] = $line->form_label;
+
+		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
+        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td>");
+//		$resarray['line_fin_desciption_light'] = $line->form_label;
 		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
 		$resarray['line_fin_qty'] = $line->qty;
 		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);

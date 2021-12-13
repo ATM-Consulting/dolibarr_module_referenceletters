@@ -631,7 +631,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
 		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
-        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td>");
+        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>");
 //		$resarray['line_fin_desciption_light'] = $line->form_label;
 		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
 		$resarray['line_fin_qty'] = $line->qty;

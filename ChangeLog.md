@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.9 - 14/06/2021
 
+- FIX : Affichage sur des documents généré docedit qui ne se faisait pas a cause de mise en forme <strong> - *13/12/2021* - 2.9.5
 - FIX : In v14, select_salesrepresentatives uses -1 as empty value, sql filters adjusted accordingly *08/09/2021* - 2.9.4 
 - FIX : Change default rights to 0 *01/07/2021* - 2.9.3
 - FIX : Compatibility V13 *17/05/2021* - 2.9.2

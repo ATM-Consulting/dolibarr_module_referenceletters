@@ -93,6 +93,7 @@ if(!empty($object->id)) {
 	dol_fiche_head($head, 'head', $langs->trans('RefLtrHeaderTab'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id','none').'">';
+	print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 
 	print '<table class="border" width="100%">';
 	print '<tr>';

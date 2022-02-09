@@ -447,23 +447,28 @@ class ActionsReferenceLetters
 				<?php
 				$defaultset=0;
 				foreach($TModelsID as &$TData) {
-				    $selected = 0;
-				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
-				        $selected = 1;
-				        $defaultset=1;
-				    }
-				?>
-					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
+					?>
+					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false);
 					tab.push(option);
 					$("#model").append(tab);
-    				<?php
-    				if (!empty($TData['default_doc']) && !$defaultset) {?>
-    					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
-    				<?php
+					<?php
+					if(!empty($object->array_options['options_rfltr_model_id'])) {
+						?>
+							var id_selected = "<?php print $object->array_options['options_rfltr_model_id']; ?>";
+						<?php
+					}
+					elseif (!empty($TData['default_doc']) && strpos($object->model_pdf, 'rfltr') !== false) {
+						?>
+							var id_selected = "<?php print $TData['id']; ?>";
+						<?php
 						$defaultset=1;
-				    }
+					}
 				}
 				?>
+
+				if(id_selected) {
+					$("#model").val('rfltr_' + id_selected).change();
+				}
 
 			});
 

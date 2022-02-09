@@ -30,6 +30,7 @@ All notable changes to this project will be documented in this file.
 
 # Version 2.0 - 06/04/2017
 
+-FIX : Preselect model on documents if default - *09/02/2022* - 2.6.6
 -FIX : Specify the condition that allows the use of agefodd substitution keys only in the case of an agefodd pdf *30/06/2021* - 2.6.5
 -NEW : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]

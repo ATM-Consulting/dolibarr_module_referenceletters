@@ -463,7 +463,9 @@ class ActionsReferenceLetters
 				}
 				?>
 
-				$("#model").val('rfltr_' + id_selected).change();
+				if(id_selected) {
+					$("#model").val('rfltr_' + id_selected).change();
+				}
 
 			});
 

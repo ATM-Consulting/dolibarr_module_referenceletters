@@ -702,6 +702,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $db, $conf,$langs;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
+		dol_include_once('/societe/class/societe.class.php');
 
 		$formAgefodd = new FormAgefodd($db);
 
@@ -718,6 +719,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$p = new Product($db);
 			$p->fetch($object->fk_product);
 			$resarray['formation_ref_produit'] = $p->ref;
+		}
+
+		// Substitution concernant le prestataire
+		if (!empty($object->fk_socpeople_presta)) {
+			$presta = new Contact($db);
+			$res = $presta->fetch($object->fk_socpeople_presta);
+			if ($res > 0) {
+				$resarray['presta_lastname'] = $presta->lastname;
+				$resarray['presta_firstname'] = $presta->firstname;
+			}
+
+			$presta_soc = new Societe($db);
+			$ressoc = $presta_soc->fetch($presta->socid);
+			if ($ressoc > 0) {
+				$resarray['presta_soc'] = $presta_soc->name;
+			}
 		}
 
 		$resarray['formation_statut'] = $object->statuslib;

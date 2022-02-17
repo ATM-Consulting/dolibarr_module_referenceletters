@@ -445,6 +445,22 @@ class ActionsReferenceLetters
 				}
 
 				<?php
+
+			    if (empty($object->array_options['options_rfltr_model_id']) && !in_array($object->model_pdf, array('crabe','azur','einstein','aurore'))){
+
+					$object_refletters->lines = array();
+					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
+					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+
+					if ($id_rfltr){
+						$object->array_options['options_rfltr_model_id'] = $id_rfltr;
+					}else{
+						$model = array_values(array_slice( $TModelsID, -1))[0];
+						$object->array_options['options_rfltr_model_id'] = $model['id'] ;
+					}
+
+				}
+
 				$defaultset=0;
 				foreach($TModelsID as &$TData) {
 				    $selected = 0;
@@ -452,6 +468,12 @@ class ActionsReferenceLetters
 				        $selected = 1;
 				        $defaultset=1;
 				    }
+
+					// ici je n'ai pas document par defaut mais on a selectionné
+					// doc edit dans la création de la facture
+					// on pré selectionne un modele doc facture
+
+
 				?>
 					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
 					tab.push(option);
@@ -471,6 +493,40 @@ class ActionsReferenceLetters
 		<?php
 
 		return 0;
+	}
+
+	/**
+	 * @param $parameters
+	 * @param $object
+	 * @param $action
+	 * @param $hookmanager
+	 * @return void
+	 */
+	function showDocuments ($parameters, &$object, &$action, $hookmanager){
+		/*global $db, $conf, $user, $langs;
+
+		if (in_array($parameters['currentcontext'], array('invoicecard'))) {
+
+			var_dump("here");
+			var_dump($object->model_pdf);
+			//var_dump($conf->modules);
+			if (in_array('referenceletters', $conf->modules)){
+
+				var_dump("module activated");
+				require_once (__DIR__ . '/referenceletters.class.php');
+				$r = new ReferenceLetters($db);
+				$result = $r->fetch_all('','','','',array('t.element_type'=> 'invoice'));
+				if ($result){
+					$object->model_pdf =  $r->lines[1]->title;
+					var_dump($r->lines[1]->title);
+				}
+
+
+				$sql = " SELECT * FROM " . MAIN_DB_PREFIX . "referenceletters ";
+			}
+
+		}*/
+		//return 1;
 	}
 
 }

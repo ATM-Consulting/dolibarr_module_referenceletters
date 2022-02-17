@@ -468,24 +468,28 @@ class ActionsReferenceLetters
 				        $selected = 1;
 				        $defaultset=1;
 				    }
-
-					// ici je n'ai pas document par defaut mais on a selectionné
-					// doc edit dans la création de la facture
-					// on pré selectionne un modele doc facture
-
-
 				?>
-					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
+					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false);
 					tab.push(option);
 					$("#model").append(tab);
     				<?php
-    				if (!empty($TData['default_doc']) && !$defaultset) {?>
-    					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
+					if(!empty($object->array_options['options_rfltr_model_id'])) {
+						?>
+							var id_selected = "<?php print $object->array_options['options_rfltr_model_id']; ?>";
+						<?php
+					}
+					elseif (!empty($TData['default_doc']) && strpos($object->model_pdf, 'rfltr') !== false) {
+						?>
+							var id_selected = "<?php print $TData['id']; ?>";
     				<?php
 						$defaultset=1;
 				    }
 				}
 				?>
+
+				if(id_selected) {
+					$("#model").val('rfltr_' + id_selected).change();
+				}
 
 			});
 
@@ -493,40 +497,6 @@ class ActionsReferenceLetters
 		<?php
 
 		return 0;
-	}
-
-	/**
-	 * @param $parameters
-	 * @param $object
-	 * @param $action
-	 * @param $hookmanager
-	 * @return void
-	 */
-	function showDocuments ($parameters, &$object, &$action, $hookmanager){
-		/*global $db, $conf, $user, $langs;
-
-		if (in_array($parameters['currentcontext'], array('invoicecard'))) {
-
-			var_dump("here");
-			var_dump($object->model_pdf);
-			//var_dump($conf->modules);
-			if (in_array('referenceletters', $conf->modules)){
-
-				var_dump("module activated");
-				require_once (__DIR__ . '/referenceletters.class.php');
-				$r = new ReferenceLetters($db);
-				$result = $r->fetch_all('','','','',array('t.element_type'=> 'invoice'));
-				if ($result){
-					$object->model_pdf =  $r->lines[1]->title;
-					var_dump($r->lines[1]->title);
-				}
-
-
-				$sql = " SELECT * FROM " . MAIN_DB_PREFIX . "referenceletters ";
-			}
-
-		}*/
-		//return 1;
 	}
 
 }

@@ -168,6 +168,11 @@ DisplaySubtitutionTable=Afficher la table des subtitutions
 ClickToAddOnEditor=cliquer pour ajouter au texte
 ClickToCopy=Cliquer pour copier
 
+PrestaSocName=Nom de la société du prestataire
+PrestaLastname=Nom du prestataire
+PrestaFirstname=Prénom du prestataire
+
+
 #
 # Substitutions Agefodd
 #

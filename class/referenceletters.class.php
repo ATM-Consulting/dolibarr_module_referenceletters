@@ -769,6 +769,9 @@ class ReferenceLetters extends CommonObject
 				,'Mentor_administrator'=>'Référent Administratif'
 				,'Mentor_pedagogique'=>'Référent pédagogique'
 				,'Mentor_handicap'=>'Référent handicap'
+				,'presta_soc'=>$langs->trans('PrestaSocName')
+				,'presta_lastname'=>$langs->trans('PrestaLastname')
+				,'presta_firstname'=>$langs->trans('PrestaFirstname')
 
 		);
 

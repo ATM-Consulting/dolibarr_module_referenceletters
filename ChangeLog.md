@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
-
+NEW : Add substitution in agefodd to be able to use preta firstname, lastname and soc *15/02/2022*
 
 ## Version 2.9 - 14/06/2021
 

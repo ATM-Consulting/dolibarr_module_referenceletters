@@ -445,9 +445,18 @@ class ActionsReferenceLetters
 				}
 
 				<?php
+				$rfltr_model = GETPOST("","alpha");
 
-			    if (empty($object->array_options['options_rfltr_model_id']) && !in_array($object->model_pdf, array('crabe','azur','einstein','aurore'))){
 
+				// pas de test possible sur le GETPOST qui contient uniquement le facId ici
+
+				// Avertissement
+				//Cette fonction peut retourner false, mais elle peut aussi retourner une valeur équivalent à false. (needle trouvée en pos 0 par exemple)
+				// Utilisez l'opérateur === pour tester la valeur de retour exacte de cette fonction.
+				//
+			    // si l'utilisateur à sélectionné un pdf de type refletters on cherche un document par défaut sinon
+			    // on sélectionne le dernier dans la liste pour eviter le document exemple de refletters
+			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
 					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
 					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
@@ -462,13 +471,7 @@ class ActionsReferenceLetters
 				}
 
 				$defaultset=0;
-				foreach($TModelsID as &$TData) {
-				    $selected = 0;
-				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
-				        $selected = 1;
-				        $defaultset=1;
-				    }
-				?>
+				foreach($TModelsID as &$TData) { ?>
 					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false);
 					tab.push(option);
 					$("#model").append(tab);

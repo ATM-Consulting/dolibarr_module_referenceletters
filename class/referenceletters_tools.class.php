@@ -29,7 +29,25 @@ class RfltrTools {
 		dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
 
 		$object_refletter = new Referenceletters($db);
-		$object_refletter->fetch($id_model);
+		$res_fetch = $object_refletter->fetch($id_model);
+
+		//
+		if(empty($res_fetch)) {
+			$object_refletter->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
+			$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
+
+			if(!empty($id_rfltr)) { // Il existe un modèle par défaut, on le charge
+				$object_refletter->fetch($id_rfltr);
+			}else{
+				// sinon on prend le premier dans la liste.
+				$object_refletter->fetch_all('DESC', 'rowid', 0, 0, array('t.element_type'=>"invoice"));
+				$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
+
+				if(!empty($id_rfltr)) { // Il existe  ...  on le charge
+					$object_refletter->fetch($id_rfltr);
+				}
+			}
+		}
 
 		if (! empty($lang_id)) {
 			$outputlangs = new Translate("", $conf);

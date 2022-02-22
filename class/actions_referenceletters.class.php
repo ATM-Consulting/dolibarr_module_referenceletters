@@ -445,7 +445,6 @@ class ActionsReferenceLetters
 				}
 
 				<?php
-				$rfltr_model = GETPOST("","alpha");
 
 
 				// pas de test possible sur le GETPOST qui contient uniquement le facId ici

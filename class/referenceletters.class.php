@@ -437,6 +437,10 @@ class ReferenceLetters extends CommonObject
 	 * @return int <0 if KO, >0 if OK
 	 */
 	public function fetch($id, $title='') {
+
+
+		if(empty($id) && empty($title)) return 0;
+
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";

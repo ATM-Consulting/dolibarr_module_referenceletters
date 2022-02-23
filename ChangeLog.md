@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.9 - 14/06/2021
 
+- FIX : unlink docedit from core odf lib to prevent html conversion to odt *23/02/2022* - 2.9.7
 - FIX : Compatibility V15 : token CSRF on model header and footer form *20/12/2021* - 2.9.6
 - FIX : Affichage sur des documents généré docedit qui ne se faisait pas a cause de mise en forme <strong> - *13/12/2021* - 2.9.5
 - FIX : In v14, select_salesrepresentatives uses -1 as empty value, sql filters adjusted accordingly *08/09/2021* - 2.9.4 

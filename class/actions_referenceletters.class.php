@@ -445,25 +445,53 @@ class ActionsReferenceLetters
 				}
 
 				<?php
+
+
+				// pas de test possible sur le GETPOST qui contient uniquement le facId ici
+
+				// Avertissement
+				//Cette fonction peut retourner false, mais elle peut aussi retourner une valeur équivalent à false. (needle trouvée en pos 0 par exemple)
+				// Utilisez l'opérateur === pour tester la valeur de retour exacte de cette fonction.
+				//
+			    // si l'utilisateur à sélectionné un pdf de type refletters on cherche un document par défaut sinon
+			    // on sélectionne le dernier dans la liste pour eviter le document exemple de refletters
+			    if (strpos($object->model_pdf, 'rfltr') !== false){
+					$object_refletters->lines = array();
+					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
+					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+
+					if ($id_rfltr){
+						$object->array_options['options_rfltr_model_id'] = $id_rfltr;
+					}else{
+						$model = array_values(array_slice( $TModelsID, -1))[0];
+						$object->array_options['options_rfltr_model_id'] = $model['id'] ;
+					}
+
+				}
+
 				$defaultset=0;
-				foreach($TModelsID as &$TData) {
-				    $selected = 0;
-				    if($TData['id'] == $object->array_options['options_rfltr_model_id']) {
-				        $selected = 1;
-				        $defaultset=1;
-				    }
-				?>
-					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false, <?php print $selected; ?>);
+				foreach($TModelsID as &$TData) { ?>
+					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false);
 					tab.push(option);
 					$("#model").append(tab);
     				<?php
-    				if (!empty($TData['default_doc']) && !$defaultset) {?>
-    					$("#model").val('rfltr_<?php print $TData['id']; ?>').change();
+					if(!empty($object->array_options['options_rfltr_model_id'])) {
+						?>
+							var id_selected = "<?php print $object->array_options['options_rfltr_model_id']; ?>";
+						<?php
+					}
+					elseif (!empty($TData['default_doc']) && strpos($object->model_pdf, 'rfltr') !== false) {
+						?>
+							var id_selected = "<?php print $TData['id']; ?>";
     				<?php
 						$defaultset=1;
 				    }
 				}
 				?>
+
+				if(id_selected) {
+					$("#model").val('rfltr_' + id_selected).change();
+				}
 
 			});
 

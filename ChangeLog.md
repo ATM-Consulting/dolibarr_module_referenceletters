@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ## Version 2.9 - 14/06/2021
 
 - FIX : unlink docedit from core odf lib to prevent html conversion to odt *23/02/2022* - 2.9.7
+- FIX : Fix selection refletters default model *17/02/2022* - 2.9.7
 - FIX : Compatibility V15 : token CSRF on model header and footer form *20/12/2021* - 2.9.6
 - FIX : Affichage sur des documents généré docedit qui ne se faisait pas a cause de mise en forme <strong> - *13/12/2021* - 2.9.5
 - FIX : In v14, select_salesrepresentatives uses -1 as empty value, sql filters adjusted accordingly *08/09/2021* - 2.9.4 
@@ -31,6 +32,7 @@ All notable changes to this project will be documented in this file.
 
 # Version 2.0 - 06/04/2017
 
+-FIX : Preselect model on documents if default - *09/02/2022* - 2.6.6
 -FIX : Specify the condition that allows the use of agefodd substitution keys only in the case of an agefodd pdf *30/06/2021* - 2.6.5
 -NEW : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]

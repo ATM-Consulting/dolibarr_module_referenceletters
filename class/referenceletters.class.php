@@ -772,11 +772,31 @@ class ReferenceLetters extends CommonObject
 			    ,'AgfMentorList'=>'Liste des référents'
 				,'Mentor_administrator'=>'Référent Administratif'
 				,'Mentor_pedagogique'=>'Référent pédagogique'
-				,'Mentor_handicap'=>'Référent handicap'
-				,'presta_soc'=>$langs->trans('PrestaSocName')
-				,'presta_lastname'=>$langs->trans('PrestaLastname')
-				,'presta_firstname'=>$langs->trans('PrestaFirstname')
-
+				,'Mentor_handicap'	=>'Référent handicap'
+				,'presta_lastname'	=>$langs->trans('PrestaLastname')
+				,'presta_firstname'	=>$langs->trans('PrestaFirstname')
+				,'presta_soc_name'	=>$langs->trans('PrestaSocName')
+				,'presta_soc_id' 	=> $langs->trans('PrestaSocId')
+				,'presta_soc_name_alias'	=> $langs->trans('PrestaSocNameAlias')
+				,'presta_soc_code_client'	=> $langs->trans('PrestaSocCode')
+				,'presta_soc_code_fournisseur'	=> $langs->trans('PrestaSocSupplier')
+				,'presta_soc_email'	=> $langs->trans('PrestaSocEmail')
+				,'presta_soc_phone'	=> $langs->trans('PrestaSocPhone')
+				,'presta_soc_fax'	=> $langs->trans('PrestaSocFax')
+				,'presta_soc_address'	=> $langs->trans('PrestaSocAddress')
+				,'presta_soc_zip'	=> $langs->trans('PrestaSocZip')
+				,'presta_soc_town'	=> $langs->trans('PrestaSocTown')
+				,'presta_soc_country_id'	=> $langs->trans('PrestaSocCountryId')
+				,'presta_soc_country_code'	=> $langs->trans('PrestaSocCountryCode')
+				,'presta_soc_idprof1'	=> $langs->trans('PrestaSocIdprof1')
+				,'presta_soc_idprof2'	=> $langs->trans('PrestaSocIdprof2')
+				,'presta_soc_idprof3'	=> $langs->trans('PrestaSocIdprof3')
+				,'presta_soc_idprof4'	=> $langs->trans('PrestaSocIdprof4')
+				,'presta_soc_idprof5'	=> $langs->trans('PrestaSocIdprof5')
+				,'presta_soc_idprof6'	=> $langs->trans('PrestaSocIdprof6')
+				,'presta_soc_tvaintra'	=> $langs->trans('PrestaSocTvaIntra')
+				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
+				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
 		);
 
 		// Liste de données - Participants

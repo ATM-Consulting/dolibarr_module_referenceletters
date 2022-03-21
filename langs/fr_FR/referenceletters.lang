@@ -172,6 +172,27 @@ PrestaSocName=Nom de la société du prestataire
 PrestaLastname=Nom du prestataire
 PrestaFirstname=Prénom du prestataire
 
+PrestaSocId = Numéro technique de la société du prestataire
+PrestaSocNameAlias = Alias de la société du prestataire
+PrestaSocCode = Code client de la société du prestataire
+PrestaSocSupplier = Code fournisseur de la société du prestataire
+PrestaSocEmail = Email de la société du prestataire
+PrestaSocPhone = Téléphone de la société du prestataire
+PrestaSocFax = Fax de la société du prestataire
+PrestaSocAddress = Adresse de la société du prestataire
+PrestaSocZip = Code postal de la société du prestataire
+PrestaSocTown = Ville de la société du prestataire
+PrestaSocCountryId = Numéro technique de la société du prestataire
+PrestaSocCountryCode = Code de la société du prestataire
+PrestaSocIdprof1 = Identifiant professionnel 1 de la société du prestataire
+PrestaSocIdprof2 = Identifiant professionnel 2 de la société du prestataire
+PrestaSocIdprof3 = Identifiant professionnel 3 de la société du prestataire
+PrestaSocIdprof4 = Identifiant professionnel 4 de la société du prestataire
+PrestaSocIdprof5 = Identifiant professionnel 5 de la société du prestataire
+PrestaSocIdprof6 = Identifiant professionnel 6 de la société du prestataire
+PrestaSocTvaIntra = N° de TVA Intracommunautaire de la société du prestataire
+PrestaSocNotePublic = Note publique de la société du prestataire
+PrestaSocNotePrivate = Note privée de la société du prestataire
 
 #
 # Substitutions Agefodd

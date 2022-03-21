@@ -722,6 +722,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Substitution concernant le prestataire
+		$TDefaultSub = array('presta_lastname', 'presta_firstname', 'presta_soc_name','presta_soc_id','presta_soc_name',
+			'presta_soc_name_alias','presta_soc_code_client','presta_soc_code_fournisseur','presta_soc_email','presta_soc_phone',
+			'presta_soc_fax','presta_soc_address','presta_soc_zip','presta_soc_town','presta_soc_country_id','presta_soc_country_code',
+			'presta_soc_idprof1','presta_soc_idprof2','presta_soc_idprof3','presta_soc_idprof4','presta_soc_idprof5',
+			'presta_soc_idprof6','presta_soc_tvaintra','presta_soc_note_public','presta_soc_note_private'
+		);
+
+		foreach ($TDefaultSub as $ksub){
+			$resarray[$ksub] = '';// si pas de substitution remplacer par vide
+		}
+
 		if (!empty($object->fk_socpeople_presta)) {
 			$presta = new Contact($db);
 			$res = $presta->fetch($object->fk_socpeople_presta);
@@ -733,7 +744,29 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$presta_soc = new Societe($db);
 			$ressoc = $presta_soc->fetch($presta->socid);
 			if ($ressoc > 0) {
-				$resarray['presta_soc'] = $presta_soc->name;
+				$resarray['presta_soc_name'] = $presta_soc->name;
+				$resarray['presta_soc_id'] = $presta_soc->id;
+				$resarray['presta_soc_name'] = $presta_soc->name;
+				$resarray['presta_soc_name_alias'] = $presta_soc->name_alias;
+				$resarray['presta_soc_code_client'] = $presta_soc->code_client;
+				$resarray['presta_soc_code_fournisseur'] = $presta_soc->code_fournisseur;
+				$resarray['presta_soc_email'] = $presta_soc->email;
+				$resarray['presta_soc_phone'] = $presta_soc->phone;
+				$resarray['presta_soc_fax'] = $presta_soc->fax;
+				$resarray['presta_soc_address'] = $presta_soc->address;
+				$resarray['presta_soc_zip'] = $presta_soc->zip;
+				$resarray['presta_soc_town'] = $presta_soc->town;
+				$resarray['presta_soc_country_id'] = $presta_soc->country_id;
+				$resarray['presta_soc_country_code'] = $presta_soc->country_code;
+				$resarray['presta_soc_idprof1'] = $presta_soc->idprof1;
+				$resarray['presta_soc_idprof2'] = $presta_soc->idprof2;
+				$resarray['presta_soc_idprof3'] = $presta_soc->idprof3;
+				$resarray['presta_soc_idprof4'] = $presta_soc->idprof4;
+				$resarray['presta_soc_idprof5'] = $presta_soc->idprof5;
+				$resarray['presta_soc_idprof6'] = $presta_soc->idprof6;
+				$resarray['presta_soc_tvaintra'] = $presta_soc->tva_intra;
+				$resarray['presta_soc_note_public'] = dol_htmlentitiesbr($presta_soc->note_public);
+				$resarray['presta_soc_note_private'] = dol_htmlentitiesbr($presta_soc->note_private);
 			}
 		}
 

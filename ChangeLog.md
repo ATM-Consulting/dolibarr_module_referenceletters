@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+## Version 2.11 - 25/03/2022
 - NEW : Add substitution in agefodd to be able to use all presta soc std data *21/03/2022* - 2.11.0
 - NEW : Add substitution in agefodd to be able to use presta firstname, lastname and soc *15/02/2022* - 2.10.0
 

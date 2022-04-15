@@ -1,6 +1,7 @@
 <?php
 /*
  * Copyright (C) 2016  Florian HENRY <florian.henry@open-concept.pro>
+ * Copyright (C) 2022  Nicolas ZABOURI <info@inovea-conseil.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,7 +309,7 @@ class ActionsReferenceLetters
             }
 
             // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-            if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
+            if (empty($result) || ! is_object($staticRefLtr) || empty($staticRefLtr->lines))
             {
                 return 0;
             }

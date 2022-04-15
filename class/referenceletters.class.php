@@ -251,6 +251,24 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
+		$this->element_type_list['fichinter'] = array (
+			'class' => 'fichinter.class.php',
+			'securityclass' => 'fichinter',
+			'securityfeature' => '',
+			'objectclass' => 'Fichinter',
+			'classpath' => DOL_DOCUMENT_ROOT . '/fichinter/class/',
+			'trans' => 'fichinter',
+			'title' => 'Intervention',
+			'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fichinter.lib.php',
+			'menuloader_function' => 'fichinter_prepare_head',
+			'card' => '/fichinter/card.php',
+			'substitution_method' => 'get_substitutionarray_object',
+			'substitution_method_line' => 'get_substitutionarray_lines',
+			'dir_output'=>DOL_DATA_ROOT.'/ficheinter/',
+			'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php',
+			'listmodelclass' => 'ModelePDFFicheinter',
+			'document_dir' => $conf->ficheinter->dir_output
+		);
 
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';

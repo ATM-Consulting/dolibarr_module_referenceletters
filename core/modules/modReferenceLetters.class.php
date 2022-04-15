@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.11.0';
+		$this->version = '2.13.0';
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -94,6 +94,7 @@ class modReferenceLetters extends DolibarrModules
 						,'supplier_proposalcard'
 						,'ordersuppliercard'
 						,'expeditioncard'
+						,'interventioncard'
 				)
 		);
 		// Set this to 1 if module has its own trigger directory
@@ -130,6 +131,7 @@ class modReferenceLetters extends DolibarrModules
 				'/referenceletters/expedition',
 				'/referenceletters/referenceletters',
 				'/referenceletters/shipping',
+				'/referenceletters/fichinter',
 		);
 
 		// Config pages. Put here list of php pages
@@ -443,6 +445,7 @@ class modReferenceLetters extends DolibarrModules
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'commande_fournisseur', 0, 0, '', '', 1, '', 0, 1);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'supplier_proposal', 0, 0, '', '', 1, '', 0, 1);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'expedition', 0, 0, '', '', 1, '', 0, 1);
+		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'fichinter', 0, 0, '', '', 1, '', 0, 1);
 
 		$reinstalltemplate=false;
 		dol_include_once('/referenceletters/script/create-maj-base.php');

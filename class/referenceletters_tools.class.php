@@ -68,7 +68,8 @@ class RfltrTools {
 								  'SupplierProposal',
 								  'CommandeFournisseur',
 								  'FactureFournisseur',
-								  'Expedition');
+								  'Expedition',
+								  'Fichinter');
 		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass))  {
 			$object = &$obj;
 			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {

@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 # UNRELEASED
+- NEW : Add new document manage by docedit : Intervention *15/04/2022* - 2.13.0
+- NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0
 
 ## Version 2.11 - 25/03/2022
 - NEW : Add substitution in agefodd to be able to use all presta soc std data *21/03/2022* - 2.11.0

@@ -183,6 +183,7 @@ class ActionsReferenceLetters
 					$destfileName = $srcobjRef . '.pdf';
 					$destfilePath = $destdir . '/' . $destfileName;
 				}
+
 				$isOverwrite = is_file($destfilePath);
 				if (!is_dir($destdir) && !mkdir($destdir)) {
 					$this->error = $langs->trans('RefLtrCannotCreateDir', $destdir);
@@ -217,7 +218,7 @@ class ActionsReferenceLetters
 
 		global $db, $conf, $user, $langs;
 
-		if (in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard', 'expeditioncard'))) {
+		if (in_array($parameters['currentcontext'], array('propalcard', 'ordercard', 'contractcard', 'invoicecard', 'supplier_proposalcard', 'ordersuppliercard', 'expeditioncard', 'interventioncard'))) {
 
 			if ($action === 'builddoc') {
 
@@ -265,7 +266,6 @@ class ActionsReferenceLetters
     function commonGenerateDocument($parameters, &$object, &$action, $hookmanager)
     {
         global $db, $langs, $conf, $user;
-
         dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
         dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
         dol_include_once('/referenceletters/class/referenceletters.class.php');
@@ -273,7 +273,8 @@ class ActionsReferenceLetters
         $element = $object->element;
         if($element === 'facture') $element = 'invoice';
         if($element === 'commande') $element = 'order';
-        if($element === 'contrat') $element = 'contract';
+		if($element === 'contrat') $element = 'contract';
+
         $TMatches = array();
 
         $matchReturn = preg_match('/^rfltr_([1-9][0-9]*)$/', $parameters['modele'], $TMatches);
@@ -419,6 +420,7 @@ class ActionsReferenceLetters
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		$object_refletters = new Referenceletters($db);
 		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
+
 		if ($result<0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {
@@ -455,20 +457,24 @@ class ActionsReferenceLetters
 				//
 			    // si l'utilisateur à sélectionné un pdf de type refletters on cherche un document par défaut sinon
 			    // on sélectionne le dernier dans la liste pour eviter le document exemple de refletters
+
 			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
 					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
 					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
-
-					if ($id_rfltr){
-						$object->array_options['options_rfltr_model_id'] = $id_rfltr;
-					}else{
-						$model = array_values(array_slice( $TModelsID, -1))[0];
-						$object->array_options['options_rfltr_model_id'] = $model['id'] ;
+					if(empty($object->array_options['options_rfltr_model_id'])) {
+						// Si modele jamais généré avec un docedit déjà existant
+						// Alors on voit s'il y a un document docedit apr défaut
+						// Sinon on garde le dernier doc généré pour cette fiche
+						if ($id_rfltr){
+							$object->array_options['options_rfltr_model_id'] = $id_rfltr;
+						}else {
+							$model = array_values(array_slice($TModelsID, -1))[0];
+							$object->array_options['options_rfltr_model_id'] = $model['id'];
+						}
 					}
 
 				}
-
 				$defaultset=0;
 				foreach($TModelsID as &$TData) { ?>
 					var option = new Option('<?php print $db->escape($TData['title']); ?>', 'rfltr_<?php print $TData['id']; ?>', false);

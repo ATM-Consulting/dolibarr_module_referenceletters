@@ -1393,21 +1393,24 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				if ($id != "")
 				{
 					$param = $extrafields->attribute_param[$key];
-					$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
-					$InfoFieldList = explode(":", $param_list[0]);
-					$classname=$InfoFieldList[0];
-					$classpath=$InfoFieldList[1];
-					if (! empty($classpath))
-					{
-						dol_include_once($InfoFieldList[1]);
-						if ($classname && class_exists($classname))
+					if(!empty($param['options'])){
+						$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
+						$InfoFieldList = explode(":", $param_list[0]);
+						$classname=$InfoFieldList[0];
+						$classpath=$InfoFieldList[1];
+						if (! empty($classpath))
 						{
-							$tmpobject = new $classname($this->db);
-							$tmpobject->fetch($id);
-							// completely replace the id with the linked object name
-							$object->array_options['options_'.$key] = $tmpobject->name;
+							dol_include_once($InfoFieldList[1]);
+							if ($classname && class_exists($classname))
+							{
+								$tmpobject = new $classname($this->db);
+								$tmpobject->fetch($id);
+								// completely replace the id with the linked object name
+								$object->array_options['options_'.$key] = $tmpobject->name;
+							}
 						}
 					}
+
 				}
 			}
 			elseif($extrafields->attribute_type[$key] == 'sellist') {

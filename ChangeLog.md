@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 # UNRELEASED
-
+- NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
 
 ## Version 2.13 - 15/04/2022
 

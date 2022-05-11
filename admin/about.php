@@ -63,22 +63,16 @@ $head = referencelettersAdminPrepareHead();
 dol_fiche_head($head, 'about', $langs->trans("Module103258Name"), 0, "referenceletters@referenceletters");
 
 // About page goes here
-echo $langs->trans("ReferenceLettersAboutPage");
+require_once __DIR__ . '/../class/techatm.class.php';
+$techATM = new \referenceletters\TechATM($db);
 
+require_once __DIR__ . '/../core/modules/modReferenceLetters.class.php';
+$moduleDescriptor = new modReferenceLetters($db);
 
-
-echo '<br>';
-
-$buffer = file_get_contents(dol_buildpath('/referenceletters/README.md', 0));
-echo Markdown($buffer);
-
-echo '<br>',
-'<a href="' . dol_buildpath('/referenceletters/COPYING', 1) . '">',
-'<img src="' . dol_buildpath('/referenceletters/img/gplv3.png', 1) . '"/>',
-'</a>';
-
+print $techATM->getAboutPage($moduleDescriptor);
 
 // Page end
-dol_fiche_end();
+print dol_get_fiche_end();
+
 llxFooter();
 $db->close();

@@ -300,25 +300,25 @@ class ActionsReferenceLetters
         {
             $TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
 
-            $result = $staticRefLtr->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
+            $TReferenceLetters = $staticRefLtr->fetchAll('ASC', 't.rowid', 1, 0, $TFilters);
 
-            if ($result < 0)
+            if ($TReferenceLetters < 0)
             {
                 setEventMessages(null, $staticRefLtr->errors, 'errors');
                 return -1;
             }
-
             // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-            if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
+            if (empty($TReferenceLetters) || ! is_array($staticRefLtr))
             {
                 return 0;
             }
 
-            $id_model = $staticRefLtr->lines[0]->id;
+            $id_model = $TReferenceLetters[0]->id;
         }
 
-        // Création et chargement d'une nouvelle instance de modèle
-        $instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
+
+		// Création et chargement d'une nouvelle instance de modèle
+        $instances = ReferenceLettersTools::load_object_refletter($object->id, $id_model, $object);
         $instance_rfltr = $instances[0];
         if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
         $instance_rfltr->create($user);
@@ -420,14 +420,14 @@ class ActionsReferenceLetters
 		$TModelsID=array();
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		$object_refletters = new Referenceletters($db);
-		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
+		$TReferenceletters = $object_refletters->fetchAll('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
 
-		if ($result<0) {
+		if ($TReferenceletters<0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {
-			if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
-				foreach($object_refletters->lines as $line) {
-					$TModelsID[] = array('id'=>$line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
+			if (is_array($TReferenceletters) && count($TReferenceletters)>0) {
+				foreach($TReferenceletters as $referenceletter) {
+					$TModelsID[] = array('id'=>$referenceletter->id, 'title'=>$referenceletter->title, 'default_doc'=>$referenceletter->default_doc);
 				}
 			}
 		}
@@ -461,7 +461,7 @@ class ActionsReferenceLetters
 
 			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
-					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
+					$object_refletters->fetchAll('', '', 0, 0, array('t.default_doc'=>1));
 					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
 					if(empty($object->array_options['options_rfltr_model_id'])) {
 						// Si modele jamais généré avec un docedit déjà existant

@@ -1,5 +1,4 @@
-# <one line to give the program's name and a brief idea of what it does.>
-# Copyright (C) <year>  <name of author>
+# Copyright (C) 2022 SuperAdmin
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,7 +11,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+
+ModuleReferencelettersName
 
 #
 # Générique
@@ -47,7 +52,7 @@ RefLtrREF_LETTER_EVTCOPYFILE=Copie le document PDF dans les fichiers joints de l
 RefLtrHelpREF_LETTER_EVTCOPYFILE=Copie le document PDF dans les fichiers joints de l'évenement crée
 RefLtrConfirmChangeState=Etes-vous sûr de changer cette option ?
 RefLtrREF_LETTER_TYPEEVENTNAME=Nom de l'évenement créé
-RefLtrREF_LETTER_TYPEEVENTNAME_normal=<Nouveau modèle de document  {ref_int}>
+RefLtrREF_LETTER_TYPEEVENTNAME_normal=< Nouveau modèle de document  {ref} >
 RefLtrREF_LETTER_TYPEEVENTNAME_other=<{Titre du modèle} - {nom du client}>
 RefLtrREF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
 RefLtrREF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
@@ -93,7 +98,7 @@ RefLtrCreate=Nouveau modèle de document
 RefLtrTitle=Titre
 RefLtrElement=Type d'objet pour le modèle de document
 RefLtrUseLandscapeFormat=Utiliser le format paysage
-RefLtrDelete=Supprimer le modèle de document
+RefLtrDelete=Supprimer le modèle de docuœment
 RefLtrConfirmDelete=Êtes-vous sûr(e) de supprimer le modèle de document ?
 RefLtrDeleteChapter=Supprimer un chapitre
 RefLtrConfirmDeleteChapter=Êtes-vous sûr(e) de supprimer le chapitre ?
@@ -104,9 +109,9 @@ RefLtrOptionHelp=Chaque ligne produira un alinéa sur le documents
 RefLtrBackToRefLtr=Retour au modèle de document
 RefLtrList=Liste des modèles de document
 RefLtrLangue=Langue
-RefLtrPosition=Numéro d'ordre
-RefLtrOption=Liste des options
-RefLtrText=Texte
+SortOrder=Numéro d'ordre
+OptionText=Liste des options
+ContentText=Texte
 RefLtrNoModelReadyForThisObject=Le module DocEdit n'est pas encore utilisable pour %s
 RefLtrSelectModel=Sélectionner le modèle
 RefLtrCreateDoc=Créer le document
@@ -126,14 +131,16 @@ RefLtrListInstance=Liste des documents
 RefLtrDoc=Document
 RefLtrErrorCopyFile=Erreur durant la copie du document PDF du document sur l'événement de l'agenda
 RefLtrBackground=Image de fond
-RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond 
-RefLtrReadOnly=Lecture seule (invisible lors de la création d'une instance de document (Onglet modéle de docuement sur les devis/commandes/....), pas d'impact sur la création 'simple' (via le bouton générer le document des devis/commandes/....)
-RefLtrUnsecable=Essaye de mettre ce chapitre sur une seule page
+RefLtrBackgroundHelp=Seuls les fichiers PDF seront utilisés comme image de fond des documents généré. Un seul fichier (le premier) sera utilisé. Les liens (URL) seront ignorés. <BR> Seuls les sauts de pages "manuel" seront avec l'image de fond
+ReadOnly=Lecture seule
+ReadOnlyHelp=Invisible lors de la création d'une instance de document (Onglet modèle de document sur les devis/commandes/...), pas d'impact sur la création 'simple' (via le bouton générer le document des devis/commandes/...)
+SamePage=Essayer de mettre ce chapitre sur une seule page
 RefLtrTitleModel=Titre modèle de document
 RefLtrDefaultDoc=Document par defaut
 RefLtrModifyAndStay=Sauver et rester
 RefLtrAddPDFDoc=Ajouter le document PDF standard de l'élément
 RefLtrPDFDoc=PDF standard de l'élément
+ReferenceLettersChapters=Chapitre
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer
@@ -228,3 +235,14 @@ RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le
 #
 RefLtrErrorCannotRecognizeModel=Erreur technique DocEdit : impossible de déterminer le type de modèle
 
+#SETUP
+
+ModelStd=Modèles standard
+REF_LETTER_CREATEEVENT=Créé un événement dans l'agenda lors de la création d'un modèle de document
+REF_LETTER_EVTCOPYFILE=- Copie le document PDF dans les fichiers joints de l'événement créé
+REF_LETTER_TYPEEVENTNAME=- Nom de l'évenement créé
+REF_LETTER_OUTPUTREFLET=Afficher le titre et la référence du document dans l'entête du document PDF
+REF_LETTER_PREDEF_HEADER_AND_FOOTER=Utiliser un modèle d'entête et de pied de page personnalisé
+DOCEDIT_CHAPTERS_INLINE_EDITION=Utiliser le mode "Edition dans le texte" d'un document
+DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Par défaut, copier le document généré à l’emplacement du document standard
+REFERENCELETTERS_REF_LETTER_CREATEEVENTTooltip = My param 1 tooltip

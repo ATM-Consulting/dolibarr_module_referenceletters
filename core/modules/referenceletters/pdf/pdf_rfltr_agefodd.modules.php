@@ -95,7 +95,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		}
 
 		// Chargement du modèle utilisé
-		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
+		$tmpTab = ReferenceLettersTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
         $instance_letter = $tmpTab[0];
         $object = $tmpTab[1];
 
@@ -127,7 +127,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 			// $deja_regle = 0;
 			// var_dump($file);exit;
-			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
+			// $objectref = dol_sanitizeFileName($instance_letter->ref);
 
 			$dir = $conf->agefodd->dir_output;
 
@@ -168,7 +168,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->pdf->SetSubject($this->outputlangs->transnoentities("Module103258Name"));
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
-				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
+				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref) . " " . $this->outputlangs->transnoentities("Module103258Name"));
 				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
 					$this->pdf->SetCompression(false);
 
@@ -459,7 +459,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("RefLtrRef") . " : " . $this->outputlangs->convToOutputCharset($instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $this->outputlangs->transnoentities("RefLtrRef") . " : " . $this->outputlangs->convToOutputCharset($instance_letter->ref), '', 'R');
 		}
 
 		$posy += 1;

@@ -93,7 +93,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	 * @param Translate $outputlangs Lang output object
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($object, $instance_letter, $outputlangs) {
+	function write_file($object, $instance_letter, $outputlangs, $doctype='', $doctypedir='') {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		$this->outputlangs=$outputlangs;
@@ -111,7 +111,8 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 		$this->outputlangs->load("companies");
 		$this->outputlangs->load("referenceletters@referenceletters");
 
-		$nblignes = count($object->lines);
+		$nblignes = 0;
+		if(!empty($object->lines)) $nblignes = count($object->lines);
 
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray = array ();
@@ -126,7 +127,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 			// $deja_regle = 0;
 
-			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
+			$objectref = dol_sanitizeFileName($instance_letter->ref);
 			$dir = $conf->referenceletters->dir_output . "/contact/" . $objectref;
 			$file = $dir . '/' . $objectref . ".pdf";
 
@@ -178,7 +179,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 				$this->pdf->SetSubject($this->outputlangs->transnoentities("Module103258Name"));
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
-				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
+				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref) . " " . $this->outputlangs->transnoentities("Module103258Name"));
 				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) {
 					$this->pdf->SetCompression(false);
 				}
@@ -400,7 +401,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref), '', 'R');
 		}
 
 		$posy += 1;
@@ -534,7 +535,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	 * @param int $hidefreetext text
 	 * @return int height of bottom margin including footer text
 	 */
-	function _pagefoot($object, $hidefreetext = 0) {
+	function _pagefoot(&$pdf,$object,$outputlangs,$hidefreetext=0) {
 		$this->pdf->SetX($this->marge_gauche);
 		return pdf_pagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}

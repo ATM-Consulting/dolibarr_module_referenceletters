@@ -37,10 +37,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public $error = '';
 
-    /**
-     * @var string[]    Array of error strings
-     */
-    public $errors = array();
+	/**
+	 * @var string[]    Array of error strings
+	 */
+	public $errors = array();
 
 	/**
 	 *
@@ -50,9 +50,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
 		return array(
-				'referenceletters_title' => $referenceletters->title,
-				'referenceletters_ref_int' => $referenceletters->ref_int,
-				'referenceletters_title_referenceletters' => $referenceletters->title_referenceletters
+			'referenceletters_title' => $referenceletters->title,
+			'referenceletters_ref' => $referenceletters->ref,
+			'referenceletters_title_referenceletters' => $referenceletters->title_referenceletters
 		);
 	}
 
@@ -123,7 +123,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientfact'] .= ($resarray['cust_contactclientfact'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientfacttel'] .= ($resarray['cust_contactclientfacttel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
-				'')) . "\n";
+						'')) . "\n";
 				$resarray['cust_contactclientfactmail'] .= ($resarray['cust_contactclientfactmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
 			}
 		}
@@ -144,7 +144,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$object->fetch_contact($id);
 				$resarray['cust_contactclientlivr'] .= ($resarray['cust_contactclientlivr'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->getFullName($outputlangs, 1)) . "\n";
 				$resarray['cust_contactclientlivrtel'] .= ($resarray['cust_contactclientlivrtel'] ? "\n" : '') . $outputlangs->convToOutputCharset(!empty($object->contact->phone_pro)?$object->contact->phone_pro:(!empty($object->contact->phone_mobile)?$object->contact->phone_mobile:
-				'')) . "\n";
+						'')) . "\n";
 				$resarray['cust_contactclientlivrmail'] .= ($resarray['cust_contactclientlivrmail'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->email) . "\n";
 				$resarray['cust_contactclientlivraddress'] .= ($resarray['cust_contactclientlivraddress'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->address) . "\n";
 				$resarray['cust_contactclientlivrzip'] .= ($resarray['cust_contactclientlivrzip'] ? "\n" : '') . $outputlangs->convToOutputCharset($object->contact->zip) . "\n";
@@ -156,61 +156,61 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// Contacts sélectionnés
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 
-        if(!empty($object->id)) $linkedContacts = $object->liste_contact(); // External par défaut
-        $TCounts = array();
+		if(!empty($object->id)) $linkedContacts = $object->liste_contact(); // External par défaut
+		$TCounts = array();
 
-        if(!empty($object->id)) $TContactTypes = $object->liste_type_contact('external', 'position', 1);
-        $atLeastOneContact = false;
+		if(!empty($object->id)) $TContactTypes = $object->liste_type_contact('external', 'position', 1);
+		$atLeastOneContact = false;
 
 		$contactKey = 'cust_contactclient_';
 		if(!empty($linkedContacts)) {
-	        foreach ($linkedContacts as $TContactRef)
-	        {
-	            $code = $TContactRef['code']; // Code
-	            if(empty($TCounts[$code])) // Index
-	            {
-	                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
-	            }
+			foreach ($linkedContacts as $TContactRef)
+			{
+				$code = $TContactRef['code']; // Code
+				if(empty($TCounts[$code])) // Index
+				{
+					$TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
+				}
 
-        	    $object->fetch_contact($TContactRef['id']);
+				$object->fetch_contact($TContactRef['id']);
 
-		        $contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
-	            if(!empty($object->contact->id)) $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
-	            $resarray = array_merge($resarray, $contactarray);
+				$contactPrefix = $contactKey . $code . '_' . $TCounts[$code];
+				if(!empty($object->contact->id)) $contactarray = parent::get_substitutionarray_contact($object->contact, $outputlangs, $contactPrefix);
+				$resarray = array_merge($resarray, $contactarray);
 
-	            $atLeastOneContact = true;
+				$atLeastOneContact = true;
 
-        	    $TCounts[$code]++;
-	        }
+				$TCounts[$code]++;
+			}
 		}
 
-        // Types de contacts non sélectionnés mais disponibles
-        $i = 0;
+		// Types de contacts non sélectionnés mais disponibles
+		$i = 0;
 		if(!empty($TContactTypes)) {
-	        foreach($TContactTypes as $code => $label)
-	        {
-		        $contactPrefix = $contactKey . $code . '_1';
+			foreach($TContactTypes as $code => $label)
+			{
+				$contactPrefix = $contactKey . $code . '_1';
 
-		        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
-		        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
-		        if (empty($atLeastOneContact) && $i == 0)
-		        {
-			        $contactstatic = new Contact($db);
-			        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
-			        $contactstatic->statut = ''; // Champ prérempli par le constructeur
-			        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
-			        $resarray = array_merge($resarray, $contactarray);
-		        }
-		        elseif (empty($TCounts[$code]))
-		        {
-		        	$resarray[$contactPrefix . '_[...]'] = '';
-		        }
+				// S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
+				// ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
+				if (empty($atLeastOneContact) && $i == 0)
+				{
+					$contactstatic = new Contact($db);
+					$contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
+					$contactstatic->statut = ''; // Champ prérempli par le constructeur
+					$contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
+					$resarray = array_merge($resarray, $contactarray);
+				}
+				elseif (empty($TCounts[$code]))
+				{
+					$resarray[$contactPrefix . '_[...]'] = '';
+				}
 
-		        $i++;
-	        }
+				$i++;
+			}
 		}
 
-        // Multicurrency
+		// Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 
 		return $resarray;
@@ -377,8 +377,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// Retour fonction
 		return array(
-				'TTitres' => array_keys($TTva),
-				'TValues' => $TTva
+			'TTitres' => array_keys($TTva),
+			'TValues' => $TTva
 		);
 	}
 
@@ -416,10 +416,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
 				$invoice_ref = $invoice->ref;
 				$TPayments[] = array(
-						$date,
-						$amount,
-						$text,
-						$invoice->ref
+					$date,
+					$amount,
+					$text,
+					$invoice->ref
 				);
 			}
 		}
@@ -446,10 +446,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$num = $row->num;
 
 				$TPayments[] = array(
-						$date,
-						$amount,
-						$oper,
-						$num
+					$date,
+					$amount,
+					$oper,
+					$num
 				);
 			}
 		}
@@ -552,63 +552,63 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
-                // Certificats
-                dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-                $agf_certif = new Agefodd_stagiaire_certif($db);
-                if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
-                        $resarray['line_certif_code'] = $agf_certif->certif_code;
-                        $resarray['line_certif_label'] = $agf_certif->certif_label;
-                        $resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
-                        $resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
-                }
+		// Certificats
+		dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
+		$agf_certif = new Agefodd_stagiaire_certif($db);
+		if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
+			$resarray['line_certif_code'] = $agf_certif->certif_code;
+			$resarray['line_certif_label'] = $agf_certif->certif_label;
+			$resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
+			$resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
+		}
 
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->id))
 		{
-		    dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
-		    dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
-		    if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
-		    {
-    		    $agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
-    		    $agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->id);
-    		    if(!empty($agefoddsessionstagiaireheures->lines)){
-    		        $hPresenceTotal = 0;
-    		        foreach ($agefoddsessionstagiaireheures->lines as $heures)
-    		        {
-    		            $agefodd_sesscalendar = new Agefodd_sesscalendar($db);
-    		            if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0)
-    		            {
-    		                if(!empty($heures->heures)){
-    		                    // start by converting to seconds
-    		                    $seconds = floor($heures->heures * 3600);
-    		                    // we're given hours, so let's get those the easy way
-    		                    $hours = floor($heures->heures);
-    		                    // since we've "calculated" hours, let's remove them from the seconds variable
-    		                    $seconds -= $hours * 3600;
-    		                    // calculate minutes left
-    		                    $minutes = floor($seconds / 60);
+			dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
+			dol_include_once('agefodd/class/agefodd_session_calendrier.class.php');
+			if(class_exists('Agefoddsessionstagiaireheures') && class_exists('Agefodd_sesscalendar'))
+			{
+				$agefoddsessionstagiaireheures = new Agefoddsessionstagiaireheures($db);
+				$agefoddsessionstagiaireheures->fetch_all_by_session($line->sessid, $line->id);
+				if(!empty($agefoddsessionstagiaireheures->lines)){
+					$hPresenceTotal = 0;
+					foreach ($agefoddsessionstagiaireheures->lines as $heures)
+					{
+						$agefodd_sesscalendar = new Agefodd_sesscalendar($db);
+						if($agefodd_sesscalendar->fetch($heures->fk_calendrier)>0)
+						{
+							if(!empty($heures->heures)){
+								// start by converting to seconds
+								$seconds = floor($heures->heures * 3600);
+								// we're given hours, so let's get those the easy way
+								$hours = floor($heures->heures);
+								// since we've "calculated" hours, let's remove them from the seconds variable
+								$seconds -= $hours * 3600;
+								// calculate minutes left
+								$minutes = floor($seconds / 60);
 
-    		                    $hPresenceTotal+= $heures->heures;
+								$hPresenceTotal+= $heures->heures;
 
-    		                    $resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
-    		                    // return the time formatted HH:MM
-    		                    $resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u", $minutes).')';
-    		                }
-    		            }
-    		        }
+								$resarray['line_presence_bloc'].= (!empty($resarray['line_presence_bloc'])?', ':'');
+								// return the time formatted HH:MM
+								$resarray['line_presence_bloc'].= dol_print_date($agefodd_sesscalendar->date_session, '%d/%m/%Y').'&nbsp;('.$hours."H".sprintf("%02u", $minutes).')';
+							}
+						}
+					}
 
-    		        // TOTAL DES HEURES PASSEES
-    		        // start by converting to seconds
-    		        $seconds = floor($hPresenceTotal * 3600);
-    		        // we're given hours, so let's get those the easy way
-    		        $hours = floor($hPresenceTotal);
-    		        // since we've "calculated" hours, let's remove them from the seconds variable
-    		        $seconds -= $hours * 3600;
-    		        // calculate minutes left
-    		        $minutes = floor($seconds / 60);
-    		        $resarray['line_presence_total']= $hours."H".sprintf("%02u", $minutes);
-    		    }
-		    }
+					// TOTAL DES HEURES PASSEES
+					// start by converting to seconds
+					$seconds = floor($hPresenceTotal * 3600);
+					// we're given hours, so let's get those the easy way
+					$hours = floor($hPresenceTotal);
+					// since we've "calculated" hours, let's remove them from the seconds variable
+					$seconds -= $hours * 3600;
+					// calculate minutes left
+					$minutes = floor($seconds / 60);
+					$resarray['line_presence_total']= $hours."H".sprintf("%02u", $minutes);
+				}
+			}
 		}
 
 		// Substitutions tableau d'horaires
@@ -631,7 +631,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
 		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
-        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>");
+		$resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>");
 //		$resarray['line_fin_desciption_light'] = $line->form_label;
 		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
 		$resarray['line_fin_qty'] = $line->qty;
@@ -788,25 +788,25 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['session_nb_days'] = $object->session_nb_days;
 		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
 		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
-        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
-        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
-        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
-        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
-        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
-        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
-        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
-        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
+		$resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
+		$resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
+		$resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
+		$resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
+		$resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
+		$resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
+		$resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
+		$resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_ADMIN)){
+		if (!empty($conf->global->AGF_DEFAULT_MENTOR_ADMIN)){
 			$u = new User($this->db);
 			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_ADMIN));
 			if ($res){
 				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
 			}
-        }
+		}
 
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_PEDAGO)) {
+		if (!empty($conf->global->AGF_DEFAULT_MENTOR_PEDAGO)) {
 			$u = new User($this->db);
 			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_PEDAGO));
 			if ($res) {
@@ -966,7 +966,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 					// Fix display vars according object
 					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
-	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
+					// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
 					if (is_callable($methodVariable, false, $callable_name)){
 						$value = $object->referenceletter_showPublicOutputField($key,$value);
@@ -1017,10 +1017,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
 
 			if( (float) DOL_VERSION < 7 ) {
-			    $hidden= ($ishidden == 0 ?  1 : 0);
+				$hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+				$hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 
 		}
@@ -1041,10 +1041,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$ishidden=$extrafields->attribute_hidden[$key];
 
 			if( (float) DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 0 ?  1 : 0);
+				$hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+				$hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 		}
 

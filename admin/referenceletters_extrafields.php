@@ -1,6 +1,10 @@
 <?php
-/* References letters
- * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
+/* Copyright (C) 2001-2002	Rodolphe Quiedeville	<rodolphe@quiedeville.org>
+ * Copyright (C) 2003		Jean-Louis Bergamo		<jlb@j1b.org>
+ * Copyright (C) 2004-2011	Laurent Destailleur		<eldy@users.sourceforge.net>
+ * Copyright (C) 2012		Regis Houssin			<regis.houssin@inodbox.com>
+ * Copyright (C) 2014		Florian Henry			<florian.henry@open-concept.pro>
+ * Copyright (C) 2015		Jean-François Ferry		<jfefe@aternatik.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,147 +17,129 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
- * \file lead/admin/lead_extrafields.php
- * \ingroup agenda
- * \brief Page to setup extra fields of lead
+ *      \file       admin/referenceletters_extrafields.php
+ *		\ingroup    referenceletters
+ *		\brief      Page to setup extra fields of referenceletters
  */
 
-// Dolibarr environment
-$res = @include ("../../main.inc.php"); // From htdocs directory
-if (! $res) {
-	$res = @include ("../../../main.inc.php"); // From "custom" directory
+// Load Dolibarr environment
+$res = 0;
+// Try main.inc.php into web root known defined into CONTEXT_DOCUMENT_ROOT (not always defined)
+if (!$res && !empty($_SERVER["CONTEXT_DOCUMENT_ROOT"])) {
+	$res = @include $_SERVER["CONTEXT_DOCUMENT_ROOT"]."/main.inc.php";
 }
-require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
-require_once "../lib/referenceletters.lib.php";
+// Try main.inc.php into web root detected using web root calculated from SCRIPT_FILENAME
+$tmp = empty($_SERVER['SCRIPT_FILENAME']) ? '' : $_SERVER['SCRIPT_FILENAME']; $tmp2 = realpath(__FILE__); $i = strlen($tmp) - 1; $j = strlen($tmp2) - 1;
+while ($i > 0 && $j > 0 && isset($tmp[$i]) && isset($tmp2[$j]) && $tmp[$i] == $tmp2[$j]) {
+	$i--; $j--;
+}
+if (!$res && $i > 0 && file_exists(substr($tmp, 0, ($i + 1))."/main.inc.php")) {
+	$res = @include substr($tmp, 0, ($i + 1))."/main.inc.php";
+}
+if (!$res && $i > 0 && file_exists(dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php")) {
+	$res = @include dirname(substr($tmp, 0, ($i + 1)))."/main.inc.php";
+}
+// Try main.inc.php using relative path
+if (!$res && file_exists("../../main.inc.php")) {
+	$res = @include "../../main.inc.php";
+}
+if (!$res && file_exists("../../../main.inc.php")) {
+	$res = @include "../../../main.inc.php";
+}
+if (!$res) {
+	die("Include of main fails");
+}
 
-if (! $user->admin)
-	accessforbidden();
+require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+require_once '../lib/referenceletters.lib.php';
 
-$langs->load("admin");
-$langs->load("other");
-$langs->load("agenda");
-$langs->load("referenceletters@referenceletters");
+// Load translation files required by the page
+$langs->loadLangs(array('referenceletters@referenceletters', 'admin'));
 
 $extrafields = new ExtraFields($db);
 $form = new Form($db);
 
 // List of supported format
 $tmptype2label = ExtraFields::$type2label;
-$type2label = array(
-	''
-);
-foreach ($tmptype2label as $key => $val)
-	$type2label[$key] = $langs->trans($val);
+$type2label = array('');
+foreach ($tmptype2label as $key => $val) {
+	$type2label[$key] = $langs->transnoentitiesnoconv($val);
+}
 
-$action = GETPOST('action', 'alpha');
+$action = GETPOST('action', 'aZ09');
 $attrname = GETPOST('attrname', 'alpha');
-$elementtype = 'referenceletters'; // Must be the $table_element of the class that manage extrafield
+$elementtype = 'referenceletters_referenceletters'; //Must be the $table_element of the class that manage extrafield
 
-if (! $user->admin)
+if (!$user->admin) {
 	accessforbidden();
-	
-	/*
+}
+
+
+/*
  * Actions
  */
-if (file_exists(DOL_DOCUMENT_ROOT . '/core/admin_extrafields.inc.php'))
-	require_once DOL_DOCUMENT_ROOT . '/core/admin_extrafields.inc.php';
 
-if (file_exists(DOL_DOCUMENT_ROOT . '/core/actions_extrafields.inc.php'))
-	require_once DOL_DOCUMENT_ROOT . '/core/actions_extrafields.inc.php';
-	
-	/*
+require DOL_DOCUMENT_ROOT.'/core/actions_extrafields.inc.php';
+
+
+
+/*
  * View
  */
 
-$textobject = $langs->transnoentitiesnoconv("Module103258Name");
+$textobject = $langs->transnoentitiesnoconv("ReferenceLetters");
 
-llxHeader('', $langs->trans("ReferenceLettersSetup"));
+$help_url = '';
+$page_name = "ReferencelettersSetup";
 
-$linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php">' . $langs->trans("BackToModuleList") . '</a>';
-print_fiche_titre($langs->trans("ReferenceLettersSetup"), $linkback, 'setup');
+llxHeader('', $langs->trans("ReferencelettersSetup"), $help_url);
 
 
-// Configuration header
+$linkback = '<a href="'.DOL_URL_ROOT.'/admin/modules.php?restore_lastsearch_values=1">'.$langs->trans("BackToModuleList").'</a>';
+print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
+
+
 $head = referencelettersAdminPrepareHead();
-dol_fiche_head($head, 'attributes', $langs->trans("Module103258Name"), 0, "referenceletters@referenceletters");
 
-print $langs->trans("DefineHereComplementaryAttributes", $langs->transnoentitiesnoconv("Module103258Name")) . '<br>' . "\n";
-print '<br>';
+print dol_get_fiche_head($head, 'referenceletters_extrafields', $langs->trans($page_name), -1, 'referenceletters@referenceletters');
 
-// Load attribute_label
-$extrafields->fetch_name_optionals_label($elementtype);
+require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_view.tpl.php';
 
-print "<table summary=\"listofattributes\" class=\"noborder\" width=\"100%\">";
+print dol_get_fiche_end();
 
-print '<tr class="liste_titre">';
-print '<td>' . $langs->trans("Label") . '</td>';
-print '<td>' . $langs->trans("AttributeCode") . '</td>';
-print '<td>' . $langs->trans("Type") . '</td>';
-print '<td align="right">' . $langs->trans("Size") . '</td>';
-print '<td align="center">' . $langs->trans("Unique") . '</td>';
-print '<td align="center">' . $langs->trans("Required") . '</td>';
-print '<td width="80">&nbsp;</td>';
-print "</tr>\n";
-
-$var = True;
-$urlToken = '';
-if (function_exists('newToken')) $urlToken = "&token=".newToken();
-
-foreach ($extrafields->attribute_type as $key => $value) {
-	$var = ! $var;
-	print "<tr " . $bc[$var] . ">";
-	print "<td>" . $extrafields->attribute_label[$key] . "</td>\n";
-	print "<td>" . $key . "</td>\n";
-	print "<td>" . $type2label[$extrafields->attribute_type[$key]] . "</td>\n";
-	print '<td align="right">' . $extrafields->attribute_size[$key] . "</td>\n";
-	print '<td align="center">' . yn($extrafields->attribute_unique[$key]) . "</td>\n";
-	print '<td align="center">' . yn($extrafields->attribute_required[$key]) . "</td>\n";
-	print '<td align="right"><a href="' . $_SERVER["PHP_SELF"] . '?action=edit&attrname=' . $key . '">' . img_edit() . '</a>';
-	print "&nbsp; <a href=\"" . $_SERVER["PHP_SELF"] . "?action=delete".$urlToken."&attrname=$key\">" . img_delete() . "</a></td>\n";
-	print "</tr>";
-}
-
-print "</table>";
-
-dol_fiche_end();
 
 // Buttons
 if ($action != 'create' && $action != 'edit') {
 	print '<div class="tabsAction">';
-	print "<a class=\"butAction\" href=\"" . $_SERVER["PHP_SELF"] . "?action=create\">" . $langs->trans("NewAttribute") . "</a>";
+	print "<a class=\"butAction\" href=\"".$_SERVER["PHP_SELF"]."?action=create#newattrib\">".$langs->trans("NewAttribute")."</a>";
 	print "</div>";
 }
 
-/* ************************************************************************* */
-/*                                                                            */
-/* Creation d'un champ optionnel											  */
-/*                                                                            */
-/* ************************************************************************** */
 
+/*
+ * Creation of an optional field
+ */
 if ($action == 'create') {
-	print "<br>";
-	print_titre($langs->trans('NewAttribute'));
-	
-	require DOL_DOCUMENT_ROOT . '/core/tpl/admin_extrafields_add.tpl.php';
+	print '<br><div id="newattrib"></div>';
+	print load_fiche_titre($langs->trans('NewAttribute'));
+
+	require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_add.tpl.php';
 }
 
-/* ************************************************************************* */
-/*                                                                            */
-/* Edition d'un champ optionnel                                               */
-/*                                                                            */
-/* ************************************************************************** */
-if ($action == 'edit' && ! empty($attrname)) {
+/*
+ * Edition of an optional field
+ */
+if ($action == 'edit' && !empty($attrname)) {
 	print "<br>";
-	print_titre($langs->trans("FieldEdition", $attrname));
-	
-	require DOL_DOCUMENT_ROOT . '/core/tpl/admin_extrafields_edit.tpl.php';
+	print load_fiche_titre($langs->trans("FieldEdition", $attrname));
+
+	require DOL_DOCUMENT_ROOT.'/core/tpl/admin_extrafields_edit.tpl.php';
 }
 
+// End of page
 llxFooter();
-
 $db->close();
-?>

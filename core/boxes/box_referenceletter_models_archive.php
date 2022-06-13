@@ -108,21 +108,22 @@ class box_referenceletter_models_archive extends ModeleBoxes {
 
 
 		$object=new ReferenceLetters($db);
-		$result = $object->fetch_all('ASC','t.datec',5,0,array('t.status'=>0));
-		if ($result<0) {
+		$TReferenceLetters = $object->fetchAll('ASC','t.date_creation',5,0,array('t.status'=>0));
+		if ($TReferenceLetters<0) {
 			setEventMessage($object->error,'errors');
 		}
 
-		if (is_array($object->lines) && count($object->lines)>0) {
-			foreach($object->lines as $key=>$line) {
+		if (is_array($TReferenceLetters) && count($TReferenceLetters)>0) {
+			$TReferenceLetters = array_values($TReferenceLetters);;
+			foreach($TReferenceLetters as $key=>$referenceLetter) {
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
-						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
+						'url' => dol_buildpath('/custom/referenceletters/referenceletters_card.php',1).'?id='.$referenceLetter->id);
 				$this->info_box_contents[$key][1] = array('td' => 'align="left" width="15"',
-						'text' => $line->title,
-						'url' => dol_buildpath('/referenceletters/referenceletters/card.php',1).'?id='.$line->id);
+						'text' => $referenceLetter->title,
+						'url' => dol_buildpath('/custom/referenceletters/referenceletters_card.php',1).'?id='.$referenceLetter->id);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
-						'text' => dol_print_date($line->datec,'daytext'));
+						'text' => dol_print_date($referenceLetter->datec,'daytext'));
 			}
 		}
 

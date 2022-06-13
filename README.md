@@ -1,50 +1,86 @@
-Reference Letters
-=========
-A module for managing letters in Dolibarr.
+# REFERENCELETTERS FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-Licence
--------
+## Features
 
-GPLv3 or (at your option) any later version.
+Description of the module...
 
-See COPYING for more information.
+<!--
+![Screenshot referenceletters](img/screenshot_referenceletters.png?raw=true "Referenceletters"){imgmd}
+-->
 
-INSTALL
--------
+Other external modules are available on [Dolistore.com](https://www.dolistore.com).
 
-	http://wiki.dolibarr.org/index.php/FAQ_Repertoire_Custom_Module_Externe
-	http://wiki.dolibarr.org/index.php/FAQ_ModuleCustomDirectory
+## Translations
 
-INSTAL FROM GIT (into "custom" directory)
----------------
+Translations can be completed manually by editing files into directories *langs*.
 
-	$git clone git@github.com:ATM-Consulting/dolibarr_module_referenceletters.git referenceletters
-	
-DOCUMENTATION
----------------
+<!--
+This module contains also a sample configuration for Transifex, under the hidden directory [.tx](.tx), so it is possible to manage translation using this service.
 
-	http://wiki.atm-consulting.fr/index.php/DocEdit_pour_Agefodd/Documentation_utilisateur
-	http://wiki.atm-consulting.fr/index.php/DocEdit/Documentation_utilisateur
-	
+For more informations, see the [translator's documentation](https://wiki.dolibarr.org/index.php/Translator_documentation).
 
-DOLISTORE
----------------
+There is a [Transifex project](https://transifex.com/projects/p/dolibarr-module-template) for this module.
+-->
 
-	https://www.dolistore.com/fr/recherche?controller=search&orderby=position&orderway=desc&search_query=DocEdit&submit_search=
+<!--
 
+## Installation
 
-DOLIBARR WIKI PAGE
----------------
+### From the ZIP file and GUI interface
 
-	https://wiki.dolibarr.org/index.php/Module_Modele_de_courrier
-	
+If the module is a ready to deploy zip file, so with a name module_xxx-version.zip (like when downloading it from a market place like [Dolistore](https://www.dolistore.com)),
+go into menu ```Home - Setup - Modules - Deploy external module``` and upload the zip file.
 
-LIVE DEMO
----------------
+Note: If this screen tell you that there is no "custom" directory, check that your setup is correct:
 
-	http://dolibarr.atm-consulting.fr/
-	
-Other Licences
---------------
+- In your Dolibarr installation directory, edit the ```htdocs/conf/conf.php``` file and check that following lines are not commented:
 
-Uses [Michel Fortin's PHP Markdown](http://michelf.ca/projets/php-markdown/) Licensed under BSD to display this README in the module's about page.
+    ```php
+    //$dolibarr_main_url_root_alt ...
+    //$dolibarr_main_document_root_alt ...
+    ```
+
+- Uncomment them if necessary (delete the leading ```//```) and assign a sensible value according to your Dolibarr installation
+
+    For example :
+
+    - UNIX:
+        ```php
+        $dolibarr_main_url_root_alt = '/custom';
+        $dolibarr_main_document_root_alt = '/var/www/Dolibarr/htdocs/custom';
+        ```
+
+    - Windows:
+        ```php
+        $dolibarr_main_url_root_alt = '/custom';
+        $dolibarr_main_document_root_alt = 'C:/My Web Sites/Dolibarr/htdocs/custom';
+        ```
+
+### From a GIT repository
+
+Clone the repository in ```$dolibarr_main_document_root_alt/referenceletters```
+
+```sh
+cd ....../custom
+git clone git@github.com:gitlogin/referenceletters.git referenceletters
+```
+
+### <a name="final_steps"></a>Final steps
+
+From your browser:
+
+  - Log into Dolibarr as a super-administrator
+  - Go to "Setup" -> "Modules"
+  - You should now be able to find and enable the module
+
+-->
+
+## Licenses
+
+### Main code
+
+GPLv3 or (at your option) any later version. See file COPYING for more information.
+
+### Documentation
+
+All texts and readmes are licensed under GFDL.

@@ -1,6 +1,5 @@
 <?php
-/* References letters
- * Copyright (C) 2014  HENRY Florian  florian.henry@open-concept.pro
+/* Copyright (C) 2022 SuperAdmin
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,16 +12,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
- * \file lib/referenceletters.lib.php
+ * \file    referenceletters/lib/referenceletters.lib.php
  * \ingroup referenceletters
- * \brief This file is an example module library
- * Put some comments here
+ * \brief   Library files with common functions for Referenceletters
  */
-function referencelettersAdminPrepareHead() {
+
+/**
+ * Prepare admin pages header
+ *
+ * @return array
+ */
+function referencelettersAdminPrepareHead()
+{
 	global $langs, $conf;
 
 	$langs->load("referenceletters@referenceletters");
@@ -30,34 +35,39 @@ function referencelettersAdminPrepareHead() {
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath("/referenceletters/admin/admin_referenceletters.php", 1);
-	$head[$h][1] = $langs->trans("ReferenceLettersSettings");
+	$head[$h][0] = dol_buildpath("/referenceletters/admin/setup.php", 1);
+	$head[$h][1] = $langs->trans("Settings");
 	$head[$h][2] = 'settings';
-	$h ++;
+	$h++;
 
-	$head[$h][0] = dol_buildpath("/referenceletters/admin/referenceletters_extrafields.php", 1);
+	/*
+	$head[$h][0] = dol_buildpath("/referenceletters/admin/myobject_extrafields.php", 1);
 	$head[$h][1] = $langs->trans("ExtraFields");
-	$head[$h][2] = 'attributes';
-	$h ++;
+	$head[$h][2] = 'myobject_extrafields';
+	$h++;
+	*/
 
 	$head[$h][0] = dol_buildpath("/referenceletters/admin/about.php", 1);
 	$head[$h][1] = $langs->trans("About");
 	$head[$h][2] = 'about';
-	$h ++;
+	$h++;
 
 	// Show more tabs from modules
 	// Entries must be declared in modules descriptor with line
-	// $this->tabs = array(
-	// 'entity:+tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
-	// ); // to add new tab
-	// $this->tabs = array(
-	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
-	// ); // to remove a tab
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'adminreferenceletters');
+	//$this->tabs = array(
+	//	'entity:+tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
+	//); // to add new tab
+	//$this->tabs = array(
+	//	'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
+	//); // to remove a tab
+	complete_head_from_modules($conf, $langs, null, $head, $h, 'referenceletters@referenceletters');
+
+	complete_head_from_modules($conf, $langs, null, $head, $h, 'referenceletters@referenceletters', 'remove');
 
 	return $head;
 }
-function referenceletterMassPrepareHead() {
+
+function referencelettersPrepareHead($object) {
 	global $langs, $conf;
 
 	$langs->load("referenceletters@referenceletters");
@@ -65,52 +75,27 @@ function referenceletterMassPrepareHead() {
 	$h = 0;
 	$head = array();
 
-	$head[$h][0] = dol_buildpath('/referenceletters/referenceletters/mass_gen.php', 1);
-	$head[$h][1] = $langs->trans("Module103258Name");
-	$head[$h][2] = 'card';
-	$h ++;
-
-	// Show more tabs from modules
-	// Entries must be declared in modules descriptor with line
-	// $this->tabs = array(
-	// 'entity:+tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
-	// ); // to add new tab
-	// $this->tabs = array(
-	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
-	// ); // to remove a tab
-	complete_head_from_modules($conf, $langs, $object, $head, $h, 'referencelettersmass');
-
-	return $head;
-}
-function referenceletterPrepareHead($object) {
-	global $langs, $conf;
-
-	$langs->load("referenceletters@referenceletters");
-
-	$h = 0;
-	$head = array();
-
-	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/card.php", 1) . '?id=' . $object->id;
+	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters_card.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Card");
 	$head[$h][2] = 'card';
 	$h ++;
 
-	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/header.php", 1) . '?id=' . $object->id;
+	$head[$h][0] = dol_buildpath("/referenceletters/header.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("RefLtrHeaderTab");
 	$head[$h][2] = 'head';
 	$h ++;
 
-	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/footer.php", 1) . '?id=' . $object->id;
+	$head[$h][0] = dol_buildpath("/referenceletters/footer.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("RefLtrFooterTab");
 	$head[$h][2] = 'foot';
 	$h ++;
 
-	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/background.php", 1) . '?id=' . $object->id;
+	$head[$h][0] = dol_buildpath("/referenceletters/background.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("RefLtrBackground");
 	$head[$h][2] = 'background';
 	$h ++;
 
-	$head[$h][0] = dol_buildpath("/referenceletters/referenceletters/info.php", 1) . '?id=' . $object->id;
+	$head[$h][0] = dol_buildpath("/referenceletters/info.php", 1) . '?id=' . $object->id;
 	$head[$h][1] = $langs->trans("Info");
 	$head[$h][2] = 'info';
 	$h ++;
@@ -238,4 +223,110 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 	 }*/
 
 	return $pdf;
+}
+
+/**
+ * Create a document onto disk according to template module.
+ *
+ * @param DoliDB $db Database handler
+ * @param object $object Object proposal
+ * @param object $instance_letter Instance letter
+ * @param Translate $outputlangs Object langs to use for output
+ * @param string $element_type element type
+ * @return int 0 if KO, 1 if OK
+ */
+function referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $element_type) {
+	global $conf, $user, $langs;
+
+	$error = 0;
+	$filefound = 0;
+
+	// Search template files
+	$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
+	if (file_exists($file)) {
+		$filefound = 1;
+	}
+
+	$classname = 'pdf_rfltr_' . $element_type;
+	// Charge le modele
+	if ($filefound) {
+		require_once $file;
+
+		/** @var pdf_rfltr_propal|pdf_rfltr_order|pdf_rfltr_invoice|pdf_rfltr_contract|pdf_rfltr_thirdparty|pdf_rfltr_contact|pdf_rfltr_supplier_proposal|pdf_rfltr_order_supplier|pdf_rfltr_shipping $obj */
+		$obj = new $classname($db);
+
+		// We save charset_output to restore it because write_file can change it if needed for
+		// output format that does not support UTF8.
+		$res = $obj->write_file($object, $instance_letter, $outputlangs);
+		if ($res > 0) {
+			return 1;
+		} else {
+			setEventMessage('referenceletters_pdf_create Error: ' . $obj->error, 'errors');
+			return - 1;
+		}
+	} else {
+		setEventMessage($langs->trans("Error") . " " . $langs->trans("ErrorFileDoesNotExists", $file), 'errors');
+		return - 1;
+	}
+}
+
+/**
+ *
+ * @param object $pdf
+ * @param int $id
+ */
+function importImageBackground(&$pdf, $id) {
+	global $conf;
+	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
+
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+
+		// add doc from attached files of training
+		$upload_dir = $conf->referenceletters->dir_output . "/referenceletters/" . $id;
+		$filearray = dol_dir_list($upload_dir, "files", 0, '\.pdf$', '\.meta$', "name", SORT_ASC, 1);
+		if (is_array($filearray) && count($filearray) > 0) {
+			// Take first PDF file added
+			$filedetail = reset($filearray);
+			if (file_exists($filedetail['fullname'])) {
+				$count = $pdf->setSourceFile($filedetail['fullname']);
+				// import only first pages
+				if ($count > 0) {
+					$tplIdx = $pdf->importPage(1);
+					if ($tplIdx !== false) {
+						$pdf->useTemplate($tplIdx);
+					} else {
+						setEventMessages(null, array(
+							$filedetail['fullname'] . ' cannot be added to current doc, probably Protected PDF'
+						), 'warnings');
+					}
+				}
+			}
+		}
+	}
+}
+
+function referenceletterMassPrepareHead() {
+	global $langs, $conf;
+
+	$langs->load("referenceletters@referenceletters");
+
+	$h = 0;
+	$head = array();
+
+	$head[$h][0] = dol_buildpath('/referenceletters/mass_gen.php', 1);
+	$head[$h][1] = $langs->trans("Module103258Name");
+	$head[$h][2] = 'card';
+	$h ++;
+
+	// Show more tabs from modules
+	// Entries must be declared in modules descriptor with line
+	// $this->tabs = array(
+	// 'entity:+tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
+	// ); // to add new tab
+	// $this->tabs = array(
+	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
+	// ); // to remove a tab
+	complete_head_from_modules($conf, $langs, $object, $head, $h, 'referencelettersmass');
+
+	return $head;
 }

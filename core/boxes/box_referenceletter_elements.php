@@ -116,10 +116,10 @@ class box_referenceletter_elements extends ModeleBoxes {
 
 				$this->info_box_contents[$key][0] = array('td' => 'align="left" width="16"',
 						'logo' => 'label',
-						'url' => dol_buildpath('referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
+						'url' => dol_buildpath('/custom/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][1] = array('td' => 'align="left" width="15"',
 						'text' => $line->ref_int,
-						'url' => dol_buildpath('/referenceletters/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
+						'url' => dol_buildpath('/custom/referenceletters/instance.php',1).'?id='.$line->fk_element.'&element_type='.$line->element_type);
 				$this->info_box_contents[$key][2] = array('td' => 'align="left" width="15"',
 						'text' => $object_ref->displayElementElement(0,$line->element_type));
 

@@ -165,8 +165,8 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 					$formmail->trackid = $trackid; // $trackid must be defined
 
 					$attachedfiles = $formmail->get_attached_files();
-					$attachedfiles['paths'][] = DOL_DATA_ROOT . '/referenceletters/' . $object->element_type . '/' . $object->ref_int . '/' . $object->ref_int . '.pdf';
-					$attachedfiles['names'][] = $object->ref_int . '.pdf';
+					$attachedfiles['paths'][] = DOL_DATA_ROOT . '/referenceletters/' . $object->element_type . '/' . $object->ref . '/' . $object->ref . '.pdf';
+					$attachedfiles['names'][] = $object->ref . '.pdf';
 					$attachedfiles['mimes'][] = 'application/pdf';
 
 					$filepath = $attachedfiles['paths'];

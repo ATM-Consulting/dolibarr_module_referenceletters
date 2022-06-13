@@ -49,8 +49,8 @@ class OdfRfltr extends Odf {
 		$ishtml=dol_textishtml($value);
 		if ($ishtml)
 		{
-	        // If string is "MYPODUCT - Desc <strong>bold</strong> with &eacute; accent<br />\n<br />\nUn texto en espa&ntilde;ol ?"
-    	    // Result after clean must be "MYPODUCT - Desc bold with é accent\n\nUn texto en espa&ntilde;ol ?"
+			// If string is "MYPODUCT - Desc <strong>bold</strong> with &eacute; accent<br />\n<br />\nUn texto en espa&ntilde;ol ?"
+			// Result after clean must be "MYPODUCT - Desc bold with é accent\n\nUn texto en espa&ntilde;ol ?"
 
 			// We want to ignore \n and we want all <br> to be \n
 			$value=preg_replace('/(\r\n|\r|\n)/i','',$value);
@@ -92,10 +92,10 @@ class OdfRfltr extends Odf {
 				$balise = str_replace('row.', '', $matches2[1]);
 				// Move segment tags around the row
 				$replace = array(
-						'[!-- BEGIN ' . $matches2[1] . ' --]'	=> '',
-						'[!-- END ' . $matches2[1] . ' --]'		=> '',
-						'<table:table-row'							=> '[!-- BEGIN ' . $balise . ' --]<table:table-row',
-						'</table:table-row>'						=> '</table:table-row>[!-- END ' . $balise . ' --]'
+					'[!-- BEGIN ' . $matches2[1] . ' --]'	=> '',
+					'[!-- END ' . $matches2[1] . ' --]'		=> '',
+					'<table:table-row'							=> '[!-- BEGIN ' . $balise . ' --]<table:table-row',
+					'</table:table-row>'						=> '</table:table-row>[!-- END ' . $balise . ' --]'
 				);
 				$replacedXML = str_replace(array_keys($replace), array_values($replace), $matches[0][$i]);
 				$this->contentXml = str_replace($matches[0][$i], $replacedXML, $this->contentXml);

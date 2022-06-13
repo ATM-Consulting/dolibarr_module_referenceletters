@@ -22,6 +22,7 @@
  * \ingroup referenceletters
  * \brief Class file to create PDF for letter's model on contract
  */
+dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 dol_include_once('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_invoice.modules.php');
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
@@ -105,18 +106,18 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$id_model = $object->array_options['options_rfltr_model_id'];
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id', 'none'));
+		$instances = ReferenceLettersTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id', 'none'));
 		/** @var ReferenceLettersElements $instance_letter */
 		$instance_letter = $instances[0];
 
-		if(empty($instance_letter->ref_int)) $instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
+		if(empty($instance_letter->ref)) $instance_letter->ref = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
 		//$instance_letter->create($user);
 		// Création du PDF
 		$result = referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $instance_letter->element_type);
 
 		if($result > 0) {
 		    // Renommage du fichier pour le mettre dans le bon répertoire pour qu'il apparaîsse dans la liste des fichiers joints sur la fiche de chaque élément
-		    $objectref = dol_sanitizeFileName($instance_letter->ref_int);
+		    $objectref = dol_sanitizeFileName($instance_letter->ref);
 		    $dir = $conf->referenceletters->dir_output . '/' .$instance_letter->element_type . '/' . $objectref;
 		    $file = $dir . '/' . $objectref . ".pdf";
 
@@ -221,7 +222,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
-			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref_int), '', 'R');
+			$this->pdf->MultiCell(100, 4, $outputlangs->transnoentities("RefLtrRef") . " : " . $outputlangs->convToOutputCharset($this->instance_letter->ref), '', 'R');
 		}
 
 		$posy += 1;

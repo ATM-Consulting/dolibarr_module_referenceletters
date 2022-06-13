@@ -1,6 +1,11 @@
 <?php
-/*
- * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
+/* Copyright (C) 2003-2004 Rodolphe Quiedeville <rodolphe@quiedeville.org>
+ * Copyright (C) 2004-2011 Laurent Destailleur  <eldy@users.sourceforge.net>
+ * Copyright (C) 2004      Eric Seigne          <eric.seigne@ryxeo.com>
+ * Copyright (C) 2005-2012 Regis Houssin        <regis.houssin@inodbox.com>
+ * Copyright (C) 2006      Andre Cianfarani     <acianfa@free.fr>
+ * Copyright (C) 2012      Juanjo Menent	    <jmenent@2byte.es>
+ * Copyright (C) 2014      Marcos García        <marcosgdf@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,31 +18,26 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * or see https://www.gnu.org/
  */
 
 /**
- * \file referenceletters/core/modules/referenceletters/modules_referenceletters.php
- * \ingroup referenceletters
- * \brief referenceletters for numbering referenceletters
+ *  \file			htdocs/core/modules/referenceletters/modules_referenceletters.php
+ *  \ingroup		referenceletters
+ *  \brief			File that contains parent class for referenceletters document models and parent class for referenceletters numbering models
  */
+
+require_once DOL_DOCUMENT_ROOT.'/core/class/commondocgenerator.class.php';
+require_once DOL_DOCUMENT_ROOT.'/compta/bank/class/account.class.php'; // required for use by classes that inherit
 dol_include_once('/referenceletters/class/commondocgeneratorreferenceletters.class.php');
 
+
 /**
- * \class ModelePDFReferenceLetters
- * \brief Absctart class for ReferenceLetters module
+ *	Parent class for documents models
  */
 abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLetters
 {
-	public $error = '';
-
-
-	/**
-	 * @var TCPDFRefletters
-	 */
-	public $pdf;
-	public $instance_letter;
-	public $outputlangs;
 
 	/**
 	 * Return list of active generation modules
@@ -83,12 +83,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		if (! is_object($this->outputlangs))
 			$this->outputlangs = $langs;
 
-                if(!empty($_REQUEST['lang_id']) && $this->outputlangs->defaultlang !== $_REQUEST['lang_id']) {
-                        $this->outputlangs = new Translate("", $conf);
-                        $this->outputlangs->setDefaultLang($_REQUEST['lang_id']);
-                        $this->outputlangs->load('main');
-                        $this->outputlangs->load('agefodd@agefodd');
-                }
+		if(!empty($_REQUEST['lang_id']) && $this->outputlangs->defaultlang !== $_REQUEST['lang_id']) {
+			$this->outputlangs = new Translate("", $conf);
+			$this->outputlangs->setDefaultLang($_REQUEST['lang_id']);
+			$this->outputlangs->load('main');
+			$this->outputlangs->load('agefodd@agefodd');
+		}
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (! empty($conf->global->MAIN_USE_FPDF))
@@ -108,7 +108,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$object->thirdparty->country=$this->outputlangs->transnoentitiesnoconv("Country".$object->thirdparty->country_code);
 			}
 
-			$objectref = dol_sanitizeFileName($instance_letter->ref_int);
+			$objectref = dol_sanitizeFileName($instance_letter->ref);
 			$dir = $conf->referenceletters->dir_output . "/".$doctypedir."/" . $objectref;
 			$file = $dir . '/' . $objectref . ".pdf";
 
@@ -159,7 +159,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$this->pdf->SetSubject($this->outputlangs->transnoentities("Module103258Name"));
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
-				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
+				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref) . " " . $this->outputlangs->transnoentities("Module103258Name"));
 				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) {
 					$this->pdf->SetCompression(false);
 				}
@@ -362,8 +362,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 				$this->pdf->Close();
 
-                $this->pdf->Output($file, 'F');
-                // we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
+				$this->pdf->Output($file, 'F');
+				// we delete the non-DocEdit PDF (it is included in the DocEdit PDF and it creates a useless dir)
 				if(!empty($filepdf)) {
 					if (is_file($filepdf)) dol_delete_file($filepdf);
 					if (is_dir(dirname($filepdf))) dol_delete_dir(dirname($filepdf));
@@ -419,7 +419,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				'ZIP_PROXY' => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
 				'DELIMITER_LEFT' => '{',
 				'DELIMITER_RIGHT' => '}'
-		), $chapter_text);
+			), $chapter_text);
 
 		if (! empty($TElementArray)) {
 
@@ -445,13 +445,13 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							complete_substitutions_array($tmparray, $this->outputlangs, $object, $line, "completesubstitutionarray_lines");
 							// Call the ODTSubstitutionLine hook
 							$parameters = array(
-									'odfHandler' => &$odfHandler,
-									'file' => '',
-									'object' => $object,
-									'outputlangs' => $this->outputlangs,
-									'substitutionarray' => &$tmparray,
-									'line' => $line,
-									'context' => $object->element . 'card'
+								'odfHandler' => &$odfHandler,
+								'file' => '',
+								'object' => $object,
+								'outputlangs' => $this->outputlangs,
+								'substitutionarray' => &$tmparray,
+								'line' => $line,
+								'context' => $object->element . 'card'
 							);
 							$action = "builddoc";
 							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
@@ -478,70 +478,70 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							if (! empty($conf->subtotal->enabled))
 							{
 								if (TSubtotal::isTitle($line)) {
-                                    if (!empty($conf->global->SUBTOTAL_TITLE_STYLE))
-                                    {
-                                        $style_start = $style_end = '';
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'B') !== false)
-                                        {
-                                            $style_start.= '<strong>';
-                                            $style_end = '</strong>'.$style_end;
-                                        }
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'U') !== false)
-                                        {
-                                            $style_start.= '<u>';
-                                            $style_end = '</u>'.$style_end;
-                                        }
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'I') !== false)
-                                        {
-                                            $style_start.= '<i>';
-                                            $style_end = '</i>'.$style_end;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        $style_start = '<strong><u>';
-                                        $style_end = '</u></strong>';
-                                    }
+									if (!empty($conf->global->SUBTOTAL_TITLE_STYLE))
+									{
+										$style_start = $style_end = '';
+										if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'B') !== false)
+										{
+											$style_start.= '<strong>';
+											$style_end = '</strong>'.$style_end;
+										}
+										if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'U') !== false)
+										{
+											$style_start.= '<u>';
+											$style_end = '</u>'.$style_end;
+										}
+										if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'I') !== false)
+										{
+											$style_start.= '<i>';
+											$style_end = '</i>'.$style_end;
+										}
+									}
+									else
+									{
+										$style_start = '<strong><u>';
+										$style_end = '</u></strong>';
+									}
 									if (!empty($listlines)) {
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
-											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
-											, '{line_desc}'          => '{line_desc}'
+										, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
+										, '{line_desc}'          => '{line_desc}'
 										));
 									}
 								} else if (TSubtotal::isSubtotal($line)) {
-                                    if (!empty($conf->global->SUBTOTAL_SUBTOTAL_STYLE))
-                                    {
-                                        $style_start = $style_end = '';
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'B') !== false)
-                                        {
-                                            $style_start.= '<strong>';
-                                            $style_end = '</strong>'.$style_end;
-                                        }
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'U') !== false)
-                                        {
-                                            $style_start.= '<u>';
-                                            $style_end = '</u>'.$style_end;
-                                        }
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'I') !== false)
-                                        {
-                                            $style_start.= '<i>';
-                                            $style_end = '</i>'.$style_end;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        $style_start = '<strong><i>';
-                                        $style_end = '</i></strong>';
-                                    }
+									if (!empty($conf->global->SUBTOTAL_SUBTOTAL_STYLE))
+									{
+										$style_start = $style_end = '';
+										if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'B') !== false)
+										{
+											$style_start.= '<strong>';
+											$style_end = '</strong>'.$style_end;
+										}
+										if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'U') !== false)
+										{
+											$style_start.= '<u>';
+											$style_end = '</u>'.$style_end;
+										}
+										if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'I') !== false)
+										{
+											$style_start.= '<i>';
+											$style_end = '</i>'.$style_end;
+										}
+									}
+									else
+									{
+										$style_start = '<strong><i>';
+										$style_end = '</i></strong>';
+									}
 									if (!empty($listlines)) {
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
-											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
-											, '{line_desc}'          => '{line_desc}'
+										, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
+										, '{line_desc}'          => '{line_desc}'
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_price_ht_locale}' => $style_start . '{line_price_ht_locale}' . $style_end
@@ -572,7 +572,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		// Annule la modification de la méthode preOdfToOdf() de la class Odf (htdocs/includes/odtphp/odf.php) si on passe dans une boucle
 //		$chapter_text = str_replace("<text:line-break/>", "<br />", $chapter_text);
 
-        return $chapter_text;
+		return $chapter_text;
 	}
 	/**
 	 *
@@ -695,14 +695,14 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
-			    if ($key == 'company_address') $value = nl2br($value);
+				if ($key == 'company_address') $value = nl2br($value);
 				$substitution_array['{cust_' . $key . '}'] = $value;
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
 		$tmparray = $this->get_substitutionarray_other($outputlangs, $object);
-        complete_substitutions_array($tmparray, $outputlangs, $object);
+		complete_substitutions_array($tmparray, $outputlangs, $object);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
 			foreach ( $tmparray as $key => $value ) {
@@ -820,20 +820,20 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 		$tmparray['object_incoterms']='';
-        if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
-            $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
-            $resql=$this->db->query($sql);
-            if ($resql) {
-                $num = $this->db->num_rows($resql);
-                if ($num) {
-                    $obj = $this->db->fetch_object($resql);
-                    if ($obj->code) {
-                        $tmparray['object_code_incoterms'] = $obj->code;
+		if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
+			$sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
+			$resql=$this->db->query($sql);
+			if ($resql) {
+				$num = $this->db->num_rows($resql);
+				if ($num) {
+					$obj = $this->db->fetch_object($resql);
+					if ($obj->code) {
+						$tmparray['object_code_incoterms'] = $obj->code;
 						$tmparray['object_incoterms'] = 'Incoterm : '.$obj->code.' - '.$tmparray['object_location_incoterms'];
-                    }
-                }
-            }
-        }
+					}
+				}
+			}
+		}
 
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -857,45 +857,45 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                             WHERE code = "' . $object->db->escape($cond_reg_lib) . '"
                             LIMIT 1';
 
-                    $resql = $object->db->query($sql);
+					$resql = $object->db->query($sql);
 
-                    if($resql && $object->db->num_rows($resql) > 0)
-                    {
-                        $obj = $object->db->fetch_object($resql);
-	                    $label = $obj->libelle_facture;
-                    }
+					if($resql && $object->db->num_rows($resql) > 0)
+					{
+						$obj = $object->db->fetch_object($resql);
+						$label = $obj->libelle_facture;
+					}
 				}
 
 				$substitution_array['{objvar_object_cond_reglement_doc}'] = $label;
 			}
 
-            // Traduction des modes de règlement
-            if(! empty($substitution_array['{objvar_object_mode_reglement_code}']))
-            {
-                $mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
-                $outputlangs->load('bills');
-                $translationKey = 'PaymentType' . strtoupper($mod_reg_lib);
+			// Traduction des modes de règlement
+			if(! empty($substitution_array['{objvar_object_mode_reglement_code}']))
+			{
+				$mod_reg_lib = $substitution_array['{objvar_object_mode_reglement_code}'];
+				$outputlangs->load('bills');
+				$translationKey = 'PaymentType' . strtoupper($mod_reg_lib);
 
-	            $label = $outputlangs->trans($translationKey);
+				$label = $outputlangs->trans($translationKey);
 
-                if($label == $translationKey)
-                {
-                    $sql = 'SELECT libelle
+				if($label == $translationKey)
+				{
+					$sql = 'SELECT libelle
                             FROM ' . MAIN_DB_PREFIX . 'c_paiement
                             WHERE code = "' . $object->db->escape($mod_reg_lib) . '"
                             LIMIT 1';
 
-                    $resql = $object->db->query($sql);
+					$resql = $object->db->query($sql);
 
-                    if($resql && $object->db->num_rows($resql) > 0)
-                    {
-                        $obj = $object->db->fetch_object($resql);
-                        $label = $obj->libelle;
-                    }
-                }
+					if($resql && $object->db->num_rows($resql) > 0)
+					{
+						$obj = $object->db->fetch_object($resql);
+						$label = $obj->libelle;
+					}
+				}
 
-                $substitution_array['{objvar_object_mode_reglement}'] = $label;
-            }
+				$substitution_array['{objvar_object_mode_reglement}'] = $label;
+			}
 
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
@@ -1012,163 +1012,90 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	}
 }
 
+
+
 /**
- * Classe mere des modeles de numerotation des references de lead
+ *  Parent class to manage numbering of ReferenceLetters
  */
-abstract class ModeleNumRefrReferenceLetters
+abstract class ModeleNumRefReferenceLetters
 {
-	var $error = '';
+	/**
+	 * @var string Error code (or message)
+	 */
+	public $error = '';
 
 	/**
-	 * Return if a module can be used or not
+	 *	Return if a module can be used or not
 	 *
-	 * @return boolean true if module can be used
+	 *	@return		boolean     true if module can be used
 	 */
-	function isEnabled() {
+	public function isEnabled()
+	{
 		return true;
 	}
 
 	/**
-	 * Renvoi la description par defaut du modele de numerotation
+	 *	Returns the default description of the numbering template
 	 *
-	 * @return string Texte descripif
+	 *	@return     string      Texte descripif
 	 */
-	function info() {
+	public function info()
+	{
 		global $langs;
 		$langs->load("referenceletters@referenceletters");
 		return $langs->trans("NoDescription");
 	}
 
 	/**
-	 * Renvoi un exemple de numerotation
+	 *	Returns an example of numbering
 	 *
-	 * @return string Example
+	 *	@return     string      Example
 	 */
-	function getExample() {
+	public function getExample()
+	{
 		global $langs;
-		$langs->load("referenceletters");
+		$langs->load("referenceletters@referenceletters");
 		return $langs->trans("NoExample");
 	}
 
 	/**
-	 * Test si les numeros deja en vigueur dans la base ne provoquent pas de
-	 * de conflits qui empechera cette numerotation de fonctionner.
+	 *  Checks if the numbers already in the database do not
+	 *  cause conflicts that would prevent this numbering working.
 	 *
-	 * @return boolean false si conflit, true si ok
+	 *	@param	Object		$object		Object we need next value for
+	 *	@return boolean     			false if conflict, true if ok
 	 */
-	function canBeActivated() {
+	public function canBeActivated($object)
+	{
 		return true;
 	}
 
 	/**
+	 *	Returns next assigned value
 	 *
-	 * Renvoi prochaine valeur attribuee
-	 *
-	 * @param int $fk_user
-	 * @param string $element_type
-	 * @param Societe $objsoc
-	 * @param reference letter $referenceletters_element
-	 * @return string
+	 *	@param	Object		$object		Object we need next value for
+	 *	@return	string      Valeur
 	 */
-	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element) {
+	public function getNextValue($object)
+	{
 		global $langs;
 		return $langs->trans("NotAvailable");
 	}
 
 	/**
-	 * Renvoi version du module numerotation
+	 *	Returns version of numbering module
 	 *
-	 * @return string Valeur
+	 *	@return     string      Valeur
 	 */
-	function getVersion() {
+	public function getVersion()
+	{
 		global $langs;
 		$langs->load("admin");
 
-		if ($this->version == 'development')
-			return $langs->trans("VersionDevelopment");
-		if ($this->version == 'experimental')
-			return $langs->trans("VersionExperimental");
-		if ($this->version == 'dolibarr')
-			return DOL_VERSION;
+		if ($this->version == 'development') return $langs->trans("VersionDevelopment");
+		if ($this->version == 'experimental') return $langs->trans("VersionExperimental");
+		if ($this->version == 'dolibarr') return DOL_VERSION;
+		if ($this->version) return $this->version;
 		return $langs->trans("NotAvailable");
-	}
-}
-
-/**
- * Create a document onto disk according to template module.
- *
- * @param DoliDB $db Database handler
- * @param object $object Object proposal
- * @param object $instance_letter Instance letter
- * @param Translate $outputlangs Object langs to use for output
- * @param string $element_type element type
- * @return int 0 if KO, 1 if OK
- */
-function referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $element_type) {
-	global $conf, $user, $langs;
-
-	$error = 0;
-	$filefound = 0;
-
-	// Search template files
-	$file = dol_buildpath('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_' . $element_type . '.modules.php');
-	if (file_exists($file)) {
-		$filefound = 1;
-	}
-
-	$classname = 'pdf_rfltr_' . $element_type;
-	// Charge le modele
-	if ($filefound) {
-		require_once $file;
-
-		/** @var pdf_rfltr_propal|pdf_rfltr_order|pdf_rfltr_invoice|pdf_rfltr_contract|pdf_rfltr_thirdparty|pdf_rfltr_contact|pdf_rfltr_supplier_proposal|pdf_rfltr_order_supplier|pdf_rfltr_shipping $obj */
-		$obj = new $classname($db);
-		// We save charset_output to restore it because write_file can change it if needed for
-		// output format that does not support UTF8.
-		$res = $obj->write_file($object, $instance_letter, $outputlangs);
-		if ($res > 0) {
-			return 1;
-		} else {
-			setEventMessage('referenceletters_pdf_create Error: ' . $obj->error, 'errors');
-			return - 1;
-		}
-	} else {
-		setEventMessage($langs->trans("Error") . " " . $langs->trans("ErrorFileDoesNotExists", $file), 'errors');
-		return - 1;
-	}
-}
-
-/**
- *
- * @param object $pdf
- * @param int $id
- */
-function importImageBackground(&$pdf, $id) {
-	global $conf;
-	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
-
-		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-
-		// add doc from attached files of training
-		$upload_dir = $conf->referenceletters->dir_output . "/referenceletters/" . $id;
-		$filearray = dol_dir_list($upload_dir, "files", 0, '\.pdf$', '\.meta$', "name", SORT_ASC, 1);
-		if (is_array($filearray) && count($filearray) > 0) {
-			// Take first PDF file added
-			$filedetail = reset($filearray);
-			if (file_exists($filedetail['fullname'])) {
-				$count = $pdf->setSourceFile($filedetail['fullname']);
-				// import only first pages
-				if ($count > 0) {
-					$tplIdx = $pdf->importPage(1);
-					if ($tplIdx !== false) {
-						$pdf->useTemplate($tplIdx);
-					} else {
-						setEventMessages(null, array(
-								$filedetail['fullname'] . ' cannot be added to current doc, probably Protected PDF'
-						), 'warnings');
-					}
-				}
-			}
-		}
 	}
 }

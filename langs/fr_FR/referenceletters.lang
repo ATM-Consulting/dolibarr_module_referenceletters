@@ -141,6 +141,8 @@ RefLtrModifyAndStay=Sauver et rester
 RefLtrAddPDFDoc=Ajouter le document PDF standard de l'élément
 RefLtrPDFDoc=PDF standard de l'élément
 ReferenceLettersChapters=Chapitre
+RefLtrText=Texte
+RefLtrOption=Liste des options
 
 RefLtrListMassGen=Génération en masse
 RefLtrSelectModelToGen=Modèle à générer

@@ -547,7 +547,6 @@ class ReferenceLetters extends CommonObject
 				$error++;
 			}
 		}
-
 		if (!$error) {
 			// copy external contacts if same company
 			if (!empty($object->socid) && property_exists($this, 'fk_soc') && $this->fk_soc == $object->socid) {
@@ -571,7 +570,6 @@ class ReferenceLetters extends CommonObject
 				if (is_array($TChapters) && count($TChapters) > 0) {
 					foreach ($TChapters as $line ) {
 						$chaptersnew = new ReferenceLettersChapters($this->db);
-						$chaptersnew->entity = $line->entity;
 						$chaptersnew->fk_referenceletters = $object->id;
 						$chaptersnew->lang = $line->lang;
 						$chaptersnew->sort_order = $line->sort_order;
@@ -588,7 +586,6 @@ class ReferenceLetters extends CommonObject
 				}
 			}
 		}
-
 		unset($object->context['createfromclone']);
 
 		// End

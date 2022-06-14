@@ -188,7 +188,7 @@ if (empty($reshook)) {
 	if($action=='addbreakpage' ) {
 		$object_chapters_breakpage = new ReferenceLettersChapters($db);
 		$object_chapters_breakpage->fk_referenceletters=$object->id;
-		$object_chapters_breakpage->title ='';
+		$object_chapters_breakpage->title ='breakpage';
 		$object_chapters_breakpage->content_text = '@breakpage@';
 		$object_chapters_breakpage->sort_order=$object_chapters_breakpage->findMaxSortOrder();
 		$object_chapters_breakpage->lang=$object_chapters_breakpage->findPreviewsLanguage();

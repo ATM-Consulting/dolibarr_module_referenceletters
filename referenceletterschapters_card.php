@@ -198,6 +198,7 @@ if (empty($reshook)) {
 		if (!empty($options)) {
 			$option_array = explode("\r\n",$options);
 			$object->options_text=$option_array;
+			$object->fields['options_text']['type'] .= ":array";
 		}
 
 	}
@@ -229,11 +230,13 @@ if (empty($reshook)) {
 	if($action == 'update'){
 		$options = GETPOST('options_text', 'none');
 
+		$options = GETPOST('options_text', 'none');
 		if (!empty($options)) {
 			$option_array = explode("\r\n",$options);
-			$_POST['options_text'] = $option_array;
 		}
+		$object->options_text = $option_array;
 	}
+
 
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
@@ -367,6 +370,14 @@ if (($id || $ref) && $action == 'edit') {
 	}
 	if ($backtopageforcancel) {
 		print '<input type="hidden" name="backtopageforcancel" value="'.$backtopageforcancel.'">';
+	}
+
+	if(is_array($object->options_text)){
+		$options_text = "";
+		foreach ($object->options_text as $key => $option_text) {
+			$options_text .= $option_text . "\n";
+		}
+		$object->options_text = $options_text;
 	}
 
 	print dol_get_fiche_head();

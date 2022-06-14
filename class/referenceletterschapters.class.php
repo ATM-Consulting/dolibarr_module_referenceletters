@@ -224,7 +224,7 @@ class ReferenceLettersChapters extends CommonObject
 			foreach($this->options_text as $key=>$option) {
 				if (empty($option)) unset($this->options_text[$key]);
 			}
-			$this->options_text=json_encode($this->options_text);
+			$this->options_text=serialize($this->options_text);
 		} else {
 			$this->options_text=trim($this->options_text);
 		}
@@ -343,6 +343,9 @@ class ReferenceLettersChapters extends CommonObject
 	public function fetch($id, $ref = null)
 	{
 		$result = $this->fetchCommon($id, $ref);
+
+		$this->options_text = unserialize($this->options_text);
+
 		if ($result > 0 && !empty($this->table_element_line)) {
 			$this->fetchLines();
 		}
@@ -491,7 +494,7 @@ class ReferenceLettersChapters extends CommonObject
 				$record = new self($this->db);
 				$record->setVarsFromFetchObj($obj);
 
-				$record->options_text= json_decode($obj->options_text);
+				$record->options_text= unserialize($obj->options_text);
 
 				$records[$record->id] = $record;
 
@@ -517,18 +520,23 @@ class ReferenceLettersChapters extends CommonObject
 	 */
 	public function update(User $user, $notrigger = false)
 	{
+
+		if(!is_array($this->options_text)){
+			$this->options_text = explode(',', $this->options_text);
+		}
+
 		// Check parameters
 		// Put here code to add a control on parameters values
 		if (is_array($this->options_text) && count($this->options_text)>0) {
-			//Remove empty values
 			foreach($this->options_text as $key=>$option) {
 				if (empty($option)) unset($this->options_text[$key]);
 			}
-			$this->options_text=json_encode($this->options_text);
-
+			$option_text=serialize($this->options_text);
 		} else {
-			$this->options_text=trim($this->options_text);
+			$option_text=trim($this->options_text);
 		}
+
+		$this->options_text = $option_text;
 
 		return $this->updateCommon($user, $notrigger);
 	}

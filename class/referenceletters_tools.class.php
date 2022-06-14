@@ -96,11 +96,11 @@ class ReferenceLettersTools {
 		}
 
 		$object_chapters = new ReferencelettersChapters($db);
-		$object_chapters->fetch_byrefltr($id_model, $langs_chapter);
+		$TChapters=$object_chapters->fetchAll('', '', '', '', array('fk_referenceletters' => $id_model));
 
 		$content_letter = array();
-		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-			foreach ($object_chapters->lines_chapters as $key => $line_chapter) {
+		if (is_array($TChapters) && count($TChapters) > 0) {
+			foreach ($TChapters as $key => $line_chapter) {
 				$options = array();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ($line_chapter->options_text as $key => $option_text) {

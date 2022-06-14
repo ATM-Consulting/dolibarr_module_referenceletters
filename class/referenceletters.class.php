@@ -318,24 +318,7 @@ class ReferenceLetters extends CommonObject
 			'listmodelclass' => 'ModelePDFSupplierProposal',
 			'document_dir' => $conf->supplier_proposal->dir_output
 		);
-		$this->element_type_list['expedition'] = array (
-			'class' => 'expedition.class.php',
-			'securityclass' => 'expedition',
-			'securityfeature' => '',
-			'objectclass' => 'Expedition',
-			'classpath' => DOL_DOCUMENT_ROOT . '/expedition/class/',
-			'trans' => 'sendings',
-			'title' => 'Shipment',
-			'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/sendings.lib.php',
-			'menuloader_function' => 'shipping_prepare_head',
-			'card' => '/exepedition/card.php',
-			'substitution_method' => 'get_substitutionarray_object',
-			'substitution_method_line' => 'get_substitutionarray_lines',
-			'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
-			'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
-			'listmodelclass' => 'ModelePdfExpedition',
-			'document_dir' => $conf->expedition->dir_output
-		);
+//
 		$this->element_type_list['shipping'] = array (
 			'class' => 'expedition.class.php',
 			'securityclass' => 'expedition',
@@ -682,7 +665,6 @@ class ReferenceLetters extends CommonObject
 		if (!empty($limit)) {
 			$sql .= $this->db->plimit($limit, $offset);
 		}
-
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);

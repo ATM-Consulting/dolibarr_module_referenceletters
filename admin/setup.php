@@ -183,10 +183,23 @@ $formSetup->newItem('REF_LETTER_TYPEEVENTNAME')->setAsSelect($TField);
 $formSetup->newItem('REF_LETTER_OUTPUTREFLET')->setAsYesNo();
 $item = $formSetup->newItem('REF_LETTER_PREDEF_HEADER_AND_FOOTER')->setAsYesNo();
 $item->helpText = $langs->trans('RefLtrHelpREF_LETTER_PREDEF_HEADER_AND_FOOTER');
+$newitemheaderfooter = ajax_constantonoff($item->confKey, array(), '', '', '', 1);
+$item->fieldOutputOverride = $newitemheaderfooter;
+
+$newitemheaderfooterinput = $item->form->selectyesno($item->confKey, $item->fieldValue, 1, 1 );
+$item->fieldInputOverride = $newitemheaderfooterinput;
+
+if($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER){
+	$item = $formSetup->newItem('REF_LETTER_PREDEF_HEADER')->setAsHtml();
+
+	$item = $formSetup->newItem('REF_LETTER_PREDEF_FOOTER')->setAsHtml();
+}
 $formSetup->newItem('DOCEDIT_CHAPTERS_INLINE_EDITION')->setAsYesNo();
 $item = $formSetup->newItem('DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT')->setAsYesNo();
 $item->helpText = $langs->trans('RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT');
-
+$item->fieldInputOverride = 'dsfskhudgfdskjfghdslgdg';
+$item->fieldOutputOverride = 'ooooooooooooooooooooo';
+$item->fieldOverride = 'gfhjklmùm';
 $setupnotempty =+ count($formSetup->items);
 
 

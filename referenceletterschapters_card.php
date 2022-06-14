@@ -161,7 +161,9 @@ if (!$permissiontoread) accessforbidden();
  */
 
 $parameters = array();
+
 $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+
 if ($reshook < 0) {
 	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
 }
@@ -223,9 +225,11 @@ if (empty($reshook)) {
 	if($action == 'add') {
 		if (!empty($idletter)) {
 			$object->fk_referenceletters = $idletter;
+
 			//TODO : gérer l'erreur "Column 'fk_referenceletters' cannot be null"
 		}
 	}
+
 
 	if($action == 'update'){
 		$options = GETPOST('options_text', 'none');
@@ -311,7 +315,7 @@ if ($action == 'create') {
 
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ReferenceLettersChapters")), '', 'object_'.$object->picto);
 
-	print '<form method="POST" action="'.dol_buildpath('/referenceletters/referenceletters_card.php', 1).'?id='.((!empty($idletter) && $idletter > 0) ? $idletter : '__ID__').'">';
+	print '<form method="POST" action="'.dol_buildpath('/referenceletters/referenceletterschapters_card.php', 1).'?fk_referenceletters='.((!empty($idletter) && $idletter > 0) ? $idletter : '__ID__').'">';
 	print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="add">';
 	print '<input type="hidden" name="fk_referenceletters" value="'.$idletter.'">';

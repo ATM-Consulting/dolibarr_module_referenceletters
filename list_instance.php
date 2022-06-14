@@ -60,7 +60,7 @@ $search_ref = GETPOST("search_ref", 'none');
 $search_element_type = GETPOST("search_element_type", 'none');
 $search_title = GETPOST("search_title", 'none');
 $search_company = GETPOST("search_company", 'none');
-$search_ref = GETPOST("search_ref", 'none');
+$search_ref_contact = GETPOST("search_ref_contact", 'none');
 
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 if ($limit > 0 && $limit != $conf->liste_limit) $options.='&limit='.$limit;
@@ -90,9 +90,9 @@ if (! empty($search_company)) {
 	$filter['search_company'] = $search_company;
 	$options .= '&amp;search_company=' . $search_company;
 }
-if (! empty($search_ref)) {
-	$filter['search_ref'] = $search_ref;
-	$options .= '&amp;search_ref=' . $search_ref;
+if (! empty($search_ref_contact)) {
+	$filter['search_ref'] = $search_ref_contact;
+	$options .= '&amp;search_ref=' . $search_ref_contact;
 }
 
 if ($page == - 1) {
@@ -194,7 +194,7 @@ if ($num != - 1) {
 	print '<input type="text" class="flat" name="search_title" value="' . $search_title . '" size="10">';
 	print '</th>';
 
-	print '<th><input type="text" class="flat" name="search_ref" value="' . $search_ref . '" size="10"></td>';
+	print '<th><input type="text" class="flat" name="search_ref_contact" value="' . $search_ref . '" size="10"></td>';
 
 	print '<th>';
 	print '<input type="text" class="flat" name="search_company" value="' . $search_company . '" size="10">';

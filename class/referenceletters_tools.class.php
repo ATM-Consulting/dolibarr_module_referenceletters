@@ -1,6 +1,6 @@
 <?php
 
-class ReferenceLettersTools {
+class RfltrTools {
 
 	static function setImgLinkToUrl($txt) {
 
@@ -163,7 +163,7 @@ class ReferenceLettersTools {
 		global $db;
 
 		$sql = 'SELECT rowid, title, element_type , default_doc
-				FROM '.MAIN_DB_PREFIX.'referenceletters
+				FROM '.MAIN_DB_PREFIX.'referenceletters_referenceletters
 				WHERE element_type LIKE "%agefodd%"
 				AND entity IN (' . getEntity('referenceletters') . ")
 				AND status=1";
@@ -793,7 +793,6 @@ class ReferenceLettersTools {
 
 	static function _print_docedit_header($object, $norepeat=false){
 		global $langs, $conf, $user;
-
 
 
 		print '<div class="docedit_document_head docedit_document_bloc">';

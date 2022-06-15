@@ -20,8 +20,8 @@ CREATE TABLE llx_referenceletters_referenceletters(
 	ref varchar(128) DEFAULT '(PROV)' NOT NULL, 
 	element_type varchar(50) NOT NULL, 
 	title varchar(100) NOT NULL, 
-	use_landscape_format integer DEFAULT 1, 
-	default_doc integer DEFAULT 1, 
+	use_landscape_format integer, 
+	default_doc integer, 
 	status integer DEFAULT 1 NOT NULL, 
 	header text, 
 	footer text, 
@@ -30,7 +30,8 @@ CREATE TABLE llx_referenceletters_referenceletters(
 	tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, 
 	date_creation datetime, 
 	import_key varchar(100), 
-	fk_user_creat integer,
-	fk_user_modif integer NOT NULL
+	fk_user_creat integer, 
+	fk_user_modif integer NOT NULL, 
+	entity integer DEFAULT 1 NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

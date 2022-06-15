@@ -106,7 +106,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$id_model = $object->array_options['options_rfltr_model_id'];
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
-		$instances = ReferenceLettersTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id', 'none'));
+		$instances = RfltrTools::load_object_refletter($object->id, $id_model, $object, '', GETPOST('lang_id', 'none'));
 		/** @var ReferenceLettersElements $instance_letter */
 		$instance_letter = $instances[0];
 

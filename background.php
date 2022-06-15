@@ -98,7 +98,7 @@ $title = $langs->trans('Module103258Name').'-'.$langs->trans('RefLtrBackground')
 llxHeader('',$title);
 
 $form = new Form($db);
-$referenceletters_tools = new ReferenceLettersTools($db);
+$referenceletters_tools = new RfltrTools($db);
 
 if ($object->id) {
 	/*

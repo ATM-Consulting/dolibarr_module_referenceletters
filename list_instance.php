@@ -108,7 +108,7 @@ $pagenext = $page + 1;
 $form = new Form($db);
 $object = new ReferenceLettersElements($db);
 $object_ref = new ReferenceLetters($db);
-$referenceletters_tools = new ReferenceLettersTools($db);
+$referenceletters_tools = new RfltrTools($db);
  $objecttmp=new ReferenceLetters($db);
 
 

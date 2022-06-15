@@ -304,7 +304,7 @@ llxHeader('', $title, $help_url, '',0,0,array(),$arrayofcss);
 // });
 // </script>';
 
-$referenceletterstools = new ReferenceLettersTools();
+$RfltrTools = new RfltrTools();
 
 // Part to create
 if ($action == 'create') {
@@ -346,7 +346,7 @@ if ($action == 'create') {
 	print '</td>';
 	print '<td>';
 	print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
-	print $referenceletterstools::displaySubtitutionKeyAdvanced($user, $object_refletter);
+	print $RfltrTools::displaySubtitutionKeyAdvanced($user, $object_refletter);
 	print '</td>';
 	print '</tr>';
 
@@ -400,7 +400,7 @@ if (($id || $ref) && $action == 'edit') {
 	print '</td>';
 	print '<td>';
 	print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
-	print $referenceletterstools::displaySubtitutionKeyAdvanced($user, $object_refletter);
+	print $RfltrTools::displaySubtitutionKeyAdvanced($user, $object_refletter);
 	print '</td>';
 	print '</tr>';
 

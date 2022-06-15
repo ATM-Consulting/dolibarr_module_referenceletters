@@ -72,7 +72,8 @@ class ActionsReferenceLetters
 		$error = 0; // Error counter
 		dol_syslog("Hook '" . get_class($this) . "' for action '" . __METHOD__ . "' launched by " . __FILE__);
 		if (in_array('referencelettersinstacecard', explode(':', $parameters['context']))) {
-            $instance_letter = $parameters['instance_letter'];
+
+			$instance_letter = $parameters['instance_letter'];
 			if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
 				dol_syslog("Hook '" . get_class($this) . " id=" . $instance_letter->id);
 				// var_dump($instance_letter);
@@ -89,6 +90,7 @@ class ActionsReferenceLetters
 					dol_include_once('/referenceletters/class/referenceletters.class.php');
 					$object_refletter = new Referenceletters($this->db);
 					$result = $object_refletter->fetch($instance_letter->fk_referenceletters);
+
 					if ($result < 0) {
 						$this->error = $object_refletter->error;
 						$this->errors[] = $object_refletter->errors;
@@ -318,7 +320,7 @@ class ActionsReferenceLetters
 
 
 		// Création et chargement d'une nouvelle instance de modèle
-        $instances = ReferenceLettersTools::load_object_refletter($object->id, $id_model, $object);
+        $instances = RfltrTools::load_object_refletter($object->id, $id_model, $object);
         $instance_rfltr = $instances[0];
         if(empty($instance_rfltr->ref_int)) $instance_rfltr->ref_int = $instance_rfltr->getNextNumRef($object->thirdparty, $user->id, $instance_rfltr->element_type);
         $instance_rfltr->create($user);

@@ -83,7 +83,7 @@ $arrayofcss = array('/referenceletters/css/view_documents.css?v='.time());
 llxHeader('',$title, '', '', 0, 0, array(), $arrayofcss);
 
 $form = new Form($db);
-$referenceletters_tools = new ReferenceLettersTools($db);
+$referenceletters_tools = new RfltrTools($db);
 
 if(!empty($object->id)) {
 

@@ -132,9 +132,9 @@ if ($action == 'buildoc') {
 		$object_element->fk_referenceletters = $idletter;
 		$object_element->outputref = GETPOST('outputref', 'int');
 		$object_element->use_custom_header = GETPOST('use_custom_header', 'none');
-		$object_element->header = ReferenceLettersTools::setImgLinkToUrl(GETPOST('header', 'none'));
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header', 'none'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer', 'none');
-		$object_element->footer = ReferenceLettersTools::setImgLinkToUrl(GETPOST('footer', 'none'));
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer', 'none'));
 		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
 		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
@@ -165,7 +165,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-					'content_text' => ReferenceLettersTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id, 'none')),
+					'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id, 'none')),
 					'options' => $options
 				);
 			}
@@ -196,9 +196,9 @@ if ($action == 'buildoc') {
 		$object_element->title = GETPOST('title_instance', 'none');
 		$object_element->outputref = GETPOST('outputref','int');
 		$object_element->use_custom_header = GETPOST('use_custom_header', 'none');
-		$object_element->header = ReferenceLettersTools::setImgLinkToUrl(GETPOST('header', 'none'));
+		$object_element->header = RfltrTools::setImgLinkToUrl(GETPOST('header', 'none'));
 		$object_element->use_custom_footer = GETPOST('use_custom_footer', 'none');
-		$object_element->footer = ReferenceLettersTools::setImgLinkToUrl(GETPOST('footer', 'none'));
+		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer', 'none'));
 		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
 
@@ -228,7 +228,7 @@ if ($action == 'buildoc') {
 				}
 
 				$content_letter[$line_chapter->id] = array (
-					'content_text' => ReferenceLettersTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id,'none')),
+					'content_text' => RfltrTools::setImgLinkToUrl(GETPOST('content_text_' . $line_chapter->id,'none')),
 					'options' => $options,
 					'same_page' => $line_chapter->same_page
 				);
@@ -292,7 +292,7 @@ $title = $langs->trans($object_refletter->element_type_list[$element_type]['titl
 llxHeader('', $title);
 
 $form = new Form($db);
-$referenceletters_tools = new ReferenceLettersTools($db);
+$referenceletters_tools = new RfltrTools($db);
 $formadmin = new FormAdmin($db);
 $formfile = new FormFile($db);
 

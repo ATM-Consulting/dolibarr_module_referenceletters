@@ -51,7 +51,7 @@ class ReferenceLettersChapters extends CommonObject
 	 * @var int  Does this object support multicompany module ?
 	 * 0=No test on entity, 1=Test with field entity, 'field@table'=Test with link by field@table
 	 */
-	public $ismultientitymanaged = 0;
+	public $ismultientitymanaged = 1;
 
 	/**
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
@@ -102,7 +102,7 @@ class ReferenceLettersChapters extends CommonObject
 		'sort_order' => array('type'=>'integer', 'label'=>'SortOrder', 'enabled'=>'1', 'position'=>40, 'notnull'=>1, 'visible'=>1, 'default'=>'1',),
 		'title' => array('type'=>'varchar(100)', 'label'=>'Title', 'enabled'=>'1', 'position'=>50, 'notnull'=>1, 'visible'=>1,),
 		'content_text' => array('type'=>'html', 'label'=>'ContentText', 'enabled'=>'1', 'position'=>60, 'notnull'=>1, 'visible'=>1,),
-		'options_text' => array('type'=>'texte', 'label'=>'OptionText', 'enabled'=>'1', 'position'=>70, 'notnull'=>0, 'visible'=>1,),
+		'options_text' => array('type'=>'text', 'label'=>'OptionText', 'enabled'=>'1', 'position'=>70, 'notnull'=>0, 'visible'=>1,),
 		'readonly' => array('type'=>'boolean', 'label'=>'ReadOnly', 'enabled'=>'1', 'position'=>80, 'notnull'=>0, 'visible'=>1, 'help'=>"ReadOnlyHelp",),
 		'same_page' => array('type'=>'boolean', 'label'=>'SamePage', 'enabled'=>'1', 'position'=>90, 'notnull'=>0, 'visible'=>1,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>100, 'notnull'=>-1, 'visible'=>-2,),
@@ -110,6 +110,7 @@ class ReferenceLettersChapters extends CommonObject
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>120, 'notnull'=>1, 'visible'=>-2,),
 		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>130, 'notnull'=>-1, 'visible'=>-2,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>'1', 'position'=>140, 'notnull'=>0, 'visible'=>-2,),
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>'1', 'position'=>50, 'notnull'=>1, 'visible'=>-1, 'default'=>'1',),
 	);
 	public $rowid;
 	public $fk_referenceletters;
@@ -216,6 +217,10 @@ class ReferenceLettersChapters extends CommonObject
 	 */
 	public function create(User $user, $notrigger = false)
 	{
+
+		if(!is_array($this->options_text)){
+			$this->options_text = explode(',', $this->options_text);
+		}
 
 		// Check parameters
 		// Put here code to add a control on parameters values
@@ -456,6 +461,7 @@ class ReferenceLettersChapters extends CommonObject
 		} else {
 			$sql .= " WHERE 1 = 1";
 		}
+
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {

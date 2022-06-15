@@ -22,13 +22,14 @@ CREATE TABLE llx_referenceletters_referenceletterschapters(
 	sort_order integer DEFAULT 1 NOT NULL, 
 	title varchar(100) NOT NULL, 
 	content_text text NOT NULL, 
-	options_text texte, 
+	options_text text, 
 	readonly boolean, 
 	same_page boolean, 
 	import_key varchar(14), 
 	fk_user_creat integer NOT NULL, 
 	date_creation datetime NOT NULL, 
 	fk_user_modif integer, 
-	tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-	-- END MODULEBUILDER FIELDS
+	tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    entity integer DEFAULT 1 NOT NULL
+    -- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

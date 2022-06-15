@@ -75,6 +75,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	public function write_file($object, $instance_letter, $outputlangs, $doctype='', $doctypedir='') {
 		global $user, $langs, $conf, $hookmanager;
 
+
+
 		$this->outputlangs=$outputlangs;
 		$this->instance_letter = $instance_letter;
 

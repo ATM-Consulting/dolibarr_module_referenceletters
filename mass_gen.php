@@ -19,7 +19,7 @@
 	$refltrelement_type=GETPOST('refltrelement_type','alpha');
 	$idletter=GETPOST('idletter','int');
 
-	$referenceletters_tools = new ReferenceLettersTools($db);
+	$referenceletters_tools = new RfltrTools($db);
 
 	llxHeader();
 	$head = referenceletterMassPrepareHead();

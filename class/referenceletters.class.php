@@ -51,7 +51,7 @@ class ReferenceLetters extends CommonObject
 	 * @var int  Does this object support multicompany module ?
 	 * 0=No test on entity, 1=Test with field entity, 'field@table'=Test with link by field@table
 	 */
-	public $ismultientitymanaged = 0;
+	public $ismultientitymanaged = 1;
 
 	/**
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
@@ -106,7 +106,7 @@ class ReferenceLetters extends CommonObject
 		'title' => array('type'=>'varchar(100)', 'label'=>'Title', 'enabled'=>'1', 'position'=>30, 'notnull'=>1, 'visible'=>1,),
 		'use_landscape_format' => array('type'=>'integer', 'label'=>'RefLtrUseLandscapeFormat', 'enabled'=>'1', 'position'=>40, 'notnull'=>0, 'visible'=>1, 'default'=>'0', 'arrayofkeyval'=>array('1'=>'Oui', '0'=>'Non'),),
 		'default_doc' => array('type'=>'integer', 'label'=>'RefLtrDefaultDoc', 'enabled'=>'1', 'position'=>50, 'notnull'=>0, 'visible'=>1, 'default'=>'0', 'arrayofkeyval'=>array('1'=>'Oui', '0'=>'Non'), 'validate'=>'1',),
-		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>'1', 'position'=>60, 'notnull'=>1, 'visible'=>0, 'default'=>'1', 'index'=>1, 'arrayofkeyval'=>array('1'=>'Activated', '0'=>'Disabled'), 'validate'=>'1',),
+		'status' => array('type'=>'integer', 'label'=>'Status', 'enabled'=>'1', 'position'=>60, 'notnull'=>1, 'visible'=>0, 'default'=>'1', 'index'=>1, 'arrayofkeyval'=>array('1'=>'Activ&eacute;', '0'=>'D&eacute;sactiv&eacute;'), 'validate'=>'1',),
 		'header' => array('type'=>'text', 'label'=>'Header', 'enabled'=>'1', 'position'=>70, 'notnull'=>0, 'visible'=>0,),
 		'footer' => array('type'=>'text', 'label'=>'Footer', 'enabled'=>'1', 'position'=>80, 'notnull'=>0, 'visible'=>0, 'default'=>'0',),
 		'use_custom_header' => array('type'=>'integer', 'label'=>'UseCustomHeader', 'enabled'=>'1', 'position'=>90, 'notnull'=>1, 'visible'=>0,),
@@ -116,6 +116,7 @@ class ReferenceLetters extends CommonObject
 		'import_key' => array('type'=>'varchar(100)', 'label'=>'ImportKey', 'enabled'=>'1', 'position'=>130, 'notnull'=>0, 'visible'=>0,),
 		'fk_user_creat' => array('type'=>'integer', 'label'=>'UserAuthor', 'enabled'=>'1', 'position'=>140, 'notnull'=>0, 'visible'=>0, 'noteditable'=>'1',),
 		'fk_user_modif' => array('type'=>'integer', 'label'=>'UserMod', 'enabled'=>'1', 'position'=>150, 'notnull'=>1, 'visible'=>0,),
+		'entity' => array('type'=>'integer', 'label'=>'Entity', 'enabled'=>'1', 'position'=>50, 'notnull'=>1, 'visible'=>-1, 'default'=>'1',),
 	);
 	public $rowid;
 	public $ref;
@@ -133,6 +134,7 @@ class ReferenceLetters extends CommonObject
 	public $import_key;
 	public $fk_user_creat;
 	public $fk_user_modif;
+	public $entity;
 	// END MODULEBUILDER PROPERTIES
 
 

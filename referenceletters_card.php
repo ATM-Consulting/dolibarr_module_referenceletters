@@ -106,14 +106,14 @@ $refltrdoc_template=GETPOST('refltrdoc_template', 'alpha');
 // Initialize technical objects
 $object = new ReferenceLetters($db);
 $object_chapters = new ReferenceLettersChapters($db);
-$object_tools = new ReferenceLettersTools($db);
+$object_tools = new RfltrTools($db);
 if(!empty($id)) {
 	$result=$object->fetch($id);
 	if ($result < 0) {
 		setEventMessage($object->error, 'errors');
 	}
 	$TChaptersLines=$object_chapters->fetchAll('', '', '', '', array('fk_referenceletters' => $object->id));
-	if ($result < 0) {
+	if ($TChaptersLines < 0) {
 		setEventMessage($object->error, 'errors');
 	}
 }

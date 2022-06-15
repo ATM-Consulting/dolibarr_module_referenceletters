@@ -1,5 +1,6 @@
 <?php
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletterselements.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 class pdf_rfltr_agefodd extends ModelePDFReferenceLetters

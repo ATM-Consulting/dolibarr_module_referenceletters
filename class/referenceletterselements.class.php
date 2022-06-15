@@ -24,7 +24,8 @@
 
 // Put here all includes required by your class file
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
-require_once (DOL_DOCUMENT_ROOT . "/custom/referenceletters/core/modules/referenceletters/mod_referenceletters_standard.php");
+require_once (DOL_DOCUMENT_ROOT . "/custom/referenceletters/core/modules/referenceletters/mod_referenceletterselements_standard.php");
+require_once (DOL_DOCUMENT_ROOT . "/custom/referenceletters/core/modules/referenceletters/mod_referenceletterselements_advanced.php");
 
 
 /**
@@ -739,17 +740,16 @@ class ReferenceLettersElements extends CommonObject
 	{
 		global $langs, $conf;
 		$langs->load("referenceletters@referenceletters");
-
-		if (empty($conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON)) {
-			$conf->global->SCRUMPROJECT_SCRUMCARD_ADDON = 'mod_referenceletters_standard';
+		if (empty($conf->global->REFERENCELETTERS_REFERENCELETTERSELEMENTS_ADDON)) {
+			$conf->global->REFERENCELETTERS_REFERENCELETTERSELEMENTS_ADDON = 'mod_referenceletterselements_standard';
 		}
 
-		if (!empty($conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON))
+		if (!empty($conf->global->REFERENCELETTERS_REFERENCELETTERSELEMENTS_ADDON))
 		{
 			$mybool = false;
 
-			$file = $conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON.".php";
-			$classname = $conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON;
+			$file = $conf->global->REFERENCELETTERS_REFERENCELETTERSELEMENTS_ADDON.".php";
+			$classname = $conf->global->REFERENCELETTERS_REFERENCELETTERSELEMENTS_ADDON;
 
 			// Include file with class
 			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);

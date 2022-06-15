@@ -238,6 +238,11 @@ if (empty($reshook)) {
 			$option_array = explode("\r\n",$options);
 		}
 		$object->options_text = $option_array;
+
+		$saveandstay=GETPOST('saveandstay', 'none');
+		if (! empty($saveandstay)) {
+			$backtopage =  dol_buildpath('/custom/referenceletters/referenceletterschapters_card.php', 1).'?id='.$id.'&action=edit&fk_referenceletters='.$object->fk_referenceletters;
+		}
 	}
 
 
@@ -407,7 +412,12 @@ if (($id || $ref) && $action == 'edit') {
 
 	print dol_get_fiche_end();
 
-	print $form->buttonsSaveCancel();
+	$saveandstay  = array(
+		'name' => 'saveandstay',
+		'label_key' => 'RefLtrModifyAndStay',
+	);
+	print $form->buttonsSaveCancel('Save', 'Cancel', $saveandstay);
+
 
 	print '</form>';
 }

@@ -1181,6 +1181,7 @@ class ReferenceLetters extends CommonObject
 		global $langs, $conf;
 		$langs->load("referenceletters@referenceletters");
 
+
 		if (empty($conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON)) {
 			$conf->global->REFERENCELETTERS_REFERENCELETTERS_ADDON = 'mod_referenceletters_standard';
 		}

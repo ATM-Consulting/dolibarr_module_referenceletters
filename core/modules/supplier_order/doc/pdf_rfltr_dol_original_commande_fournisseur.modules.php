@@ -24,6 +24,7 @@
  */
 dol_include_once('/referenceletters/core/modules/referenceletters/pdf/pdf_rfltr_default.modules.php');
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletterselements.php');
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';

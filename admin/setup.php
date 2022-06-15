@@ -223,6 +223,7 @@ if ($action == 'updateMask') {
 
 	if ($maskconst) {
 		$res = dolibarr_set_const($db, $maskconst, $maskvalue, 'chaine', 0, '', $conf->entity);
+
 		if (!($res > 0)) {
 			$error++;
 		}
@@ -370,6 +371,10 @@ print '</table>';
 $moduledir = 'referenceletters';
 $myTmpObjects = array();
 $myTmpObjects['referenceletters'] = array(
+	'includerefgeneration'=>1,
+	'includedocgeneration'=>0
+);
+$myTmpObjects['referenceletterselements'] = array(
 	'includerefgeneration'=>1,
 	'includedocgeneration'=>0
 );

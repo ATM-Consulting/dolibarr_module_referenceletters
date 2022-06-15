@@ -18,18 +18,17 @@
  */
 
 /**
- *  \file       htdocs/core/modules/referenceletters/mod_referenceletters_standard.php
+ *  \file       htdocs/core/modules/referenceletters/mod_referenceletterselements_standard.php
  *  \ingroup    referenceletters
  *  \brief      File of class to manage ScrumCard numbering rules standard
  */
-dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletterselements.php');
 
 
 /**
  *	Class to manage customer order numbering rules standard
  */
-class mod_referenceletters_standard extends ModeleNumRefReferenceLetters
+class mod_referenceletterselements_standard extends ModeleNumRefReferenceLettersElements
 {
 	/**
 	 * Dolibarr version of the loaded document
@@ -37,7 +36,7 @@ class mod_referenceletters_standard extends ModeleNumRefReferenceLetters
 	 */
 	public $version = 'dolibarr'; // 'development', 'experimental', 'dolibarr'
 
-	public $prefix = 'LTR';
+	public $prefix = 'LT';
 
 	/**
 	 * @var string Error code (or message)
@@ -88,7 +87,7 @@ class mod_referenceletters_standard extends ModeleNumRefReferenceLetters
 
 		$posindice = strlen($this->prefix) + 6;
 		$sql = "SELECT MAX(CAST(SUBSTRING(ref FROM ".$posindice.") AS SIGNED)) as max";
-		$sql .= " FROM ".MAIN_DB_PREFIX."referenceletters_referenceletters";
+		$sql .= " FROM ".MAIN_DB_PREFIX."referenceletters_elements";
 		$sql .= " WHERE ref LIKE '".$db->escape($this->prefix)."____-%'";
 		if ($object->ismultientitymanaged == 1) {
 			$sql .= " AND entity = ".$conf->entity;
@@ -125,7 +124,7 @@ class mod_referenceletters_standard extends ModeleNumRefReferenceLetters
 		// first we get the max value
 		$posindice = strlen($this->prefix) + 6;
 		$sql = "SELECT MAX(CAST(SUBSTRING(ref FROM ".$posindice.") AS SIGNED)) as max";
-		$sql .= " FROM ".MAIN_DB_PREFIX."referenceletters_referenceletters";
+		$sql .= " FROM ".MAIN_DB_PREFIX."referenceletters_elements";
 		$sql .= " WHERE ref LIKE '".$db->escape($this->prefix)."____-%'";
 		if ($object->ismultientitymanaged == 1) {
 			$sql .= " AND entity = ".$conf->entity;

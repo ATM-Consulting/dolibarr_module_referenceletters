@@ -270,6 +270,7 @@ class ActionsReferenceLetters
     {
         global $db, $langs, $conf, $user;
         dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
+        dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletterselements.php');
         dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
         dol_include_once('/referenceletters/class/referenceletters.class.php');
 

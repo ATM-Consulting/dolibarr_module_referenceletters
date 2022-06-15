@@ -43,6 +43,7 @@ require_once 'class/referenceletters_tools.class.php';
 require_once 'class/referenceletters_tools.class.php';
 require_once 'lib/referenceletters.lib.php';
 require_once 'core/modules/referenceletters/modules_referenceletters.php';
+require_once 'core/modules/referenceletters/modules_referenceletterselements.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
@@ -629,53 +630,55 @@ if (! empty($refletterelemntid)) {
 			print '</td>';
 			print '</tr>';
 
-			foreach ( $object_element->content_letter as $key => $line_chapter ) {
-				if ($line_chapter['content_text'] == '@breakpage@') {
-					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
-					print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
-					print $langs->trans('RefLtrPageBreak');
-					print '</td></tr>';
-				} elseif ($line_chapter['content_text'] == '@breakpagenohead@') {
-					print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
-					print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
-					print $langs->trans('RefLtrAddPageBreakWithoutHeader');
-					print '</td></tr>';
-				}else {
-					print '<tr>';
-					print '<td  width="20%">';
-					print $langs->trans('RefLtrText');
-					print '</td>';
-					print '<td>';
+			if(!empty($object_element->content_letter)) {
+				foreach ($object_element->content_letter as $key => $line_chapter) {
+					if ($line_chapter['content_text'] == '@breakpage@') {
+						print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+						print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
+						print $langs->trans('RefLtrPageBreak');
+						print '</td></tr>';
+					} elseif ($line_chapter['content_text'] == '@breakpagenohead@') {
+						print '<tr><td colspan="2" style="text-align:center;font-weight:bold">';
+						print '<input type="hidden" name="content_text_' . $key . '" value="' . $line_chapter['content_text'] . '"/>';
+						print $langs->trans('RefLtrAddPageBreakWithoutHeader');
+						print '</td></tr>';
+					} else {
+						print '<tr>';
+						print '<td  width="20%">';
+						print $langs->trans('RefLtrText');
+						print '</td>';
+						print '<td>';
 
-					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
-					$nbrows = ROWS_2;
-					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
-					$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
-					$doleditor->Create();
-					print '</td>';
-					print '</tr>';
+						require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
+						$nbrows = ROWS_2;
+						if (!empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
+							$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
+						$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+						$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
+						$doleditor->Create();
+						print '</td>';
+						print '</tr>';
 
-					print '<tr>';
-					print '<td  width="20%">';
-					print $langs->trans('RefLtrOption');
-					print '</td>';
-					print '<td>';
-					if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
-						foreach ( $line_chapter['options'] as $keyoption => $option_detail ) {
-							if (! empty($option_detail['text_content_option'])) {
-								if (! empty($option_detail['use_content_option'])) {
-									$checked = ' checked="checked" ';
-								} else {
-									$checked = '';
+						print '<tr>';
+						print '<td  width="20%">';
+						print $langs->trans('RefLtrOption');
+						print '</td>';
+						print '<td>';
+						if (is_array($line_chapter['options']) && count($line_chapter['options']) > 0) {
+							foreach ($line_chapter['options'] as $keyoption => $option_detail) {
+								if (!empty($option_detail['text_content_option'])) {
+									if (!empty($option_detail['use_content_option'])) {
+										$checked = ' checked="checked" ';
+									} else {
+										$checked = '';
+									}
+									print '<input type="checkbox" ' . $checked . ' name="use_content_option_' . $key . '_' . $keyoption . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $key . '_' . $keyoption . '" value="' . $option_detail['text_content_option'] . '" ><br>';
 								}
-								print '<input type="checkbox" ' . $checked . ' name="use_content_option_' . $key . '_' . $keyoption . '" value="1"><input type="texte class="flat" size="20" name="text_content_option_' . $key . '_' . $keyoption . '" value="' . $option_detail['text_content_option'] . '" ><br>';
 							}
 						}
+						print '</td>';
+						print '</tr>';
 					}
-					print '</td>';
-					print '</tr>';
 				}
 			}
 

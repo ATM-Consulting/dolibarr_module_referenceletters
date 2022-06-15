@@ -61,6 +61,9 @@ RefLtrReInstallTemplate=Ré-installer les modèles de documents standard
 RefLtrDOCEDIT_CHAPTERS_INLINE_EDITION=Utiliser le mode "Edition dans le texte" d'un document
 RefLtrDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Par défaut, copier le document généré à l’emplacement du document standard
 RefLtrHelpDOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT=Si cette option est activée, la case « Copier le document généré à l’emplacement du document standard » de l’onglet Modèle de document sera cochée par défaut.
+ReferencelettersSetup=Paramètres DocEdit
+NumberingModulesreferenceletters=Modèles de numérotation des modèles de document
+NumberingModulesreferenceletterselements=Modèles de numérotation des documents
 
 #Models
 RefLtrPropal=Exemple de modèle de PROPOSITION

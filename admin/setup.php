@@ -388,7 +388,7 @@ foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
 		 */
 		$setupnotempty++;
 
-		print load_fiche_titre($langs->trans("NumberingModules", $myTmpObjectKey), '', '');
+		print load_fiche_titre($langs->trans("NumberingModules".$myTmpObjectKey), '', '');
 
 		print '<table class="noborder centpercent">';
 		print '<tr class="liste_titre">';

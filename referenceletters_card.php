@@ -282,7 +282,7 @@ $help_url = '';
 llxHeader('', $title, $help_url, '', 0, 0, array(), $arrayofcss);
 
 if($action == 'create' || $action == 'edit') {
-	$selectElementType = selectElementType();
+	$selectElementType = $object_tools->selectElementType();
 	print '<script type="text/javascript">
 	 jQuery(document).ready(function() {
 		function init_myfunc()

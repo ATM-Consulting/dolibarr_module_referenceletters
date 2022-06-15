@@ -45,6 +45,7 @@ $id = GETPOST('id', 'int');
 // Access control
 // Restrict access to users with invoice reading permissions
 restrictedArea($user, 'referenceletters');
+$permissiontoadd = !empty($user->rights->referenceletters->write);
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");

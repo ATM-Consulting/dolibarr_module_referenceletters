@@ -196,12 +196,11 @@ if (empty($reshook)) {
 			setEventMessage('Page call wtih wrong argument', 'errors');
 		}
 
-		$options = GETPOST('option_text', 'none');
-		if (!empty($options)) {
-			$option_array = explode("\r\n",$options);
-			$object->options_text=$option_array;
-			$object->fields['options_text']['type'] .= ":array";
-		}
+//		$options = GETPOST('option_text', 'none');
+//		if (!empty($options)) {
+//			$option_array = explode("\r\n",$options);
+//			$object->options_text=$option_array;
+//		}
 
 	}
 

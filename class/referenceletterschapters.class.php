@@ -219,7 +219,7 @@ class ReferenceLettersChapters extends CommonObject
 	{
 
 		if(!is_array($this->options_text)){
-			$this->options_text = explode(',', $this->options_text);
+			$this->options_text = explode("\r\n", $this->options_text);
 		}
 
 		// Check parameters
@@ -230,8 +230,6 @@ class ReferenceLettersChapters extends CommonObject
 				if (empty($option)) unset($this->options_text[$key]);
 			}
 			$this->options_text=serialize($this->options_text);
-		} else {
-			$this->options_text=trim($this->options_text);
 		}
 
 		$resultcreate = $this->createCommon($user, $notrigger);
@@ -528,7 +526,7 @@ class ReferenceLettersChapters extends CommonObject
 	{
 
 		if(!is_array($this->options_text)){
-			$this->options_text = explode(',', $this->options_text);
+			$this->options_text = explode("\r\n", $this->options_text);
 		}
 
 		// Check parameters
@@ -538,10 +536,8 @@ class ReferenceLettersChapters extends CommonObject
 				if (empty($option)) unset($this->options_text[$key]);
 			}
 			$option_text=serialize($this->options_text);
-		} else {
-			$option_text=trim($this->options_text);
-		}
 
+		}
 		$this->options_text = $option_text;
 
 		return $this->updateCommon($user, $notrigger);

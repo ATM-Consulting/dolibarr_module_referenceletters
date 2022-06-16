@@ -392,7 +392,7 @@ class modReferenceletters extends DolibarrModules
             // Define condition to show or hide menu entry. Use '$conf->referenceletters->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
             'enabled'=>'$conf->referenceletters->enabled',
             // Use 'perms'=>'$user->rights->referenceletters->level1->level2' if you want your menu with a permission rules
-            'perms'=>'$user->rights->referenceletters->referenceletters->read',
+            'perms'=>'$user->rights->referenceletters->read',
             'target'=>'',
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2,
@@ -411,7 +411,7 @@ class modReferenceletters extends DolibarrModules
             // Define condition to show or hide menu entry. Use '$conf->referenceletters->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
             'enabled'=>'$conf->referenceletters->enabled',
             // Use 'perms'=>'$user->rights->referenceletters->level1->level2' if you want your menu with a permission rules
-            'perms'=>'$user->rights->referenceletters->referenceletters->write',
+            'perms'=>'$user->rights->referenceletters->write',
             'target'=>'',
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2
@@ -432,7 +432,7 @@ class modReferenceletters extends DolibarrModules
             // Define condition to show or hide menu entry. Use '$conf->referenceletters->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
             'enabled'=>'$conf->referenceletters->enabled',
             // Use 'perms'=>'$user->rights->referenceletters->level1->level2' if you want your menu with a permission rules
-            'perms'=>'$user->rights->referenceletters->referenceletters->read',
+            'perms'=>'$user->rights->referenceletters->read',
             'target'=>'',
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2
@@ -452,7 +452,7 @@ class modReferenceletters extends DolibarrModules
             // Define condition to show or hide menu entry. Use '$conf->referenceletters->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
             'enabled'=>'$conf->referenceletters->enabled',
             // Use 'perms'=>'$user->rights->referenceletters->level1->level2' if you want your menu with a permission rules
-            'perms'=>'$user->rights->referenceletters->referenceletters->write',
+            'perms'=>'$user->rights->referenceletters->write',
             'target'=>'',
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2

@@ -14,7 +14,7 @@
 -- You should have received a copy of the GNU General Public License
 -- along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-CREATE TABLE IF NOT EXISTS llx_referenceletters_elements (
+CREATE TABLE IF NOT EXISTS llx_referenceletters_referenceletterselements (
 rowid integer NOT NULL auto_increment PRIMARY KEY,
 entity integer NOT NULL DEFAULT 1,
 ref varchar(20) NULL,

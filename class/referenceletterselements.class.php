@@ -37,7 +37,7 @@ class ReferenceLettersElements extends CommonObject
 	public $error; // !< To return error code (or message)
 	public $errors = array(); // !< To return several error codes (or messages)
 	public $element = 'referenceletterselements'; // !< Id that identify managed objects
-	public $table_element = 'referenceletters_elements'; // !< Name of table without prefix where object is stored
+	public $table_element = 'referenceletters_referenceletterselements'; // !< Name of table without prefix where object is stored
 	public $id;
 	public $entity;
 	public $ref;
@@ -105,7 +105,7 @@ class ReferenceLettersElements extends CommonObject
 		// Put here code to add control on parameters values
 
 		// Insert request
-		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters_elements(";
+		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements(";
 
 		$sql .= "entity,";
 		$sql .= "ref,";
@@ -157,7 +157,7 @@ class ReferenceLettersElements extends CommonObject
 		}
 
 		if (! $error) {
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "referenceletters_elements");
+			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "referenceletters_referenceletterselements");
 
 			if (! $notrigger) {
 
@@ -215,7 +215,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.use_landscape_format";
 		$sql .= " ,p.title as title_referenceletters";
 
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters_referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.rowid = " . $id;
 
@@ -286,7 +286,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.fk_user_modif,";
 		$sql .= " t.tms";
 		$sql .= " ,p.title as title_referenceletters";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters_referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.entity IN (".getEntity("referenceletters", 1).")";
 		$sql .= " AND t.fk_element = " . $element_id;
@@ -369,7 +369,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " t.fk_user_modif,";
 		$sql .= " t.tms";
 		$sql .= " ,p.title as title_referenceletters";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters_referenceletters as p ON p.rowid=t.fk_referenceletters";
 		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
 
@@ -542,7 +542,7 @@ class ReferenceLettersElements extends CommonObject
 		// Put here code to add a control on parameters values
 
 		// Update request
-		$sql = "UPDATE " . MAIN_DB_PREFIX . "referenceletters_elements SET";
+		$sql = "UPDATE " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements SET";
 
 		$sql .= " ref=" . (isset($this->ref) ? "'" . $this->db->escape($this->ref) . "'" : "null") . ",";
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
@@ -626,7 +626,7 @@ class ReferenceLettersElements extends CommonObject
 		}
 
 		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements";
 			$sql .= " WHERE rowid=" . $this->id;
 
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);

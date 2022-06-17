@@ -717,7 +717,7 @@ class ReferenceLetters extends CommonObject
 		$error = 0;
 
 		if ($forceDeleteElements) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
+			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_referenceletterselements";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
 			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);

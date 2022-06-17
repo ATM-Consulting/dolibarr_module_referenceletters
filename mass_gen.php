@@ -26,7 +26,7 @@
 	dol_fiche_head($head, 'card', $langs->trans('Module103258Name'), 0, dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 	echo '<form name="addreferenceletters" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
-	echo '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+	echo '<input type="hidden" name="token" value="' . function_exists('newToken') ? newToken() : $_SESSION['newtoken'] . '">';
 	echo '<input type="hidden" name="action" value="choice">';
 
 	echo '<tr>';
@@ -1282,7 +1282,7 @@ function _list_thirdparty()
 	print '<form method="post" action="'.$_SERVER["PHP_SELF"].'" name="formfilter">';
 	if ($optioncss != '')
 		print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="token" value="'.function_exists('newToken') ? newToken() : $_SESSION['newtoken'].'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
@@ -2636,7 +2636,7 @@ function _list_contact()
 	print '<form method="post" action="'.$_SERVER["PHP_SELF"].'" name="formfilter">';
 	if ($optioncss != '')
 		print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="token" value="'. function_exists('newToken') ? newToken() : $_SESSION['newtoken'] .'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
 	print '<input type="hidden" name="sortfield" value="'.$sortfield.'">';
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';

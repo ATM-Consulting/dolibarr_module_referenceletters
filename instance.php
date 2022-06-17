@@ -385,7 +385,7 @@ print '</table>';
 print_fiche_titre($langs->trans('RefLtrNewLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="token" value="' . function_exists('newToken')? newToken():$_SESSION['newtoken'] . '">';
 print '<input type="hidden" name="action" value="selectmodel">';
 
 print '<table class="nobordernopadding">';
@@ -418,7 +418,7 @@ if (! empty($idletter)) {
 		print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 		print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-		print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="token" value="' . function_exists('newToken') ? newToken():$_SESSION['newtoken'] . '">';
 		print '<input type="hidden" name="action" value="buildoc">';
 		print '<input type="hidden" name="idletter" value="' . $idletter . '">';
 
@@ -570,7 +570,7 @@ if (! empty($refletterelemntid)) {
 
 			// Edit a existing letter
 			print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-			print '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
+			print '<input type="hidden" name="token" value="' . function_exists('newToken') ? newToken() : $_SESSION['newtoken'] . '">';
 			print '<input type="hidden" name="action" value="buildoc">';
 			print '<input type="hidden" name="idletter" value="' . $object_element->fk_referenceletters . '">';
 			print '<input type="hidden" name="refletterelemntid" value="' . $object_element->id . '">';

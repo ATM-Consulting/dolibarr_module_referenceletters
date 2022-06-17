@@ -95,6 +95,9 @@ if (! empty($search_ref_contact)) {
 	$options .= '&amp;search_ref=' . $search_ref_contact;
 }
 
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
+$options .= '&token='.$newToken;
+
 if ($page == - 1) {
 	$page = 0;
 }

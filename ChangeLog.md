@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.13 - 15/04/2022
 
+- FIX : Ajout de clés manquantes liés aux exped alors qu'elles sont dans le modele de base *19/07/2022* - 2.13.2
 - FIX : Infinite loop and fail to generate good doc *26/04/2022* - 2.13.1
 - NEW : Add new document manage by docedit : Intervention *15/04/2022* - 2.13.0
 - NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0

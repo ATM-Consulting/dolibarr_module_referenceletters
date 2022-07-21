@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+
+
+
+## Version 2.15 - 21/07/2022
+
 - NEW : Modification de l'icône du module *13/06/2022* 2.15.0
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
 

@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.9 - 14/06/2021
 
+- FIX : Date de naissance sur attestation de fin de formation - *27/07/2022* - 2.9.8
 - FIX : unlink docedit from core odf lib to prevent html conversion to odt *23/02/2022* - 2.9.7
 - FIX : Fix selection refletters default model *17/02/2022* - 2.9.7
 - FIX : Compatibility V15 : token CSRF on model header and footer form *20/12/2021* - 2.9.6

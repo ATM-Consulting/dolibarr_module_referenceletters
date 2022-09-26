@@ -28,7 +28,8 @@ require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
- * Classe permettant de gérer les modèles de PDF DocEdit
+ * Classe permettant de gérer les modèles de PDF DocEdit.
+ *
  */
 class ReferenceLetters extends CommonObject
 {

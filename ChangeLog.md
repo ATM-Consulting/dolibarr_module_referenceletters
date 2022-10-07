@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.15 - 21/07/2022
 
+- FIX : Hooks inexistants; les hooks permettraient à d'autres modules
+  d'étendre les types de documents gérés par DocEdit *15/09/2022* 2.15.1
 - NEW : Modification de l'icône du module *13/06/2022* 2.15.0
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
 

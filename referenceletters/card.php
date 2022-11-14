@@ -709,15 +709,15 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	/*
 	 * Barre d'actions
 	*/
-
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<div class="tabsAction">';
 	if ($user->rights->referenceletters->write) {
         print '<div class="inline-block divButAction">';
-        print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=addbreakpage&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+        print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=addbreakpage&token=' . $newToken . '&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
         if (strpos('rfltr_agefodd_', $object->element_type) == false && (array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
-            print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=adddocpdf&id=' . $object->id . '">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
+            print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=adddocpdf&token=' . $newToken . '&id=' . $object->id . '">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
         }
-	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
+	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&token=' . $newToken . '&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 	    print "</div><br>";
 		//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";

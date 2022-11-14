@@ -103,6 +103,7 @@ if (empty($sortfield))
 $title = $langs->trans('RefLtrList');
 
 llxHeader('', $title);
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 // Count total nb of records
 $nbtotalofrecords = 0;
@@ -118,6 +119,7 @@ if ($resql != - 1) {
 	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
 
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="token" value="' . $newToken . '">';
 
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';

@@ -857,9 +857,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
 
-			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
-				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
+					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+				}
 			}
+
 			// surcharge pour le oui ou non à la place de 1 ou 0
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
 

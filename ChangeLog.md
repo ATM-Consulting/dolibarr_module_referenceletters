@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Version 2.15 - 21/07/2022
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.4
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.3
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.2  
 - FIX : Compatibilité V16 : Ajout des tokens manquants pour bon fonctionnement des listes et des actions relatives à la création de nouveaux modèles de document *10/11/2022* 2.15.1

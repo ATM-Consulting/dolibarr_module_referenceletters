@@ -1360,11 +1360,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			elseif($extrafields->attribute_type[$key] == 'checkbox') {
 				$valArray=explode(',', $object->array_options['options_'.$key]);
 				$output=array();
-				foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
-					if  (in_array($keyopt, $valArray)) {
-						$output[]=$valopt;
+				if (is_array($extrafields->attribute_param[$key]['options'])){
+					foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+						if  (in_array($keyopt, $valArray)) {
+							$output[]=$valopt;
+						}
 					}
 				}
+
 				$object->array_options['options_'.$key] = implode(', ', $output);
 			}
 			elseif($extrafields->attribute_type[$key] == 'date')

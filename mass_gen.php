@@ -311,6 +311,7 @@ function _list_invoice() {
 	$param .= '&begin='.urlencode($begin).'&view='.urlencode($view).'&userid='.urlencode($userid).'&contactname='.urlencode($sall);
 	$param .= '&type='.urlencode($type).'&view='.urlencode($view);
 
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<form method="POST" name="searchFormList" action="'.$_SERVER["PHP_SELF"].'">'."\n";
 	print '<input type="hidden" name="token" value="'.$newToken.'">';
 	print '<input type="hidden" name="formfilteraction" id="formfilteraction" value="list">';
@@ -530,7 +531,7 @@ function _list_invoice() {
 				var $td = $item.closest('td');
 
 				data["id"] = $item.val();
-				data["token"] = <?php echo $newToken ?>;
+				data["token"] = '<?php echo $newToken ?>';
 
 				$td.html('...');
 
@@ -1282,6 +1283,7 @@ function _list_thirdparty()
 		$arrayofmassactions = array();
 //$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<form method="post" action="'.$_SERVER["PHP_SELF"].'" name="formfilter">';
 	if ($optioncss != '')
 		print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';
@@ -2637,6 +2639,7 @@ function _list_contact()
 		$arrayofmassactions = array();
 //$massactionbutton=$form->selectMassAction('', $arrayofmassactions);
 
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<form method="post" action="'.$_SERVER["PHP_SELF"].'" name="formfilter">';
 	if ($optioncss != '')
 		print '<input type="hidden" name="optioncss" value="'.$optioncss.'">';

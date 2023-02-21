@@ -88,6 +88,7 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 /*
  * Actions
  */
+$permissiontoadd = $user->rights->referenceletters->write;
 include_once DOL_DOCUMENT_ROOT . '/core/actions_linkedfiles.inc.php';
 
 /*

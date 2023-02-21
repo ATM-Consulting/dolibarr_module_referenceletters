@@ -92,7 +92,7 @@ if(!empty($object->id)) {
 
 	print '<form name="saveHeader" method="POST" action="'.$_SERVER['PHP_SELF'].'?id='.GETPOST('id','none').'">';
         $newToken = function_exists('newToken')?newToken():$_SESSION['newtoken'];
-	print '<input type="hidden" name="token" value="' . $newtoken . '">';
+	print '<input type="hidden" name="token" value="' . $newToken . '">';
 
 	print '<table class="border" width="100%">';
 	print '<tr>';

@@ -3,11 +3,21 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+
+
+
+## Version 2.15 - 21/07/2022
+- FIX : Handle agefodd img training - *20/01/2023* - 2.15.5
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.4
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.3
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.2  
+- FIX : Compatibilité V16 : Ajout des tokens manquants pour bon fonctionnement des listes et des actions relatives à la création de nouveaux modèles de document *10/11/2022* 2.15.1
 - NEW : Modification de l'icône du module *13/06/2022* 2.15.0
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
 
 ## Version 2.13 - 15/04/2022
 
+- FIX : Ajout de clés manquantes liés aux exped alors qu'elles sont dans le modele de base *19/07/2022* - 2.13.2
 - FIX : Infinite loop and fail to generate good doc *26/04/2022* - 2.13.1
 - NEW : Add new document manage by docedit : Intervention *15/04/2022* - 2.13.0
 - NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0
@@ -18,6 +28,8 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.9 - 14/06/2021
 
+- FIX : Fix error to upload background - *28/09/2022* - 2.9.9
+- FIX : Date de naissance sur attestation de fin de formation - *27/07/2022* - 2.9.8
 - FIX : unlink docedit from core odf lib to prevent html conversion to odt *23/02/2022* - 2.9.7
 - FIX : Fix selection refletters default model *17/02/2022* - 2.9.7
 - FIX : Compatibility V15 : token CSRF on model header and footer form *20/12/2021* - 2.9.6

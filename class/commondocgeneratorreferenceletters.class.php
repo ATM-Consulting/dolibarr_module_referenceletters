@@ -498,6 +498,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
 		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		if(empty($resarray['line_qty_shipped'])) $resarray['line_qty_shipped'] = price2num($line->qty_shipped);
+		if(empty($resarray['line_qty_asked'])) $resarray['line_qty_asked'] = price2num($line->qty_asked);
+		if(empty($resarray['line_weight'])) $resarray['line_weight'] = price2num($line->weight);
+		if(empty($resarray['line_vol'])) $resarray['line_vol'] = price2num($line->volume);
 
 		return $resarray;
 	}
@@ -853,9 +857,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
 
-			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
-				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
+					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+				}
 			}
+
 			// surcharge pour le oui ou non à la place de 1 ou 0
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
 
@@ -961,12 +968,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 
 				if (! is_array($value) && ! is_object($value)) {
-					if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
+                    if($key== 'date_birth') {
+                        $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
+                    }
+                    if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
 					// Fix display vars according object
 					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
-					// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
+	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
 					if (is_callable($methodVariable, false, $callable_name)){
 						$value = $object->referenceletter_showPublicOutputField($key,$value);
@@ -1353,13 +1363,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			elseif($extrafields->attribute_type[$key] == 'checkbox') {
 				$valArray=explode(',', $object->array_options['options_'.$key]);
 				$output=array();
-				if(is_array($extrafields->attribute_param[$key]['options']) && !empty($extrafields->attribute_param[$key]['options'])) {
-					foreach ($extrafields->attribute_param[$key]['options'] as $keyopt => $valopt) {
-						if (in_array($keyopt, $valArray)) {
-							$output[] = $valopt;
+				if (is_array($extrafields->attribute_param[$key]['options'])){
+					foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+						if  (in_array($keyopt, $valArray)) {
+							$output[]=$valopt;
 						}
 					}
 				}
+
 				$object->array_options['options_'.$key] = implode(', ', $output);
 			}
 			elseif($extrafields->attribute_type[$key] == 'date')

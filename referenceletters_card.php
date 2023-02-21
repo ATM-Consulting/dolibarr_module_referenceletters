@@ -84,6 +84,7 @@ dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
 dol_include_once('/referenceletters/lib/referenceletters_referenceletters.lib.php');
 
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 // Load translation files required by the page
 $langs->loadLangs(array("referenceletters@referenceletters", "other"));
@@ -310,7 +311,7 @@ if ($action == 'create') {
 	print load_fiche_titre($langs->trans("NewObject", $langs->transnoentitiesnoconv("ReferenceLetters")), '', 'object_'.$object->picto);
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="token" value="'.$newToken.'">';
 	print '<input type="hidden" name="action" value="add">';
 	if ($backtopage) {
 		print '<input type="hidden" name="backtopage" value="'.$backtopage.'">';
@@ -348,7 +349,7 @@ if (($id || $ref) && $action == 'edit') {
 	print load_fiche_titre($langs->trans("ReferenceLetters"), '', 'object_'.$object->picto);
 
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.newToken().'">';
+	print '<input type="hidden" name="token" value="'.$newToken.'">';
 	print '<input type="hidden" name="action" value="update">';
 	print '<input type="hidden" name="id" value="'.$object->id.'">';
 	if ($backtopage) {
@@ -571,7 +572,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			} else {
 				$nbChapterInPage++;
 				$urlToken = '';
-				if (function_exists('newToken')) $urlToken = "&token=".newToken();
+				if (function_exists('newToken')) $urlToken = "&token=".$newToken;
 
 				print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 
@@ -844,12 +845,12 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		if (empty($reshook)) {
 			if ($user->rights->referenceletters->write) {
 				print '<div class="inline-block divButAction">';
-				print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters_card.php', 1) . '?action=addbreakpage&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
+				print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters_card.php', 1) . '?action=addbreakpage&id=' . $object->id . '&token='.$newToken.'">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
 				if (strpos('rfltr_agefodd_', $object->element_type) == false && (array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
-					print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters_card.php', 1) . '?action=adddocpdf&id=' . $object->id . '">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
+					print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters_card.php', 1) . '?action=adddocpdf&id=' . $object->id . '&token='.$newToken.'">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
 				}
-				print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters_card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
-				print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletterschapters_card.php',1).'?action=create&fk_referenceletters='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
+				print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters_card.php',1).'?action=addbreakpagewithoutheader&id='.$object->id.'&token='.$newToken.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';
+				print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletterschapters_card.php',1).'?action=create&fk_referenceletters='.$object->id.'&token='.$newToken.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 				print "</div><br>";
 				//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";
 				print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone">' . $langs->trans("Clone") . "</a></div>\n";
@@ -857,15 +858,15 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 			// Back to draft
 			if ($object->status == $object::STATUS_ACTIVATED) {
-				print dolGetButtonAction($langs->trans('Disable'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=confirm_setdraft&confirm=yes&token='.newToken(), '', $permissiontoadd);
+				print dolGetButtonAction($langs->trans('Disable'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=confirm_setdraft&confirm=yes&token='.$newToken, '', $permissiontoadd);
 			}
 
-			print dolGetButtonAction($langs->trans('Modify'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=edit&token='.newToken(), '', $permissiontoadd);
+			print dolGetButtonAction($langs->trans('Modify'), '', 'default', $_SERVER["PHP_SELF"].'?id='.$object->id.'&action=edit&token='.$newToken, '', $permissiontoadd);
 
 			// Validate
 			if ($object->status == $object::STATUS_DISABLED) {
 				if (empty($object->table_element_line) || (is_array($object->lines) && count($object->lines) > 0)) {
-					print dolGetButtonAction($langs->trans('Activate'), '', 'default', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_validate&confirm=yes&token='.newToken(), '', $permissiontoadd);
+					print dolGetButtonAction($langs->trans('Activate'), '', 'default', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=confirm_validate&confirm=yes&token='.$newToken, '', $permissiontoadd);
 				} else {
 					$langs->load("errors");
 					print dolGetButtonAction($langs->trans("ErrorAddAtLeastOneLineFirst"), $langs->trans("Activate"), 'default', '#', '', 0);
@@ -893,7 +894,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 			*/
 
 			// Delete (need delete permission, or if draft, just need create/modify permission)
-			print dolGetButtonAction($langs->trans('Delete'), '', 'delete', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=delete&token='.newToken(), '', $permissiontodelete || ($object->status == $object::STATUS_DISABLED && $permissiontoadd));
+			print dolGetButtonAction($langs->trans('Delete'), '', 'delete', $_SERVER['PHP_SELF'].'?id='.$object->id.'&action=delete&token='.$newToken, '', $permissiontodelete || ($object->status == $object::STATUS_DISABLED && $permissiontoadd));
 		}
 		print '</div>'."\n";
 	}

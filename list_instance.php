@@ -95,9 +95,6 @@ if (! empty($search_ref_contact)) {
 	$options .= '&amp;search_ref=' . $search_ref_contact;
 }
 
-$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
-$options .= '&token='.$newToken;
-
 if ($page == - 1) {
 	$page = 0;
 }
@@ -154,8 +151,10 @@ if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massa
 
 
 if ($num != - 1) {
+	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 	print '<form enctype="multipart/form-data" method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="token" value="' . $sortfield . '"/>';
 	include 'core/massactions.inc.php';
 
 

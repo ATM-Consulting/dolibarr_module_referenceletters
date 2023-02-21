@@ -48,13 +48,15 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.formadmin.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 
-$action = GETPOST('action', 'alpha');
+$action = GETPOST('action', 'alphanohtml');
 $id = GETPOST('id', 'int');
 $idletter = GETPOST('idletter', 'int');
 $confirm = GETPOST('confirm', 'alpha');
 $element_type = GETPOST('element_type', 'alpha');
 $refletterelemntid = GETPOST('refletterelemntid', 'int');
 $justinformme = GETPOST('justinformme', 'none');
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
+
 
 $sortfield=GETPOST('sortfield','alpha');
 $sortorder=GETPOST('sortorder','alpha');
@@ -63,6 +65,7 @@ $object_chapters = new ReferencelettersChapters($db);
 $object_element = new ReferenceLettersElements($db);
 $object_refletter = new Referenceletters($db);
 $object_refletter->fetch($idletter);
+
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
@@ -298,8 +301,7 @@ $formadmin = new FormAdmin($db);
 $formfile = new FormFile($db);
 
 $now = dol_now();
-$urlToken = '';
-if (function_exists('newToken')) $urlToken = "&token=".newToken();
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 // load menu according context (element_type)
 $head = call_user_func($object_refletter->element_type_list[$element_type]['menuloader_function'], $object);
@@ -319,7 +321,7 @@ print load_fiche_titre($langs->trans('RefLtrExistingLetters'), '', dol_buildpath
 // Confirm form
 $formconfirm = '';
 if ($action == 'delete') {
-	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $refletterelemntid, $langs->trans('RefLtrDeleteLetter'), $langs->trans('RefLtrConfirmDeleteLetter'), 'confirm_delete', '', 0, 1);
+	$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $refletterelemntid . '&token='.$newToken, $langs->trans('RefLtrDeleteLetter'), $langs->trans('RefLtrConfirmDeleteLetter'), 'confirm_delete', '', 0, 1);
 }
 
 if (empty($formconfirm)) {
@@ -374,7 +376,7 @@ if (is_array($object_element->lines) && count($object_element->lines) > 0) {
 		print '</td>';
 
 		print '<td>';
-		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete'.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
+		print '<a href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '&refletterelemntid=' . $line->id . '&action=delete&token='.$newToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 		print '</td>';
 		print "</tr>\n";
 	}
@@ -385,7 +387,7 @@ print '</table>';
 print_fiche_titre($langs->trans('RefLtrNewLetters'), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-print '<input type="hidden" name="token" value="' . function_exists('newToken')? newToken():$_SESSION['newtoken'] . '">';
+print '<input type="hidden" name="token" value="' .$newToken. '">';
 print '<input type="hidden" name="action" value="selectmodel">';
 
 print '<table class="nobordernopadding">';
@@ -418,7 +420,7 @@ if (! empty($idletter)) {
 		print_fiche_titre($langs->trans("RefLtrChapters"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 		print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-		print '<input type="hidden" name="token" value="' . function_exists('newToken') ? newToken():$_SESSION['newtoken'] . '">';
+		print '<input type="hidden" name="token" value="' .$newToken. '">';
 		print '<input type="hidden" name="action" value="buildoc">';
 		print '<input type="hidden" name="idletter" value="' . $idletter . '">';
 
@@ -570,7 +572,7 @@ if (! empty($refletterelemntid)) {
 
 			// Edit a existing letter
 			print '<form action="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&element_type=' . $element_type . '" method="POST">';
-			print '<input type="hidden" name="token" value="' . function_exists('newToken') ? newToken() : $_SESSION['newtoken'] . '">';
+			print '<input type="hidden" name="token" value="' .$newToken. '">';
 			print '<input type="hidden" name="action" value="buildoc">';
 			print '<input type="hidden" name="idletter" value="' . $object_element->fk_referenceletters . '">';
 			print '<input type="hidden" name="refletterelemntid" value="' . $object_element->id . '">';

@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
-
+- NEW : Refonte module Builder - *21/02/2023* - 3.0
 
 
 ## Version 2.15 - 21/07/2022

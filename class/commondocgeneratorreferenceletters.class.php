@@ -498,6 +498,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
 		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		if(empty($resarray['line_qty_shipped'])) $resarray['line_qty_shipped'] = price2num($line->qty_shipped);
+		if(empty($resarray['line_qty_asked'])) $resarray['line_qty_asked'] = price2num($line->qty_asked);
+		if(empty($resarray['line_weight'])) $resarray['line_weight'] = price2num($line->weight);
+		if(empty($resarray['line_vol'])) $resarray['line_vol'] = price2num($line->volume);
 
 		return $resarray;
 	}
@@ -1397,21 +1401,24 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				if ($id != "")
 				{
 					$param = $extrafields->attribute_param[$key];
-					$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
-					$InfoFieldList = explode(":", $param_list[0]);
-					$classname=$InfoFieldList[0];
-					$classpath=$InfoFieldList[1];
-					if (! empty($classpath))
-					{
-						dol_include_once($InfoFieldList[1]);
-						if ($classname && class_exists($classname))
+					if(!empty($param['options'])){
+						$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
+						$InfoFieldList = explode(":", $param_list[0]);
+						$classname=$InfoFieldList[0];
+						$classpath=$InfoFieldList[1];
+						if (! empty($classpath))
 						{
-							$tmpobject = new $classname($this->db);
-							$tmpobject->fetch($id);
-							// completely replace the id with the linked object name
-							$object->array_options['options_'.$key] = $tmpobject->name;
+							dol_include_once($InfoFieldList[1]);
+							if ($classname && class_exists($classname))
+							{
+								$tmpobject = new $classname($this->db);
+								$tmpobject->fetch($id);
+								// completely replace the id with the linked object name
+								$object->array_options['options_'.$key] = $tmpobject->name;
+							}
 						}
 					}
+
 				}
 			}
 			elseif($extrafields->attribute_type[$key] == 'sellist') {

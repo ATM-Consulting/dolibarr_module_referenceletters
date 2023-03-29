@@ -714,7 +714,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	if ($user->rights->referenceletters->write) {
         print '<div class="inline-block divButAction">';
         print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=addbreakpage&token=' . $newToken . '&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
-        if (strpos('rfltr_agefodd_', $object->element_type) == false && (array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
+        if (strpos('rfltr_agefodd_', $object->element_type) == false && !empty($object->element_type_list[$object->element_type]) &&(array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
             print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=adddocpdf&token=' . $newToken . '&id=' . $object->id . '">' . $langs->trans("RefLtrAddPDFDoc") . '</a>';
         }
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/card.php',1).'?action=addbreakpagewithoutheader&token=' . $newToken . '&id='.$object->id.'">' . $langs->trans("RefLtrAddPageBreakWithoutHeader") . '</a>';

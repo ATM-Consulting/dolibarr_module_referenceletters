@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Version 2.15 - 21/07/2022
+- FIX : !empty - *29/03/2023* - 2.15.6
 - FIX : Handle agefodd img training - *20/01/2023* - 2.15.5
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.4
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.3

@@ -858,9 +858,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
 
-			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
-				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
+					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+				}
 			}
+
 			// surcharge pour le oui ou non à la place de 1 ou 0
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
 
@@ -1361,11 +1364,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			elseif($extrafields->attribute_type[$key] == 'checkbox') {
 				$valArray=explode(',', $object->array_options['options_'.$key]);
 				$output=array();
-				foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
-					if  (in_array($keyopt, $valArray)) {
-						$output[]=$valopt;
+				if (is_array($extrafields->attribute_param[$key]['options'])){
+					foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+						if  (in_array($keyopt, $valArray)) {
+							$output[]=$valopt;
+						}
 					}
 				}
+
 				$object->array_options['options_'.$key] = implode(', ', $output);
 			}
 			elseif($extrafields->attribute_type[$key] == 'date')

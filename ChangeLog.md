@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 # UNRELEASED
 
 
+
+
+## Version 2.15 - 21/07/2022
+- FIX : !empty - *29/03/2023* - 2.15.6
+- FIX : Handle agefodd img training - *20/01/2023* - 2.15.5
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.4
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.3
+- FIX : TEST ARRAY  - *23/11/2022* - 2.15.2  
+- FIX : Compatibilité V16 : Ajout des tokens manquants pour bon fonctionnement des listes et des actions relatives à la création de nouveaux modèles de document *10/11/2022* 2.15.1
+- NEW : Modification de l'icône du module *13/06/2022* 2.15.0
+- NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
+
 ## Version 2.13 - 15/04/2022
 
 - FIX : Ajout de clés manquantes liés aux exped alors qu'elles sont dans le modele de base *19/07/2022* - 2.13.2

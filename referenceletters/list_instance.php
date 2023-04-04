@@ -123,8 +123,7 @@ $title = $langs->trans('RefLtrListInstance');
 $trigger_name = 'SEND_REFLETTER_BY_MAIL';
 include '../core/sendAll.inc.php';
 llxHeader('', $title);
-
-
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 
 // Count total nb of records
 $nbtotalofrecords = 0;
@@ -152,6 +151,8 @@ if (! GETPOST('confirmmassaction','alpha') && $massaction != 'presend' && $massa
 if ($num != - 1) {
 
 	print '<form enctype="multipart/form-data" method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
+	print '<input type="hidden" name="token" value="' . $newToken . '">';
+
 	include '../core/massactions.inc.php';
 
 

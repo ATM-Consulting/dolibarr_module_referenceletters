@@ -780,6 +780,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_commercial'] = $object->commercialname;
 		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
 		$resarray['formation_commercial_phone'] = $object->commercialphone;
+		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone;
 		$resarray['formation_commercial_mail'] = $object->commercialemail;
 		$resarray['formation_societe'] = $object->thirdparty->nom;
 		$resarray['formation_commentaire'] = nl2br($object->notes);

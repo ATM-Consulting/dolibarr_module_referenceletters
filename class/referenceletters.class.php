@@ -764,6 +764,7 @@ class ReferenceLetters extends CommonObject
 		        ,'session_nb_days' => 'Nombre de jours dans le calendrier de la session'
 				,'formation_commercial'=>'commercial en charge de la formation'
 				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
+				,'formation_commercial_mobile_phone'=>'téléphone mobile du commercial en charge de la formation'
 				,'formation_commercial_mail'=>'email commercial en charge de la formation'
 				,'formation_societe'=>'Société concernée'
 		        ,'formation_but'=>'But de la formation'

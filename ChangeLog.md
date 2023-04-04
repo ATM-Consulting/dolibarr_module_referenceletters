@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0
 
 ## Version 2.11 - 25/03/2022
+- FIX : Add substitution in agefodd to be able to use commercial mobile phone *04/04/2023* - 2.11.1
 - NEW : Add substitution in agefodd to be able to use all presta soc std data *21/03/2022* - 2.11.0
 - NEW : Add substitution in agefodd to be able to use presta firstname, lastname and soc *15/02/2022* - 2.10.0
 

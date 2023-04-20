@@ -623,13 +623,15 @@ class ReferenceLetters extends CommonObject
 	 */
 	public function displayElement($mode = 0) {
 		global $langs;
-
+		$label = '';
 		if(!empty($this->element_type_list[$this->element_type]['trans'])) $langs->load($this->element_type_list[$this->element_type]['trans']);
-
-		if (empty($mode)) {
-			$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
-		} else {
-			$label = $langs->transnoentities($this->element_type_list[$this->element_type]['title']);
+		if(!empty($this->element_type_list[$this->element_type]['title'])) {
+			if(empty($mode)) {
+				$label = $langs->trans($this->element_type_list[$this->element_type]['title']);
+			}
+			else {
+				$label = $langs->transnoentities($this->element_type_list[$this->element_type]['title']);
+			}
 		}
 		return $label;
 	}
@@ -1040,9 +1042,11 @@ class ReferenceLetters extends CommonObject
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
-				dol_syslog(get_class($this) . "::".__METHOD__. ' ' . $errmsg, LOG_ERR);
-				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
+			if(!empty($this->errors)) {
+				foreach($this->errors as $errmsg) {
+					dol_syslog(get_class($this)."::".__METHOD__.' '.$errmsg, LOG_ERR);
+					$this->error .= ($this->error ? ', '.$errmsg : $errmsg);
+				}
 			}
 			$this->db->rollback();
 			return - 1 * $error;

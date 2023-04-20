@@ -90,6 +90,7 @@ $error = 0;
 $object = new $object_refletter->element_type_list[$element_type]['objectclass']($db);
 
 $result = $object->fetch($id);
+
 if ($result < 0)
 	setEventMessage($object->error, 'errors');
 if (method_exists($object, 'fetch_thirdparty')) {
@@ -345,6 +346,7 @@ if ($result < 0)
 	setEventMessage($object_element->error, 'errors');
 
 if (is_array($object_element->lines) && count($object_element->lines) > 0) {
+	$var = 0;
 	foreach ( $object_element->lines as $line ) {
 
 		// Affichage tableau des lead

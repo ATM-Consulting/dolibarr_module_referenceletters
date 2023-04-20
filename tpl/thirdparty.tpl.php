@@ -2,7 +2,7 @@
 print '<table class="border" width="100%">';
 
 print '<tr><td width="25%">' . $langs->trans("ThirdPartyName") . '</td><td colspan="3">';
-print $form->showrefnav($object, 'socid', '', ($user->societe_id ? 0 : 1), 'rowid', 'nom');
+print $form->showrefnav($object, 'socid', '', (!empty($user->societe_id) && $user->societe_id ? 0 : 1), 'rowid', 'nom');
 print '</td></tr>';
 
 if (! empty($conf->global->SOCIETE_USEPREFIX)) // Old not used prefix field
@@ -10,10 +10,10 @@ if (! empty($conf->global->SOCIETE_USEPREFIX)) // Old not used prefix field
 	print '<tr><td>' . $langs->trans('Prefix') . '</td><td colspan="3">' . $object->prefix_comm . '</td></tr>';
 }
 
-if ($object->client) {
+if (!empty($object->client)) {
 	print '<tr><td>';
 	print $langs->trans('CustomerCode') . '</td><td colspan="3">';
-	print $soc->code_client;
+	print $object->code_client;
 	if ($object->check_codeclient() != 0)
 		print ' <font class="error">(' . $langs->trans("WrongCustomerCode") . ')</font>';
 	print '</td></tr>';
@@ -33,7 +33,7 @@ if (! empty($conf->barcode->enabled)) {
 }
 
 print "<tr><td valign=\"top\">" . $langs->trans('Address') . "</td><td colspan=\"3\">";
-dol_print_address($object->address, 'gmap', 'thirdparty', $soc->id);
+dol_print_address($object->address, 'gmap', 'thirdparty', $object->id);
 print "</td></tr>";
 
 // Zip / Town
@@ -60,7 +60,7 @@ print dol_print_url($object->url);
 print '</td></tr>';
 
 // Phone / Fax
-print '<tr><td>' . $langs->trans('Phone') . '</td><td>' . dol_print_phone($object->tel, $object->country_code, 0, $object->id, 'AC_TEL') . '</td>';
+print '<tr><td>' . $langs->trans('Phone') . '</td><td>' . dol_print_phone(!empty($object->tel) ? $object->tel :  '', $object->country_code, 0, $object->id, 'AC_TEL') . '</td>';
 print '<td>' . $langs->trans('Fax') . '</td><td>' . dol_print_phone($object->fax, $object->country_code, 0, $object->id, 'AC_FAX') . '</td></tr>';
 
 print '</table>';

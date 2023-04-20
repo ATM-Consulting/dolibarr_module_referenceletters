@@ -14,11 +14,11 @@ if (! defined('INC_FROM_DOLIBARR') && defined('INC_FROM_CRON_SCRIPT')) {
 	global $dolibarr_main_db_host, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass;
 }
 if (! defined('DB_HOST')) {
-	define('DB_HOST', $dolibarr_main_db_host);
-	define('DB_NAME', $dolibarr_main_db_name);
-	define('DB_USER', $dolibarr_main_db_user);
-	define('DB_PASS', $dolibarr_main_db_pass);
-	define('DB_DRIVER', $dolibarr_main_db_type);
+	if(!empty($dolibarr_main_db_host)) define('DB_HOST', $dolibarr_main_db_host);
+	if(!empty($dolibarr_main_db_name)) define('DB_NAME', $dolibarr_main_db_name);
+	if(!empty($dolibarr_main_db_user)) define('DB_USER', $dolibarr_main_db_user);
+	if(!empty($dolibarr_main_db_pass)) define('DB_PASS', $dolibarr_main_db_pass);
+	if(!empty($dolibarr_main_db_type)) define('DB_DRIVER', $dolibarr_main_db_type);
 }
 
 dol_include_once('/referenceletters/class/referenceletters.class.php');
@@ -57,7 +57,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -260,7 +259,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -475,7 +473,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -649,7 +646,6 @@ if($rfltr->fetch('', $title) <= 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -808,7 +804,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -1002,7 +997,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -1169,7 +1163,6 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 <br />
@@ -1353,7 +1346,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	
 	$rfltr->tms = dol_now();
 	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
@@ -1656,7 +1649,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 &nbsp;<br />
@@ -1904,7 +1897,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	$rfltr->fk_user_mod = $obj->fk_user_mod;
+	
 	$rfltr->tms = dol_now();
 	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>

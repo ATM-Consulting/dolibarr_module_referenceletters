@@ -87,6 +87,18 @@ print '<br>';
 // Load attribute_label
 $extrafields->fetch_name_optionals_label($elementtype);
 
+if(floatval(DOL_VERSION) >= 17) {
+	$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+	if($extrafields->attributes[$elementtype]['count'] > 0) {
+		$extrafields->attribute_type = $extrafields->attributes[$elementtype]['type'];
+		$extrafields->attribute_size = $extrafields->attributes[$elementtype]['size'];
+		$extrafields->attribute_unique = $extrafields->attributes[$elementtype]['unique'];
+		$extrafields->attribute_required = $extrafields->attributes[$elementtype]['required'];
+		$extrafields->attribute_label = $extrafields->attributes[$elementtype]['label'];
+	}
+}
+
+
 print "<table summary=\"listofattributes\" class=\"noborder\" width=\"100%\">";
 
 print '<tr class="liste_titre">';

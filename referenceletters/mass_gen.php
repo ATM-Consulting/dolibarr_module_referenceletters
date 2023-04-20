@@ -107,7 +107,7 @@ function _show_ref_letter($idletter) {
 			print '<td>'.$langs->trans('RefLtrHeaderContent');
 			print '</td>';
 			print '<td>';
-			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+			$doleditor=new DolEditor('header', $object_refletter->header, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, 0, 70);
 			$doleditor->Create();
 			print '</td>';
 			print '</tr>';
@@ -386,7 +386,7 @@ function _get_link_invoice($id) {
 function _list_thirdparty()
 {
 
-	global $conf, $db, $user, $langs, $refltrelement_type, $idletter, $hookmanager;
+	global $conf, $db, $user, $langs, $refltrelement_type, $idletter, $hookmanager, $mysoc;
 
 	/*
 	 *
@@ -408,7 +408,7 @@ function _list_thirdparty()
 
 // Security check
 	$socid = GETPOST('socid', 'int');
-	if ($user->societe_id)
+	if (!empty($user->societe_id) && $user->societe_id)
 		$socid = $user->societe_id;
 	$result = restrictedArea($user, 'societe', $socid, '');
 
@@ -503,7 +503,29 @@ function _list_thirdparty()
 
 // fetch optionals attributes and labels
 	$extralabels = $extrafields->fetch_name_optionals_label('societe');
+	if(floatval(DOL_VERSION) >= 17) {
+		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		if($extrafields->attributes['societe']['count'] > 0) {
+			$extrafields->attribute_type = $extrafields->attributes['societe']['type'];
+			$extrafields->attribute_size = $extrafields->attributes['societe']['size'];
+			$extrafields->attribute_unique = $extrafields->attributes['societe']['unique'];
+			$extrafields->attribute_required = $extrafields->attributes['societe']['required'];
+			$extrafields->attribute_label = $extrafields->attributes['societe']['label'];
+		}
+	}
 	$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
+
+	if(floatval(DOL_VERSION) >= 17) {
+		$elementtype = 'societe';
+		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		if($extrafields->attributes[$elementtype]['count'] > 0) {
+			$extrafields->attribute_type = $extrafields->attributes[$elementtype]['type'];
+			$extrafields->attribute_size = $extrafields->attributes[$elementtype]['size'];
+			$extrafields->attribute_unique = $extrafields->attributes[$elementtype]['unique'];
+			$extrafields->attribute_required = $extrafields->attributes[$elementtype]['required'];
+			$extrafields->attribute_label = $extrafields->attributes[$elementtype]['label'];
+		}
+	}
 
 // List of fields to search into when doing a "search in all"
 	$fieldstosearchall = array(
@@ -547,7 +569,7 @@ function _list_thirdparty()
 	$checkprospectlevel = (in_array($contextpage, array('prospectlist')) ? 1 : 0);
 	$checkstcomm = (in_array($contextpage, array('prospectlist')) ? 1 : 0);
 	$arrayfields = array(
-		's.rowid' => array('label' => "TechnicalID", 'checked' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0), 'enabled' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0)),
+		's.rowid' => array('label' => "TechnicalID", 'checked' => (!empty($conf->global->MAIN_SHOW_TECHNICAL_ID) ? 1 : 0), 'enabled' => (!empty($conf->global->MAIN_SHOW_TECHNICAL_ID) ? 1 : 0)),
 		's.nom' => array('label' => "ThirdPartyName", 'checked' => 1),
 		's.name_alias' => array('label' => "AliasNameShort", 'checked' => 1),
 		's.barcode' => array('label' => "Gencod", 'checked' => 1, 'enabled' => (!empty($conf->barcode->enabled))),
@@ -601,7 +623,7 @@ function _list_thirdparty()
 		$action = 'list';
 		$massaction = '';
 	}
-	if (!GETPOST('confirmmassaction', 'alpha') && $massaction != 'presend' && $massaction != 'confirm_presend')
+	if (!GETPOST('confirmmassaction', 'alpha') && ((!empty($massaction) && ($massaction != 'presend') && ($massaction != 'confirm_presend')) || empty($massaction)))
 	{
 		$massaction = '';
 	}
@@ -968,8 +990,6 @@ function _list_thirdparty()
 		$param .= '&limit='.$limit;
 	if ($search_all != '')
 		$param = "&sall=".urlencode($search_all);
-	if ($sall != '')
-		$param .= "&sall=".urlencode($sall);
 	if ($search_categ_cus > 0)
 		$param .= '&search_categ_cus='.urlencode($search_categ_cus);
 	if ($search_categ_sup > 0)
@@ -1068,7 +1088,7 @@ function _list_thirdparty()
 	print '<input type="hidden" name="sortorder" value="'.$sortorder.'">';
 	print '<input type="hidden" name="page" value="'.$page.'">';
 	//var_dump($title, $page, $_SERVER["PHP_SELF"], $param, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);exit;
-	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER["PHP_SELF"], $param.'&refltrelement_type='.$refltrelement_type.'&idletter='.$idletter, $sortfield, $sortorder, '', $num, $nbtotalofrecords, 'title_companies', 0, '', '', $limit);
 
 	$langs->load("other");
 	$textprofid = array();
@@ -1492,7 +1512,7 @@ function _list_thirdparty()
 
 
 	$i = 0;
-	$totalarray = array();
+	$totalarray = array('nbfield' => 0);
 	while ($i < min($num, $limit))
 	{
 		$obj = $db->fetch_object($resql);
@@ -1620,9 +1640,9 @@ function _list_thirdparty()
 		if (!empty($arrayfields['typent.code']['checked']))
 		{
 			print '<td align="center">';
-			if (!is_array($typenArray) || count($typenArray) == 0)
-				$typenArray = $formcompany->typent_array(1);
-			print $typenArray[$obj->typent_code];
+			$typenArray = $formcompany->typent_array(1);
+			if(!empty($obj->typent_code)) print $typenArray[$obj->typent_code];
+			else print '';
 			print '</td>';
 			if (!$i)
 				$totalarray['nbfield'] ++;
@@ -1899,7 +1919,7 @@ if($refltrelement_type) {
 			var $td = $item.closest('td');
 
 			data["id"] = $item.val();
-
+			data["token"] = $('input[name="token"]').val();
 			$td.html('...');
 			console.log(data);
 
@@ -1975,7 +1995,7 @@ function _list_contact()
 	$id = GETPOST('id', 'int');
 	$contactid = GETPOST('id', 'int');
 	$ref = '';  // There is no ref for contacts
-	if ($user->societe_id)
+	if (!empty($user->societe_id) && $user->societe_id)
 		$socid = $user->societe_id;
 	$result = restrictedArea($user, 'contact', $contactid, '');
 
@@ -2063,6 +2083,16 @@ function _list_contact()
 
 // fetch optionals attributes and labels
 	$extralabels = $extrafields->fetch_name_optionals_label('contact');
+	if(floatval(DOL_VERSION) >= 17) {
+		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		if($extrafields->attributes['contact']['count'] > 0) {
+			$extrafields->attribute_type = $extrafields->attributes['contact']['type'];
+			$extrafields->attribute_size = $extrafields->attributes['contact']['size'];
+			$extrafields->attribute_unique = $extrafields->attributes['contact']['unique'];
+			$extrafields->attribute_required = $extrafields->attributes['contact']['required'];
+			$extrafields->attribute_label = $extrafields->attributes['contact']['label'];
+		}
+	}
 	$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
 
 // List of fields to search into when doing a "search in all"

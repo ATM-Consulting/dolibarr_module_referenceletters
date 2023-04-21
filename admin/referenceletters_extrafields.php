@@ -95,6 +95,13 @@ if(floatval(DOL_VERSION) >= 17) {
 		$extrafields->attribute_unique = $extrafields->attributes[$elementtype]['unique'];
 		$extrafields->attribute_required = $extrafields->attributes[$elementtype]['required'];
 		$extrafields->attribute_label = $extrafields->attributes[$elementtype]['label'];
+		$extrafields->attribute_default = $extrafields->attributes[$elementtype]['default'];
+		$extrafields->attribute_computed = $extrafields->attributes[$elementtype]['computed'];
+		$extrafields->attribute_param = $extrafields->attributes[$elementtype]['param'];
+		$extrafields->attribute_perms = $extrafields->attributes[$elementtype]['perms'];
+		$extrafields->attribute_langfile = $extrafields->attributes[$elementtype]['langfile'];
+		$extrafields->attribute_list = $extrafields->attributes[$elementtype]['list'];
+		$extrafields->attribute_hidden = $extrafields->attributes[$elementtype]['hidden'];
 	}
 }
 

@@ -52,6 +52,13 @@ if(floatval(DOL_VERSION) >= 17) {
 		$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
 		$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
 		$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
+		$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
+		$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
+		$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
+		$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
+		$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
+		$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
+		$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
 	}
 }
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array

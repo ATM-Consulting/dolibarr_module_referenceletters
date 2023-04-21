@@ -659,6 +659,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
 				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
 				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
+				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
+				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
+				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
+				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
+				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
+				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
+				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
 			}
 		}
 		if ($fetchoptionnals) {
@@ -676,6 +683,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
 					$extrafields->attribute_required = $extrafields->attributes['agefodd_stagiaire']['required'];
 					$extrafields->attribute_label = $extrafields->attributes['agefodd_stagiaire']['label'];
+					$extrafields->attribute_default = $extrafields->attributes['agefodd_stagiaire']['default'];
+					$extrafields->attribute_computed = $extrafields->attributes['agefodd_stagiaire']['computed'];
+					$extrafields->attribute_param = $extrafields->attributes['agefodd_stagiaire']['param'];
+					$extrafields->attribute_perms = $extrafields->attributes['agefodd_stagiaire']['perms'];
+					$extrafields->attribute_langfile = $extrafields->attributes['agefodd_stagiaire']['langfile'];
+					$extrafields->attribute_list = $extrafields->attributes['agefodd_stagiaire']['list'];
+					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'];
 				}
 			}
 			$line->array_options=$line->agefodd_stagiaire->array_options;
@@ -885,6 +899,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique'];
 					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required'];
 					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label'];
+					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default'];
+					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed'];
+					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param'];
+					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms'];
+					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile'];
+					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list'];
+					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden'];
 				}
 			}
 			if (is_array($e->attributes[$catalogue->table_element]['label'])){
@@ -979,6 +1000,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
 							$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
 							$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
+							$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
+							$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
+							$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
+							$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
+							$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
+							$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
+							$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
 						}
 					}
 					foreach ($extralabels as $key_opt => $label_opt)
@@ -1392,7 +1420,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
 				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
 				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['param'];
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
 			}
 		}
 

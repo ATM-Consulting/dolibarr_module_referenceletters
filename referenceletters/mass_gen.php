@@ -504,28 +504,23 @@ function _list_thirdparty()
 // fetch optionals attributes and labels
 	$extralabels = $extrafields->fetch_name_optionals_label('societe');
 	if(floatval(DOL_VERSION) >= 17) {
-		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		$extrafields->attribute_type = $extrafields->attribute_default = $extrafields->attribute_computed = $extrafields->attribute_hidden = $extrafields->attribute_param = $extrafields->attribute_list = $extrafields->attribute_langfile = $extrafields->attribute_perms = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 		if($extrafields->attributes['societe']['count'] > 0) {
 			$extrafields->attribute_type = $extrafields->attributes['societe']['type'];
 			$extrafields->attribute_size = $extrafields->attributes['societe']['size'];
 			$extrafields->attribute_unique = $extrafields->attributes['societe']['unique'];
 			$extrafields->attribute_required = $extrafields->attributes['societe']['required'];
 			$extrafields->attribute_label = $extrafields->attributes['societe']['label'];
+			$extrafields->attribute_default = $extrafields->attributes['societe']['default'];
+			$extrafields->attribute_computed = $extrafields->attributes['societe']['computed'];
+			$extrafields->attribute_param = $extrafields->attributes['societe']['param'];
+			$extrafields->attribute_perms = $extrafields->attributes['societe']['perms'];
+			$extrafields->attribute_langfile = $extrafields->attributes['societe']['langfile'];
+			$extrafields->attribute_list = $extrafields->attributes['societe']['list'];
+			$extrafields->attribute_hidden = $extrafields->attributes['societe']['hidden'];
 		}
 	}
 	$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');
-
-	if(floatval(DOL_VERSION) >= 17) {
-		$elementtype = 'societe';
-		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-		if($extrafields->attributes[$elementtype]['count'] > 0) {
-			$extrafields->attribute_type = $extrafields->attributes[$elementtype]['type'];
-			$extrafields->attribute_size = $extrafields->attributes[$elementtype]['size'];
-			$extrafields->attribute_unique = $extrafields->attributes[$elementtype]['unique'];
-			$extrafields->attribute_required = $extrafields->attributes[$elementtype]['required'];
-			$extrafields->attribute_label = $extrafields->attributes[$elementtype]['label'];
-		}
-	}
 
 // List of fields to search into when doing a "search in all"
 	$fieldstosearchall = array(
@@ -2091,6 +2086,13 @@ function _list_contact()
 			$extrafields->attribute_unique = $extrafields->attributes['contact']['unique'];
 			$extrafields->attribute_required = $extrafields->attributes['contact']['required'];
 			$extrafields->attribute_label = $extrafields->attributes['contact']['label'];
+			$extrafields->attribute_default = $extrafields->attributes['contact']['default'];
+			$extrafields->attribute_computed = $extrafields->attributes['contact']['computed'];
+			$extrafields->attribute_param = $extrafields->attributes['contact']['param'];
+			$extrafields->attribute_perms = $extrafields->attributes['contact']['perms'];
+			$extrafields->attribute_langfile = $extrafields->attributes['contact']['langfile'];
+			$extrafields->attribute_list = $extrafields->attributes['contact']['list'];
+			$extrafields->attribute_hidden = $extrafields->attributes['contact']['hidden'];
 		}
 	}
 	$search_array_options = $extrafields->getOptionalsFromPost($extralabels, '', 'search_');

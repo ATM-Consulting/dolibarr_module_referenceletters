@@ -503,9 +503,9 @@ function _list_thirdparty()
 
 // fetch optionals attributes and labels
 	$extralabels = $extrafields->fetch_name_optionals_label('societe');
-	if(floatval(DOL_VERSION) >= 17) {
-		$extrafields->attribute_type = $extrafields->attribute_default = $extrafields->attribute_computed = $extrafields->attribute_hidden = $extrafields->attribute_param = $extrafields->attribute_list = $extrafields->attribute_langfile = $extrafields->attribute_perms = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-		if($extrafields->attributes['societe']['count'] > 0) {
+	if(floatval(DOL_VERSION) >= 16) {
+		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		if($extrafields->attributes['societe']['loaded'] > 0) {
 			$extrafields->attribute_type = $extrafields->attributes['societe']['type'];
 			$extrafields->attribute_size = $extrafields->attributes['societe']['size'];
 			$extrafields->attribute_unique = $extrafields->attributes['societe']['unique'];
@@ -2078,9 +2078,9 @@ function _list_contact()
 
 // fetch optionals attributes and labels
 	$extralabels = $extrafields->fetch_name_optionals_label('contact');
-	if(floatval(DOL_VERSION) >= 17) {
-		$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-		if($extrafields->attributes['contact']['count'] > 0) {
+	if(floatval(DOL_VERSION) >= 16) {
+		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+		if($extrafields->attributes['contact']['loaded'] > 0) {
 			$extrafields->attribute_type = $extrafields->attributes['contact']['type'];
 			$extrafields->attribute_size = $extrafields->attributes['contact']['size'];
 			$extrafields->attribute_unique = $extrafields->attributes['contact']['unique'];

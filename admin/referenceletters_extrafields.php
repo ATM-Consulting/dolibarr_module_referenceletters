@@ -87,9 +87,9 @@ print '<br>';
 // Load attribute_label
 $extrafields->fetch_name_optionals_label($elementtype);
 
-if(floatval(DOL_VERSION) >= 17) {
-	$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-	if($extrafields->attributes[$elementtype]['count'] > 0) {
+if(floatval(DOL_VERSION) >= 16) {
+	$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+	if($extrafields->attributes[$elementtype]['loaded'] > 0) {
 		$extrafields->attribute_type = $extrafields->attributes[$elementtype]['type'];
 		$extrafields->attribute_size = $extrafields->attributes[$elementtype]['size'];
 		$extrafields->attribute_unique = $extrafields->attributes[$elementtype]['unique'];

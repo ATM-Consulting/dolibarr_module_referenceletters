@@ -651,9 +651,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-		if(floatval(DOL_VERSION) >= 17) {
-			$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$extrafieldkey]['count'] > 0) {
+		if(floatval(DOL_VERSION) >= 16) {
+			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+			if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
 				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
 				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
 				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
@@ -675,9 +675,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
-			if(floatval(DOL_VERSION) >= 17) {
-				$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes['agefodd_stagiaire']['count'] > 0) {
+			if(floatval(DOL_VERSION) >= 16) {
+				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+				if($extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
 					$extrafields->attribute_type = $extrafields->attributes['agefodd_stagiaire']['type'];
 					$extrafields->attribute_size = $extrafields->attributes['agefodd_stagiaire']['size'];
 					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
@@ -891,9 +891,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_Accessibility_Handicap_label'] = $langs->trans('RefLtrAccessHandicapTitle');
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
-			if(floatval(DOL_VERSION) >= 17) {
-				$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes[$catalogue->table_element]['count'] > 0) {
+			if(floatval(DOL_VERSION) >= 16) {
+				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+				if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
 					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type'];
 					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size'];
 					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique'];
@@ -992,9 +992,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-					if(floatval(DOL_VERSION) >= 17) {
-						$extrafields->attribute_type = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-						if($extrafields->attributes[$extrafieldkey]['count'] > 0) {
+					if(floatval(DOL_VERSION) >= 16) {
+						$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+						if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
 							$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
 							$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
 							$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
@@ -1076,7 +1076,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $conf,$langs;
 
 		//TODO, Dolibarr deal it with diffrent way in commondocgenerator : why ?
-
 		if (! empty($extrafieldsobjectkey))
 		{
 			$elementtype=$extrafields->attributes[$extrafieldsobjectkey]['elementtype'][$key];	// seems not used
@@ -1124,7 +1123,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 		}
-
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
 
 		// If field is a computed field, value must become result of compute
@@ -1411,10 +1409,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
-
-		if(floatval(DOL_VERSION) >= 17) {
+		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$object->table_element]['count'] > 0) {
+			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
 				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
@@ -1429,6 +1426,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
 			}
 		}
+
 
 		// phpcs:enable
 		global $conf;

@@ -656,7 +656,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
-
+		$TTmpArrayOptions = $object->array_options;
 		// User substitution value
 		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
 		$substitution_array = array();
@@ -910,7 +910,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			$txt = preg_replace('/\{' . preg_quote($prefixKey, '/') . '_[0-9]+_[^\}]+\}/', '', $txt);
 		}
-
+		$object->array_options=$TTmpArrayOptions;
 		return $txt;
 	}
 

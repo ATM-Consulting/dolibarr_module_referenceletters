@@ -88,12 +88,14 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 	/**
 	 * Function to build pdf onto disk
 	 *
-	 * @param Object $object Object to generate
-	 * @param Object $instance_letter Object to generate
-	 * @param Translate $outputlangs Lang output object
+	 * @param Object    $object          Object to generate
+	 * @param Object    $instance_letter Object to generate
+	 * @param Translate $outputlangs     Lang output object
+	 * @param string    $doctype
+	 * @param string    $doctypedir
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file($object, $instance_letter, $outputlangs) {
+	function write_file($object, $instance_letter, $outputlangs, $doctype = '', $doctypedir = '') {
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		$this->outputlangs=$outputlangs;
@@ -507,11 +509,13 @@ class pdf_rfltr_thirdparty extends ModelePDFReferenceLetters
 	 * Show footer of page.
 	 * Need this->emetteur object
 	 *
-	 * @param Object $object show
-	 * @param int $hidefreetext text
+	 * @param Object $pdf       show
+	 * @param        $object
+	 * @param        $outputlangs
+	 * @param int    $hidefreetext text
 	 * @return int height of bottom margin including footer text
 	 */
-	function _pagefoot($object, $hidefreetext = 0) {
+	function _pagefoot(&$pdf, $object, $outputlangs, $hidefreetext = 0) {
 		$this->pdf->SetX($this->marge_gauche);
 		return pdf_pagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}

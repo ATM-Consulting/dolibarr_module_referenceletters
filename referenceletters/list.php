@@ -116,7 +116,7 @@ $resql = $object->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset,
 if ($resql != - 1) {
 	$num = $resql;
 
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
+	print_barre_liste($title, $page, $_SERVER['PHP_SELF'], $option, $sortfield, $sortorder, '', $num, $nbtotalofrecords);
 
 	print '<form method="post" action="' . $_SERVER['PHP_SELF'] . '" name="search_form">' . "\n";
 	print '<input type="hidden" name="token" value="' . $newToken . '">';
@@ -131,10 +131,10 @@ if ($resql != - 1) {
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Status"), $_SERVEUR['PHP_SELF'], "t.status", "", $option, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrDefaultDoc"), $_SERVEUR['PHP_SELF'], "t.default_doc", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVER['PHP_SELF'], "t.title", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVER['PHP_SELF'], "t.element_type", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Status"), $_SERVER['PHP_SELF'], "t.status", "", $option, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrDefaultDoc"), $_SERVER['PHP_SELF'], "t.default_doc", "", $option, '', $sortfield, $sortorder);
 	print '<td align="center"></td>';
 
 	print "</tr>\n";

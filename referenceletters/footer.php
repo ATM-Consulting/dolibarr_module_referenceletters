@@ -44,7 +44,23 @@ $relativepathwithnofile="referenceletters/" . $object->id.'/';
 
 // fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
-
+if(floatval(DOL_VERSION) >= 16) {
+	$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+	if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
+		$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
+		$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
+		$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
+		$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
+		$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
+		$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
+		$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
+		$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
+		$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
+		$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
+		$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+	}
+}
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array(
 		'referencelettersfooter'
@@ -138,7 +154,7 @@ if(!empty($object->id)) {
 	print '<td>'.$langs->trans('RefLtrFooterContent');
 	print '</td>';
 	print '<td>';
-	$doleditor=new DolEditor('footer', $object->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, $nbrows, 70);
+	$doleditor=new DolEditor('footer', $object->footer, '', 150, 'dolibarr_notes_encoded', '', false, true, 1, 0, 70);
 	$doleditor->Create();
 	print '</td>';
 	print '</tr>';
@@ -184,6 +200,7 @@ if(!empty($object->id)) {
 							id:<?php echo (int)$object->id ?>
 							,action:"set_custom_footer"
 							,use_custom_footer:+is_checked
+							,token:$('input[name="token"]').val()
 						}
 
 		});

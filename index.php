@@ -43,7 +43,7 @@ dol_include_once('/referenceletters/core/boxes/box_referenceletter_elements.php'
 // Access control
 // Restrict access to users with invoice reading permissions
 restrictedArea($user, 'referenceletters');
-if ($user->societe_id > 0) {
+if (!empty($user->societe_id) && $user->societe_id > 0) {
 	accessforbidden();
 }
 

@@ -41,12 +41,12 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 	 */
 	function info()
 	{
-		global $conf, $langs;
+		global $conf, $langs, $db;
 		
 		$langs->load("referenceletters@referenceletters");
 		$langs->load("admin");
 		
-		$form = new Form($this->db);
+		$form = new Form($db);
 		
 		$texte = $langs->trans('GenericNumRefModelDesc') . "<br>\n";
 		$texte .= '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';

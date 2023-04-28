@@ -2,7 +2,7 @@
 print '<table class="border" width="100%">';
 
 print '<tr><td width="25%">' . $langs->trans("ThirdPartyName") . '</td><td colspan="3">';
-print $form->showrefnav($object, 'socid', '', (!empty($user->societe_id) && $user->societe_id ? 0 : 1), 'rowid', 'nom');
+print $form->showrefnav($object, 'socid', '', intval(empty($user->societe_id)), 'rowid', 'nom');
 print '</td></tr>';
 
 if (! empty($conf->global->SOCIETE_USEPREFIX)) // Old not used prefix field

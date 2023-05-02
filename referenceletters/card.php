@@ -60,6 +60,8 @@ restrictedArea($user, 'referenceletters');
 $langs->load("referenceletters@referenceletters");
 $langs->load("refflettersubtitution@referenceletters");
 
+$urlToken = '';
+if(function_exists('newToken')) $urlToken = '&token='.newToken();
 
 $object = new ReferenceLetters($db);
 $object_chapters = new ReferenceLettersChapters($db);
@@ -82,7 +84,23 @@ $error = 0;
 
 // fetch optionals attributes and labels
 $extralabels = $extrafields->fetch_name_optionals_label($object->table_element);
-
+if(floatval(DOL_VERSION) >= 16) {
+	$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+	if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
+		$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
+		$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
+		$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
+		$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
+		$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
+		$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
+		$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
+		$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
+		$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
+		$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
+		$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+	}
+}
 // Initialize technical object to manage hooks of thirdparties. Note that conf->hooks_modules contains array array
 $hookmanager->initHooks(array(
 		'referenceletterscard'
@@ -447,8 +465,6 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 		    } else {
 		        $nbChapterInPage++;
-                $urlToken = '';
-                if (function_exists('newToken')) $urlToken = "&token=".newToken();
 
 		        print '<div id="chapter_'.$line_chapter->id.'" class="sortable docedit_document_body docedit_document_bloc" data-sortable-chapter="'.$line_chapter->id.'">';
 

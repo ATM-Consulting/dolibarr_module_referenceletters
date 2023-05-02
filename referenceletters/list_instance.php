@@ -60,6 +60,7 @@ $search_element_type = GETPOST("search_element_type", 'none');
 $search_title = GETPOST("search_title", 'none');
 $search_company = GETPOST("search_company", 'none');
 $search_ref = GETPOST("search_ref", 'none');
+$options = '';
 
 $limit = GETPOST('limit','int')?GETPOST('limit','int'):$conf->liste_limit;
 if ($limit > 0 && $limit != $conf->liste_limit) $options.='&limit='.$limit;
@@ -71,7 +72,6 @@ if (GETPOST("button_removefilter_x", 'none')) {
 	$search_ref = '';
 	$toselect='';
 }
-
 $filter = array ();
 if (! empty($search_ref_int)) {
 	$filter['t.ref_int'] = $search_ref_int;
@@ -156,7 +156,7 @@ if ($num != - 1) {
 	include '../core/massactions.inc.php';
 
 
-	print_barre_liste($title, $page, $_SERVEUR['PHP_SELF'], $options, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords,'title_generic.png',0, '', '', $limit);
+	print_barre_liste($title, $page, $_SERVER['PHP_SELF'], $options, $sortfield, $sortorder, $massactionbutton, $num, $nbtotalofrecords,'title_generic.png',0, '', '', $limit);
 
 	if (! empty($sortfield))
 		print '<input type="hidden" name="sortfield" value="' . $sortfield . '"/>';
@@ -168,12 +168,12 @@ if ($num != - 1) {
 	$i = 0;
 	print '<table class="noborder" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVEUR['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVEUR['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVEUR['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Ref"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("Company"), $_SERVEUR['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
-	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVEUR['PHP_SELF'], "t.datec", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrRef"), $_SERVER['PHP_SELF'], "t.ref_int", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrElement"), $_SERVER['PHP_SELF'], "t.element_type", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrTitle"), $_SERVER['PHP_SELF'], "t.title", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Ref"), $_SERVER['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("Company"), $_SERVER['PHP_SELF'], "", "", $options, '', $sortfield, $sortorder);
+	print_liste_field_titre($langs->trans("RefLtrDatec"), $_SERVER['PHP_SELF'], "t.datec", "", $options, '', $sortfield, $sortorder);
 
 	// edit button
 	print '<th style="width:70px" class="liste_titre" align="right"><input class="liste_titre" type="image" src="' . DOL_URL_ROOT . '/theme/' . $conf->theme . '/img/search.png" value="' . dol_escape_htmltag($langs->trans("Search")) . '" title="' . dol_escape_htmltag($langs->trans("Search")) . '">';

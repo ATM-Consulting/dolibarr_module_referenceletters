@@ -874,13 +874,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 
 			$catalogue->fetch($object->fk_formation_catalogue);
-			$resarray['formation_but'] = strip_tags($catalogue->but);
-			$resarray['formation_ref'] = strip_tags($catalogue->ref_obj);
-			$resarray['formation_refint'] = strip_tags($catalogue->ref_interne);
-			$resarray['formation_methode'] = strip_tags($catalogue->methode);
-			$resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
-			$resarray['formation_sanction'] = strip_tags($catalogue->sanction);
-			$resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
+			$resarray['formation_but'] = $catalogue->but;
+			$resarray['formation_ref'] = $catalogue->ref_obj;
+			$resarray['formation_refint'] = $catalogue->ref_interne;
+			$resarray['formation_methode'] = $catalogue->methode;
+			$resarray['formation_prerequis'] = $catalogue->prerequis;
+			$resarray['formation_sanction'] = $catalogue->sanction;
+			$resarray['formation_type_stagiaire'] = $catalogue->public;
 			$resarray['formation_programme'] = $catalogue->programme;
 			$resarray['formation_documents'] = $catalogue->note1;
 			$resarray['formation_equipements'] = $catalogue->note2;

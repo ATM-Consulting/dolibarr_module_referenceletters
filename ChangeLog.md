@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Version 2.15 - 21/07/2022
+- FIX : remove strip tags - *19/07/2023* - 2.15.8
 - FIX : Compat V17 - *21/04/2023* - 2.15.7
 - FIX : !empty - *29/03/2023* - 2.15.6
 - FIX : Handle agefodd img training - *20/01/2023* - 2.15.5

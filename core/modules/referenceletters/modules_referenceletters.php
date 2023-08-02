@@ -264,6 +264,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 							$filepdf = $dirpdf . "/" . $objectrefpdf . ".pdf";
 							$pagecounttmp = $this->pdf->setSourceFile($filepdf);
+//var_dump($filepdf);exit;
 							if ($pagecounttmp>=1) {
 
 								for ($idocpdf = 1; $idocpdf <= $pagecounttmp; $idocpdf++) {

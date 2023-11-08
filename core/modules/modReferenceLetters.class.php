@@ -458,6 +458,37 @@ class modReferenceLetters extends DolibarrModules
 		    dol_include_once('/referenceletters/script/migrate_model_to_extrafields.php');
 		}
 
+		// fix pour la 2.15 et supérieures
+		if(empty($conf->global->DOCEDIT_FIX_TMS_FOR_MYSQL)) {
+			$sqlTables = "SHOW TABLES LIKE '%referenceletters%'";
+			$resqlTables = $this->db->query($sqlTables);
+			if($resqlTables) {
+				while($objTables = $this->db->fetch_array($resqlTables)) {
+					$tableName = $objTables['Tables_in_'.$this->db->database_name.' (%referenceletters%)'];
+					$testTms = 'DESCRIBE '.$tableName.' tms';
+					$resqlTest = $this->db->query($testTms);
+					if(! empty($resqlTest->num_rows)) {
+						$objTest = $this->db->fetch_object($resqlTest);
+						if($objTest->Null == 'NO' && empty($objTest->Default)) {
+							$sqlFix = 'ALTER TABLE `'.$tableName.'` CHANGE `tms` `tms` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP';
+							$resfix = $this->db->query($sqlFix);
+						}
+					}
+				}
+
+				// const qui sera créée après l'init
+				$this->const[] = [
+					'DOCEDIT_FIX_TMS_FOR_MYSQL',
+					'chaine',
+					'1',
+					'TMS had to be fix for mysql so we did it',
+					0,
+					'allentities',
+					0
+				];
+			}
+		}
+
 		return $this->_init($sql, $options);
 	}
 

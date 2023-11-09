@@ -54,6 +54,7 @@ class RfltrTools {
 			$outputlangs->setDefaultLang($lang_id);
 			$outputlangs->load('main');
 			$outputlangs->load('agefodd@agefodd');
+			$outputlangs->load('agefoddcertificat@agefoddcertificat');
 		} else {
 			global $langs;
 			$outputlangs=$langs;

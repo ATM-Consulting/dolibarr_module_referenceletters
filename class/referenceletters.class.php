@@ -310,8 +310,6 @@ class ReferenceLetters extends CommonObject
 			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
 			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
 			    ,'attestation'=>'AgfSendAttestation'
-			    ,'certificateA4'=>'AgfPDFCertificateA4'
-			    ,'certificatecard'=>'AgfPDFCertificateCard'
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
@@ -320,6 +318,13 @@ class ReferenceLetters extends CommonObject
 			    ,'attestation_trainee'=>'Attestation stagiaire'
 			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
 			);
+
+			if(!empty($conf->agefoddcertificat->enabled)) {
+				$Tab['certificateA4']='CertifTemplateA4';
+				$Tab['certificatecard']='CertifTemplateCredit';
+				$Tab['certificateA4_trainee']='CertifTemplateA4ByTrainee';
+				$Tab['certificatecard_trainee']='CertifTemplateCreditByTrainee';
+			}
 
 			foreach ($Tab as $key => $val){
 			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];

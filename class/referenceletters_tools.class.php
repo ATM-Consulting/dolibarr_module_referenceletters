@@ -257,15 +257,18 @@ class RfltrTools {
 				});
 				// Sélection du modèle et génération du document
 				$(".id_external_model").change(function() {
-
-					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id', 'none'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
+                    let model = $(this).attr('model');
+                    if(['certificateA4_trainee', 'certificatecard_trainee','certificateA4','certificatecard'].includes(model)) {
+                        var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php',1); ?>'
+                    } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
+					path += '?id=' + <?php echo GETPOST('id', 'none'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
 					// On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
 					lignetitre = $(this).parent().parent();
 					while(!lignetitre.hasClass('liste_titre')) {
 						lignetitre = lignetitre.prev();
 					}
 					var sessiontrainerid = lignetitre.find('a').attr('name');
-					<?php
+					<?phpe
 
 						if($page === 'document') {
 							?>
@@ -299,7 +302,9 @@ class RfltrTools {
 						}
 
 					?>
-
+                    if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
+                        path += '&returnurl='+'<?php echo $_SERVER['PHP_SELF']; ?>'+'?id='+ <?php echo GETPOST('id', 'int'); ?>;
+                    }
 					document.location.href=path;
 
 				});

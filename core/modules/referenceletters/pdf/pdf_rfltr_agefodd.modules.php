@@ -66,9 +66,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param string $obj_agefodd_convention convention object
 	 * @param string $socid socid
 	 * @param int $courrier id session
+	 * @param bool $isCertif
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '') {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -122,16 +123,16 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray = array();
-
-		if ($conf->agefodd->dir_output) {
+		if ($isCertif) $dir_output = $conf->agefoddcertificat->dir_output;
+		else $dir_output = $conf->agefodd->dir_output;
+		if ($dir_output) {
 
 			// $deja_regle = 0;
 			// var_dump($file);exit;
 			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
+			$dir = $dir_output;
 
-			$dir = $conf->agefodd->dir_output;
-
-			$file = $dir . '/' . $file;
+			if(!$isCertif) $file = $dir . '/' . $file;
 
 			if (! file_exists($dir)) {
 				if (dol_mkdir($dir) < 0) {
@@ -359,7 +360,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$this->pdf->AliasNbPages();
 
 				$this->pdf->Close();
-
 				$this->pdf->Output($file, 'F');
 
 				// Add pdfgeneration hook

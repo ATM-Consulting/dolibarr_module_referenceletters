@@ -556,15 +556,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
-                // Certificats
-                dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-                $agf_certif = new Agefodd_stagiaire_certif($db);
-                if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
-                        $resarray['line_certif_code'] = $agf_certif->certif_code;
-                        $resarray['line_certif_label'] = $agf_certif->certif_label;
-                        $resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
-                        $resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
-                }
+		if($conf->agefoddcertificat->enabled) {
+			// Certificats
+			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
+			$agf_certif = new AgefoddCertificat($db);
+			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid));
+			if(count($TCertif) > 0) {
+				$agf_certif = array_shift($TCertif);
+				$resarray['line_certif_code'] = $agf_certif->number;
+				$resarray['line_certif_label'] = $agf_certif->label;
+				$resarray['line_certif_date_debut'] = dol_print_date($agf_certif->date_start);
+				$resarray['line_certif_date_fin'] = dol_print_date($agf_certif->date_end);
+			}
+		}
 
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->id))

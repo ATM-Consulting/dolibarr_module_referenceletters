@@ -268,7 +268,7 @@ class RfltrTools {
 						lignetitre = lignetitre.prev();
 					}
 					var sessiontrainerid = lignetitre.find('a').attr('name');
-					<?phpe
+					<?php
 
 						if($page === 'document') {
 							?>

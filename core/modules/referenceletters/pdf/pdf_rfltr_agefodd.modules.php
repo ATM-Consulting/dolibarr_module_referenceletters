@@ -250,7 +250,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					// END x1
 					// rather than hard coded
 					// Sould be x4 then x3,x2 (same level) then x1
-					$chapter_text = $this->merge_array($object, $chapter_text, array(
+					$TAgfArray = array(
 							'THorairesSession',
 							'TFormationObjPeda',
 							'TStagiairesSession',
@@ -263,7 +263,13 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TFormateursSession',
 							'TConventionFinancialLine',
 							'TFormateursSessionCal'
-					));
+					);
+					if($conf->agefoddcertificat->enabled) {
+						$TAgfArray[] = 'TSessionStagiairesCertif';
+						$TAgfArray[] = 'TSessionStagiairesCertifSoc';
+					}
+
+					$chapter_text = $this->merge_array($object, $chapter_text, $TAgfArray);
 
 					// fix TK9360 : ce patch n'est plus utile à présent => je vire
 /*					// correction de problème de décalage de texte

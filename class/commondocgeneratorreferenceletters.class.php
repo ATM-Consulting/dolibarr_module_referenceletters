@@ -549,10 +549,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
 		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
 		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
-
-		$resarray['line_societe_address'] = $line->societe_address;
-		$resarray['line_societe_zip'] = $line->societe_zip;
-		$resarray['line_societe_town'] = $line->societe_town;
+		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat
+			$resarray['line_societe_address'] = $line->societe_address;
+			$resarray['line_societe_zip'] = $line->societe_zip;
+			$resarray['line_societe_town'] = $line->societe_town;
+		}
+		else {
+			$resarray['line_societe_address'] = $line->agefodd_stagiaire->thirdparty->address;
+			$resarray['line_societe_zip'] = $line->agefodd_stagiaire->thirdparty->zip;
+			$resarray['line_societe_town'] = $line->agefodd_stagiaire->thirdparty->town;
+			$resarray['line_societe_mail'] = $line->agefodd_stagiaire->thirdparty->email;
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($line->agefodd_stagiaire->thirdparty->element, true);
+			$resarray = $this->fill_substitutionarray_with_extrafields($line->agefodd_stagiaire->thirdparty, $resarray, $extrafields, 'line_societe', $langs);
+		}
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
@@ -560,13 +570,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			// Certificats
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);
-			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid));
+			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid, 'isDeleted' => 0));
 			if(count($TCertif) > 0) {
 				$agf_certif = array_shift($TCertif);
 				$resarray['line_certif_code'] = $agf_certif->number;
 				$resarray['line_certif_label'] = $agf_certif->label;
 				$resarray['line_certif_date_debut'] = dol_print_date($agf_certif->date_start);
 				$resarray['line_certif_date_fin'] = dol_print_date($agf_certif->date_end);
+				$resarray['line_certif_date_alerte'] = dol_print_date($agf_certif->date_warning);
 			}
 		}
 
@@ -1398,7 +1409,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
-	 *	Fill array with couple extrafield key => extrafield value
+	 *	Fill array with couplexite extrafield key => extrafield value
 	 *
 	 *	@param  Object			$object				Object with extrafields (must have $object->array_options filled)
 	 *	@param  array			$array_to_fill      Substitution array

@@ -748,7 +748,7 @@ class ReferenceLetters extends CommonObject
 
 	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
-		global $langs;
+		global $langs, $conf;
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
@@ -826,21 +826,47 @@ class ReferenceLetters extends CommonObject
 		);
 
 		// Liste de données - Participants
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
+		$moreTrad = '';
+		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilite'=>'Civilité'
 				,'line_nom'=>'Nom participant'
 				,'line_prenom'=>'Prénom participant'
 				,'line_nom_societe'=>'Société du participant'
+				,'line_societe_address'=>'Adresse de la société du participant'
+				,'line_societe_town'=>'Ville de la société du participant'
+				,'line_societe_zip'=>'Code postal de la société du participant'
+				,'line_societe_mail'=>'Adresse mail de la société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
 				,'line_mail' => 'Email du participant'
 				,'line_siret' => 'SIRET de la société du participant'
 				,'line_birthday' => 'Date de naissance du participant'
 				,'line_birthplace'=>'Lieu de naissance du participant'
 				,'line_code_societe'=> 'Code de la société du participant'
-				,'line_nom_societe'=> 'Nom du client du participant'
 				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
-
 		);
+		$extrafields = new ExtraFields($this->db);
+		$stag_extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+		if(!empty($stag_extralabels)) {
+			foreach($stag_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
+			}
+		}
+		//Extrafield tiers
+		$soc_extralabels = $extrafields->fetch_name_optionals_label('societe', true);
+		if(!empty($soc_extralabels)) {
+			foreach($soc_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_societe_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
+			}
+		}
+
+		if($conf->agefoddcertificat->enabled) {
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_fin'] = 'Date de fin du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_alerte'] = 'Date d\'alerte du certificat';
+		}
 
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
@@ -863,8 +889,32 @@ class ReferenceLetters extends CommonObject
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
 		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
-			,'stagiaire_presence_total' => 'Temps de présence total',
+			,'objvar_object_stagiaire_socname' => 'Société du participant'
+			,'objvar_object_stagiaire_socaddr' => 'Adresse de la société du participant'
+			,'objvar_object_stagiaire_soczip' => 'Code postal de la société du participant'
+			,'objvar_object_stagiaire_soctown' => 'Ville de la société du participant'
+			,'objvar_object_lieu_adresse' => 'Adresse du lieu'
+			,'objvar_object_lieu_ref_interne' => 'Ref interne du lieu'
 		);
+
+		if(!empty($stag_extralabels)) {
+			foreach($stag_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
+			}
+		}
+		//Extrafield tiers
+		if(!empty($soc_extralabels)) {
+			foreach($soc_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
+			}
+		}
+		if($conf->agefoddcertificat->enabled) {
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_fin'] = 'Date de fin du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_alerte'] = 'Date d\'alerte du certificat';
+		}
 
 		// Tags des lignes
 		$subst_array[$langs->trans('RefLtrLines')] = array(

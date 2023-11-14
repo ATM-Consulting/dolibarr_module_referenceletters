@@ -841,6 +841,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			foreach ( $tmparray as $key => $value ) {
 				$substitution_array['{objvar_' . $key . '}'] = $value;
 			}
+			print '<pre>';
+			print_r($substitution_array);exit;
 
 			// Traduction des conditions de règlement
 			if(! empty($substitution_array['{objvar_object_cond_reglement_code}']))

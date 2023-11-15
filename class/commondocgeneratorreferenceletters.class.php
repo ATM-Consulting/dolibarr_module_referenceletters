@@ -571,7 +571,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);
 			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid, 'isDeleted' => 0));
-			if(count($TCertif) > 0) {
+			if(is_array($TCertif) && count($TCertif) > 0) {
 				$agf_certif = array_shift($TCertif);
 				$resarray['line_certif_code'] = $agf_certif->number;
 				$resarray['line_certif_label'] = $agf_certif->label;
@@ -640,6 +640,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
 		$resarray['line_formateur_mail'] = $line->email;
+		$resarray['line_formateur_socname'] =  $line->socname;
+		$resarray['line_formateur_address'] = $line->address;
+		$resarray['line_formateur_town'] = $line->town;
+		$resarray['line_formateur_zip'] = $line->zip;
 		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
 		// Substitutions tableau des objectif :

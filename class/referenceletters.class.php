@@ -881,6 +881,10 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_phone'=>'Téléphone du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
+				,'line_formateur_address'=>'Adresse du formateur'
+				,'line_formateur_town'=>'Ville du formateur'
+				,'line_formateur_zip'=>'Code postal du formateur'
+				,'line_formateur_socname'=>'Nom de la société associée au formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
 

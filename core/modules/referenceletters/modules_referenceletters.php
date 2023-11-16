@@ -88,6 +88,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                         $this->outputlangs->setDefaultLang($_REQUEST['lang_id']);
                         $this->outputlangs->load('main');
                         $this->outputlangs->load('agefodd@agefodd');
+                        $this->outputlangs->load('agefoddcertificat@agefoddcertificat');
                 }
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO

@@ -198,7 +198,8 @@ PrestaSocNotePrivate = Note privée de la société du prestataire
 # Substitutions Agefodd
 #
 RefLtrSubstAgefodd=Sessions de formation module Agefodd
-RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession" ou "TStagiairesSessionSoc" ou "TStagiairesSessionPresent" ou "TStagiairesSessionSocConfirm")
+RefLtrSubstAgefoddListParticipants=Participants (Liste de données Agefodd "TStagiairesSession" ou "TStagiairesSessionSoc" ou "TStagiairesSessionPresent" ou "TStagiairesSessionSocConfirm"%s)
+RefLtrSubstAgefoddListParticipantsCertif= ou "TSessionStagiairesCertif" ou "TSessionStagiairesCertifSoc"
 RefLtrSubstAgefoddListHoraires=Horaires (Liste de données Agefodd "THorairesSession")
 RefLtrSubstAgefoddListFormateurs=Formateurs (Liste de données Agefodd "TFormateursSession")
 RefLtrSubstAgefoddStagiaire=Stagiaire (pour les documents par participants)

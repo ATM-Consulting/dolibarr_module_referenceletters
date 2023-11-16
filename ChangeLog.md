@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
-- NEW : Compatibilité agefoddcertificat *15/11/2023* 2.17.0
+- NEW : Compatibilité agefoddcertificat 1.12.0 *15/11/2023* 2.17.0
 - NEW : move script url mover from abricot *11/05/2022* 2.16.0
 
 ## Version 2.15 - 21/07/2022

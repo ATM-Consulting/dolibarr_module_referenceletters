@@ -549,7 +549,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
 		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
 		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
-		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat
+		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat < 2.17
 			$resarray['line_societe_address'] = $line->societe_address;
 			$resarray['line_societe_zip'] = $line->societe_zip;
 			$resarray['line_societe_town'] = $line->societe_town;
@@ -1413,7 +1413,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
-	 *	Fill array with couplexite extrafield key => extrafield value
+	 *	Fill array with couple extrafield key => extrafield value
 	 *
 	 *	@param  Object			$object				Object with extrafields (must have $object->array_options filled)
 	 *	@param  array			$array_to_fill      Substitution array

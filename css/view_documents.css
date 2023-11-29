@@ -202,3 +202,9 @@
 .h3-element-count::after {
 	content: attr(data-element-count);
 }
+
+
+/* css patch for dolibarr */
+.mod-referenceletters.page-card .select2-dropdown.ui-dialog {
+  z-index: 9999 !important;
+}

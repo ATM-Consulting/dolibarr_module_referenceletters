@@ -253,7 +253,7 @@ if ($action == "add") {
 $title = $langs->trans('Module103258Name');
 $arrayofcss = array('/referenceletters/css/view_documents.css?v='.time());
 $arrayofjs = array();
-llxHeader('', $title, '', '', 0, 0, $arrayofjs, $arrayofcss);
+llxHeader('', $title, '', '', 0, 0, $arrayofjs, $arrayofcss, '', 'mod-referenceletters page-card');
 
 $form = new Form($db);
 $formrefleter = new FormReferenceLetters($db);

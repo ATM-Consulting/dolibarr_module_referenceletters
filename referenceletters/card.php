@@ -129,7 +129,7 @@ if ($action == "add") {
 	} else {
 		header('Location:' . $_SERVER["PHP_SELF"] . '?id=' . $object->id);
 	}
-} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
+} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->hasRight('referenceletters', 'delete')) {
 	$result = $object->delete($user);
 	if ($result < 0) {
 		setEventMessage($object->errors, 'errors');
@@ -260,7 +260,7 @@ $formrefleter = new FormReferenceLetters($db);
 
 $now = dol_now();
 // Add new proposal
-if ($action == 'create' && $user->rights->referenceletters->write) {
+if ($action == 'create' && $user->hasRight('referenceletters', 'write')) {
 	print_fiche_titre($langs->trans("RefLtrCreate"), '', dol_buildpath('/referenceletters/img/object_referenceletters.png', 1), 1);
 
 	print '<form name="addreferenceletters" action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
@@ -324,7 +324,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	/*
 	 * Show object in view mode
 	*/
-	if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write  && floatval(DOL_VERSION) >= 11) {
+	if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION')  && $user->hasRight('referenceletters', 'write')  && floatval(DOL_VERSION) >= 11) {
 		print '<script>' . "\n";
 		print ' CKEDITOR.disableAutoInline = false;' . "\n";
 		print '</script>' . "\n";
@@ -375,7 +375,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	print '<li class="noborder litext">'.$linkback.'</li>';
 	print '</ul></div>';
 	print '<div class="inline-block floatleft valignmiddle refid refidpadding">';
-	print $langs->trans('RefLtrTitle').' : '. $form->editfieldval("RefLtrTitle", 'refltrtitle', $object->title, $object, $user->rights->referenceletters->write);
+	print $langs->trans('RefLtrTitle').' : '. $form->editfieldval("RefLtrTitle", 'refltrtitle', $object->title, $object, $user->hasRight('referenceletters', 'write'));
 	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
 	print '<div class="refidno">';
 	if ($action=='editrefltrelement') {
@@ -401,10 +401,10 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	}
 	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
 	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
-	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat", 'refltruse_landscape_format', $object->use_landscape_format, $object, $user->rights->referenceletters->write, 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<br>';
+	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat", 'refltruse_landscape_format', $object->use_landscape_format, $object, $user->hasRight('referenceletters', 'write'), 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<br>';
 	print $langs->trans('RefLtrDefaultDoc') . ' : ';
 	if ($action !== 'editrefltrdefault_doc') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrdefault_doc&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
-	print '&nbsp;' . $form->editfieldval("RefLtrDefaultDoc", 'refltrdefault_doc', $object->default_doc, $object, $user->rights->referenceletters->write, 'select;1:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]).',0:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO])) . '<br>';
+	print '&nbsp;' . $form->editfieldval("RefLtrDefaultDoc", 'refltrdefault_doc', $object->default_doc, $object, $user->hasRight('referenceletters', 'write'), 'select;1:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]).',0:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO])) . '<br>';
 
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -471,12 +471,12 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        // Button and infos
 		        print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
 
-		        if ($user->rights->referenceletters->write) {
-		            if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE)){
+		        if ($user->hasRight('referenceletters', 'write')) {
+		            if(getDolGlobalString('DOCEDIT_CHAPTERS_SORTABLE')){
 		                print '<span class="docedit_infos_icon handle classfortooltip" ><span class="fa fa-th marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('MoveChapter').'" title="'.$langs->trans('MoveChapter').'"></span></span>';
 		            }
 
-		            if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)){
+		            if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION')){
 		                print '<span class="docedit_infos_icon docedit_save classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-save marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('Save').'" title="'.$langs->trans('Save').'"></span></span>';
 
 						print '<span class="docedit_infos_icon docedit_shortcode classfortooltip" data-target="#chapter_body_text_'.$line_chapter->id.'"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
@@ -495,7 +495,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		        print '<div class="docedit_infos docedit_infos_top">';
 		        print '<span class="docedit_title_type" >';
 		        print $langs->trans('RefLtrTitle');
-		        if (! empty($conf->global->MAIN_MULTILANGS))
+		        if (getDolGlobalString('MAIN_MULTILANGS'))
 		        {
 		            $s=picto_from_langcode($line_chapter->lang);
 		            print ($s?' '.$s:'');
@@ -508,7 +508,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 		        //print $langs->trans('RefLtrText');
 		        $editInline = '';
-		        if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION)  && $user->rights->referenceletters->write ){ $editInline = ' contenteditable="true" '; }
+		        if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION')  && $user->hasRight('referenceletters', 'write') ){ $editInline = ' contenteditable="true" '; }
 
 			    print '<div class="docedit_document_body_text" '.$editInline.' id="chapter_body_text_'.$line_chapter->id.'" data-id="'.$line_chapter->id.'"  data-type="chapter_text" >';
 			    print $line_chapter->content_text;
@@ -543,7 +543,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 
 		print '</div><!-- end docedit_docboard -->';
 
-		if(!empty($conf->global->DOCEDIT_CHAPTERS_SORTABLE) && $user->rights->referenceletters->write)
+		if(getDolGlobalString('DOCEDIT_CHAPTERS_SORTABLE') && $user->hasRight('referenceletters', 'write'))
 		{
 	        print '
 	        <script>$( function() {
@@ -625,7 +625,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 		    print '} );</script>';
 		}
 
-		if(!empty($conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION) && $user->rights->referenceletters->write)
+		if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION') && $user->hasRight('referenceletters', 'write'))
 		{
 
 			print '<script>'."\n";
@@ -727,7 +727,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	*/
 	$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 	print '<div class="tabsAction">';
-	if ($user->rights->referenceletters->write) {
+	if ($user->hasRight('referenceletters', 'write')) {
         print '<div class="inline-block divButAction">';
         print '<a class="butAction" href="' . dol_buildpath('/referenceletters/referenceletters/card.php', 1) . '?action=addbreakpage&token=' . $newToken . '&id=' . $object->id . '">' . $langs->trans("RefLtrAddPageBreak") . '</a>';
         if (strpos('rfltr_agefodd_', $object->element_type) == false && !empty($object->element_type_list[$object->element_type]) &&(array_key_exists('listmodelfile',$object->element_type_list[$object->element_type]))) {
@@ -743,7 +743,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	}
 
 	// Activ/Unactiv
-	if ($user->rights->referenceletters->write) {
+	if ($user->hasRight('referenceletters', 'write')) {
 		if (empty($object->status)) {
 			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrActive") . "</a></div>\n";
 		} else {
@@ -752,7 +752,7 @@ if ($action == 'create' && $user->rights->referenceletters->write) {
 	}
 
 	// Delete
-	if ($user->rights->referenceletters->delete) {
+	if ($user->hasRight('referenceletters', 'delete')) {
 		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete'.$urlToken.'">' . $langs->trans("Delete") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
@@ -777,7 +777,7 @@ function _print_docedit_footer($object){
 
     // Button and infos
     print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
-    if ($user->rights->referenceletters->write) {
+    if ($user->hasRight('referenceletters', 'write')) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/footer.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
     print '</div></div><!-- END docedit_infos -->';
@@ -808,7 +808,7 @@ function _print_docedit_header($object, $norepeat=false){
 
     // Button and infos
     print '<div class="docedit_infos docedit_infos_left"><div class="docedit_sticky">';
-    if ($user->rights->referenceletters->write) {
+    if ($user->hasRight('referenceletters', 'write')) {
         print '<a  href="'.dol_buildpath('/referenceletters/referenceletters/header.php',1).'?id=' . $object->id .'">' . img_picto($langs->trans('Edit'), 'edit') . '</a>';
     }
 
@@ -828,22 +828,22 @@ function _print_docedit_header($object, $norepeat=false){
             //var_dump($object->element_type);
             // Add default header
             if($object->element_type == 'invoice'){
-                print $conf->global->INVOICE_FREE_TEXT;
+                print getDolGlobalString('INVOICE_FREE_TEXT');
             }
             elseif($object->element_type == 'propal'){
-                print $conf->global->PROPOSAL_FREE_TEXT;
+                print getDolGlobalString('PROPOSAL_FREE_TEXT');
             }
             elseif($object->element_type == 'order'){
-                print $conf->global->ORDER_FREE_TEXT;
+                print getDolGlobalString('ORDER_FREE_TEXT');
             }
             elseif($object->element_type == 'contract'){
-                print $conf->global->CONTRACT_FREE_TEXT;
+                print getDolGlobalString('CONTRACT_FREE_TEXT');
             }
             elseif($object->element_type == 'order_supplier'){
-                print $conf->global->SUPPLIER_ORDER_FREE_TEXT;
+                print getDolGlobalString('SUPPLIER_ORDER_FREE_TEXT');
             }
             elseif($object->element_type == 'supplier_proposal'){
-                print $conf->global->SUPPLIER_PROPOSAL_FREE_TEXT;
+                print getDolGlobalString('SUPPLIER_PROPOSAL_FREE_TEXT');
             }
         }
     }

@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -42,36 +42,36 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 	function info()
 	{
 		global $conf, $langs, $db;
-		
+
 		$langs->load("referenceletters@referenceletters");
 		$langs->load("admin");
-		
+
 		$form = new Form($db);
-		
+
 		$texte = $langs->trans('GenericNumRefModelDesc') . "<br>\n";
 		$texte .= '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 		$texte .= '<input type="hidden" name="token" value="' . $_SESSION['newtoken'] . '">';
 		$texte .= '<input type="hidden" name="action" value="updateMask">';
 		$texte .= '<input type="hidden" name="maskconstrefletter" value="REF_LETTER_UNIVERSAL_MASK">';
 		$texte .= '<table class="nobordernopadding" width="100%">';
-		
+
 		$tooltip = $langs->trans("GenericMaskCodes", $langs->transnoentities("Module103258Name"), $langs->transnoentities("Module103258Name"));
 		$tooltip .= $langs->trans("GenericMaskCodes2");
 		$tooltip .= $langs->trans("GenericMaskCodes3");
 		$tooltip .= $langs->trans("GenericMaskCodes4a", $langs->transnoentities("Module103258Name"), $langs->transnoentities("Module103258Name"));
 		$tooltip .= $langs->trans("GenericMaskCodes5");
-		
+
 		// Parametrage du prefix
 		$texte .= '<tr><td>' . $langs->trans("Mask") . ':</td>';
-		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . $conf->global->REF_LETTER_UNIVERSAL_MASK . '">', $tooltip, 1, 1) . '</td>';
-		
+		$texte .= '<td align="right">' . $form->textwithpicto('<input type="text" class="flat" size="24" name="maskrefletter" value="' . getDolGlobalString('REF_LETTER_UNIVERSAL_MASK') . '">', $tooltip, 1, 1) . '</td>';
+
 		$texte .= '<td align="left" rowspan="2">&nbsp; <input type="submit" class="button" value="' . $langs->trans("Modify") . '" name="Button"></td>';
-		
+
 		$texte .= '</tr>';
-		
+
 		$texte .= '</table>';
 		$texte .= '</form>';
-		
+
 		return $texte;
 	}
 
@@ -83,12 +83,12 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 	function getExample()
 	{
 		global $conf, $langs, $mysoc, $user;
-		
+
 		$old_code_client = $mysoc->code_client;
 		// $mysoc->code_client='CCCCCCCCCC';
 		$numExample = $this->getNextValue($user->id, $mysoc, '');
 		// $mysoc->code_client=$old_code_client;
-		
+
 		if (! $numExample) {
 			$numExample = $langs->trans('NotConfigured');
 		}
@@ -102,25 +102,25 @@ class mod_referenceletters_universal extends ModeleNumRefrReferenceLetters
 	 *        	user creating
 	 * @param string $element_type
 	 *        	element_type
-	 * @param Lead $lead        	
+	 * @param Lead $lead
 	 * @return string Valeur
 	 */
 	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters='')
 	{
 		global $db, $conf;
-		
+
 		require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
-		
+
 		// On defini critere recherche compteur
-		$mask = $conf->global->REF_LETTER_UNIVERSAL_MASK;
-		
+		$mask = getDolGlobalString('REF_LETTER_UNIVERSAL_MASK');
+
 		if (! $mask) {
 			$this->error = 'NotConfigured';
 			return 0;
 		}
-		
+
 		$numFinal = get_next_value($db, $mask, 'referenceletters_elements', 'ref_int', '', $objsoc->code_client, dol_now());
-		
+
 		return $numFinal;
 	}
 }

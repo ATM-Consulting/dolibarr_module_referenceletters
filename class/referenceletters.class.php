@@ -431,7 +431,7 @@ class ReferenceLetters extends CommonObject
 
 		if (! $error) {
 
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
+			if (!getDolGlobalString('MAIN_EXTRAFIELDS_DISABLED')) {
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -1090,7 +1090,7 @@ class ReferenceLetters extends CommonObject
 
 		if (! $error) {
 
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			if (!getDolGlobalString('MAIN_EXTRAFIELDS_DISABLED')) // For avoid conflicts if trigger used
 {
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
@@ -1322,8 +1322,10 @@ class ReferenceLetters extends CommonObject
 				$this->id = $obj->rowid;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
-				$this->user_modification = $obj->fk_user_mod;
-				$this->user_creation = $obj->fk_user_author;
+				if(property_exists($this, 'user_modification')) $this->user_modification = $obj->fk_user_mod;
+				if(property_exists($this, 'user_modification_id')) $this->user_modification_id = $obj->fk_user_mod;
+				if(property_exists($this, 'user_creation_id')) $this->user_creation_id = $obj->fk_user_author;
+				if(property_exists($this, 'user_creation')) $this->user_creation = $obj->fk_user_author; // deprecated v19
 			}
 			$this->db->free($resql);
 			return 1;

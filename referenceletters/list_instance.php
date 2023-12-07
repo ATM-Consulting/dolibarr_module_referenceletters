@@ -37,7 +37,7 @@ dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/societe/class/societe.class.php');
 
 // Security check
-if (! $user->rights->referenceletters->read)
+if (! $user->hasRight('referenceletters', 'read'))
 	accessforbidden();
 
 $langs->load("referenceletters@referenceletters");
@@ -128,7 +128,7 @@ $newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Count total nb of records
 $nbtotalofrecords = 0;
 
-if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+if (!getDolGlobalString('MAIN_DISABLE_FULL_SCANLIST')) {
 	$nbtotalofrecords = $object->fetchAll($sortorder, $sortfield, 0, 0, $filter);
 }
 if(!empty($limit) && (float)$page > $nbtotalofrecords/$limit){

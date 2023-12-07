@@ -146,7 +146,7 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 
 	dol_include_once('/referenceletters/class/TCPDFReferenceletters.class.php');
 
-	if ((! file_exists(TCPDF_PATH . 'tcpdf.php') && ! class_exists('TCPDFRefletters')) && ! empty($conf->global->MAIN_USE_FPDF)) {
+	if ((! file_exists(TCPDF_PATH . 'tcpdf.php') && ! class_exists('TCPDFRefletters')) && getDolGlobalString('MAIN_USE_FPDF')) {
 		print 'TCPDF Must be use for this module forget TCPDI or FPDF or other PDF class, please contact your admnistrator';
 		exit();
 	}

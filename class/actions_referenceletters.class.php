@@ -73,7 +73,7 @@ class ActionsReferenceLetters
 		dol_syslog("Hook '" . get_class($this) . "' for action '" . __METHOD__ . "' launched by " . __FILE__);
 		if (in_array('referencelettersinstacecard', explode(':', $parameters['context']))) {
             $instance_letter = $parameters['instance_letter'];
-			if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
+			if (getDolGlobalString('REF_LETTER_CREATEEVENT')) {
 				dol_syslog("Hook '" . get_class($this) . " id=" . $instance_letter->id);
 				// var_dump($instance_letter);
 				$langs->load('referenceletters@referenceletters');
@@ -82,7 +82,7 @@ class ActionsReferenceLetters
 				dol_include_once('/comm/action/class/actioncomm.class.php');
 				$actioncomm = new ActionComm($this->db);
 				$actioncomm->type_code = 'AC_LTR_DOC';
-				if ($conf->global->REF_LETTER_TYPEEVENTNAME == 'normal') {
+				if (getDolGlobalString('REF_LETTER_TYPEEVENTNAME') == 'normal') {
 					$actioncomm->label = $langs->trans('RefLtrNewLetters') . ' ' . $instance_letter->ref_int;
 				} else {
 					// find refletter inforamtion
@@ -134,7 +134,7 @@ class ActionsReferenceLetters
 					return - 1;
 				} else {
 
-					if (! empty($conf->global->REF_LETTER_EVTCOPYFILE)) {
+					if (getDolGlobalString('REF_LETTER_EVTCOPYFILE')) {
 						dol_include_once('/core/lib/files.lib.php');
 
 						$objectref = dol_sanitizeFileName($instance_letter->ref_int);

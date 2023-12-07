@@ -142,7 +142,7 @@ if ($action == "add") {
 			header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
 		}
 	}
-} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
+} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->hasRight('referenceletters', 'delete')) {
 	$result = $object->fetch($id);
 	if ($result < 0) {
 		$action = 'delete';
@@ -208,7 +208,7 @@ $formadmin = new FormAdmin($db);
 
 $now = dol_now();
 // Add new proposal
-if (($action == 'create' || $action=='edit' || $action=='delete') && $user->rights->referenceletters->write) {
+if (($action == 'create' || $action=='edit' || $action=='delete') && $user->hasRight('referenceletters', 'write')) {
 
 	// Confirm form
 	$formconfirm = '';
@@ -239,7 +239,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 	print '<table class="border" width="100%">';
 
 	print '<tr>';
-	if (! empty($conf->global->MAIN_MULTILANGS))
+	if (getDolGlobalString('MAIN_MULTILANGS'))
 	{
 		print '<td class="fieldrequired"  width="20%">';
 		print $langs->trans('RefLtrLangue');
@@ -298,9 +298,11 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		print '<td>';
 		require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 		$nbrows = ROWS_2;
-		if (!empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-			$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-		$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+		if (getDolGlobalString('MAIN_INPUT_DESC_HEIGHT')){
+			$nbrows = getDolGlobalInt('MAIN_INPUT_DESC_HEIGHT');
+		}
+
+		$enable = getDolGlobalInt('FCKEDITOR_ENABLE_SOCIETE');
 		$doleditor = new DolEditor('content_text', $object->content_text, '', 700, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 		$doleditor->Create();
 		print '</td>';

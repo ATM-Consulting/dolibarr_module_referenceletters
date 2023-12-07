@@ -92,7 +92,7 @@ class RfltrTools {
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
-			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
+			if (empty($langs_chapter) && getDolGlobalString('MAIN_MULTILANGS')) $langs_chapter = $object->thirdparty->default_lang;
 			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
 		}
 

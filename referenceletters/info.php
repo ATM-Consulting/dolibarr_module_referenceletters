@@ -32,7 +32,7 @@ require_once ('../lib/referenceletters.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 
 // Security check
-if (! $user->rights->referenceletters->read)
+if (! $user->hasRight('referenceletters', 'read'))
 	accessforbidden();
 
 $id = GETPOST('id', 'int');

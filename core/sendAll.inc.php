@@ -105,16 +105,16 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 					$fromtype = GETPOST('fromtype', 'alpha');
 
 					if ($fromtype === 'robot') {
-						$from = $conf->global->MAIN_MAIL_EMAIL_FROM . ' <' . $conf->global->MAIN_MAIL_EMAIL_FROM . '>';
+						$from = getDolGlobalString('MAIN_MAIL_EMAIL_FROM') . ' <' . getDolGlobalString('MAIN_MAIL_EMAIL_FROM') . '>';
 					} elseif ($fromtype === 'user') {
 						$from = $user->getFullName($langs) . ' <' . $user->email . '>';
 					} elseif ($fromtype === 'company') {
-						$from = $conf->global->MAIN_INFO_SOCIETE_NOM . ' <' . $conf->global->MAIN_INFO_SOCIETE_MAIL . '>';
+						$from = getDolGlobalString('MAIN_INFO_SOCIETE_NOM') . ' <' . getDolGlobalString('MAIN_INFO_SOCIETE_MAIL') . '>';
 					} elseif (preg_match('/user_aliases_(\d+)/', $fromtype, $reg)) {
 						$tmp = explode(',', $user->email_aliases);
 						$from = trim($tmp[($reg[1] - 1)]);
 					} elseif (preg_match('/global_aliases_(\d+)/', $fromtype, $reg)) {
-						$tmp = explode(',', $conf->global->MAIN_INFO_SOCIETE_MAIL_ALIASES);
+						$tmp = explode(',', getDolGlobalString('MAIN_INFO_SOCIETE_MAIL_ALIASES');
 						$from = trim($tmp[($reg[1] - 1)]);
 					} elseif (preg_match('/senderprofile_(\d+)_(\d+)/', $fromtype, $reg)) {
 						$sql = 'SELECT rowid, label, email FROM ' . MAIN_DB_PREFIX . 'c_email_senderprofile WHERE rowid = ' . ( int ) $reg[1];
@@ -141,7 +141,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 					// Autocomplete the $sendtobcc
 					// $autocopy can be MAIN_MAIL_AUTOCOPY_PROPOSAL_TO, MAIN_MAIL_AUTOCOPY_ORDER_TO, MAIN_MAIL_AUTOCOPY_INVOICE_TO, MAIN_MAIL_AUTOCOPY_SUPPLIER_PROPOSAL_TO...
 					if (! empty($autocopy)) {
-						$sendtobcc .= (empty($conf->global->$autocopy) ? '' : (($sendtobcc ? ", " : "") . $conf->global->$autocopy));
+						$sendtobcc .= getDolGlobalString( $autocopy, (($sendtobcc ? ", " : "") . getDolGlobalString($autocopy)));
 					}
 
 					$deliveryreceipt = $_POST['deliveryreceipt'];

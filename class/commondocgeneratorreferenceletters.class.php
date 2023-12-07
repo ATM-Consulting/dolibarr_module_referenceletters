@@ -334,7 +334,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$TTva = array();
 
 		$sign = 1;
-		if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+		if (isset($object->type) && $object->type == 2 && getDolGlobalString('INVOICE_POSITIVE_CREDIT_NOTE'))
 			$sign = - 1;
 
 		foreach ( $object->lines as &$line ) {
@@ -437,7 +437,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resql = $db->query($sql);
 		if ($resql) {
 			$sign = 1;
-			if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+			if ($object->type == 2 && getDolGlobalString('INVOICE_POSITIVE_CREDIT_NOTE'))
 				$sign = - 1;
 			while ( $row = $db->fetch_object($resql) ) {
 				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
@@ -856,26 +856,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_ADMIN)){
+        if (getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')){
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_ADMIN));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')));
 			if ($res){
 				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
 			}
         }
 
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_PEDAGO)) {
+        if (getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')) {
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_PEDAGO));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')));
 			if ($res) {
 				$resarray['Mentor_pedagogique'] = ucfirst($langs->trans('MentorPedago') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
 			}
 		}
 
 
-		if (!empty($conf->global->AGF_DEFAULT_MENTOR_HANDICAP)) {
+		if (getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')) {
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_HANDICAP));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')));
 			if ($res) {
 				$resarray['Mentor_handicap'] = ucfirst($langs->trans('MentorHandicap') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
 			}
@@ -964,14 +964,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (!empty($object->trainer_session))
 		{
 			$url = $downloadIcsLink . '&amp;agftrainerid=' . $object->trainer_session->id;
-			$url .= '&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftrainerid' . $object->trainer_session->id);
+			$url .= '&exportkey=' . md5(getDolGlobalString('MAIN_AGENDA_XCAL_EXPORTKEY') . 'agftrainerid' . $object->trainer_session->id);
 			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
 			$resarray['formation_agenda_ics_url'] = $url;
 		}
 		elseif (!empty($object->stagiaire))
 		{
 			$url = $downloadIcsLink . '&amp;agftraineeid=' . $object->stagiaire->id;
-			$url .='&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftraineeid' . $object->stagiaire->id);
+			$url .='&exportkey=' . md5(getDolGlobalString('MAIN_AGENDA_XCAL_EXPORTKEY') . 'agftraineeid' . $object->stagiaire->id);
 			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
 			$resarray['formation_agenda_ics_url'] = $url;
 		}

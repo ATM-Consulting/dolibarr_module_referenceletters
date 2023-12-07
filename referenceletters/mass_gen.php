@@ -91,7 +91,7 @@ function _show_ref_letter($idletter) {
 		print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
 		print '</td>';
 		print '<td>';
-		print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
+		print '<input type="checkbox" class="flat" name="outputref" '.(getDolGlobalString('REF_LETTER_OUTPUTREFLET')?'checked="checked"':'').' id="outputref" value="1">';
 		print '</td>';
 		print '</tr>';
 
@@ -132,9 +132,9 @@ function _show_ref_letter($idletter) {
 
 				require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 				$nbrows = ROWS_2;
-				if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-					$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+				if (getDolGlobalString('MAIN_INPUT_DESC_HEIGHT'))
+					$nbrows = getDolGlobalInt('MAIN_INPUT_DESC_HEIGHT');
+					$enable = getDolGlobalInt('FCKEDITOR_ENABLE_SOCIETE');
 					$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 					$doleditor->Create();
 					print '</td>';
@@ -564,7 +564,7 @@ function _list_thirdparty()
 	$checkprospectlevel = (in_array($contextpage, array('prospectlist')) ? 1 : 0);
 	$checkstcomm = (in_array($contextpage, array('prospectlist')) ? 1 : 0);
 	$arrayfields = array(
-		's.rowid' => array('label' => "TechnicalID", 'checked' => (!empty($conf->global->MAIN_SHOW_TECHNICAL_ID) ? 1 : 0), 'enabled' => (!empty($conf->global->MAIN_SHOW_TECHNICAL_ID) ? 1 : 0)),
+		's.rowid' => array('label' => "TechnicalID", 'checked' => (getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0), 'enabled' => (getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0)),
 		's.nom' => array('label' => "ThirdPartyName", 'checked' => 1),
 		's.name_alias' => array('label' => "AliasNameShort", 'checked' => 1),
 		's.barcode' => array('label' => "Gencod", 'checked' => 1, 'enabled' => (!empty($conf->barcode->enabled))),
@@ -844,17 +844,17 @@ function _list_thirdparty()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs ON s.rowid = cs.fk_soc"; // We'll need this table joined to the select in order to filter by categ
 	$sql .= " ,".MAIN_DB_PREFIX."c_stcomm as st";
 // We'll need this table joined to the select in order to filter by sale
-	if (($search_sale && $search_sale > 0) || (!$user->rights->societe->client->voir && !$socid))
+	if (($search_sale && $search_sale > 0) || (!$user->hasRight('societe', 'client', 'voir') && !$socid))
 		$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 	$sql .= " WHERE s.fk_stcomm = st.id";
 	$sql .= " AND s.entity IN (".getEntity('societe').")";
-	if (!$user->rights->societe->client->voir && !$socid)
+	if (!$user->hasRight('societe', 'client', 'voir') && !$socid)
 		$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".$user->id;
 	if ($socid)
 		$sql .= " AND s.rowid = ".$socid;
 	if ($search_sale && $search_sale > 0)
 		$sql .= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
-	if (!$user->rights->fournisseur->lire)
+	if (!$user->hasRight('fournisseur', 'lire'))
 		$sql .= " AND (s.fournisseur <> 1 OR s.client <> 0)";	// client=0, fournisseur=0 must be visible
 	if ($search_sale && $search_sale > 0)
 		$sql .= " AND sc.fk_user = ".$db->escape($search_sale);
@@ -949,7 +949,7 @@ function _list_thirdparty()
 
 // Count total nb of records
 	$nbtotalofrecords = '';
-	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
+	if (!getDolGlobalString('MAIN_DISABLE_FULL_SCANLIST'))
 	{
 		$result = $db->query($sql);
 		$nbtotalofrecords = $db->num_rows($result);
@@ -968,7 +968,7 @@ function _list_thirdparty()
 
 	$arrayofselected = is_array($toselect) ? $toselect : array();
 
-	if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && ($search_all != '' || $search_cti != '') && $action != 'list')
+	if ($num == 1 && getDolGlobalString('MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE') && ($search_all != '' || $search_cti != '') && $action != 'list')
 	{
 		$obj = $db->fetch_object($resql);
 		$id = $obj->rowid;
@@ -1068,7 +1068,7 @@ function _list_thirdparty()
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-	if ($user->rights->societe->supprimer)
+	if ($user->hasRight('societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
 		$arrayofmassactions = array();
@@ -1138,7 +1138,7 @@ function _list_thirdparty()
 	}
 
 // If the user can view prospects other than his'
-	if ($user->rights->societe->client->voir || $socid)
+	if ($user->hasRight('societe', 'client', 'voir') || $socid)
 	{
 		$moreforfilter .= '<div class="divsearchfield">';
 		$moreforfilter .= $langs->trans('SalesRepresentatives').': ';
@@ -1261,7 +1261,7 @@ function _list_thirdparty()
 	if (!empty($arrayfields['typent.code']['checked']))
 	{
 		print '<td class="liste_titre maxwidthonsmartphone" align="center">';
-		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 1, 0, 0, '', 0, 0, 0, (empty($conf->global->SOCIETE_SORT_ON_TYPEENT) ? 'ASC' : $conf->global->SOCIETE_SORT_ON_TYPEENT));
+		print $form->selectarray("search_type_thirdparty", $formcompany->typent_array(0), $search_type_thirdparty, 1, 0, 0, '', 0, 0, 0, (!getDolGlobalString('SOCIETE_SORT_ON_TYPEENT') ? 'ASC' : getDolGlobalString('SOCIETE_SORT_ON_TYPEENT')));
 		print '</td>';
 	}
 	if (!empty($arrayfields['s.email']['checked']))
@@ -1343,9 +1343,9 @@ function _list_thirdparty()
 			print '<input type="hidden" name="type" value="'.$type.'">';
 		print '<select class="flat" name="search_type">';
 		print '<option value="-1"'.($search_type == '' ? ' selected' : '').'>&nbsp;</option>';
-		if (empty($conf->global->SOCIETE_DISABLE_CUSTOMERS))
+		if (!getDolGlobalString('SOCIETE_DISABLE_CUSTOMERS'))
 			print '<option value="1,3"'.($search_type == '1,3' ? ' selected' : '').'>'.$langs->trans('Customer').'</option>';
-		if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS))
+		if (!getDolGlobalString('SOCIETE_DISABLE_PROSPECTS'))
 			print '<option value="2,3"'.($search_type == '2,3' ? ' selected' : '').'>'.$langs->trans('Prospect').'</option>';
 		//if (empty($conf->global->SOCIETE_DISABLE_PROSPECTS)) print '<option value="3"'.($search_type=='3'?' selected':'').'>'.$langs->trans('ProspectCustomer').'</option>';
 		print '<option value="4"'.($search_type == '4' ? ' selected' : '').'>'.$langs->trans('Supplier').'</option>';
@@ -1707,13 +1707,13 @@ function _list_thirdparty()
 		{
 			print '<td align="center">';
 			$s = '';
-			if (($obj->client == 1 || $obj->client == 3) && empty($conf->global->SOCIETE_DISABLE_CUSTOMERS))
+			if (($obj->client == 1 || $obj->client == 3) && !getDolGlobalString('SOCIETE_DISABLE_CUSTOMERS'))
 			{
 				$companystatic->name = $langs->trans("Customer");
 				$companystatic->name_alias = '';
 				$s .= $companystatic->getNomUrl(0, 'customer', 0, 1);
 			}
-			if (($obj->client == 2 || $obj->client == 3) && empty($conf->global->SOCIETE_DISABLE_PROSPECTS))
+			if (($obj->client == 2 || $obj->client == 3) && !getDolGlobalString('SOCIETE_DISABLE_PROSPECTS'))
 			{
 				if ($s)
 					$s .= " / ";
@@ -1961,7 +1961,7 @@ if($refltrelement_type) {
 	});
 
 	</script>
-	<?php
+<?php
 }
 
 function _list_contact()
@@ -2046,7 +2046,7 @@ function _list_contact()
 	$offset = $limit * $page;
 
 	$contextpage = 'contactlist';
-	$titre = (!empty($conf->global->SOCIETE_ADDRESSES_MANAGEMENT) ? $langs->trans("ListOfContacts") : $langs->trans("ListOfContactsAddresses"));
+	$titre = (getDolGlobalString('SOCIETE_ADDRESSES_MANAGEMENT') ? $langs->trans("ListOfContacts") : $langs->trans("ListOfContactsAddresses"));
 	if ($type == "p")
 	{
 		$contextpage = 'contactprospectlist';
@@ -2107,7 +2107,7 @@ function _list_contact()
 
 // Definition of fields for list
 	$arrayfields = array(
-		'p.rowid' => array('label' => "TechnicalID", 'checked' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0), 'enabled' => ($conf->global->MAIN_SHOW_TECHNICAL_ID ? 1 : 0)),
+		'p.rowid' => array('label' => "TechnicalID", 'checked' => ( getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0), 'enabled' => ( getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0)),
 		'p.lastname' => array('label' => "Lastname", 'checked' => 1),
 		'p.firstname' => array('label' => "Firstname", 'checked' => 1),
 		'p.poste' => array('label' => "PostOrFunction", 'checked' => 1),
@@ -2119,7 +2119,7 @@ function _list_contact()
 		'p.fax' => array('label' => "Fax", 'checked' => 1),
 		'p.email' => array('label' => "EMail", 'checked' => 1),
 		'p.skype' => array('label' => "Skype", 'checked' => 1, 'enabled' => (!empty($conf->skype->enabled))),
-		'p.thirdparty' => array('label' => "ThirdParty", 'checked' => 1, 'enabled' => empty($conf->global->SOCIETE_DISABLE_CONTACTS)),
+		'p.thirdparty' => array('label' => "ThirdParty", 'checked' => 1, 'enabled' => !getDolGlobalString('SOCIETE_DISABLE_CONTACTS')),
 		'p.priv' => array('label' => "ContactVisibility", 'checked' => 1, 'position' => 200),
 		'p.datec' => array('label' => "DateCreationShort", 'checked' => 0, 'position' => 500),
 		'p.tms' => array('label' => "DateModificationShort", 'checked' => 0, 'position' => 500),
@@ -2219,7 +2219,7 @@ function _list_contact()
 	$formother = new FormOther($db);
 	$contactstatic = new Contact($db);
 
-	$title = (!empty($conf->global->SOCIETE_ADDRESSES_MANAGEMENT) ? $langs->trans("Contacts") : $langs->trans("ContactsAddresses"));
+	$title = (getDolGlobalString('SOCIETE_ADDRESSES_MANAGEMENT') ? $langs->trans("Contacts") : $langs->trans("ContactsAddresses"));
 
 	$sql = "SELECT s.rowid as socid, s.nom as name,";
 	$sql .= " p.rowid, p.lastname as lastname, p.statut, p.firstname, p.zip, p.town, p.poste, p.email, p.skype,";
@@ -2243,10 +2243,10 @@ function _list_contact()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_societe as cs ON s.rowid = cs.fk_soc";	   // We need this table joined to the select in order to filter by categ
 	if (!empty($search_categ_supplier))
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs2 ON s.rowid = cs2.fk_soc";	   // We need this table joined to the select in order to filter by categ
-	if (!$user->rights->societe->client->voir && !$socid)
+	if (!$user->hasRight('societe', 'client', 'voir') && !$socid)
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON s.rowid = sc.fk_soc";
 	$sql .= ' WHERE p.entity IN ('.getEntity('societe').')';
-	if (!$user->rights->societe->client->voir && !$socid) //restriction
+	if (!$user->hasRight('societe', 'client', 'voir') && !$socid) //restriction
 	{
 		$sql .= " AND (sc.fk_user = ".$user->id." OR p.fk_soc IS NULL)";
 	}
@@ -2357,7 +2357,7 @@ function _list_contact()
 
 // Count total nb of records
 	$nbtotalofrecords = '';
-	if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST))
+	if (!getDolGlobalString('MAIN_DISABLE_FULL_SCANLIST'))
 	{
 		$result = $db->query($sql);
 		$nbtotalofrecords = $db->num_rows($result);
@@ -2376,7 +2376,7 @@ function _list_contact()
 
 	$arrayofselected = is_array($toselect) ? $toselect : array();
 
-	if ($num == 1 && !empty($conf->global->MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE) && ($sall != '' || $seearch_cti != ''))
+	if ($num == 1 && getDolGlobalString('MAIN_SEARCH_DIRECT_OPEN_IF_ONLY_ONE') && ($sall != '' || $seearch_cti != ''))
 	{
 		$obj = $db->fetch_object($resql);
 		$id = $obj->rowid;
@@ -2443,7 +2443,7 @@ function _list_contact()
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-	if ($user->rights->societe->supprimer)
+	if ($user->hasRight('societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
 		$arrayofmassactions = array();
@@ -3033,5 +3033,5 @@ function _list_contact()
 		});
 
 		</script>
-	<?php
+<?php
 }

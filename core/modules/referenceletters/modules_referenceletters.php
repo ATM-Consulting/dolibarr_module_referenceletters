@@ -519,7 +519,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                                             $style_start.= '<strong>';
                                             $style_end = '</strong>'.$style_end;
                                         }
-                                        if (strpos( getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE', 'U') !== false)
+                                        if (strpos( getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE'), 'U') !== false)
                                         {
                                             $style_start.= '<u>';
                                             $style_end = '</u>'.$style_end;

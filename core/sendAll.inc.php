@@ -114,7 +114,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 						$tmp = explode(',', $user->email_aliases);
 						$from = trim($tmp[($reg[1] - 1)]);
 					} elseif (preg_match('/global_aliases_(\d+)/', $fromtype, $reg)) {
-						$tmp = explode(',', getDolGlobalString('MAIN_INFO_SOCIETE_MAIL_ALIASES');
+						$tmp = explode(',', getDolGlobalString('MAIN_INFO_SOCIETE_MAIL_ALIASES'));
 						$from = trim($tmp[($reg[1] - 1)]);
 					} elseif (preg_match('/senderprofile_(\d+)_(\d+)/', $fromtype, $reg)) {
 						$sql = 'SELECT rowid, label, email FROM ' . MAIN_DB_PREFIX . 'c_email_senderprofile WHERE rowid = ' . ( int ) $reg[1];

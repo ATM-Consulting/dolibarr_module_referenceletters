@@ -52,7 +52,7 @@ class box_referenceletter_elements extends ModeleBoxes {
 
 		$langs->load("boxes");
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrExistingLetters",10);
-		$this->hidden=! ($user->rights->referenceletters->read);
+		$this->hidden=! ($user->hasRight('referenceletters','read'));
 	}
 
 	/**

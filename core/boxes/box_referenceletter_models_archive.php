@@ -84,7 +84,7 @@ class box_referenceletter_models_archive extends ModeleBoxes {
 
 		$langs->load("boxes");
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrLettersUnactiveListbox",15);
-		$this->hidden=! ($user->rights->referenceletters->read);
+		$this->hidden=! ($user->hasRight('referenceletters','read'));
 	}
 
 	/**

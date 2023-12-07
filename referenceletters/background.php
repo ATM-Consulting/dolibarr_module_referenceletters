@@ -103,7 +103,7 @@ $reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action
 /*
  * Actions
  */
-$permissiontoadd = $user->rights->referenceletters->write;
+$permissiontoadd = $user->hasRight('referenceletters','write');
 include_once DOL_DOCUMENT_ROOT . '/core/actions_linkedfiles.inc.php';
 
 /*
@@ -171,7 +171,7 @@ if ($object->id) {
 
 	if (!getDolGlobalString('MAIN_DISABLE_FPDI')) {
 		$modulepart = 'referenceletters';
-		$permission = ($user->rights->referenceletters->write);
+		$permission = ($user->hasRight('referenceletters','write'));
 		$param = '&id=' . $object->id;
 		include_once DOL_DOCUMENT_ROOT . '/core/tpl/document_actions_post_headers.tpl.php';
 	}else {

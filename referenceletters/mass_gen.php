@@ -675,8 +675,8 @@ function _list_thirdparty()
 		// Mass actions
 		$objectclass = 'Societe';
 		$objectlabel = 'ThirdParty';
-		$permtoread = $user->rights->societe->lire;
-		$permtodelete = $user->rights->societe->supprimer;
+		$permtoread = $user->hasRight('societe', 'lire');
+		$permtodelete = $user->hasRight('societe','supprimer');
 		$uploaddir = $conf->societe->dir_output;
 		include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 
@@ -2201,8 +2201,8 @@ function _list_contact()
 		// Mass actions
 		$objectclass = 'Contact';
 		$objectlabel = 'Contact';
-		$permtoread = $user->rights->societe->lire;
-		$permtodelete = $user->rights->societe->supprimer;
+		$permtoread = $user->hasRight('societe','lire');
+		$permtodelete = $user->hasRight('societe','supprimer');
 		$uploaddir = $conf->societe->dir_output;
 		include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 	}

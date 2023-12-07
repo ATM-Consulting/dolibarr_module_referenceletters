@@ -27,7 +27,8 @@
 /**
  * Class ActionsReferenceLetters
  */
-class ActionsReferenceLetters
+require_once __DIR__.'/../backport/v19/core/class/commonhookactions.class.php';
+class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookActions
 {
 	/**
 	 *

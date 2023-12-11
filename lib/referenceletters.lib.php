@@ -329,8 +329,6 @@ function rl_userHasRight(User $user, string $module, string $permlevel1, string 
 			$permlevel1 = 'recruitmentjobposition';
 		}
 
-		//var_dump($user->rights);
-		//var_dump($rightsPath.' '.$permlevel1.' '.$permlevel2);
 		if(empty($rightsPath) || empty($user->rights) || empty($user->rights->$rightsPath) || empty($permlevel1)) {
 			return 0;
 		}

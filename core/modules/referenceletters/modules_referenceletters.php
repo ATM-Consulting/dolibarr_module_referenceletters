@@ -239,9 +239,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 						$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
 
-						$hidedetails = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS') ? 1 : 0);
-						$hidedesc =(getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_DESC') ? 1 : 0);
-						$hideref = (getDolGlobalString('MAIN_GENERATE_DOCUMENTS_HIDE_REF') ? 1 : 0);
+						$hidedetails = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS');
+						$hidedesc =getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_DESC');
+						$hideref = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_REF');
 						$backup_forceDisableConcatPdf = !empty($object->forceDisableConcatPdf);
 						$object->forceDisableConcatPdf = 1;
 						$result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);

@@ -84,7 +84,8 @@ class ReferenceLetters extends CommonObject
 		global $conf;
 
 		$this->db = $db;
-		$this->element_type_list['contract'] = array (
+		if (isset($conf->contract) && !empty($conf->contract->enabled)) {
+			$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
 				'securityfeature' => '',
@@ -99,9 +100,11 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
 				'listmodelclass' => 'ModelePDFContract',
-                'document_dir' => $conf->contrat->dir_output
+                'document_dir' => $conf->contract->dir_output
 		);
-		$this->element_type_list['thirdparty'] = array (
+		}
+		if (isset($conf->societe) && !empty($conf->societe->enabled)) {
+			$this->element_type_list['thirdparty'] = array(
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
 				'securityfeature' => '&societe',
@@ -114,10 +117,11 @@ class ReferenceLetters extends CommonObject
 				'card' => 'societe/soc.php',
 				'substitution_method' => 'get_substitutionarray_thirdparty',
 				'picto' => 'company',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/societe/modules_societe.php',
 				'listmodelclass' => 'ModeleThirdPartyDoc',
-                'document_dir' => $conf->societe->dir_output
-		);
+				'document_dir' => $conf->societe->dir_output
+			);
+		}
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
@@ -131,7 +135,8 @@ class ReferenceLetters extends CommonObject
 				'card' => 'contact/card.php',
 				'substitution_method' => 'get_substitutionarray_contact'
 		);
-		$this->element_type_list['propal'] = array (
+		if (isset($conf->propal) && !empty($conf->propal->enabled)){
+			$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
 				'securityfeature' => '',
@@ -149,7 +154,9 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->propal->dir_output
 
 		);
-		$this->element_type_list['invoice'] = array (
+		}
+		if (isset($conf->invoice) && !empty($conf->invoice->enabled)){
+			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
 				'securityfeature' => '',
@@ -164,26 +171,30 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
 				'listmodelclass' => 'ModelePDFFactures',
-                'document_dir' => $conf->facture->dir_output
+                'document_dir' => $conf->invoice->dir_output
 		);
-		$this->element_type_list['order'] = array (
-				'class' => 'commande.class.php',
-				'securityclass' => 'commande',
-				'securityfeature' => '',
-				'objectclass' => 'Commande',
-				'classpath' => DOL_DOCUMENT_ROOT . '/commande/class/',
-				'trans' => 'orders',
-				'title' => 'CustomerOrder',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
-				'menuloader_function' => 'commande_prepare_head',
-				'card' => 'commande/card.php',
-				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
-				'listmodelclass' => 'ModelePDFCommandes',
-                'document_dir' => $conf->commande->dir_output
-		);
-		$this->element_type_list['order_supplier'] = array (
+		}
+		if (isset($conf->order) && !empty($conf->order->enabled)){
+			$this->element_type_list['order'] = array (
+					'class' => 'commande.class.php',
+					'securityclass' => 'commande',
+					'securityfeature' => '',
+					'objectclass' => 'Commande',
+					'classpath' => DOL_DOCUMENT_ROOT . '/commande/class/',
+					'trans' => 'orders',
+					'title' => 'CustomerOrder',
+					'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
+					'menuloader_function' => 'commande_prepare_head',
+					'card' => 'commande/card.php',
+					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method_line' => 'get_substitutionarray_lines',
+					'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
+					'listmodelclass' => 'ModelePDFCommandes',
+					'document_dir' => $conf->commande->dir_output
+			);
+		}
+		if (isset($conf->order_supplier) && !empty($conf->order_supplier->enabled)) {
+			$this->element_type_list['order_supplier'] = array(
 				'class' => 'fournisseur.commande.class.php',
 				'securityclass' => 'fournisseur',
 				'securityfeature' => 'commande_fournisseur',
@@ -196,12 +207,14 @@ class ReferenceLetters extends CommonObject
 				'card' => '/fourn/commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
+				'dir_output' => DOL_DATA_ROOT . '/fournisseur/commande/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/supplier_order/modules_commandefournisseur.php',
 				'listmodelclass' => 'ModelePDFSuppliersOrders',
-                'document_dir' => $conf->fournisseur->commande->dir_output
-		);
-		$this->element_type_list['supplier_proposal'] = array (
+				'document_dir' => $conf->fournisseur->commande->dir_output
+			);
+		}
+		if ( isset($conf->supplier_proposal) && !empty($conf->supplier_proposal->enabled) ) {
+			$this->element_type_list['supplier_proposal'] = array(
 				'class' => 'supplier_proposal.class.php',
 				'securityclass' => 'supplier_proposal',
 				'securityfeature' => '',
@@ -214,12 +227,14 @@ class ReferenceLetters extends CommonObject
 				'card' => '/supplier_proposal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
+				'dir_output' => DOL_DATA_ROOT . '/supplier_proposal/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/supplier_proposal/modules_supplier_proposal.php',
 				'listmodelclass' => 'ModelePDFSupplierProposal',
-                'document_dir' => $conf->supplier_proposal->dir_output
-		);
-		$this->element_type_list['expedition'] = array (
+				'document_dir' => $conf->supplier_proposal->dir_output
+			);
+		}
+		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
+			$this->element_type_list['expedition'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
 				'securityfeature' => '',
@@ -235,9 +250,11 @@ class ReferenceLetters extends CommonObject
 				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
 				'listmodelclass' => 'ModelePdfExpedition',
-                'document_dir' => $conf->expedition->dir_output
-		);
-		$this->element_type_list['shipping'] = array (
+				'document_dir' => $conf->expedition->dir_output
+			);
+		}
+		if (isset($conf->shipping) && !empty($conf->shipping->enabled)) {
+			$this->element_type_list['shipping'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
 				'securityfeature' => '',
@@ -251,25 +268,27 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
-		$this->element_type_list['fichinter'] = array (
-			'class' => 'fichinter.class.php',
-			'securityclass' => 'fichinter',
-			'securityfeature' => '',
-			'objectclass' => 'Fichinter',
-			'classpath' => DOL_DOCUMENT_ROOT . '/fichinter/class/',
-			'trans' => 'fichinter',
-			'title' => 'Intervention',
-			'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fichinter.lib.php',
-			'menuloader_function' => 'fichinter_prepare_head',
-			'card' => '/fichinter/card.php',
-			'substitution_method' => 'get_substitutionarray_object',
-			'substitution_method_line' => 'get_substitutionarray_lines',
-			'dir_output'=>DOL_DATA_ROOT.'/ficheinter/',
-			'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php',
-			'listmodelclass' => 'ModelePDFFicheinter',
-			'document_dir' => $conf->ficheinter->dir_output
-		);
-
+		}
+		if (isset($conf->fichinter) && !empty($conf->fichinter->enabled)) {
+			$this->element_type_list['fichinter'] = array(
+				'class' => 'fichinter.class.php',
+				'securityclass' => 'fichinter',
+				'securityfeature' => '',
+				'objectclass' => 'Fichinter',
+				'classpath' => DOL_DOCUMENT_ROOT . '/fichinter/class/',
+				'trans' => 'fichinter',
+				'title' => 'Intervention',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fichinter.lib.php',
+				'menuloader_function' => 'fichinter_prepare_head',
+				'card' => '/fichinter/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output' => DOL_DATA_ROOT . '/ficheinter/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/fichinter/modules_fichinter.php',
+				'listmodelclass' => 'ModelePDFFicheinter',
+				'document_dir' => $conf->ficheinter->dir_output
+			);
+		}
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 

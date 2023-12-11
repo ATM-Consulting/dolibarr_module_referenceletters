@@ -271,7 +271,7 @@ if ($action == 'buildoc') {
 
 		exit();
 	}
-} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->hasRight('referenceletters', 'delete')) {
+} elseif ($action == 'confirm_delete' && $confirm == 'yes' && rl_userHasRight($user,'referenceletters', 'delete')) {
 	$result = $object_element->fetch($refletterelemntid);
 	if ($result < 0) {
 		setEventMessage($object_element->error, 'errors');

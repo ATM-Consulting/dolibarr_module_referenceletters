@@ -827,33 +827,33 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		$resarray['formation_statut'] = $object->statuslib;
-		$resarray['formation_duree'] = $object->duree;
-		$resarray['formation_duree_session'] = $object->duree_session;
-		$resarray['formation_commercial'] = $object->commercialname;
-		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
-		$resarray['formation_commercial_phone'] = $object->commercialphone;
-		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone;
-		$resarray['formation_commercial_mail'] = $object->commercialemail;
-		$resarray['formation_societe'] = $object->thirdparty->nom;
-		$resarray['formation_commentaire'] = nl2br($object->notes);
-		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
-		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
-		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention;
-		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention;
-		$resarray['formation_prix'] = price($object->sell_price);
-		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
-		$resarray['session_nb_days'] = $object->session_nb_days;
-		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
-		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
-        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
-        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
-        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
-        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
-        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
-        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
-        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
-        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
+		$resarray['formation_statut'] = $object->statuslib ?? '';
+		$resarray['formation_duree'] = $object->duree?? '';
+		$resarray['formation_duree_session'] = $object->duree_session?? '';
+		$resarray['formation_commercial'] = $object->commercialname?? '';
+		$resarray['formation_commercial_invert'] = $object->commercialname_invert?? '';
+		$resarray['formation_commercial_phone'] = $object->commercialphone?? '';
+		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone?? '';
+		$resarray['formation_commercial_mail'] = $object->commercialemail?? '';
+		$resarray['formation_societe'] = $object->thirdparty->nom?? '';
+		$resarray['formation_commentaire'] = nl2br($object->notes ?? '') ;
+		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session] ?? '';
+		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire ?? '';
+		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention?? '';
+		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention?? '';
+		$resarray['formation_prix'] = price($object->sell_price ?? '' );
+		$resarray['formation_obj_peda'] = $object->formation_obj_peda?? '';
+		$resarray['session_nb_days'] = $object->session_nb_days?? '';
+		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline?? '';
+		$resarray['trainer_datetextline'] = $object->trainer_datetextline?? '';
+        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
+        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
+        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
+        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
+        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
+        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
+        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
+        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
         if (getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')){
@@ -911,23 +911,25 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
 			if(floatval(DOL_VERSION) >= 16) {
-				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
-					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type'];
-					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size'];
-					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique'];
-					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required'];
-					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label'];
-					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default'];
-					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed'];
-					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param'];
-					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms'];
-					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile'];
-					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list'];
-					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden'];
+				if (isset($extrafields)){
+					$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+					if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
+					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type']?? array();
+					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size']?? array() ;
+					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique']?? array();
+					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required']?? array();
+					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label']?? array();
+					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default']?? array();
+					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed']?? array();
+					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param']?? array();
+					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms']?? array();
+					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile']?? array();
+					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list']?? array();
+					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden']?? array();
+				}
 				}
 			}
-			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+			if (isset($e->attributes[$catalogue->table_element]['label']) && is_array($e->attributes[$catalogue->table_element]['label'])){
 				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
 					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
 				}
@@ -1012,20 +1014,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
 					if(floatval(DOL_VERSION) >= 16) {
-						$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-						if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
-							$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
-							$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
-							$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
-							$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
-							$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
-							$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
-							$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
-							$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
-							$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
-							$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
-							$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
-							$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
+						if (isset($extrafields)) {
+							$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+							if ($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+								$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? array();
+								$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size']?? array();
+								$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique']?? array();
+								$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required']?? array();
+								$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label']?? array();
+								$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default']?? array();
+								$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed']?? array();
+								$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param']?? array();
+								$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms']?? array();
+								$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile']?? array();
+								$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list']?? array();
+								$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden']?? array();
+							}
 						}
 					}
 					foreach ($extralabels as $key_opt => $label_opt)
@@ -1431,18 +1435,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
+				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
+				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();
+				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'] ?? array();
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'] ?? array();
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'] ?? array();
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'] ?? array();
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'] ?? array();
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'] ?? array();
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'] ?? array();
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'] ?? array();
 			}
 		}
 

@@ -401,6 +401,7 @@ function _list_thirdparty()
 	require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 	require_once DOL_DOCUMENT_ROOT.'/societe/class/client.class.php';
 
+
 	$langs->loadLangs(array("companies", "commercial", "customers", "suppliers", "bills", "compta", "categories"));
 
 	$action = GETPOST('action', 'alpha');
@@ -675,8 +676,8 @@ function _list_thirdparty()
 		// Mass actions
 		$objectclass = 'Societe';
 		$objectlabel = 'ThirdParty';
-		$permtoread = $user->hasRight('societe', 'lire');
-		$permtodelete = $user->hasRight('societe','supprimer');
+		$permtoread = rl_userHasRight($user,'societe', 'lire');
+		$permtodelete = rl_userHasRight($user,'societe','supprimer');
 		$uploaddir = $conf->societe->dir_output;
 		include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 
@@ -844,17 +845,17 @@ function _list_thirdparty()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs ON s.rowid = cs.fk_soc"; // We'll need this table joined to the select in order to filter by categ
 	$sql .= " ,".MAIN_DB_PREFIX."c_stcomm as st";
 // We'll need this table joined to the select in order to filter by sale
-	if (($search_sale && $search_sale > 0) || (!$user->hasRight('societe', 'client', 'voir') && !$socid))
+	if (($search_sale && $search_sale > 0) || (!rl_userHasRight($user,'societe', 'client', 'voir') && !$socid))
 		$sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 	$sql .= " WHERE s.fk_stcomm = st.id";
 	$sql .= " AND s.entity IN (".getEntity('societe').")";
-	if (!$user->hasRight('societe', 'client', 'voir') && !$socid)
+	if (!rl_userHasRight($user,'societe', 'client', 'voir') && !$socid)
 		$sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = ".$user->id;
 	if ($socid)
 		$sql .= " AND s.rowid = ".$socid;
 	if ($search_sale && $search_sale > 0)
 		$sql .= " AND s.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
-	if (!$user->hasRight('fournisseur', 'lire'))
+	if (!rl_userHasRight($user,'fournisseur', 'lire'))
 		$sql .= " AND (s.fournisseur <> 1 OR s.client <> 0)";	// client=0, fournisseur=0 must be visible
 	if ($search_sale && $search_sale > 0)
 		$sql .= " AND sc.fk_user = ".$db->escape($search_sale);
@@ -1068,7 +1069,7 @@ function _list_thirdparty()
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-	if ($user->hasRight('societe', 'supprimer'))
+	if (rl_userHasRight($user,'societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
 		$arrayofmassactions = array();
@@ -1138,7 +1139,7 @@ function _list_thirdparty()
 	}
 
 // If the user can view prospects other than his'
-	if ($user->hasRight('societe', 'client', 'voir') || $socid)
+	if (rl_userHasRight($user,'societe', 'client', 'voir') || $socid)
 	{
 		$moreforfilter .= '<div class="divsearchfield">';
 		$moreforfilter .= $langs->trans('SalesRepresentatives').': ';
@@ -2201,8 +2202,8 @@ function _list_contact()
 		// Mass actions
 		$objectclass = 'Contact';
 		$objectlabel = 'Contact';
-		$permtoread = $user->hasRight('societe','lire');
-		$permtodelete = $user->hasRight('societe','supprimer');
+		$permtoread = rl_userHasRight($user,'societe','lire');
+		$permtodelete = rl_userHasRight($user,'societe','supprimer');
 		$uploaddir = $conf->societe->dir_output;
 		include DOL_DOCUMENT_ROOT.'/core/actions_massactions.inc.php';
 	}
@@ -2243,10 +2244,10 @@ function _list_contact()
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_societe as cs ON s.rowid = cs.fk_soc";	   // We need this table joined to the select in order to filter by categ
 	if (!empty($search_categ_supplier))
 		$sql .= ' LEFT JOIN '.MAIN_DB_PREFIX."categorie_fournisseur as cs2 ON s.rowid = cs2.fk_soc";	   // We need this table joined to the select in order to filter by categ
-	if (!$user->hasRight('societe', 'client', 'voir') && !$socid)
+	if (!rl_userHasRight($user,'societe', 'client', 'voir') && !$socid)
 		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON s.rowid = sc.fk_soc";
 	$sql .= ' WHERE p.entity IN ('.getEntity('societe').')';
-	if (!$user->hasRight('societe', 'client', 'voir') && !$socid) //restriction
+	if (!rl_userHasRight($user,'societe', 'client', 'voir') && !$socid) //restriction
 	{
 		$sql .= " AND (sc.fk_user = ".$user->id." OR p.fk_soc IS NULL)";
 	}
@@ -2443,7 +2444,7 @@ function _list_contact()
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
 //if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
-	if ($user->hasRight('societe', 'supprimer'))
+	if (rl_userHasRight($user,'societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
 		$arrayofmassactions = array();

@@ -42,7 +42,8 @@ if (! empty($conf->projet->enabled))
 	print '<table width="100%" class="nobordernopadding"><tr><td>';
 	print $langs->trans("Project");
 	print '</td>';
-	if ($action != "classify" && $user->hasRight('projet', 'creer')) print '<td align="right"><a href="'.$_SERVER["PHP_SELF"].'?action=classify&amp;id='.$object->id.'">'.img_edit($langs->trans("SetProject")).'</a></td>';
+	require_once __DIR__ . '/../lib/referenceletters.lib.php';
+	if ($action != "classify" && rl_userHasRight($user,'projet', 'creer' ) ) print '<td align="right"><a href="'.$_SERVER["PHP_SELF"].'?action=classify&amp;id='.$object->id.'">'.img_edit($langs->trans("SetProject")).'</a></td>';
 	print '</tr></table>';
 	print '</td><td colspan="3">';
 	if ($action == "classify")

@@ -142,7 +142,7 @@ if ($action == "add") {
 			header('Location:' . dol_buildpath('/referenceletters/referenceletters/card.php', 1).'?id='.$object->fk_referenceletters);
 		}
 	}
-} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->hasRight('referenceletters', 'delete')) {
+} elseif ($action == 'confirm_delete' && $confirm == 'yes' && rl_userHasRight($user,'referenceletters', 'delete')) {
 	$result = $object->fetch($id);
 	if ($result < 0) {
 		$action = 'delete';
@@ -208,7 +208,7 @@ $formadmin = new FormAdmin($db);
 
 $now = dol_now();
 // Add new proposal
-if (($action == 'create' || $action=='edit' || $action=='delete') && $user->hasRight('referenceletters', 'write')) {
+if (($action == 'create' || $action=='edit' || $action=='delete') && rl_userHasRight($user,'referenceletters', 'write')) {
 
 	// Confirm form
 	$formconfirm = '';

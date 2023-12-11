@@ -407,7 +407,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
-		if ($conf->subtotal->enabled) {
+		if (isset($conf->subtotal->enabled) && $conf->subtotal->enabled && isset($conf->subtotal->enabled) && $conf->subtotal->enabled ) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 		}
 		if (! class_exists('Product')) {

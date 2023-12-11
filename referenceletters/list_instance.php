@@ -37,7 +37,7 @@ dol_include_once('/contact/class/contact.class.php');
 dol_include_once('/societe/class/societe.class.php');
 
 // Security check
-if (! $user->hasRight('referenceletters', 'read'))
+if (! rl_userHasRight($user,'referenceletters', 'read'))
 	accessforbidden();
 
 $langs->load("referenceletters@referenceletters");

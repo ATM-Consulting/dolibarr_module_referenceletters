@@ -241,3 +241,141 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 
 	return $pdf;
 }
+
+/**
+ * RETROCOMPAT V15
+ * @param User   $user
+ * @param string $module
+ * @param string $permlevel1
+ * @param string $permlevel2
+ * @return int                        1 if user has permission, 0 if not.
+ */
+function rl_userHasRight(User $user, string $module, string $permlevel1, string $permlevel2 = '') {
+
+	if(method_exists($user, 'hasRight')) {
+		return $user->hasRight($module, $permlevel1, $permlevel2);
+	} else {
+		global $conf;
+		// For compatibility with bad naming permissions on module
+		$moduletomoduletouse = array(
+			'compta' => 'comptabilite',
+			'contract' => 'contrat',
+			'member' => 'adherent',
+			'mo' => 'mrp',
+			'order' => 'commande',
+			'produit' => 'product',
+			'project' => 'projet',
+			'propale' => 'propal',
+			'shipping' => 'expedition',
+			'task' => 'task@projet',
+			'fichinter' => 'ficheinter',
+			'inventory' => 'stock',
+			'invoice' => 'facture',
+			'invoice_supplier' => 'fournisseur',
+			'order_supplier' => 'fournisseur',
+			'knowledgerecord' => 'knowledgerecord@knowledgemanagement',
+			'skill@hrm' => 'all@hrm', // skill / job / position objects rights are for the moment grouped into right level "all"
+			'job@hrm' => 'all@hrm', // skill / job / position objects rights are for the moment grouped into right level "all"
+			'position@hrm' => 'all@hrm', // skill / job / position objects rights are for the moment grouped into right level "all"
+			'facturerec' => 'facture',
+			'margins' => 'margin',
+		);
+
+		if(! empty($moduletomoduletouse[$module])) {
+			$module = $moduletomoduletouse[$module];
+		}
+
+		$moduleRightsMapping = array(
+			'product' => 'produit',    // We must check $user->rights->produit...
+			'margin' => 'margins',
+			'comptabilite' => 'compta'
+		);
+
+		$rightsPath = $module;
+		if(! empty($moduleRightsMapping[$rightsPath])) {
+			$rightsPath = $moduleRightsMapping[$rightsPath];
+		}
+
+		// If module is abc@module, we check permission user->rights->module->abc->permlevel1
+		$tmp = explode('@', $rightsPath, 2);
+		if(! empty($tmp[1])) {
+			if(strpos($module, '@') !== false) {
+				$module = $tmp[1];
+			}
+			$rightsPath = $tmp[1];
+			$permlevel2 = $permlevel1;
+			$permlevel1 = $tmp[0];
+		}
+
+		// In $conf->modules, we have 'accounting', 'product', 'facture', ...
+		// In $user->rights, we have 'accounting', 'produit', 'facture', ...
+		//var_dump($module);
+		//var_dump($rightsPath);
+		//var_dump($user->rights->$rightsPath);
+		//var_dump($conf->modules);
+		//var_dump($module.' '.isModEnabled($module).' '.$rightsPath.' '.$permlevel1.' '.$permlevel2);
+		if(! $conf->$module->enabled) {
+			return 0;
+		}
+
+		// For compatibility with bad naming permissions on permlevel1
+		if($permlevel1 == 'propale') {
+			$permlevel1 = 'propal';
+		}
+		if($permlevel1 == 'member') {
+			$permlevel1 = 'adherent';
+		}
+		if($permlevel1 == 'recruitmentcandidature') {
+			$permlevel1 = 'recruitmentjobposition';
+		}
+
+		//var_dump($user->rights);
+		//var_dump($rightsPath.' '.$permlevel1.' '.$permlevel2);
+		if(empty($rightsPath) || empty($user->rights) || empty($user->rights->$rightsPath) || empty($permlevel1)) {
+			return 0;
+		}
+
+		if($permlevel2) {
+			if(! empty($user->rights->$rightsPath->$permlevel1)) {
+				if(! empty($user->rights->$rightsPath->$permlevel1->$permlevel2)) {
+					return $user->rights->$rightsPath->$permlevel1->$permlevel2;
+				}
+				// For backward compatibility with old permissions called "lire", "creer", "create", "supprimer"
+				// instead of "read", "write", "delete"
+				if($permlevel2 == 'read' && ! empty($user->rights->$rightsPath->$permlevel1->lire)) {
+					return $user->rights->$rightsPath->$permlevel1->lire;
+				}
+				if($permlevel2 == 'write' && ! empty($user->rights->$rightsPath->$permlevel1->creer)) {
+					return $user->rights->$rightsPath->$permlevel1->creer;
+				}
+				if($permlevel2 == 'write' && ! empty($user->rights->$rightsPath->$permlevel1->create)) {
+					return $user->rights->$rightsPath->$permlevel1->create;
+				}
+				if($permlevel2 == 'delete' && ! empty($user->rights->$rightsPath->$permlevel1->supprimer)) {
+					return $user->rights->$rightsPath->$permlevel1->supprimer;
+				}
+			}
+		}
+		else {
+			if(! empty($user->rights->$rightsPath->$permlevel1)) {
+				return $user->rights->$rightsPath->$permlevel1;
+			}
+			// For backward compatibility with old permissions called "lire", "creer", "create", "supprimer"
+			// instead of "read", "write", "delete"
+			if($permlevel1 == 'read' && ! empty($user->rights->$rightsPath->lire)) {
+				return $user->rights->$rightsPath->lire;
+			}
+			if($permlevel1 == 'write' && ! empty($user->rights->$rightsPath->creer)) {
+				return $user->rights->$rightsPath->creer;
+			}
+			if($permlevel1 == 'write' && ! empty($user->rights->$rightsPath->create)) {
+				return $user->rights->$rightsPath->create;
+			}
+			if($permlevel1 == 'delete' && ! empty($user->rights->$rightsPath->supprimer)) {
+				return $user->rights->$rightsPath->supprimer;
+			}
+		}
+
+		return 0;
+	}
+}

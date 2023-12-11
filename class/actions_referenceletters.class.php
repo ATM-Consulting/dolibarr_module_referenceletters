@@ -412,7 +412,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 		/***** Permet d'afficher les modèles disponibles dans la liste de génération de la fiche de chaque élément *****/
 
 		// 1 - On récupère les modèles disponibles pour ce type de document
-		$element = $object->element;
+		$element = $object->element ?? '';
 		if($element === 'facture') $element = 'invoice';
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';

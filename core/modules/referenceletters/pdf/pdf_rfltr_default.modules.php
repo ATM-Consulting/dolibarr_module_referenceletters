@@ -77,7 +77,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$this->marge_gauche =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT', 10));
 		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', 10));
 		$this->marge_haute = floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP', 10));
-		$this->marge_basse = getDolGlobalInt('MAIN_PDF_MARGIN_BOTTOM', 10);
+		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', 10));
 
 		$this->option_logo = 1; // Affiche logo
 

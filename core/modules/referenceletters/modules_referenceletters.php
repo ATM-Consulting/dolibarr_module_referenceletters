@@ -169,7 +169,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				// Header high
 				$height = $this->getRealHeightLine('head');
 				if (getDolGlobalString('REF_LETTER_PREDEF_HIGHT') && !empty($instance_letter->use_custom_header)) {
-					$height=$height + intval(getDolGlobalString('REF_LETTER_PREDEF_HIGHT'));
+					$height=$height + floatval(getDolGlobalString('REF_LETTER_PREDEF_HIGHT'));
 				} else {
 					$height=$height+10;
 				}

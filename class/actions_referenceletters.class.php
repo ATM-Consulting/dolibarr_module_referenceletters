@@ -310,7 +310,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
             }
 
             // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-            if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
+			if (empty($result) || !validateObjectProperty($staticRefLtr,'lines') || !is_array($staticRefLtr->lines) || empty($staticRefLtr->lines))
             {
                 return 0;
             }

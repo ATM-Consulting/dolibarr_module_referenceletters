@@ -72,10 +72,10 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = getDolGlobalInt('MAIN_PDF_MARGIN_LEFT',10);
-		$this->marge_droite = getDolGlobalInt('MAIN_PDF_MARGIN_RIGHT',10);
-		$this->marge_haute =  getDolGlobalInt('MAIN_PDF_MARGIN_TOP',10);
-		$this->marge_basse =  getDolGlobalInt('MAIN_PDF_MARGIN_BOTTOM',10);
+		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT',10));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT',10));
+		$this->marge_haute =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP',10));
+		$this->marge_basse =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM',10));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -153,7 +153,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 				$heightforinfotot = 50; // Height reserved to output the info and total part
-				$heightforfreetext = ( getDolGlobalInt('MAIN_PDF_FREETEXT_HEIGHT', 5)); // Height reserved to output the free text on last page
+				$heightforfreetext = ( floatval(getDolGlobalString('MAIN_PDF_FREETEXT_HEIGHT', 5))); // Height reserved to output the free text on last page
 				$heightforfooter = $this->marge_basse + 8; // Height reserved to output the footer (value include bottom margin)
 
 				// Set calculation of header and footer high line

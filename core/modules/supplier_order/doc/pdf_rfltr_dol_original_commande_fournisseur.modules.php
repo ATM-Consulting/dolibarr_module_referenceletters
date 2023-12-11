@@ -74,9 +74,9 @@ class pdf_rfltr_dol_original_commande_fournisseur extends pdf_rfltr_default
 				$this->page_hauteur
 		);
 		$this->marge_gauche = getDolGlobalInt('MAIN_PDF_MARGIN_LEFT', 10);
-		$this->marge_droite = getDolGlobalInt('MAIN_PDF_MARGIN_RIGHT',10);
-		$this->marge_haute = getDolGlobalInt('MAIN_PDF_MARGIN_TOP',10);
-		$this->marge_basse = getDolGlobalInt('MAIN_PDF_MARGIN_BOTTOM',10);
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', 10));
+		$this->marge_haute = floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP', 10));
+		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', 10));
 
 		$this->option_logo = 1; // Affiche logo
 

@@ -299,7 +299,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && rl_userHasR
 		require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 		$nbrows = ROWS_2;
 		if (getDolGlobalString('MAIN_INPUT_DESC_HEIGHT')){
-			$nbrows = getDolGlobalInt('MAIN_INPUT_DESC_HEIGHT');
+			$nbrows = floatval(getDolGlobalString('MAIN_INPUT_DESC_HEIGHT'));
 		}
 
 		$enable = getDolGlobalInt('FCKEDITOR_ENABLE_SOCIETE');

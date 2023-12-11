@@ -2108,7 +2108,7 @@ function _list_contact()
 
 // Definition of fields for list
 	$arrayfields = array(
-		'p.rowid' => array('label' => "TechnicalID", 'checked' => ( getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0), 'enabled' => ( getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0)),
+		'p.rowid' => array('label' => "TechnicalID", 'checked' =>  getDolGlobalInt('MAIN_SHOW_TECHNICAL_ID'), 'enabled' => getDolGlobalInt('MAIN_SHOW_TECHNICAL_ID')),
 		'p.lastname' => array('label' => "Lastname", 'checked' => 1),
 		'p.firstname' => array('label' => "Firstname", 'checked' => 1),
 		'p.poste' => array('label' => "PostOrFunction", 'checked' => 1),

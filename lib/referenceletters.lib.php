@@ -307,13 +307,6 @@ function rl_userHasRight(User $user, string $module, string $permlevel1, string 
 			$permlevel1 = $tmp[0];
 		}
 
-		// In $conf->modules, we have 'accounting', 'product', 'facture', ...
-		// In $user->rights, we have 'accounting', 'produit', 'facture', ...
-		//var_dump($module);
-		//var_dump($rightsPath);
-		//var_dump($user->rights->$rightsPath);
-		//var_dump($conf->modules);
-		//var_dump($module.' '.isModEnabled($module).' '.$rightsPath.' '.$permlevel1.' '.$permlevel2);
 		if(! $conf->$module->enabled) {
 			return 0;
 		}

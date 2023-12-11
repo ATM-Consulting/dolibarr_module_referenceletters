@@ -150,12 +150,12 @@ class modReferenceLetters extends DolibarrModules
 		$this->requiredby = array ();
 		// Minimum version of PHP required by module
 		$this->phpmin = array (
-				5,
-				2
+				7,
+				0
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
-				4,
+				12,
 				0
 		);
 		$this->langfiles = array (

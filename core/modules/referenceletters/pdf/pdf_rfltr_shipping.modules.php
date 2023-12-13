@@ -133,10 +133,10 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT', 10));
-		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', 10));
-		$this->marge_haute = getDolGlobalInt('MAIN_PDF_MARGIN_TOP', 10);
-		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', 10));
+		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT', '10'));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', '10'));
+		$this->marge_haute = floatval(getDolGlobalInt('MAIN_PDF_MARGIN_TOP', '10'));
+		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', '10'));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -159,7 +159,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 			$this->posxtotalht=$this->page_largeur - $this->marge_droite - 20;
 		}
 
-		$this->posxpicture=$this->posxweightvol - (!getDolGlobalString('MAIN_DOCUMENTS_WITH_PICTURE_WIDTH')?20: getDolGlobalInt('MAIN_DOCUMENTS_WITH_PICTURE_WIDTH'));	// width of images
+		$this->posxpicture=  $this->posxweightvol - floatval(getDolGlobalString('MAIN_DOCUMENTS_WITH_PICTURE_WIDTH', '20')) ;	// width of images
 
 		if ($this->page_largeur < 210) // To work with US executive format
 		{

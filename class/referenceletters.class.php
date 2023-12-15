@@ -155,7 +155,8 @@ class ReferenceLetters extends CommonObject
 
 		);
 		}
-		if (isset($conf->invoice) && !empty($conf->invoice->enabled)){
+
+		if (property_exists($conf, 'facture') && !empty($conf->facture->enabled) || property_exists($conf, 'invoice') && !empty($conf->invoice->enabled) ){
 			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
@@ -253,7 +254,7 @@ class ReferenceLetters extends CommonObject
 				'document_dir' => $conf->expedition->dir_output
 			);
 		}
-		if (isset($conf->shipping) && !empty($conf->shipping->enabled)) {
+		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
 			$this->element_type_list['shipping'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',

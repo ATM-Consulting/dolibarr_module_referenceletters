@@ -271,7 +271,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
 		}
-		if (isset($conf->fichinter) && !empty($conf->fichinter->enabled)) {
+		if (isset($conf->ficheinter) && !empty($conf->ficheinter->enabled)) {
 			$this->element_type_list['fichinter'] = array(
 				'class' => 'fichinter.class.php',
 				'securityclass' => 'fichinter',

@@ -133,7 +133,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/card.php',
-			q	'substitution_method' => 'get_substitutionarray_contact'
+				'substitution_method' => 'get_substitutionarray_contact'
 		);
 		if (isset($conf->propal) && !empty($conf->propal->enabled)){
 			$this->element_type_list['propal'] = array (

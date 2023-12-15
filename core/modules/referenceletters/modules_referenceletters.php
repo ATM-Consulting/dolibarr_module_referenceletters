@@ -58,7 +58,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	function _pagefoot(&$pdf,$object,$outputlangs,$hidefreetext=0)
 	{
 		global $conf;
-		$showdetails=$conf->global->MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS;
+		$showdetails= getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_SHOW_FOOT_DETAILS');
 		return pdf_pagefoot($pdf,$outputlangs,strtoupper($object->element).'_FREE_TEXT',$this->emetteur,$this->marge_basse,$this->marge_gauche,$this->page_hauteur,$object,$showdetails,$hidefreetext);
 	}
 
@@ -92,7 +92,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                 }
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
-		if (! empty($conf->global->MAIN_USE_FPDF))
+		if (getDolGlobalString('MAIN_USE_FPDF'))
 			$this->outputlangs->charset_output = 'ISO-8859-1';
 
 		$this->outputlangs->load("main");
@@ -146,8 +146,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 				// Set path to the background PDF File
-				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
-					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
+				if (!getDolGlobalString('MAIN_DISABLE_FPDI') && getDolGlobalString('MAIN_ADD_PDF_BACKGROUND')) {
+					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . getDolGlobalString('MAIN_ADD_PDF_BACKGROUND'));
 					if ($pagecount>0) {
 						$tplidx = $this->pdf->importPage(1);
 					}
@@ -161,15 +161,15 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
 				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
-				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION)) {
+				if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION')) {
 					$this->pdf->SetCompression(false);
 				}
 
 				// Set calculation of header and footer high line
 				// Header high
 				$height = $this->getRealHeightLine('head');
-				if (!empty($conf->global->REF_LETTER_PREDEF_HIGHT) && !empty($instance_letter->use_custom_header)) {
-					$height=$height+$conf->global->REF_LETTER_PREDEF_HIGHT;
+				if (getDolGlobalString('REF_LETTER_PREDEF_HIGHT') && !empty($instance_letter->use_custom_header)) {
+					$height=$height + floatval(getDolGlobalString('REF_LETTER_PREDEF_HIGHT'));
 				} else {
 					$height=$height+10;
 				}
@@ -239,9 +239,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 						$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter_text));
 
-						$hidedetails = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS) ? 1 : 0);
-						$hidedesc =(! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_DESC) ? 1 : 0);
-						$hideref = (! empty($conf->global->MAIN_GENERATE_DOCUMENTS_HIDE_REF) ? 1 : 0);
+						$hidedetails = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_DETAILS');
+						$hidedesc =getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_DESC');
+						$hideref = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_REF');
 						$backup_forceDisableConcatPdf = !empty($object->forceDisableConcatPdf);
 						$object->forceDisableConcatPdf = 1;
 						$result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
@@ -354,7 +354,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 					if(count($test_array) > 1) {
 						//comment because seems to not be need. Actually remove the last attestaion page en loop on pages
-						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP)) $this->pdf->deletePage($this->pdf->getPage());
+						if(getDolGlobalString('REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP')) $this->pdf->deletePage($this->pdf->getPage());
 					}
 				}
 				// Pied de page
@@ -379,8 +379,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
-				if (! empty($conf->global->MAIN_UMASK))
-					@chmod($file, octdec($conf->global->MAIN_UMASK));
+				if (getDolGlobalString('MAIN_UMASK'))
+					@chmod($file, octdec( getDolGlobalString('MAIN_UMASK')));
 
 				return 1; // Pas d'erreur
 			} else {
@@ -407,7 +407,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
-		if ($conf->subtotal->enabled) {
+		if (isset($conf->subtotal->enabled) && $conf->subtotal->enabled && isset($conf->subtotal->enabled) && $conf->subtotal->enabled ) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 		}
 		if (! class_exists('Product')) {
@@ -479,20 +479,20 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							if (! empty($conf->subtotal->enabled))
 							{
 								if (TSubtotal::isTitle($line)) {
-                                    if (!empty($conf->global->SUBTOTAL_TITLE_STYLE))
+                                    if (getDolGlobalString('SUBTOTAL_TITLE_STYLE'))
                                     {
                                         $style_start = $style_end = '';
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'B') !== false)
+                                        if (strpos( getDolGlobalString('SUBTOTAL_TITLE_STYLE'), 'B') !== false)
                                         {
                                             $style_start.= '<strong>';
                                             $style_end = '</strong>'.$style_end;
                                         }
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'U') !== false)
+                                        if (strpos(getDolGlobalString('SUBTOTAL_TITLE_STYLE'), 'U') !== false)
                                         {
                                             $style_start.= '<u>';
                                             $style_end = '</u>'.$style_end;
                                         }
-                                        if (strpos($conf->global->SUBTOTAL_TITLE_STYLE, 'I') !== false)
+                                        if (strpos( getDolGlobalString('SUBTOTAL_TITLE_STYLE'), 'I') !== false)
                                         {
                                             $style_start.= '<i>';
                                             $style_end = '</i>'.$style_end;
@@ -511,20 +511,20 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 										));
 									}
 								} else if (TSubtotal::isSubtotal($line)) {
-                                    if (!empty($conf->global->SUBTOTAL_SUBTOTAL_STYLE))
+                                    if (getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE'))
                                     {
                                         $style_start = $style_end = '';
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'B') !== false)
+                                        if (strpos(getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE'), 'B') !== false)
                                         {
                                             $style_start.= '<strong>';
                                             $style_end = '</strong>'.$style_end;
                                         }
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'U') !== false)
+                                        if (strpos( getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE'), 'U') !== false)
                                         {
                                             $style_start.= '<u>';
                                             $style_end = '</u>'.$style_end;
                                         }
-                                        if (strpos($conf->global->SUBTOTAL_SUBTOTAL_STYLE, 'I') !== false)
+                                        if (strpos(getDolGlobalString('SUBTOTAL_SUBTOTAL_STYLE'), 'I') !== false)
                                         {
                                             $style_start.= '<i>';
                                             $style_end = '</i>'.$style_end;
@@ -594,8 +594,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$height = $end_y;
 
 		$nb=0;
-		if(!empty($conf->global->REF_LETTER_PAGE_HEAD_ADJUST)) {
-			$tmp_array = explode(',', $conf->global->REF_LETTER_PAGE_HEAD_ADJUST);
+		if(getDolGlobalString('REF_LETTER_PAGE_HEAD_ADJUST')) {
+			$tmp_array = explode(',', getDolGlobalString('REF_LETTER_PAGE_HEAD_ADJUST'));
 			if(is_array($tmp_array) && !empty($tmp_array)) {
 				foreach($tmp_array as $v) {
 					list($element, $tmp_nb) = explode(':',$v);
@@ -635,7 +635,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		// Show page nb only on iso languages (so default Helvetica font)
-		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && empty($conf->global->MAIN_USE_FPDF) && !empty($usePageNumber))
+		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && !getDolGlobalString('MAIN_USE_FPDF') && !empty($usePageNumber))
 		{
 			$currenty=$this->pdf->GetY();
 			$currentx=$this->pdf->GetX();
@@ -680,7 +680,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		if (get_class($object) === 'Societe') {
 			$socobject = $object;
 		} else {
-			if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) && ! empty($object->contact)) {
+			if (getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT') && ! empty($object->contact)) {
 				if (method_exists($object->contact, 'fetch_thirdparty')) {
 					$object->contact->fetch_thirdparty();
 					$socobject = $object->contact->thirdparty;
@@ -1146,7 +1146,7 @@ function referenceletters_pdf_create($db, $object, $instance_letter, $outputlang
  */
 function importImageBackground(&$pdf, $id) {
 	global $conf;
-	if (empty($conf->global->MAIN_DISABLE_FPDI)) {
+	if (!getDolGlobalString('MAIN_DISABLE_FPDI')) {
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 

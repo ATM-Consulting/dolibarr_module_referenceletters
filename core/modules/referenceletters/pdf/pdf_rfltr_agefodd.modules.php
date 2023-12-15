@@ -43,10 +43,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = isset($conf->global->MAIN_PDF_MARGIN_LEFT) ? $conf->global->MAIN_PDF_MARGIN_LEFT : 10;
-		$this->marge_droite = isset($conf->global->MAIN_PDF_MARGIN_RIGHT) ? $conf->global->MAIN_PDF_MARGIN_RIGHT : 10;
-		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
-		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
+		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT',10));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT',10));
+		$this->marge_haute =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP',10));
+		$this->marge_basse =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM',10));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -114,7 +114,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
-		if (! empty($conf->global->MAIN_USE_FPDF))
+		if (getDolGlobalString('MAIN_USE_FPDF'))
 			$this->outputlangs->charset_output = 'ISO-8859-1';
 
 		$this->outputlangs->load("main");
@@ -157,8 +157,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 				// Set path to the background PDF File
-				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
-					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
+				if (!getDolGlobalString('MAIN_DISABLE_FPDI') && getDolGlobalString('MAIN_ADD_PDF_BACKGROUND')) {
+					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . getDolGlobalString('MAIN_ADD_PDF_BACKGROUND'));
 					$tplidx = $this->pdf->importPage(1);
 				}
 
@@ -170,7 +170,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
 				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
-				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
+				if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION'))
 					$this->pdf->SetCompression(false);
 
 				// Set calculation of header and footer high line
@@ -187,7 +187,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
 
-				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
+				$tab_top_newpage = (!getDolGlobalString('MAIN_PDF_DONOTREPEAT_HEAD') ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
 
@@ -264,7 +264,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TConventionFinancialLine',
 							'TFormateursSessionCal'
 					);
-					if($conf->agefoddcertificat->enabled) {
+					if(isset($conf->agefoddcertificat->enabled) && $conf->agefoddcertificat->enabled ) {
 						$TAgfArray[] = 'TSessionStagiairesCertif';
 						$TAgfArray[] = 'TSessionStagiairesCertifSoc';
 					}
@@ -321,13 +321,13 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 					if(count($test_array) > 1) {
 						//Do not apply this stuff for trainee docuement( générated from Document per trainee, if there is a @beakpage@ in this models, the last page should not be removes
-						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP) && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
+						if(getDolGlobalString('REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP') && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
 							$this->pdf->deletePage($this->pdf->getPage());
 						}
 					}
 				}
 
-				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+				if (getDolGlobalString('AGF_ADD_PROGRAM_TO_CONV') && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 				    if(class_exists('Agefodd')){
 				        $agfTraining = new Agefodd($db);
 				    } elseif (class_exists('Formation')) {
@@ -381,8 +381,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
-				if (! empty($conf->global->MAIN_UMASK))
-					@chmod($file, octdec($conf->global->MAIN_UMASK));
+				if (getDolGlobalString('MAIN_UMASK'))
+					@chmod($file, octdec( getDolGlobalString('MAIN_UMASK')));
 
 				return 1; // Pas d'erreur
 			} else {
@@ -471,7 +471,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		$posy += 1;
 		$this->pdf->SetFont('', '', $default_font_size - 1);
 
-		if ($object->ref_client) {
+		if (validateObjectProperty($object,"ref_client") &&  $object->ref_client) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
@@ -506,7 +506,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			// Show sender
 			$posy = 42;
 			$posx = $this->marge_gauche;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->page_largeur - $this->marge_droite - 80;
 			$hautcadre = 45;
 			$max_y=$posy+$hautcadre;
@@ -553,6 +553,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 }*/
 
 			$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
+			$usecontact = $usecontact ?? 0;
 			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 
 			// Show recipient
@@ -561,7 +562,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$widthrecbox = 84; // To work with US executive format
 			$posy = 42;
 			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->marge_gauche;
 
 			// Show recipient frame

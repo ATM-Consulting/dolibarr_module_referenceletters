@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.17.1';
+		$this->version = '2.18.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -150,12 +150,12 @@ class modReferenceLetters extends DolibarrModules
 		$this->requiredby = array ();
 		// Minimum version of PHP required by module
 		$this->phpmin = array (
-				5,
-				2
+				7,
+				0
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
-				4,
+				12,
 				0
 		);
 		$this->langfiles = array (
@@ -452,14 +452,14 @@ class modReferenceLetters extends DolibarrModules
 
 		$reinstalltemplate=false;
 		dol_include_once('/referenceletters/script/create-maj-base.php');
-		if (empty($conf->global->REF_LETTER_MIGRATED))
+		if (!getDolGlobalString('REF_LETTER_MIGRATED'))
 		{
 		    dolibarr_set_const($db, "REF_LETTER_MIGRATED", '1', 'chaine', 0, '', $conf->entity);
 		    dol_include_once('/referenceletters/script/migrate_model_to_extrafields.php');
 		}
 
 		// fix pour la 2.15 et supérieures
-		if(empty($conf->global->DOCEDIT_FIX_TMS_FOR_MYSQL)) {
+		if(!getDolGlobalString('DOCEDIT_FIX_TMS_FOR_MYSQL')) {
 			$sqlTables = "SHOW TABLES LIKE '%referenceletters%'";
 			$resqlTables = $this->db->query($sqlTables);
 			if($resqlTables) {

@@ -27,7 +27,8 @@
 /**
  * Class ActionsReferenceLetters
  */
-class ActionsReferenceLetters
+require_once __DIR__.'/../backport/v19/core/class/commonhookactions.class.php';
+class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookActions
 {
 	/**
 	 *
@@ -73,7 +74,7 @@ class ActionsReferenceLetters
 		dol_syslog("Hook '" . get_class($this) . "' for action '" . __METHOD__ . "' launched by " . __FILE__);
 		if (in_array('referencelettersinstacecard', explode(':', $parameters['context']))) {
             $instance_letter = $parameters['instance_letter'];
-			if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
+			if (getDolGlobalString('REF_LETTER_CREATEEVENT')) {
 				dol_syslog("Hook '" . get_class($this) . " id=" . $instance_letter->id);
 				// var_dump($instance_letter);
 				$langs->load('referenceletters@referenceletters');
@@ -82,7 +83,7 @@ class ActionsReferenceLetters
 				dol_include_once('/comm/action/class/actioncomm.class.php');
 				$actioncomm = new ActionComm($this->db);
 				$actioncomm->type_code = 'AC_LTR_DOC';
-				if ($conf->global->REF_LETTER_TYPEEVENTNAME == 'normal') {
+				if (getDolGlobalString('REF_LETTER_TYPEEVENTNAME') == 'normal') {
 					$actioncomm->label = $langs->trans('RefLtrNewLetters') . ' ' . $instance_letter->ref_int;
 				} else {
 					// find refletter inforamtion
@@ -134,7 +135,7 @@ class ActionsReferenceLetters
 					return - 1;
 				} else {
 
-					if (! empty($conf->global->REF_LETTER_EVTCOPYFILE)) {
+					if (getDolGlobalString('REF_LETTER_EVTCOPYFILE')) {
 						dol_include_once('/core/lib/files.lib.php');
 
 						$objectref = dol_sanitizeFileName($instance_letter->ref_int);
@@ -309,7 +310,7 @@ class ActionsReferenceLetters
             }
 
             // La recherche n'a pas été fructueuse : on rend la main à la génération par défaut
-            if (empty($result) || ! is_array($staticRefLtr) || empty($staticRefLtr->lines))
+			if (empty($result) || !validateObjectProperty($staticRefLtr,'lines') || !is_array($staticRefLtr->lines) || empty($staticRefLtr->lines))
             {
                 return 0;
             }
@@ -411,7 +412,7 @@ class ActionsReferenceLetters
 		/***** Permet d'afficher les modèles disponibles dans la liste de génération de la fiche de chaque élément *****/
 
 		// 1 - On récupère les modèles disponibles pour ce type de document
-		$element = $object->element;
+		$element = $object->element ?? '';
 		if($element === 'facture') $element = 'invoice';
 		if($element === 'commande') $element = 'order';
 		if($element === 'contrat') $element = 'contract';

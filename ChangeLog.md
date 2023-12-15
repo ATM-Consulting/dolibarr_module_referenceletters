@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 # UNRELEASED
 
+- NEW : COMPATV19 - *11/12/2023* - 2.18.0  
+    - Changed Dolibarr compatibility range to 12 min - 19 max  
+    - Change PHP compatibility range to 7.0 min - 8.2 max
 
 
 ## Version 2.17 - 29/11/2023

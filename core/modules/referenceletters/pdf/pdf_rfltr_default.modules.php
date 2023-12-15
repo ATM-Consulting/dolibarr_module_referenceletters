@@ -74,10 +74,10 @@ class pdf_rfltr_default extends CommonDocGenerator
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = isset($conf->global->MAIN_PDF_MARGIN_LEFT) ? $conf->global->MAIN_PDF_MARGIN_LEFT : 10;
-		$this->marge_droite = isset($conf->global->MAIN_PDF_MARGIN_RIGHT) ? $conf->global->MAIN_PDF_MARGIN_RIGHT : 10;
-		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
-		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
+		$this->marge_gauche =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT', 10));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', 10));
+		$this->marge_haute = floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP', 10));
+		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', 10));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -262,7 +262,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			// Show sender
 			$posy = 42;
 			$posx = $this->marge_gauche;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->page_largeur - $this->marge_droite - 80;
 			$hautcadre = 45;
 
@@ -298,7 +298,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 			// Recipient name
 			if (! empty($usecontact)) {
 				// On peut utiliser le nom de la societe du contact
-				if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
+				if (getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))
 					$socname = $object->contact->socname;
 				else
 					$socname = $object->thirdparty->nom;
@@ -315,7 +315,7 @@ class pdf_rfltr_default extends CommonDocGenerator
 				$widthrecbox = 84; // To work with US executive format
 			$posy = 42;
 			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->marge_gauche;
 
 				// Show recipient frame

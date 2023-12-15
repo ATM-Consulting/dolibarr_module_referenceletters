@@ -133,7 +133,7 @@ class ReferenceLetters extends CommonObject
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/contact.lib.php',
 				'menuloader_function' => 'contact_prepare_head',
 				'card' => 'contact/card.php',
-				'substitution_method' => 'get_substitutionarray_contact'
+			q	'substitution_method' => 'get_substitutionarray_contact'
 		);
 		if (isset($conf->propal) && !empty($conf->propal->enabled)){
 			$this->element_type_list['propal'] = array (
@@ -175,7 +175,8 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->invoice->dir_output
 		);
 		}
-		if (isset($conf->order) && !empty($conf->order->enabled)){
+		if (property_exists($conf, 'commande') && !empty($conf->commande->enabled) || property_exists($conf, 'order') && !empty($conf->order->enabled) ){
+
 			$this->element_type_list['order'] = array (
 					'class' => 'commande.class.php',
 					'securityclass' => 'commande',
@@ -194,7 +195,7 @@ class ReferenceLetters extends CommonObject
 					'document_dir' => $conf->commande->dir_output
 			);
 		}
-		if (isset($conf->order_supplier) && !empty($conf->order_supplier->enabled)) {
+		if (isset($conf->fournisseur) && !empty($conf->fournisseur->enabled)) {
 			$this->element_type_list['order_supplier'] = array(
 				'class' => 'fournisseur.commande.class.php',
 				'securityclass' => 'fournisseur',
@@ -355,6 +356,7 @@ class ReferenceLetters extends CommonObject
 
 		return 1;
 	}
+
 
 	/**
 	 * Create object into database

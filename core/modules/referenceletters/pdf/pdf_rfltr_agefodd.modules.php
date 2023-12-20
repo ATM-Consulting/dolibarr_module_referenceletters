@@ -2,6 +2,7 @@
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
+require_once __DIR__.'/../../../../class/Tools.class.php';
 class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 {
 	public $db;
@@ -471,7 +472,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		$posy += 1;
 		$this->pdf->SetFont('', '', $default_font_size - 1);
 
-		if (validateObjectProperty($object,"ref_client") &&  $object->ref_client) {
+		if (\referenceletters\Tools::validateObjectProperty($object,"ref_client") &&  $object->ref_client) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);

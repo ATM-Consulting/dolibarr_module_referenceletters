@@ -8,7 +8,7 @@ $soc = $object->thirdparty;
 // Ref
 print '<tr><td width="20%">' . $langs->trans('Ref') . '</td>';
 print '<td colspan="5">';
-print $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref ?? 0);
+print $form->showrefnav($object, 'ref', $linkback, 1, 'ref', 'ref', $morehtmlref ?? '');
 print '</td></tr>';
 
 // Ref customer

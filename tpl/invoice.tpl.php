@@ -8,12 +8,14 @@
 	// Ref
 	print '<tr><td width="20%">' . $langs->trans('Ref') . '</td>';
 	print '<td colspan="5">';
+
+	 $fieldfac = $fieldfac ?? "";
 	if (floatval(DOL_VERSION) > 9) {
 		$fieldfac .= "ref";
 	} else {
 		$fieldfac .= " facnumber";
 	}
-	print $form->showrefnav($object, 'ref', $linkback, 1, $fieldfac, 'ref', $morehtmlref);
+	print $form->showrefnav($object, 'ref', $linkback, 1, $fieldfac, 'ref', $morehtmlref ?? '');
 	print '</td></tr>';
 
 	// Ref customer
@@ -66,7 +68,7 @@
 		$facusing->fetch($object->fk_facture_source);
 		print ' (' . $langs->transnoentities("CorrectInvoice", $facusing->getNomUrl(1)) . ')';
 	}
-
+	$totalpaye = $totalpaye ?? 0 ;
 	// Statut
 	print '<tr><td>' . $langs->trans('Status') . '</td>';
 	print '<td align="left" colspan="3">' . ($object->getLibStatut(4, $totalpaye)) . '</td></tr>';

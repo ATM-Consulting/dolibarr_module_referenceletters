@@ -464,7 +464,7 @@ class modReferenceLetters extends DolibarrModules
 			$resqlTables = $this->db->query($sqlTables);
 			if($resqlTables) {
 				while($objTables = $this->db->fetch_array($resqlTables)) {
-					$tableName = $objTables['Tables_in_'.$this->db->database_name.' (%referenceletters%)'];
+					$tableName = $objTables[0];
 					$testTms = 'DESCRIBE '.$tableName.' tms';
 					$resqlTest = $this->db->query($testTms);
 					if(! empty($resqlTest->num_rows)) {

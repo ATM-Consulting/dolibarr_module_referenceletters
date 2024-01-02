@@ -755,6 +755,7 @@ class ReferenceLetters extends CommonObject
 
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['trainer_cost_planned'] = 'Coût planifié formateur';
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 # UNRELEASED
 
 ## Version 2.18 - 02/01/2024
+- NEW : COMPATV19 - *11/12/2023* - 2.18.0  
+    - Changed Dolibarr compatibility range to 12 min - 19 max  
+    - Change PHP compatibility range to 7.0 min - 8.2 max
 - NEW : Add substitution in agefodd to be able to use trainer cost planned *21/03/2022* - 2.18.0
 
 ## Version 2.17 - 29/11/2023

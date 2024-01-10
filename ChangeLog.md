@@ -1,20 +1,23 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-# UNRELEASED
+### UNRELEASED
 
-## Version 2.18 - 02/01/2024
+
+
+
+## Release 2.18 - 10/01/2024
 - NEW : COMPATV19 - *11/12/2023* - 2.18.0  
     - Changed Dolibarr compatibility range to 12 min - 19 max  
     - Change PHP compatibility range to 7.0 min - 8.2 max
 - NEW : Add substitution in agefodd to be able to use trainer cost planned *21/03/2022* - 2.18.0
 
-## Version 2.17 - 29/11/2023
+## Release 2.17 - 29/11/2023
 - FIX : DA024195 - z-index select ajout de modele pdf à concatener *29/11/2023* 2.17.1
 - NEW : Compatibilité agefoddcertificat 1.12.0 *15/11/2023* 2.17.0
 - NEW : move script url mover from abricot *11/05/2022* 2.16.0
 
-## Version 2.15 - 21/07/2022
+## Release 2.15 - 21/07/2022
 - FIX : DA024017 tms doesn't have a default value - *24/10/2023* - 2.15.9
 - FIX : remove strip tags - *19/07/2023* - 2.15.8
 - FIX : Compat V17 - *21/04/2023* - 2.15.7
@@ -27,19 +30,19 @@ All notable changes to this project will be documented in this file.
 - NEW : Modification de l'icône du module *13/06/2022* 2.15.0
 - NEW : Ajout de la class TechATM pour l'affichage de la page "A propos" *11/05/2022* 2.14.0
 
-## Version 2.13 - 15/04/2022
+## Release 2.13 - 15/04/2022
 
 - FIX : Ajout de clés manquantes liés aux exped alors qu'elles sont dans le modele de base *19/07/2022* - 2.13.2
 - FIX : Infinite loop and fail to generate good doc *26/04/2022* - 2.13.1
 - NEW : Add new document manage by docedit : Intervention *15/04/2022* - 2.13.0
 - NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0
 
-## Version 2.11 - 25/03/2022
+## Release 2.11 - 25/03/2022
 - FIX : Add substitution in agefodd to be able to use commercial mobile phone *04/04/2023* - 2.11.1
 - NEW : Add substitution in agefodd to be able to use all presta soc std data *21/03/2022* - 2.11.0
 - NEW : Add substitution in agefodd to be able to use presta firstname, lastname and soc *15/02/2022* - 2.10.0
 
-## Version 2.9 - 14/06/2021
+## Release 2.9 - 14/06/2021
 
 - FIX : Fix error to upload background - *28/09/2022* - 2.9.9
 - FIX : Date de naissance sur attestation de fin de formation - *27/07/2022* - 2.9.8
@@ -53,12 +56,12 @@ All notable changes to this project will be documented in this file.
 - FIX - Compatibility V14 : Edit the descriptor: family - *2021-06-10* - 2.9.1
 - NEW : TK2003-0572 - Qualiopi Référents Ajouter les tags DocEdit qui permettent d'y avoir acces *04/06/2021* - 2.9
 
-## Version 2.8 - 14/04/2021
+## Release 2.8 - 14/04/2021
 
 -FIX : Remove dead links *14/04/2021* - 2.8.1
 -NEW : Dolibarr V13 Box compatibility *02/04/2021* - 2.8.0
 
-## Version 2.7 - 26/03/2021
+## Release 2.7 - 26/03/2021
 
 -FIX : compatibity with Dolibarr V12 (supplier_order model path changed from "core/modules/supplier_order/pdf" to "core/modules/supplier_order/doc")
 -FIX : Ajout tags formation_nb_place, formation_type_public, formation_moyens_pedagogique et formation_sanction + gestion tags extrafields multiselect - 2.7.2
@@ -66,14 +69,14 @@ All notable changes to this project will be documented in this file.
 
 -NEW : Add idprof1 and idprof2 tag helper
 
-# Version 2.0 - 06/04/2017
+# Release 2.0 - 06/04/2017
 
 -FIX : Preselect model on documents if default - *09/02/2022* - 2.6.6
 -FIX : Specify the condition that allows the use of agefodd substitution keys only in the case of an agefodd pdf *30/06/2021* - 2.6.5
 -NEW : Add mass generation for invoice model letters
 -FIX : V13 compatibility add newToken to some triggers links [2021-03-03]
 
-## 1.9 - 14/11/2016
+## Release 1.9 - 14/11/2016
 
 -NEW : Only for 4.0
 

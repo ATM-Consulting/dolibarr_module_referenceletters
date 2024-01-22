@@ -657,7 +657,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
-
+		$TTmpArrayOptions = $object->array_options;
 		// User substitution value
 		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
 		$substitution_array = array();
@@ -821,7 +821,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 		$tmparray['object_incoterms']='';
-        if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
+        if(!empty($conf->incoterm->enabled) && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
             if ($resql) {
@@ -911,7 +911,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			$txt = preg_replace('/\{' . preg_quote($prefixKey, '/') . '_[0-9]+_[^\}]+\}/', '', $txt);
 		}
-
+		$object->array_options=$TTmpArrayOptions;
 		return $txt;
 	}
 

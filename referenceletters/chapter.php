@@ -320,7 +320,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && $user->righ
 		}
 		print '</textarea>';
 		print '</td><td>';
-		print $form->textwithpicto('', $langs->trans("RefLtrOptionHelp" . $type), 1, 0);
+		print $form->textwithpicto('', $langs->trans("RefLtrOptionHelp"), 1, 0);
 		print '</td></tr></table>';
 		print '</td>';
 		print '</tr>';

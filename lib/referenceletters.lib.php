@@ -53,6 +53,7 @@ function referencelettersAdminPrepareHead() {
 	// $this->tabs = array(
 	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
 	// ); // to remove a tab
+	$object = new stdClass;
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'adminreferenceletters');
 
 	return $head;
@@ -78,6 +79,7 @@ function referenceletterMassPrepareHead() {
 	// $this->tabs = array(
 	// 'entity:-tabname:Title:@referenceletters:/referenceletters/mypage.php?id=__ID__'
 	// ); // to remove a tab
+	$object = new stdClass;
 	complete_head_from_modules($conf, $langs, $object, $head, $h, 'referencelettersmass');
 
 	return $head;
@@ -151,37 +153,37 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 
 	// Define constant for TCPDF
 	if (! defined('K_TCPDF_EXTERNAL_CONFIG')) {
-		define('K_TCPDF_EXTERNAL_CONFIG', 1); // this avoid using tcpdf_config file
-		define('K_PATH_CACHE', DOL_DATA_ROOT . '/admin/temp/');
-		define('K_PATH_URL_CACHE', DOL_DATA_ROOT . '/admin/temp/');
+		if(!defined('K_TCPDF_EXTERNAL_CONFIG')) define('K_TCPDF_EXTERNAL_CONFIG', 1); // this avoid using tcpdf_config file
+		if(!defined('K_PATH_CACHE')) define('K_PATH_CACHE', DOL_DATA_ROOT . '/admin/temp/');
+		if(!defined('K_PATH_URL_CACHE')) define('K_PATH_URL_CACHE', DOL_DATA_ROOT . '/admin/temp/');
 		dol_mkdir(K_PATH_CACHE);
-		define('K_BLANK_IMAGE', '_blank.png');
-		define('PDF_PAGE_FORMAT', 'A4');
-		define('PDF_PAGE_ORIENTATION', 'P');
-		define('PDF_CREATOR', 'TCPDF');
-		define('PDF_AUTHOR', 'TCPDF');
-		define('PDF_HEADER_TITLE', 'TCPDF Example');
-		define('PDF_HEADER_STRING', "by Dolibarr ERP CRM");
-		define('PDF_UNIT', 'mm');
-		define('PDF_MARGIN_HEADER', 5);
-		define('PDF_MARGIN_FOOTER', 10);
-		define('PDF_MARGIN_TOP', 27);
-		define('PDF_MARGIN_BOTTOM', 25);
-		define('PDF_MARGIN_LEFT', 15);
-		define('PDF_MARGIN_RIGHT', 15);
-		define('PDF_FONT_NAME_MAIN', 'helvetica');
-		define('PDF_FONT_SIZE_MAIN', 10);
-		define('PDF_FONT_NAME_DATA', 'helvetica');
-		define('PDF_FONT_SIZE_DATA', 8);
-		define('PDF_FONT_MONOSPACED', 'courier');
-		define('PDF_IMAGE_SCALE_RATIO', 1.25);
-		define('HEAD_MAGNIFICATION', 1.1);
-		define('K_CELL_HEIGHT_RATIO', 1.25);
-		define('K_TITLE_MAGNIFICATION', 1.3);
-		define('K_SMALL_RATIO', 2 / 3);
-		define('K_THAI_TOPCHARS', true);
-		define('K_TCPDF_CALLS_IN_HTML', true);
-		define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
+		if(!defined('K_BLANK_IMAGE')) define('K_BLANK_IMAGE', '_blank.png');
+		if(!defined('PDF_PAGE_FORMAT')) define('PDF_PAGE_FORMAT', 'A4');
+		if(!defined('PDF_PAGE_ORIENTATION')) define('PDF_PAGE_ORIENTATION', 'P');
+		if(!defined('PDF_CREATOR')) define('PDF_CREATOR', 'TCPDF');
+		if(!defined('PDF_AUTHOR')) define('PDF_AUTHOR', 'TCPDF');
+		if(!defined('PDF_HEADER_TITLE')) define('PDF_HEADER_TITLE', 'TCPDF Example');
+		if(!defined('PDF_HEADER_STRING')) define('PDF_HEADER_STRING', "by Dolibarr ERP CRM");
+		if(!defined('PDF_UNIT')) define('PDF_UNIT', 'mm');
+		if(!defined('PDF_MARGIN_HEADER')) define('PDF_MARGIN_HEADER', 5);
+		if(!defined('PDF_MARGIN_FOOTER')) define('PDF_MARGIN_FOOTER', 10);
+		if(!defined('PDF_MARGIN_TOP')) define('PDF_MARGIN_TOP', 27);
+		if(!defined('PDF_MARGIN_BOTTOM')) define('PDF_MARGIN_BOTTOM', 25);
+		if(!defined('PDF_MARGIN_LEFT')) define('PDF_MARGIN_LEFT', 15);
+		if(!defined('PDF_MARGIN_RIGHT')) define('PDF_MARGIN_RIGHT', 15);
+		if(!defined('PDF_FONT_NAME_MAIN')) define('PDF_FONT_NAME_MAIN', 'helvetica');
+		if(!defined('PDF_FONT_SIZE_MAIN')) define('PDF_FONT_SIZE_MAIN', 10);
+		if(!defined('PDF_FONT_NAME_DATA')) define('PDF_FONT_NAME_DATA', 'helvetica');
+		if(!defined('PDF_FONT_SIZE_DATA')) define('PDF_FONT_SIZE_DATA', 8);
+		if(!defined('PDF_FONT_MONOSPACED')) define('PDF_FONT_MONOSPACED', 'courier');
+		if(!defined('PDF_IMAGE_SCALE_RATIO')) define('PDF_IMAGE_SCALE_RATIO', 1.25);
+		if(!defined('HEAD_MAGNIFICATION')) define('HEAD_MAGNIFICATION', 1.1);
+		if(!defined('K_CELL_HEIGHT_RATIO')) define('K_CELL_HEIGHT_RATIO', 1.25);
+		if(!defined('K_TITLE_MAGNIFICATION')) define('K_TITLE_MAGNIFICATION', 1.3);
+		if(!defined('K_SMALL_RATIO')) define('K_SMALL_RATIO', 2 / 3);
+		if(!defined('K_THAI_TOPCHARS')) define('K_THAI_TOPCHARS', true);
+		if(!defined('K_TCPDF_CALLS_IN_HTML')) define('K_TCPDF_CALLS_IN_HTML', true);
+		if(!defined('K_TCPDF_THROW_EXCEPTION_ERROR')) define('K_TCPDF_THROW_EXCEPTION_ERROR', false);
 	}
 
 	require_once TCPDF_PATH . 'tcpdf.php';

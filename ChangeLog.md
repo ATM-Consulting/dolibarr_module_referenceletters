@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 
 
 ## Version 2.15 - 21/07/2022
+- FIX : DA024017 tms doesn't have a default value - *24/10/2023* - 2.15.9
+- FIX : remove strip tags - *19/07/2023* - 2.15.8
+- FIX : Compat V17 - *21/04/2023* - 2.15.7
+- FIX : !empty - *29/03/2023* - 2.15.6
 - FIX : Handle agefodd img training - *20/01/2023* - 2.15.5
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.4
 - FIX : TEST ARRAY  - *23/11/2022* - 2.15.3
@@ -23,6 +27,7 @@ All notable changes to this project will be documented in this file.
 - NEW : Select the previous docedit document used by fiche *15/04/2022* - 2.12.0
 
 ## Version 2.11 - 25/03/2022
+- FIX : Add substitution in agefodd to be able to use commercial mobile phone *04/04/2023* - 2.11.1
 - NEW : Add substitution in agefodd to be able to use all presta soc std data *21/03/2022* - 2.11.0
 - NEW : Add substitution in agefodd to be able to use presta firstname, lastname and soc *15/02/2022* - 2.10.0
 

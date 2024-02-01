@@ -326,7 +326,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return number|array[]|number[][]
 	 */
 	public static function get_detail_tva(&$object, &$outputlangs) {
-		global $conf;
+		global $conf, $langs;
+
+		$langs->load("referenceletters@referenceletters");
 
 		if (! is_array($object->lines))
 			return 0;
@@ -366,8 +368,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if ($object->remise_percent)
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-				if(empty($TTva['Total TVA ' . round($vatrate, 2) . '%'])) $TTva['Total TVA ' . round($vatrate, 2) . '%'] = 0;
-				$TTva['Total TVA ' . round($vatrate, 2) . '%'] += $tvaligne;
+				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}
 

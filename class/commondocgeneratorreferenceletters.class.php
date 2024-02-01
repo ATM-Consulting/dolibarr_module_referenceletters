@@ -368,7 +368,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if ($object->remise_percent)
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-				if(empty($TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] = 0;
+				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
 				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}

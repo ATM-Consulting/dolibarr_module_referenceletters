@@ -133,10 +133,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
 			$dir = $dir_output;
 			if($fk_step > 0) {
-				$dir = getStrStepDir($id_object, $socid, $fk_step);
+				//Si on est sur un modele trainee, on nous file quand même un $socid qui est l'id du trainee ... =)
+				if(substr($this->instance_letter->element_type, -8) ==='_trainee') $dir = getStrStepDir($id_object, 0, $fk_step);
+				else $dir = getStrStepDir($id_object, $socid, $fk_step);
 			}
 			if(!$isCertif) $file = $dir . '/' . $file;
-
 			if (! file_exists($dir)) {
 				if (dol_mkdir($dir) < 0) {
 					$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);

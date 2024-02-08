@@ -955,22 +955,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
 			$fk_place = $agfStep->fk_place;
 		}
-		if (! empty($fk_place)) {
-			dol_include_once('/agefodd/class/agefodd_place.class.php');
-			$agf_place = new Agefodd_place($db);
-			$agf_place->fetch($fk_place);
-			$resarray['formation_lieu'] = strip_tags($agf_place->ref_interne);
-			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
-			// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
-			// fix TK9760
-			$resarray['formation_lieu_acces'] = str_replace('&amp;','&',$agf_place->acces_site);
-			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
-			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-			$resarray['formation_lieu_divers'] = $agf_place->note1;
-		}
+
+		dol_include_once('/agefodd/class/agefodd_place.class.php');
+		$agf_place = new Agefodd_place($db);
+		if(! empty($fk_place)) $agf_place->fetch($fk_place);
+		$resarray['formation_lieu'] = strip_tags($agf_place->ref_interne);
+		$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
+		$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
+		$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
+		// fix TK9760
+		$resarray['formation_lieu_acces'] = str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
+		$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
+		$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
+		$resarray['formation_lieu_divers'] = $agf_place->note1;
+
 
 		// Add ICS link replacement to mails
 		$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2) . '?format=ical&type=event';

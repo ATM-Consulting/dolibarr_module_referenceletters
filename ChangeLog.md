@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
+
+
+
+## Release 2.19 - 12/02/2024
 - NEW : Compatibility with agefodd step - *08/02/2024* - 2.19.0
 
 ## Release 2.18 - 10/01/2024

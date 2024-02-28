@@ -867,6 +867,7 @@ class ReferenceLetters extends CommonObject
 				'line_product_ref'=>'Référence produit',
 				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
 				'line_product_label'=>'Libellé produit',
+				'line_libelle'=>'Libellé du produit/service', // Ajout du libellé des produit/service
 				'line_product_type'=>'Type produit',
 				'line_desc'=>'Description',
 				'line_vatrate'=>'Taux de TVA',

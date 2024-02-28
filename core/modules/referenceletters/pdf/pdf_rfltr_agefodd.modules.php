@@ -229,6 +229,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					// Sould be x4 then x3,x2 (same level) then x1
 					$chapter_text = $this->merge_array($object, $chapter_text, array(
 							'THorairesSession',
+							'TFormateursSession', // Voir ticket ATM 11988
 							'TFormationObjPeda',
 							'TStagiairesSession',
 							'TStagiairesSessionPresent',
@@ -237,7 +238,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					        'TStagiairesSessionSocConfirm',
 							'TStagiairesSessionSocMore',
 							'TStagiairesSessionConvention',
-							'TFormateursSession',
 							'TConventionFinancialLine',
 							'TFormateursSessionCal'
 					));

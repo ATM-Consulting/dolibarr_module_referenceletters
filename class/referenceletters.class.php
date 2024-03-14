@@ -861,7 +861,7 @@ class ReferenceLetters extends CommonObject
 				,'line_societe_zip'=>'Code postal de la société du participant'
 				,'line_societe_mail'=>'Adresse mail de la société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
-				,'line_mail' => 'Email du participant'
+				,'line_email' => 'Email du participant'
 				,'line_siret' => 'SIRET de la société du participant'
 				,'line_birthday' => 'Date de naissance du participant'
 				,'line_birthplace'=>'Lieu de naissance du participant'

@@ -861,7 +861,7 @@ class ReferenceLetters extends CommonObject
 				,'line_societe_zip'=>'Code postal de la société du participant'
 				,'line_societe_mail'=>'Adresse mail de la société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
-				,'line_mail' => 'Email du participant'
+				,'line_email' => 'Email du participant'
 				,'line_siret' => 'SIRET de la société du participant'
 				,'line_birthday' => 'Date de naissance du participant'
 				,'line_birthplace'=>'Lieu de naissance du participant'
@@ -949,6 +949,7 @@ class ReferenceLetters extends CommonObject
 				'line_product_ref'=>'Référence produit',
 				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
 				'line_product_label'=>'Libellé produit',
+				'line_libelle'=>'Libellé du produit/service', // Ajout du libellé des produit/service
 				'line_product_type'=>'Type produit',
 				'line_desc'=>'Description',
 				'line_vatrate'=>'Taux de TVA',

@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Release 2.19 - 12/02/2024
+- FIX : DA024630 warning  - *21/03/2024* - 2.19.1  
 - FIX : fix line mail to line_email  in referenceletter.class  - *12/03/2024* - 2.19.1  
 - NEW : Compatibility with agefodd step - *08/02/2024* - 2.19.0
 

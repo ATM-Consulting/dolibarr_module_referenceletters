@@ -534,7 +534,7 @@ class pdf_rfltr_contact extends ModelePDFReferenceLetters
 	 * @param int $hidefreetext text
 	 * @return int height of bottom margin including footer text
 	 */
-	function _pagefoot($object, $hidefreetext = 0) {
+	function _pagefoot(&$pdf,$object,$outputlangs, $hidefreetext = 0) {
 		$this->pdf->SetX($this->marge_gauche);
 		return pdf_pagefoot($this->pdf, $this->outputlangs, '', $this->emetteur, $this->marge_basse, $this->marge_gauche, $this->page_hauteur, $object, 0, $hidefreetext);
 	}

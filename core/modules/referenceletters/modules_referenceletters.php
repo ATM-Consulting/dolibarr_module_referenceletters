@@ -653,9 +653,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param stdClass $object
 	 * @param string $txt
 	 * @param Translate $outputlangs Translate langs
+	 * @param int $fk_stagiaire
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt='', $outputlangs=null) {
+	function setSubstitutions(&$object, $txt='', $outputlangs=null, $fk_stagiaire = 0) {
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
@@ -752,7 +753,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Agsession') {
-			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs, $fk_stagiaire);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {

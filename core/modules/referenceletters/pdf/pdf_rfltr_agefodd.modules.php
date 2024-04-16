@@ -69,9 +69,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $courrier id session
 	 * @param bool $isCertif
 	 * @param int $fk_step
+	 * @param int $fk_stagiaire
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0) {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_stagiaire = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -242,7 +243,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $chapter_text);
+					$chapter_text = $this->setSubstitutions($object, $chapter_text, null , $fk_stagiaire);
 
 					// merge agefodd arrays
 					//TODO : define this order on logical order by template

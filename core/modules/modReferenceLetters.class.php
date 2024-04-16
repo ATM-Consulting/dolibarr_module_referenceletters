@@ -61,7 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module ReferenceLetters";
 		// Possible values for version are: 'development', 'experimental' or version
-		$this->version = '2.19.3';
+		$this->version = '2.20.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -102,7 +102,7 @@ class modReferenceLetters extends DolibarrModules
 				'triggers' => 1
 		);
 		// Set this to 1 if module has its own trigger directory
-		
+
 		// Set this to 1 if module has its own login method directory
 		// 'login' => 0,
 		// Set this to 1 if module has its own substitution function file

@@ -242,7 +242,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $chapter_text, null );
+					$chapter_text = $this->setSubstitutions($object, $chapter_text );
 
 					// merge agefodd arrays
 					//TODO : define this order on logical order by template

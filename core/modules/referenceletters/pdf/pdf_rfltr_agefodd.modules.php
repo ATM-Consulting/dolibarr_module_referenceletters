@@ -69,10 +69,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $courrier id session
 	 * @param bool $isCertif
 	 * @param int $fk_step
-	 * @param int $fk_stagiaire
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_stagiaire = 0) {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -243,7 +242,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $chapter_text, null , $fk_stagiaire);
+					$chapter_text = $this->setSubstitutions($object, $chapter_text, null );
 
 					// merge agefodd arrays
 					//TODO : define this order on logical order by template
@@ -276,36 +275,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 					$chapter_text = $this->merge_array($object, $chapter_text, $TAgfArray);
 
-					// fix TK9360 : ce patch n'est plus utile à présent => je vire
-/*					// correction de problème de décalage de texte
-					if (preg_match('/<strong>/', $chapter_text)) {
-						$position = 0;
-
-						while ( preg_match('/<strong>/', substr($chapter_text, $position)) ) {
-							$position = strpos($chapter_text, '<strong>', $position);
-							$startStrong = $position;
-							$endStrong = strpos($chapter_text, '</strong>', $position);
-							$strong = substr($chapter_text, $startStrong + 8, $endStrong - $position - 8);
-							$style = 'font-weight:bold;';
-							$i = 0;
-							while ( @strpos($strong, '<span style=', $i) !== false ) {
-								$len = strpos(substr($strong, strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
-								$style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
-								$styleposition = strpos($strong, '<span style=', $i);
-								if (empty($styleposition)) {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, strpos($strong, '>', $o) + 1, $l);
-								} else {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, 0, strpos($strong, '<span')) . substr($strong, strpos($strong, '>') + 1, $l) . substr($strong, strripos($strong, '</span>') + 7);
-								}
-								$i += $len;
-							}
-							$chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="' . $style . '">' . $strong . '</span>' . substr($chapter_text, $endStrong + 9);
-							$position = $endStrong;
-						}
-					}
-*/
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
     					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);

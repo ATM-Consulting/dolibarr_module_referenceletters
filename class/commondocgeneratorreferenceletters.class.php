@@ -753,10 +753,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 *
 	 * @param CommonObject $object Object
 	 * @param Translate $outputlangs Translate instance
-	 * @param int $fk_stagiaire
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
-	public function get_substitutionsarray_agefodd(&$object, $outputlangs, $fk_stagiaire = 0)
+	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
 		global $db, $langs;
 
@@ -780,89 +779,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
-
-		$staId = $fk_stagiaire > 0 ? $fk_stagiaire : 0 ;
-
-		$sta = new Agefodd_stagiaire($db);
-		$res = $sta->fetch($staId);
-		if ($res >  0 ){
-
-				require_once DOL_DOCUMENT_ROOT .'/societe/class/societe.class.php';
-				$socSta = new Societe($db);
-
-				$resarray['objvar_object_stagiaire_civilite'] 	=$sta->civilite;
-				$resarray['objvar_object_stagiaire_nom']		=$sta->nom;
-				$resarray['objvar_object_stagiaire_prenom']		=$sta->prenom;
-				$resarray['objvar_object_stagiaire_mail']		=$sta->mail;
-				$resarray['objvar_object_stagiaire_socname']	=$sta->socname;
-				$resarray['objvar_object_stagiaire_socaddr']	=$sta->socaddr;
-				$resarray['objvar_object_stagiaire_soczip']		=$sta->socid;
-				$resarray['objvar_object_stagiaire_soctown']	=$sta->soctown;
-
-				// extrafield STAGIAIRE
-				$extrafields = new ExtraFields($db);
-				$extrafields->fetch_name_optionals_label($sta->table_element);
-				if(floatval(DOL_VERSION) >= 16) {
-					if (isset($extrafields)){
-						$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-						if($extrafields->attributes[$sta->table_element]['loaded'] > 0) {
-							$extrafields->attribute_type = $extrafields->attributes[$sta->table_element]['type']?? array();
-							$extrafields->attribute_size = $extrafields->attributes[$sta->table_element]['size']?? array() ;
-							$extrafields->attribute_unique = $extrafields->attributes[$sta->table_element]['unique']?? array();
-							$extrafields->attribute_required = $extrafields->attributes[$sta->table_element]['required']?? array();
-							$extrafields->attribute_label = $extrafields->attributes[$sta->table_element]['label']?? array();
-							$extrafields->attribute_default = $extrafields->attributes[$sta->table_element]['default']?? array();
-							$extrafields->attribute_computed = $extrafields->attributes[$sta->table_element]['computed']?? array();
-							$extrafields->attribute_param = $extrafields->attributes[$sta->table_element]['param']?? array();
-							$extrafields->attribute_perms = $extrafields->attributes[$sta->table_element]['perms']?? array();
-							$extrafields->attribute_langfile = $extrafields->attributes[$sta->table_element]['langfile']?? array();
-							$extrafields->attribute_list = $extrafields->attributes[$sta->table_element]['list']?? array();
-							$extrafields->attribute_hidden = $extrafields->attributes[$sta->table_element]['hidden']?? array();
-						}
-					}
-				}
-				if (isset($extrafields->attributes[$sta->table_element]['label']) && is_array($extrafields->attributes[$sta->table_element]['label'])){
-					foreach($extrafields->attributes[$sta->table_element]['label'] as $key => $val) {
-						$resarray['objvar_object_stagiaire_options_'.$key] = strip_tags($extrafields->showOutputField($key, $sta->array_options['options_'.$key]));
-					}
-				}
-				// -------------------------------------------------------------------------------------------------------
-				// extrafield STAGIAIRE SOC
-				$res = $socSta->fetch($sta->socid);
-				if ($res > 0 ){
-					// extrafield STAGIAIRE SOC
-					$extrafields->fetch_name_optionals_label($socSta->table_element);
-					if(floatval(DOL_VERSION) >= 16) {
-						if (isset($extrafields)){
-							$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-							if($extrafields->attributes[$socSta->table_element]['loaded'] > 0) {
-								$extrafields->attribute_type = $extrafields->attributes[$socSta->table_element]['type']?? array();
-								$extrafields->attribute_size = $extrafields->attributes[$socSta->table_element]['size']?? array() ;
-								$extrafields->attribute_unique = $extrafields->attributes[$socSta->table_element]['unique']?? array();
-								$extrafields->attribute_required = $extrafields->attributes[$socSta->table_element]['required']?? array();
-								$extrafields->attribute_label = $extrafields->attributes[$socSta->table_element]['label']?? array();
-								$extrafields->attribute_default = $extrafields->attributes[$socSta->table_element]['default']?? array();
-								$extrafields->attribute_computed = $extrafields->attributes[$socSta->table_element]['computed']?? array();
-								$extrafields->attribute_param = $extrafields->attributes[$socSta->table_element]['param']?? array();
-								$extrafields->attribute_perms = $extrafields->attributes[$socSta->table_element]['perms']?? array();
-								$extrafields->attribute_langfile = $extrafields->attributes[$socSta->table_element]['langfile']?? array();
-								$extrafields->attribute_list = $extrafields->attributes[$socSta->table_element]['list']?? array();
-								$extrafields->attribute_hidden = $extrafields->attributes[$socSta->table_element]['hidden']?? array();
-							}
-						}
-					}
-
-					if (isset($extrafields->attributes[$socSta->table_element]['label']) && is_array($extrafields->attributes[$socSta->table_element]['label'])){
-						foreach($extrafields->attributes[$socSta->table_element]['label'] as $key => $val) {
-							$resarray['objvar_object_stagiaire_soc_options_'.$key] = strip_tags($extrafields->showOutputField($key, $socSta->array_options['options_'.$key]));
-						}
-					}
-				}
-
-			}
-
-
-
 
 
 		if(!empty($object->fk_product)) {
@@ -1048,8 +964,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$agf_place = new Agefodd_place($db);
 		if(! empty($fk_place)) $agf_place->fetch($fk_place);
 		// Lieu
-		$resarray['objvar_object_lieu_adresse']		= strip_tags($agf_place->adresse);;
-		$resarray['objvar_object_lieu_ref_interne']	= strip_tags($agf_place->ref_interne);;
 		$resarray['formation_lieu'] 				= strip_tags($agf_place->ref_interne);
 		$resarray['formation_lieu_adresse'] 		= strip_tags($agf_place->adresse);
 		$resarray['formation_lieu_cp'] 				= strip_tags($agf_place->cp);

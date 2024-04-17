@@ -489,7 +489,11 @@ class modReferenceLetters extends DolibarrModules
 				];
 			}
 		}
+		if ($this->needUpdate('2.20.0')) {
+			$this->db->query("ALTER TABLE ".MAIN_DB_PREFIX."referenceletters MODIFY COLUMN element_type VARCHAR(150);");
+		}
 
+		dolibarr_set_const($this->db, 'REFERENCELETTERS_MOD_LAST_RELOAD_VERSION', $this->version, 'chaine', 0, '', 0);
 		return $this->_init($sql, $options);
 	}
 
@@ -518,4 +522,24 @@ class modReferenceLetters extends DolibarrModules
 	function load_tables() {
 		return $this->_load_tables('/referenceletters/sql/');
 	}
+
+	/**
+	 * Compare
+	 *
+	 * @param string $targetVersion numéro de version pour lequel il faut faire la comparaison
+	 * @return bool
+	 */
+	public function needUpdate($targetVersion){
+		global $conf;
+		if (empty($conf->global->REFERENCELETTERS_MOD_LAST_RELOAD_VERSION)) {
+			return true;
+		}
+
+		if(versioncompare(explode('.',$targetVersion), explode('.', $conf->global->REFERENCELETTERS_MOD_LAST_RELOAD_VERSION))>0){
+			return true;
+		}
+
+		return false;
+	}
+
 }

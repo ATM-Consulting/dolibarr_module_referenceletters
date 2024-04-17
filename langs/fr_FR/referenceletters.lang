@@ -68,7 +68,9 @@ RefLtrAgefodd=Exemple de modèle pour le module Formation
 RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
 RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 RefLtrShipping=Exemple de modèle de BON DE LIVRAISON
-
+AgfendTrainingTrainee=Attestation de fin de formation stagiaire
+AgfLinkedDocCertificatAchievmentq=Certification de réalisation documents liés
+AgfTraineeDocCertificatAchievment=Certificat de réalisation par stagiaire
 #
 # Page À propos
 #

@@ -336,9 +336,9 @@ class ReferenceLetters extends CommonObject
 			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
-			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
-				,'linked_certificate_completion_trainee'=>'Certificat de réalisation documents liés'
-				,'certificate_completion_trainee'=>'Certificat de réalisation par stagiaire'
+			    ,'attestationendtraining_trainee'=>'AgfendTrainingTrainee'
+				,'linked_certificate_completion_trainee'=>'AgfLinkedDocCertificatAchievment'
+				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
 
 			if(!empty($conf->agefoddcertificat->enabled)) {

@@ -483,7 +483,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -757,7 +757,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db, $conf,$langs;
+		global $db, $langs;
+
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
@@ -778,6 +779,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+
 
 		if(!empty($object->fk_product)) {
 			$p = new Product($db);
@@ -854,14 +856,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['session_nb_days'] = $object->session_nb_days?? '';
 		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline?? '';
 		$resarray['trainer_datetextline'] = $object->trainer_datetextline?? '';
-    $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
-    $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
-    $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
-    $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
-    $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
-    $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
-    $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
-    $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
+		$resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
+		$resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
+		$resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
+		$resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
+		$resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
+		$resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
+		$resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
+		$resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
  		$resarray['trainer_cost_planned'] = price($object->cost_trainer_planned ?? '');
 
 
@@ -940,6 +942,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 				}
 			}
+
 			if (isset($e->attributes[$catalogue->table_element]['label']) && is_array($e->attributes[$catalogue->table_element]['label'])){
 				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
 					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
@@ -960,17 +963,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		dol_include_once('/agefodd/class/agefodd_place.class.php');
 		$agf_place = new Agefodd_place($db);
 		if(! empty($fk_place)) $agf_place->fetch($fk_place);
-		$resarray['formation_lieu'] = strip_tags($agf_place->ref_interne);
-		$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-		$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-		$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+		// Lieu
+		$resarray['formation_lieu'] 				= strip_tags($agf_place->ref_interne);
+		$resarray['formation_lieu_adresse'] 		= strip_tags($agf_place->adresse);
+		$resarray['formation_lieu_cp'] 				= strip_tags($agf_place->cp);
+		$resarray['formation_lieu_ville'] 			= strip_tags($agf_place->ville);
 		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
 		// fix TK9760
-		$resarray['formation_lieu_acces'] = str_replace('&amp;', '&', $agf_place->acces_site);
-		$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
-		$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-		$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-		$resarray['formation_lieu_divers'] = $agf_place->note1;
+		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_phone'] 			= dol_print_phone($agf_place->tel, $agf_place->country_code);
+		$resarray['formation_lieu_horaires'] 		= strip_tags($agf_place->timeschedule);
+		$resarray['formation_lieu_notes'] 			= strip_tags($agf_place->notes);
+		$resarray['formation_lieu_divers'] 			= $agf_place->note1;
 
 
 		// Add ICS link replacement to mails

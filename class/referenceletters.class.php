@@ -311,7 +311,6 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
-
 			$Tab = array(
 			    'fiche_pedago'=>'AgfFichePedagogique'
 			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
@@ -337,7 +336,9 @@ class ReferenceLetters extends CommonObject
 			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
-			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			    ,'attestationendtraining_trainee'=>'AgfendTrainingTrainee'
+				,'linked_certificate_completion_trainee'=>'AgfLinkedDocCertificatAchievment'
+				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
 
 			if(!empty($conf->agefoddcertificat->enabled)) {
@@ -762,7 +763,6 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		return $subst_array;

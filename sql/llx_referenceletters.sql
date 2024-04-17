@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS llx_referenceletters (
 rowid integer NOT NULL auto_increment PRIMARY KEY,
 entity integer NOT NULL DEFAULT 1,
 title varchar(100) NOT NULL,
-element_type varchar(50) NOT NULL,
+element_type varchar(150) NOT NULL,
 use_custom_header integer NOT NULL DEFAULT 0,
 header text,
 use_custom_footer integer NOT NULL DEFAULT 0,

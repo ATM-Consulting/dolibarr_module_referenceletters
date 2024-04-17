@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
-
+NEW : Add certificat_completion  generation for trainee docs / docs  - *16/04/2024* - 2.20.0  
 
 ## Release 2.19 - 12/02/2024
 - FIX : DA024698/DA024701 docedit pdf generation when creating objects  - *21/03/2024* - 2.19.2

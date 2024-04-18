@@ -326,7 +326,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return number|array[]|number[][]
 	 */
 	public static function get_detail_tva(&$object, &$outputlangs) {
-		global $conf;
+		global $conf, $langs;
+
+		$langs->load("referenceletters@referenceletters");
 
 		if (! is_array($object->lines))
 			return 0;
@@ -358,7 +360,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$tvaligne = $sign * $line->total_tva;
 					}
 				} else {
-					if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+					if (!empty($conf->multicurrency->enabled) && $object->multicurrency_tx != 1)
 						$tvaligne = $line->multicurrency_total_tva;
 					else
 						$tvaligne = $line->total_tva;
@@ -366,8 +368,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if ($object->remise_percent)
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-
-				$TTva['Total TVA ' . round($vatrate, 2) . '%'] += $tvaligne;
+				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}
 
@@ -483,6 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -651,6 +654,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
+		if(floatval(DOL_VERSION) >= 16) {
+			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+			if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
+				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
+				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
+				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
+				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
+				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
+				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
+				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
+				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
+				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
+				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
+				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
+			}
+		}
 		if ($fetchoptionnals) {
 			$line->fetch_optionals($line->rowid, $extralabels);
 		}
@@ -658,6 +678,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+			if(floatval(DOL_VERSION) >= 16) {
+				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+				if($extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
+					$extrafields->attribute_type = $extrafields->attributes['agefodd_stagiaire']['type'];
+					$extrafields->attribute_size = $extrafields->attributes['agefodd_stagiaire']['size'];
+					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
+					$extrafields->attribute_required = $extrafields->attributes['agefodd_stagiaire']['required'];
+					$extrafields->attribute_label = $extrafields->attributes['agefodd_stagiaire']['label'];
+					$extrafields->attribute_default = $extrafields->attributes['agefodd_stagiaire']['default'];
+					$extrafields->attribute_computed = $extrafields->attributes['agefodd_stagiaire']['computed'];
+					$extrafields->attribute_param = $extrafields->attributes['agefodd_stagiaire']['param'];
+					$extrafields->attribute_perms = $extrafields->attributes['agefodd_stagiaire']['perms'];
+					$extrafields->attribute_langfile = $extrafields->attributes['agefodd_stagiaire']['langfile'];
+					$extrafields->attribute_list = $extrafields->attributes['agefodd_stagiaire']['list'];
+					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'];
+				}
+			}
 			$line->array_options=$line->agefodd_stagiaire->array_options;
 		}
 
@@ -780,6 +817,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_commercial'] = $object->commercialname;
 		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
 		$resarray['formation_commercial_phone'] = $object->commercialphone;
+		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone;
 		$resarray['formation_commercial_mail'] = $object->commercialemail;
 		$resarray['formation_societe'] = $object->thirdparty->nom;
 		$resarray['formation_commentaire'] = nl2br($object->notes);
@@ -839,13 +877,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 
 			$catalogue->fetch($object->fk_formation_catalogue);
-			$resarray['formation_but'] = strip_tags($catalogue->but);
-			$resarray['formation_ref'] = strip_tags($catalogue->ref_obj);
-			$resarray['formation_refint'] = strip_tags($catalogue->ref_interne);
-			$resarray['formation_methode'] = strip_tags($catalogue->methode);
-			$resarray['formation_prerequis'] = strip_tags($catalogue->prerequis);
-			$resarray['formation_sanction'] = strip_tags($catalogue->sanction);
-			$resarray['formation_type_stagiaire'] = strip_tags($catalogue->public);
+			$resarray['formation_but'] = $catalogue->but;
+			$resarray['formation_ref'] = $catalogue->ref_obj;
+			$resarray['formation_refint'] = $catalogue->ref_interne;
+			$resarray['formation_methode'] = $catalogue->methode;
+			$resarray['formation_prerequis'] = $catalogue->prerequis;
+			$resarray['formation_sanction'] = $catalogue->sanction;
+			$resarray['formation_type_stagiaire'] = $catalogue->public;
 			$resarray['formation_programme'] = $catalogue->programme;
 			$resarray['formation_documents'] = $catalogue->note1;
 			$resarray['formation_equipements'] = $catalogue->note2;
@@ -856,10 +894,29 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_Accessibility_Handicap_label'] = $langs->trans('RefLtrAccessHandicapTitle');
 			$e = new ExtraFields($db);
 			$e->fetch_name_optionals_label($catalogue->table_element);
-
-			foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
-				$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+			if(floatval(DOL_VERSION) >= 16) {
+				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+				if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
+					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type'];
+					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size'];
+					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique'];
+					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required'];
+					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label'];
+					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default'];
+					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed'];
+					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param'];
+					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms'];
+					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile'];
+					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list'];
+					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden'];
+				}
 			}
+			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
+					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
+				}
+			}
+
 			// surcharge pour le oui ou non à la place de 1 ou 0
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
 
@@ -937,8 +994,24 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
-					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey,true);
-
+					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
+					if(floatval(DOL_VERSION) >= 16) {
+						$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+						if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+							$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
+							$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
+							$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
+							$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
+							$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
+							$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
+							$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
+							$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
+							$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
+							$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
+							$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
+							$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
+						}
+					}
 					foreach ($extralabels as $key_opt => $label_opt)
 					{
 						$array_other['object_options_'.$key_opt] =  '';
@@ -1006,7 +1079,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $conf,$langs;
 
 		//TODO, Dolibarr deal it with diffrent way in commondocgenerator : why ?
-
 		if (! empty($extrafieldsobjectkey))
 		{
 			$elementtype=$extrafields->attributes[$extrafieldsobjectkey]['elementtype'][$key];	// seems not used
@@ -1054,7 +1126,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 		}
-
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
 
 		// If field is a computed field, value must become result of compute
@@ -1341,6 +1412,24 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
+		if(floatval(DOL_VERSION) >= 16) {
+			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
+				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
+				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
+				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
+				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+			}
+		}
+
 
 		// phpcs:enable
 		global $conf;
@@ -1360,11 +1449,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			elseif($extrafields->attribute_type[$key] == 'checkbox') {
 				$valArray=explode(',', $object->array_options['options_'.$key]);
 				$output=array();
-				foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
-					if  (in_array($keyopt, $valArray)) {
-						$output[]=$valopt;
+				if (is_array($extrafields->attribute_param[$key]['options'])){
+					foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
+						if  (in_array($keyopt, $valArray)) {
+							$output[]=$valopt;
+						}
 					}
 				}
+
 				$object->array_options['options_'.$key] = implode(', ', $output);
 			}
 			elseif($extrafields->attribute_type[$key] == 'date')

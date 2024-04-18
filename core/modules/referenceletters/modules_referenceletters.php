@@ -507,6 +507,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
 											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
 											, '{line_desc}'          => '{line_desc}'
+											, '{line_libelle}'       => '{line_libelle}'
 										));
 									}
 								} else if (TSubtotal::isSubtotal($line)) {
@@ -542,6 +543,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
 											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
 											, '{line_desc}'          => '{line_desc}'
+											, '{line_libelle}'       => '{line_libelle}'
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_price_ht_locale}' => $style_start . '{line_price_ht_locale}' . $style_end
@@ -656,7 +658,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
-
+		$TTmpArrayOptions = $object->array_options;
 		// User substitution value
 		$tmparray = $this->get_substitutionarray_user($user, $outputlangs);
 		$substitution_array = array();
@@ -753,7 +755,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
-					$substitution_array['{' . $key . '}'] = $value;
+					$substitution_array['{' . $key . '}'] = RfltrTools::setImgLinkToUrl($value);
 				}
 				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 			}
@@ -820,7 +822,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 		$tmparray['object_incoterms']='';
-        if($conf->incoterm->enabled && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
+        if(!empty($conf->incoterm->enabled) && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
             if ($resql) {
@@ -910,7 +912,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 			$txt = preg_replace('/\{' . preg_quote($prefixKey, '/') . '_[0-9]+_[^\}]+\}/', '', $txt);
 		}
-
+		$object->array_options=$TTmpArrayOptions;
 		return $txt;
 	}
 

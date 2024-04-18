@@ -23,7 +23,7 @@
  * Put some comments here
  */
 include_once DOL_DOCUMENT_ROOT . "/core/boxes/modules_boxes.php";
-
+require_once  __DIR__. '/../../lib/referenceletters.lib.php';
 /**
  * Class to manage the box
  */
@@ -84,7 +84,8 @@ class box_referenceletter_models extends ModeleBoxes {
 
 		$langs->load("boxes");
 		$this->boxlabel = $langs->transnoentitiesnoconv("Module103258Name").'-'.$langs->transnoentitiesnoconv("RefLtrLettersActiveListbox",15);
-		$this->hidden=! ($user->rights->referenceletters->read);
+
+		$this->hidden=! ( rl_userHasRight($user,'referenceletters','read'));
 	}
 
 	/**

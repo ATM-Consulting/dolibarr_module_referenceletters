@@ -744,7 +744,7 @@ class ReferenceLettersElements extends CommonObject
 				'/'
 		), ( array ) $conf->modules_parts['models']);
 
-		if (! empty($conf->global->REF_LETTER_ADDON)) {
+		if (getDolGlobalString('REF_LETTER_ADDON')) {
 			foreach ( $dirmodels as $reldir ) {
 				$dir = dol_buildpath($reldir . "core/modules/referenceletters/");
 				if (is_dir($dir)) {
@@ -753,14 +753,14 @@ class ReferenceLettersElements extends CommonObject
 						$var = true;
 
 						while ( ($file = readdir($handle)) !== false ) {
-							if ($file == $conf->global->REF_LETTER_ADDON . '.php') {
+							if ($file == getDolGlobalString('REF_LETTER_ADDON') . '.php') {
 								$file = substr($file, 0, dol_strlen($file) - 4);
 								require_once $dir . $file . '.php';
 
 								$module = new $file();
 
 								// Chargement de la classe de numerotation
-								$classname = $conf->global->REF_LETTER_ADDON;
+								$classname = getDolGlobalString('REF_LETTER_ADDON');
 
 								$obj = new $classname();
 

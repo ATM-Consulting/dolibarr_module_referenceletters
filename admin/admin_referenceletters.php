@@ -139,9 +139,9 @@ foreach ( $dirmodels as $reldir ) {
 					$module = new $file();
 
 					// Show modules according to features level
-					if ($module->version == 'development' && $conf->global->MAIN_FEATURES_LEVEL < 2)
+					if ($module->version == 'development' && getDolGlobalInt('MAIN_FEATURES_LEVEL') < 2)
 						continue;
-					if ($module->version == 'experimental' && $conf->global->MAIN_FEATURES_LEVEL < 1)
+					if ($module->version == 'experimental' && getDolGlobalInt('MAIN_FEATURES_LEVEL') < 1)
 						continue;
 
 					if ($module->isEnabled()) {
@@ -162,7 +162,7 @@ foreach ( $dirmodels as $reldir ) {
 						print '</td>' . "\n";
 
 						print '<td align="center">';
-						if ($conf->global->REF_LETTER_ADDON == "$file") {
+						if (getDolGlobalString('REF_LETTER_ADDON') == "$file") {
 							print img_picto($langs->trans("Activated"), 'switch_on');
 						} else {
 							print '<a href="' . $_SERVER["PHP_SELF"] . '?action=setmod&amp;value=' . $file . '">';
@@ -242,7 +242,7 @@ if ($conf->use_javascript_ajax) {
 			'0' => $langs->trans("No"),
 			'1' => $langs->trans("Yes")
 	);
-	print $form->selectarray("REF_LETTER_CREATEEVENT", $arrval, $conf->global->REF_LETTER_CREATEEVENT);
+	print $form->selectarray("REF_LETTER_CREATEEVENT", $arrval, getDolGlobalString('REF_LETTER_CREATEEVENT'));
 }
 print '</td>';
 print '<td align="center">';
@@ -250,7 +250,7 @@ print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_CREATEEVENT")
 print '</td>';
 print '</tr>';
 
-if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
+if (getDolGlobalString('REF_LETTER_CREATEEVENT')) {
 	print '<tr class="impair ifeventyes"><td style="padding-left:20px"> - ' . $langs->trans("RefLtrREF_LETTER_EVTCOPYFILE") . '</td>';
 	print '<td align="left">';
 	if ($conf->use_javascript_ajax) {
@@ -260,7 +260,7 @@ if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
 				'0' => $langs->trans("No"),
 				'1' => $langs->trans("Yes")
 		);
-		print $form->selectarray("REF_LETTER_EVTCOPYFILE", $arrval, $conf->global->REF_LETTER_EVTCOPYFILE);
+		print $form->selectarray("REF_LETTER_EVTCOPYFILE", $arrval, getDolGlobalString('REF_LETTER_EVTCOPYFILE'));
 	}
 	print '</td>';
 	print '<td align="center">';
@@ -274,7 +274,7 @@ if (! empty($conf->global->REF_LETTER_CREATEEVENT)) {
 			'normal' => $langs->trans("RefLtrREF_LETTER_TYPEEVENTNAME_normal"),
 			'other' => $langs->trans("RefLtrREF_LETTER_TYPEEVENTNAME_other")
 	);
-	print $form->selectarray("REF_LETTER_TYPEEVENTNAME", $arrval, $conf->global->REF_LETTER_TYPEEVENTNAME);
+	print $form->selectarray("REF_LETTER_TYPEEVENTNAME", $arrval, getDolGlobalString('REF_LETTER_TYPEEVENTNAME'));
 	print '</td>';
 	print '<td align="center">';
 	print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
@@ -291,7 +291,7 @@ if ($conf->use_javascript_ajax) {
 			'0' => $langs->trans("No"),
 			'1' => $langs->trans("Yes")
 	);
-	print $form->selectarray("REF_LETTER_OUTPUTREFLET", $arrval, $conf->global->REF_LETTER_OUTPUTREFLET);
+	print $form->selectarray("REF_LETTER_OUTPUTREFLET", $arrval, getDolGlobalString('REF_LETTER_OUTPUTREFLET'));
 }
 print '</td>';
 print '<td align="center">';
@@ -328,7 +328,7 @@ if ($conf->use_javascript_ajax) {
         '0' => $langs->trans("No"),
         '1' => $langs->trans("Yes")
     );
-    print $form->selectarray("REF_LETTER_PREDEF_HEADER_AND_FOOTER", $arrval, $conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER);
+    print $form->selectarray("REF_LETTER_PREDEF_HEADER_AND_FOOTER", $arrval, getDolGlobalString('REF_LETTER_PREDEF_HEADER_AND_FOOTER'));
 }
 print '</td>';
 print '<td align="center">';
@@ -336,10 +336,10 @@ print $form->textwithpicto('', $langs->trans("RefLtrHelpREF_LETTER_PREDEF_HEADER
 print '</td>';
 print '</tr>';
 
-if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
+if (getDolGlobalString('REF_LETTER_PREDEF_HEADER_AND_FOOTER')) {
 
     print '<tr class="impair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrHeaderContent').' <br><br>';
-    $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', $conf->global->REF_LETTER_PREDEF_HEADER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_HEADER', getDolGlobalString('REF_LETTER_PREDEF_HEADER'), '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
     print '</td><td align="center">';
     print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
@@ -347,7 +347,7 @@ if (! empty($conf->global->REF_LETTER_PREDEF_HEADER_AND_FOOTER)) {
     print '</tr>';
 
     print '<tr class="pair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrFooterContent') . '<br><br>';
-    $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', $conf->global->REF_LETTER_PREDEF_FOOTER, '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
+    $doleditor=new DolEditor('REF_LETTER_PREDEF_FOOTER', getDolGlobalString('REF_LETTER_PREDEF_FOOTER'), '', 200, 'dolibarr_notes_encoded', '', false, true, 1, '', 70);
     $doleditor->Create();
     print '</td><td align="center">';
     print '<input type="submit" class="button" value="' . $langs->trans("Save") . '">';
@@ -370,7 +370,7 @@ if ($conf->use_javascript_ajax) {
         '0' => $langs->trans("No"),
         '1' => $langs->trans("Yes")
     );
-    print $form->selectarray("DOCEDIT_CHAPTERS_INLINE_EDITION", $arrval, $conf->global->DOCEDIT_CHAPTERS_INLINE_EDITION);
+    print $form->selectarray("DOCEDIT_CHAPTERS_INLINE_EDITION", $arrval, getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION'));
 }
 print '</td>';
 print '<td align="center">';
@@ -386,7 +386,7 @@ print '<tr>'
         : $form->selectarray(
             'DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT',
             array('0' => $langs->trans('No'), '1' => $langs->trans('Yes')),
-            $conf->global->DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT)).'</td>'
+				getDolGlobalString('DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT'))).'</td>'
     .'</tr>';
 
 print "</table><br>\n";

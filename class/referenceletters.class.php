@@ -334,11 +334,8 @@ class ReferenceLetters extends CommonObject
 		// Hook permettant à d'autres modules d'ajouter des types de documents
 		// (à terme, on pourrait même utiliser ce hook dans Agefodd et débarrasser DocEdit de toute référence
 		// à Agefodd)
-		$parameters = array();
-		$reshook = $hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
-		if ($reshook >= 0 && !empty($hookmanager->resArray)) {
-			$this->element_type_list = array_merge($this->element_type_list, $hookmanager->resArray);
-		}
+		$parameters = array('element_type_list' => &$this->element_type_list);
+		$hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
 
 		return 1;
 	}
@@ -752,12 +749,8 @@ class ReferenceLetters extends CommonObject
 
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
-		$parameters = array();
-		$reshook = $hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
-
-		if ($reshook >= 0 && !empty($hookmanager->resArray)) {
-			$subst_array = array_merge($subst_array, $hookmanager->resArray);
-		}
+		$parameters = array('subst_array' => &$subst_array);
+		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
 
 		return $subst_array;
 	}

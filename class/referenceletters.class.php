@@ -87,7 +87,8 @@ class ReferenceLetters extends CommonObject
 		$hookmanager->initHooks(array('referenceletters'));
 
 		$this->db = $db;
-		$this->element_type_list['contract'] = array (
+		if (isset($conf->contract) && !empty($conf->contract->enabled)) {
+			$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
 				'securityfeature' => '',
@@ -102,9 +103,11 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/contract/modules_contract.php',
 				'listmodelclass' => 'ModelePDFContract',
-                'document_dir' => $conf->contrat->dir_output
+                'document_dir' => $conf->contract->dir_output
 		);
-		$this->element_type_list['thirdparty'] = array (
+		}
+		if (isset($conf->societe) && !empty($conf->societe->enabled)) {
+			$this->element_type_list['thirdparty'] = array(
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
 				'securityfeature' => '&societe',
@@ -117,10 +120,11 @@ class ReferenceLetters extends CommonObject
 				'card' => 'societe/soc.php',
 				'substitution_method' => 'get_substitutionarray_thirdparty',
 				'picto' => 'company',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/societe/modules_societe.php',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/societe/modules_societe.php',
 				'listmodelclass' => 'ModeleThirdPartyDoc',
-                'document_dir' => $conf->societe->dir_output
-		);
+				'document_dir' => $conf->societe->dir_output
+			);
+		}
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
 				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
@@ -134,7 +138,8 @@ class ReferenceLetters extends CommonObject
 				'card' => 'contact/card.php',
 				'substitution_method' => 'get_substitutionarray_contact'
 		);
-		$this->element_type_list['propal'] = array (
+		if (isset($conf->propal) && !empty($conf->propal->enabled)){
+			$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
 				'securityfeature' => '',
@@ -152,7 +157,10 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->propal->dir_output
 
 		);
-		$this->element_type_list['invoice'] = array (
+		}
+
+		if (property_exists($conf, 'facture') && !empty($conf->facture->enabled) || property_exists($conf, 'invoice') && !empty($conf->invoice->enabled) ){
+			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
 				'securityfeature' => '',
@@ -167,26 +175,31 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/facture/modules_facture.php',
 				'listmodelclass' => 'ModelePDFFactures',
-                'document_dir' => $conf->facture->dir_output
+                'document_dir' => $conf->invoice->dir_output
 		);
-		$this->element_type_list['order'] = array (
-				'class' => 'commande.class.php',
-				'securityclass' => 'commande',
-				'securityfeature' => '',
-				'objectclass' => 'Commande',
-				'classpath' => DOL_DOCUMENT_ROOT . '/commande/class/',
-				'trans' => 'orders',
-				'title' => 'CustomerOrder',
-				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
-				'menuloader_function' => 'commande_prepare_head',
-				'card' => 'commande/card.php',
-				'substitution_method' => 'get_substitutionarray_object',
-				'substitution_method_line' => 'get_substitutionarray_lines',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
-				'listmodelclass' => 'ModelePDFCommandes',
-                'document_dir' => $conf->commande->dir_output
-		);
-		$this->element_type_list['order_supplier'] = array (
+		}
+		if (property_exists($conf, 'commande') && !empty($conf->commande->enabled) || property_exists($conf, 'order') && !empty($conf->order->enabled) ){
+
+			$this->element_type_list['order'] = array (
+					'class' => 'commande.class.php',
+					'securityclass' => 'commande',
+					'securityfeature' => '',
+					'objectclass' => 'Commande',
+					'classpath' => DOL_DOCUMENT_ROOT . '/commande/class/',
+					'trans' => 'orders',
+					'title' => 'CustomerOrder',
+					'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/order.lib.php',
+					'menuloader_function' => 'commande_prepare_head',
+					'card' => 'commande/card.php',
+					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method_line' => 'get_substitutionarray_lines',
+					'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/commande/modules_commande.php',
+					'listmodelclass' => 'ModelePDFCommandes',
+					'document_dir' => $conf->commande->dir_output
+			);
+		}
+		if (isset($conf->fournisseur) && !empty($conf->fournisseur->enabled)) {
+			$this->element_type_list['order_supplier'] = array(
 				'class' => 'fournisseur.commande.class.php',
 				'securityclass' => 'fournisseur',
 				'securityfeature' => 'commande_fournisseur',
@@ -199,12 +212,14 @@ class ReferenceLetters extends CommonObject
 				'card' => '/fourn/commande/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/fournisseur/commande/',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_order/modules_commandefournisseur.php',
+				'dir_output' => DOL_DATA_ROOT . '/fournisseur/commande/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/supplier_order/modules_commandefournisseur.php',
 				'listmodelclass' => 'ModelePDFSuppliersOrders',
-                'document_dir' => $conf->fournisseur->commande->dir_output
-		);
-		$this->element_type_list['supplier_proposal'] = array (
+				'document_dir' => $conf->fournisseur->commande->dir_output
+			);
+		}
+		if ( isset($conf->supplier_proposal) && !empty($conf->supplier_proposal->enabled) ) {
+			$this->element_type_list['supplier_proposal'] = array(
 				'class' => 'supplier_proposal.class.php',
 				'securityclass' => 'supplier_proposal',
 				'securityfeature' => '',
@@ -217,12 +232,14 @@ class ReferenceLetters extends CommonObject
 				'card' => '/supplier_proposal/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
-				'dir_output'=>DOL_DATA_ROOT.'/supplier_proposal/',
-				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/supplier_proposal/modules_supplier_proposal.php',
+				'dir_output' => DOL_DATA_ROOT . '/supplier_proposal/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/supplier_proposal/modules_supplier_proposal.php',
 				'listmodelclass' => 'ModelePDFSupplierProposal',
-                'document_dir' => $conf->supplier_proposal->dir_output
-		);
-		$this->element_type_list['expedition'] = array (
+				'document_dir' => $conf->supplier_proposal->dir_output
+			);
+		}
+		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
+			$this->element_type_list['expedition'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
 				'securityfeature' => '',
@@ -238,9 +255,11 @@ class ReferenceLetters extends CommonObject
 				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
 				'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/expedition/modules_expedition.php',
 				'listmodelclass' => 'ModelePdfExpedition',
-                'document_dir' => $conf->expedition->dir_output
-		);
-		$this->element_type_list['shipping'] = array (
+				'document_dir' => $conf->expedition->dir_output
+			);
+		}
+		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
+			$this->element_type_list['shipping'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
 				'securityfeature' => '',
@@ -254,25 +273,27 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
-		$this->element_type_list['fichinter'] = array (
-			'class' => 'fichinter.class.php',
-			'securityclass' => 'fichinter',
-			'securityfeature' => '',
-			'objectclass' => 'Fichinter',
-			'classpath' => DOL_DOCUMENT_ROOT . '/fichinter/class/',
-			'trans' => 'fichinter',
-			'title' => 'Intervention',
-			'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fichinter.lib.php',
-			'menuloader_function' => 'fichinter_prepare_head',
-			'card' => '/fichinter/card.php',
-			'substitution_method' => 'get_substitutionarray_object',
-			'substitution_method_line' => 'get_substitutionarray_lines',
-			'dir_output'=>DOL_DATA_ROOT.'/ficheinter/',
-			'listmodelfile' =>	DOL_DOCUMENT_ROOT.'/core/modules/fichinter/modules_fichinter.php',
-			'listmodelclass' => 'ModelePDFFicheinter',
-			'document_dir' => $conf->ficheinter->dir_output
-		);
-
+		}
+		if (isset($conf->ficheinter) && !empty($conf->ficheinter->enabled)) {
+			$this->element_type_list['fichinter'] = array(
+				'class' => 'fichinter.class.php',
+				'securityclass' => 'fichinter',
+				'securityfeature' => '',
+				'objectclass' => 'Fichinter',
+				'classpath' => DOL_DOCUMENT_ROOT . '/fichinter/class/',
+				'trans' => 'fichinter',
+				'title' => 'Intervention',
+				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/fichinter.lib.php',
+				'menuloader_function' => 'fichinter_prepare_head',
+				'card' => '/fichinter/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines',
+				'dir_output' => DOL_DATA_ROOT . '/ficheinter/',
+				'listmodelfile' => DOL_DOCUMENT_ROOT . '/core/modules/fichinter/modules_fichinter.php',
+				'listmodelclass' => 'ModelePDFFicheinter',
+				'document_dir' => $conf->ficheinter->dir_output
+			);
+		}
 		$this->TStatus[ReferenceLetters::STATUS_VALIDATED]='RefLtrAvailable';
 		$this->TStatus[ReferenceLetters::STATUS_DRAFT]='RefLtrUnvailable';
 
@@ -293,7 +314,6 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
-
 			$Tab = array(
 			    'fiche_pedago'=>'AgfFichePedagogique'
 			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
@@ -313,16 +333,23 @@ class ReferenceLetters extends CommonObject
 			    ,'attestationpresencetraining'=>'AgfAttestationPresenceTraining'
 			    ,'attestationpresencecollective'=>'AgfAttestationPresenceCollective'
 			    ,'attestation'=>'AgfSendAttestation'
-			    ,'certificateA4'=>'AgfPDFCertificateA4'
-			    ,'certificatecard'=>'AgfPDFCertificateCard'
 			    ,'contrat_presta'=>'AgfContratPrestation'
 			    ,'mission_trainer'=>'AgfTrainerMissionLetter'
 			    ,'contrat_trainer'=>'AgfContratTrainer'
 			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
-			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			    ,'attestationendtraining_trainee'=>'AgfendTrainingTrainee'
+				,'linked_certificate_completion_trainee'=>'AgfLinkedDocCertificatAchievment'
+				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
+
+			if(!empty($conf->agefoddcertificat->enabled)) {
+				$Tab['certificateA4']='CertifTemplateA4';
+				$Tab['certificatecard']='CertifTemplateCredit';
+				$Tab['certificateA4_trainee']='CertifTemplateA4ByTrainee';
+				$Tab['certificatecard_trainee']='CertifTemplateCreditByTrainee';
+			}
 
 			foreach ($Tab as $key => $val){
 			    $this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_convention'];
@@ -339,6 +366,7 @@ class ReferenceLetters extends CommonObject
 
 		return 1;
 	}
+
 
 	/**
 	 * Create object into database
@@ -435,7 +463,7 @@ class ReferenceLetters extends CommonObject
 
 		if (! $error) {
 
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) {
+			if (!getDolGlobalString('MAIN_EXTRAFIELDS_DISABLED')) {
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
 					$error ++;
@@ -746,7 +774,6 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		$parameters = array('subst_array' => &$subst_array);
@@ -761,13 +788,14 @@ class ReferenceLetters extends CommonObject
 	 */
 	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
-		global $langs;
+		global $langs, $conf;
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
 
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['trainer_cost_planned'] = 'Coût planifié formateur';
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
@@ -839,21 +867,47 @@ class ReferenceLetters extends CommonObject
 		);
 
 		// Liste de données - Participants
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants')] = array(
+		$moreTrad = '';
+		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilite'=>'Civilité'
 				,'line_nom'=>'Nom participant'
 				,'line_prenom'=>'Prénom participant'
 				,'line_nom_societe'=>'Société du participant'
+				,'line_societe_address'=>'Adresse de la société du participant'
+				,'line_societe_town'=>'Ville de la société du participant'
+				,'line_societe_zip'=>'Code postal de la société du participant'
+				,'line_societe_mail'=>'Adresse mail de la société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
-				,'line_mail' => 'Email du participant'
+				,'line_email' => 'Email du participant'
 				,'line_siret' => 'SIRET de la société du participant'
 				,'line_birthday' => 'Date de naissance du participant'
 				,'line_birthplace'=>'Lieu de naissance du participant'
 				,'line_code_societe'=> 'Code de la société du participant'
-				,'line_nom_societe'=> 'Nom du client du participant'
 				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
-
 		);
+		$extrafields = new ExtraFields($this->db);
+		$stag_extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+		if(!empty($stag_extralabels)) {
+			foreach($stag_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
+			}
+		}
+		//Extrafield tiers
+		$soc_extralabels = $extrafields->fetch_name_optionals_label('societe', true);
+		if(!empty($soc_extralabels)) {
+			foreach($soc_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_societe_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
+			}
+		}
+
+		if($conf->agefoddcertificat->enabled) {
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_fin'] = 'Date de fin du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_alerte'] = 'Date d\'alerte du certificat';
+		}
 
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
@@ -868,6 +922,10 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_phone'=>'Téléphone du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
+				,'line_formateur_address'=>'Adresse du formateur'
+				,'line_formateur_town'=>'Ville du formateur'
+				,'line_formateur_zip'=>'Code postal du formateur'
+				,'line_formateur_socname'=>'Nom de la société associée au formateur'
 				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
 		);
 
@@ -876,8 +934,32 @@ class ReferenceLetters extends CommonObject
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
 		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
-			,'stagiaire_presence_total' => 'Temps de présence total',
+			,'objvar_object_stagiaire_socname' => 'Société du participant'
+			,'objvar_object_stagiaire_socaddr' => 'Adresse de la société du participant'
+			,'objvar_object_stagiaire_soczip' => 'Code postal de la société du participant'
+			,'objvar_object_stagiaire_soctown' => 'Ville de la société du participant'
+			,'objvar_object_lieu_adresse' => 'Adresse du lieu'
+			,'objvar_object_lieu_ref_interne' => 'Ref interne du lieu'
 		);
+
+		if(!empty($stag_extralabels)) {
+			foreach($stag_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
+			}
+		}
+		//Extrafield tiers
+		if(!empty($soc_extralabels)) {
+			foreach($soc_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
+			}
+		}
+		if($conf->agefoddcertificat->enabled) {
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_fin'] = 'Date de fin du certificat';
+			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_alerte'] = 'Date d\'alerte du certificat';
+		}
 
 		// Tags des lignes
 		$subst_array[$langs->trans('RefLtrLines')] = array(
@@ -1050,7 +1132,7 @@ class ReferenceLetters extends CommonObject
 
 		if (! $error) {
 
-			if (empty($conf->global->MAIN_EXTRAFIELDS_DISABLED)) // For avoid conflicts if trigger used
+			if (!getDolGlobalString('MAIN_EXTRAFIELDS_DISABLED')) // For avoid conflicts if trigger used
 {
 				$result = $this->insertExtraFields();
 				if ($result < 0) {
@@ -1282,8 +1364,10 @@ class ReferenceLetters extends CommonObject
 				$this->id = $obj->rowid;
 				$this->date_creation = $this->db->jdate($obj->datec);
 				$this->date_modification = $this->db->jdate($obj->tms);
-				$this->user_modification = $obj->fk_user_mod;
-				$this->user_creation = $obj->fk_user_author;
+				if(property_exists($this, 'user_modification')) $this->user_modification = $obj->fk_user_mod;
+				if(property_exists($this, 'user_modification_id')) $this->user_modification_id = $obj->fk_user_mod;
+				if(property_exists($this, 'user_creation_id')) $this->user_creation_id = $obj->fk_user_author;
+				if(property_exists($this, 'user_creation')) $this->user_creation = $obj->fk_user_author; // deprecated v19
 			}
 			$this->db->free($resql);
 			return 1;

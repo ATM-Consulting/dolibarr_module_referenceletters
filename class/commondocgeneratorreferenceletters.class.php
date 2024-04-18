@@ -336,7 +336,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$TTva = array();
 
 		$sign = 1;
-		if (isset($object->type) && $object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+		if (isset($object->type) && $object->type == 2 && getDolGlobalString('INVOICE_POSITIVE_CREDIT_NOTE'))
 			$sign = - 1;
 
 		foreach ( $object->lines as &$line ) {
@@ -439,7 +439,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resql = $db->query($sql);
 		if ($resql) {
 			$sign = 1;
-			if ($object->type == 2 && ! empty($conf->global->INVOICE_POSITIVE_CREDIT_NOTE))
+			if ($object->type == 2 && getDolGlobalString('INVOICE_POSITIVE_CREDIT_NOTE'))
 				$sign = - 1;
 			while ( $row = $db->fetch_object($resql) ) {
 				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
@@ -485,7 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -552,22 +552,37 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
 		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
 		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
-
-		$resarray['line_societe_address'] = $line->societe_address;
-		$resarray['line_societe_zip'] = $line->societe_zip;
-		$resarray['line_societe_town'] = $line->societe_town;
+		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat < 2.17
+			$resarray['line_societe_address'] = $line->societe_address;
+			$resarray['line_societe_zip'] = $line->societe_zip;
+			$resarray['line_societe_town'] = $line->societe_town;
+		}
+		else {
+			$resarray['line_societe_address'] = $line->agefodd_stagiaire->thirdparty->address;
+			$resarray['line_societe_zip'] = $line->agefodd_stagiaire->thirdparty->zip;
+			$resarray['line_societe_town'] = $line->agefodd_stagiaire->thirdparty->town;
+			$resarray['line_societe_mail'] = $line->agefodd_stagiaire->thirdparty->email;
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($line->agefodd_stagiaire->thirdparty->element, true);
+			$resarray = $this->fill_substitutionarray_with_extrafields($line->agefodd_stagiaire->thirdparty, $resarray, $extrafields, 'line_societe', $langs);
+		}
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
-                // Certificats
-                dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-                $agf_certif = new Agefodd_stagiaire_certif($db);
-                if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
-                        $resarray['line_certif_code'] = $agf_certif->certif_code;
-                        $resarray['line_certif_label'] = $agf_certif->certif_label;
-                        $resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
-                        $resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
-                }
+		if($conf->agefoddcertificat->enabled) {
+			// Certificats
+			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
+			$agf_certif = new AgefoddCertificat($db);
+			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid, 'isDeleted' => 0));
+			if(is_array($TCertif) && count($TCertif) > 0) {
+				$agf_certif = array_shift($TCertif);
+				$resarray['line_certif_code'] = $agf_certif->number;
+				$resarray['line_certif_label'] = $agf_certif->label;
+				$resarray['line_certif_date_debut'] = dol_print_date($agf_certif->date_start);
+				$resarray['line_certif_date_fin'] = dol_print_date($agf_certif->date_end);
+				$resarray['line_certif_date_alerte'] = dol_print_date($agf_certif->date_warning);
+			}
+		}
 
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->id))
@@ -628,6 +643,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
 		$resarray['line_formateur_mail'] = $line->email;
+		$resarray['line_formateur_socname'] =  $line->socname;
+		$resarray['line_formateur_address'] = $line->address;
+		$resarray['line_formateur_town'] = $line->town;
+		$resarray['line_formateur_zip'] = $line->zip;
 		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
 		// Substitutions tableau des objectif :
@@ -740,10 +759,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db, $conf,$langs;
+		global $db, $langs;
+
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
+
+		$fk_step = intval(GETPOST('fk_step', 'int'));
+		if($fk_step > 0) {
+			$agfStep = new Agefodd_step($this->db);
+			$agfStep->fetch($fk_step);
+		}
 
 		$formAgefodd = new FormAgefodd($db);
 
@@ -756,11 +782,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
 
+
 		if(!empty($object->fk_product)) {
 			$p = new Product($db);
 			$p->fetch($object->fk_product);
 			$resarray['formation_ref_produit'] = $p->ref;
 		}
+
 
 		// Substitution concernant le prestataire
 		$TDefaultSub = array('presta_lastname', 'presta_firstname', 'presta_soc_name','presta_soc_id','presta_soc_name',
@@ -811,55 +839,57 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		$resarray['formation_statut'] = $object->statuslib;
-		$resarray['formation_duree'] = $object->duree;
-		$resarray['formation_duree_session'] = $object->duree_session;
-		$resarray['formation_commercial'] = $object->commercialname;
-		$resarray['formation_commercial_invert'] = $object->commercialname_invert;
-		$resarray['formation_commercial_phone'] = $object->commercialphone;
-		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone;
-		$resarray['formation_commercial_mail'] = $object->commercialemail;
-		$resarray['formation_societe'] = $object->thirdparty->nom;
-		$resarray['formation_commentaire'] = nl2br($object->notes);
-		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session];
-		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire;
-		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention;
-		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention;
-		$resarray['formation_prix'] = price($object->sell_price);
-		$resarray['formation_obj_peda'] = $object->formation_obj_peda;
-		$resarray['session_nb_days'] = $object->session_nb_days;
-		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline;
-		$resarray['trainer_datetextline'] = $object->trainer_datetextline;
-        $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total;
-        $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc;
-        $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total;
-        $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total;
-        $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total;
-        $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total;
-        $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total;
-        $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total;
+		$resarray['formation_statut'] = $object->statuslib ?? '';
+		$resarray['formation_duree'] = $object->duree?? '';
+		$resarray['formation_duree_session'] = $object->duree_session?? '';
+		$resarray['formation_commercial'] = $object->commercialname?? '';
+		$resarray['formation_commercial_invert'] = $object->commercialname_invert?? '';
+		$resarray['formation_commercial_phone'] = $object->commercialphone?? '';
+		$resarray['formation_commercial_mobile_phone'] = $object->commercial_mobile_phone?? '';
+		$resarray['formation_commercial_mail'] = $object->commercialemail?? '';
+		$resarray['formation_societe'] = $object->thirdparty->nom?? '';
+		$resarray['formation_commentaire'] = nl2br($object->notes ?? '') ;
+		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session] ?? '';
+		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire ?? '';
+		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention?? '';
+		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention?? '';
+		$resarray['formation_prix'] = price($object->sell_price ?? '' );
+		$resarray['formation_obj_peda'] = $object->formation_obj_peda?? '';
+		$resarray['session_nb_days'] = $object->session_nb_days?? '';
+		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline?? '';
+		$resarray['trainer_datetextline'] = $object->trainer_datetextline?? '';
+		$resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
+		$resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
+		$resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
+		$resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
+		$resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
+		$resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
+		$resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
+		$resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
+ 		$resarray['trainer_cost_planned'] = price($object->cost_trainer_planned ?? '');
+
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_ADMIN)){
+        if (getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')){
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_ADMIN));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')));
 			if ($res){
 				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
 			}
         }
 
-        if (!empty($conf->global->AGF_DEFAULT_MENTOR_PEDAGO)) {
+        if (getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')) {
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_PEDAGO));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')));
 			if ($res) {
 				$resarray['Mentor_pedagogique'] = ucfirst($langs->trans('MentorPedago') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
 			}
 		}
 
 
-		if (!empty($conf->global->AGF_DEFAULT_MENTOR_HANDICAP)) {
+		if (getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')) {
 			$u = new User($this->db);
-			$res = $u->fetch(intval($conf->global->AGF_DEFAULT_MENTOR_HANDICAP));
+			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')));
 			if ($res) {
 				$resarray['Mentor_handicap'] = ucfirst($langs->trans('MentorHandicap') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
 			}
@@ -892,26 +922,30 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['formation_moyens_pedagogique'] = $catalogue->pedago_usage;
 			$resarray['formation_sanction'] = $catalogue->sanction;
 			$resarray['formation_Accessibility_Handicap_label'] = $langs->trans('RefLtrAccessHandicapTitle');
-			$e = new ExtraFields($db);
-			$e->fetch_name_optionals_label($catalogue->table_element);
+
+			$extrafields = new ExtraFields($db);
+			$extrafields->fetch_name_optionals_label($catalogue->table_element);
 			if(floatval(DOL_VERSION) >= 16) {
-				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
-					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type'];
-					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size'];
-					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique'];
-					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required'];
-					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label'];
-					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default'];
-					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed'];
-					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param'];
-					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms'];
-					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile'];
-					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list'];
-					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden'];
+				if (isset($extrafields)){
+					$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+					if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
+					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type']?? array();
+					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size']?? array() ;
+					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique']?? array();
+					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required']?? array();
+					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label']?? array();
+					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default']?? array();
+					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed']?? array();
+					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param']?? array();
+					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms']?? array();
+					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile']?? array();
+					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list']?? array();
+					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden']?? array();
+				}
 				}
 			}
-			if (is_array($e->attributes[$catalogue->table_element]['label'])){
+
+			if (isset($e->attributes[$catalogue->table_element]['label']) && is_array($e->attributes[$catalogue->table_element]['label'])){
 				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
 					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
 				}
@@ -923,23 +957,27 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		}
 
-		if (! empty($object->placeid)) {
-			dol_include_once('/agefodd/class/agefodd_place.class.php');
-			$agf_place = new Agefodd_place($db);
-			$agf_place->fetch($object->placeid);
-
-			$resarray['formation_lieu'] = $object->placecode;
-			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
-			// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
-			// fix TK9760
-			$resarray['formation_lieu_acces'] = str_replace('&amp;','&',$agf_place->acces_site);
-			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
-			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-			$resarray['formation_lieu_divers'] = $agf_place->note1;
+		$fk_place = $object->placeid;
+		if(!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
+			$fk_place = $agfStep->fk_place;
 		}
+
+		dol_include_once('/agefodd/class/agefodd_place.class.php');
+		$agf_place = new Agefodd_place($db);
+		if(! empty($fk_place)) $agf_place->fetch($fk_place);
+		// Lieu
+		$resarray['formation_lieu'] 				= strip_tags($agf_place->ref_interne);
+		$resarray['formation_lieu_adresse'] 		= strip_tags($agf_place->adresse);
+		$resarray['formation_lieu_cp'] 				= strip_tags($agf_place->cp);
+		$resarray['formation_lieu_ville'] 			= strip_tags($agf_place->ville);
+		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
+		// fix TK9760
+		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_phone'] 			= dol_print_phone($agf_place->tel, $agf_place->country_code);
+		$resarray['formation_lieu_horaires'] 		= strip_tags($agf_place->timeschedule);
+		$resarray['formation_lieu_notes'] 			= strip_tags($agf_place->notes);
+		$resarray['formation_lieu_divers'] 			= $agf_place->note1;
+
 
 		// Add ICS link replacement to mails
 		$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2) . '?format=ical&type=event';
@@ -948,14 +986,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (!empty($object->trainer_session))
 		{
 			$url = $downloadIcsLink . '&amp;agftrainerid=' . $object->trainer_session->id;
-			$url .= '&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftrainerid' . $object->trainer_session->id);
+			$url .= '&exportkey=' . md5(getDolGlobalString('MAIN_AGENDA_XCAL_EXPORTKEY') . 'agftrainerid' . $object->trainer_session->id);
 			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
 			$resarray['formation_agenda_ics_url'] = $url;
 		}
 		elseif (!empty($object->stagiaire))
 		{
 			$url = $downloadIcsLink . '&amp;agftraineeid=' . $object->stagiaire->id;
-			$url .='&exportkey=' . md5($conf->global->MAIN_AGENDA_XCAL_EXPORTKEY . 'agftraineeid' . $object->stagiaire->id);
+			$url .='&exportkey=' . md5(getDolGlobalString('MAIN_AGENDA_XCAL_EXPORTKEY') . 'agftraineeid' . $object->stagiaire->id);
 			$resarray['formation_agenda_ics'] = '<a href="' . $url . '">' . $documentLinkLabel . '</a>';
 			$resarray['formation_agenda_ics_url'] = $url;
 		}
@@ -996,20 +1034,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
 					if(floatval(DOL_VERSION) >= 16) {
-						$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-						if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
-							$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
-							$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
-							$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
-							$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
-							$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
-							$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
-							$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
-							$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
-							$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
-							$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
-							$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
-							$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
+						if (isset($extrafields)) {
+							$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+							if ($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+								$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? array();
+								$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size']?? array();
+								$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique']?? array();
+								$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required']?? array();
+								$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label']?? array();
+								$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default']?? array();
+								$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed']?? array();
+								$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param']?? array();
+								$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms']?? array();
+								$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile']?? array();
+								$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list']?? array();
+								$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden']?? array();
+							}
 						}
 					}
 					foreach ($extralabels as $key_opt => $label_opt)
@@ -1415,18 +1455,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
+				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
+				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();
+				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'] ?? array();
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'] ?? array();
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'] ?? array();
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'] ?? array();
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'] ?? array();
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'] ?? array();
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'] ?? array();
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'] ?? array();
 			}
 		}
 

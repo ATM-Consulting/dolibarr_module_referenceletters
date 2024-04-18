@@ -2,6 +2,7 @@
 dol_include_once('/referenceletters/core/modules/referenceletters/modules_referenceletters.php');
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/referenceletters/lib/referenceletters.lib.php');
+require_once __DIR__.'/../../../../class/Tools.class.php';
 class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 {
 	public $db;
@@ -43,10 +44,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = isset($conf->global->MAIN_PDF_MARGIN_LEFT) ? $conf->global->MAIN_PDF_MARGIN_LEFT : 10;
-		$this->marge_droite = isset($conf->global->MAIN_PDF_MARGIN_RIGHT) ? $conf->global->MAIN_PDF_MARGIN_RIGHT : 10;
-		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
-		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
+		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT',10));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT',10));
+		$this->marge_haute =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP',10));
+		$this->marge_basse =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM',10));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -66,9 +67,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param string $obj_agefodd_convention convention object
 	 * @param string $socid socid
 	 * @param int $courrier id session
+	 * @param bool $isCertif
+	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '') {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -113,7 +116,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
-		if (! empty($conf->global->MAIN_USE_FPDF))
+		if (getDolGlobalString('MAIN_USE_FPDF'))
 			$this->outputlangs->charset_output = 'ISO-8859-1';
 
 		$this->outputlangs->load("main");
@@ -122,17 +125,19 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 		// Loop on each lines to detect if there is at least one image to show
 		$realpatharray = array();
-
-		if ($conf->agefodd->dir_output) {
+		if ($isCertif) $dir_output = $conf->agefoddcertificat->dir_output;
+		else $dir_output = $conf->agefodd->dir_output;
+		if ($dir_output) {
 
 			// $deja_regle = 0;
-			// var_dump($file);exit;
 			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
-
-			$dir = $conf->agefodd->dir_output;
-
-			$file = $dir . '/' . $file;
-
+			$dir = $dir_output;
+			if($fk_step > 0) {
+				//Si on est sur un modele trainee, on nous file quand même un $socid qui est l'id du trainee ... =)
+				if(substr($this->instance_letter->element_type, -8) ==='_trainee') $dir = getStrStepDir($id_object, 0, $fk_step);
+				else $dir = getStrStepDir($id_object, $socid, $fk_step);
+			}
+			if(!$isCertif) $file = $dir . '/' . $file;
 			if (! file_exists($dir)) {
 				if (dol_mkdir($dir) < 0) {
 					$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
@@ -156,8 +161,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
 				// Set path to the background PDF File
-				if (empty($conf->global->MAIN_DISABLE_FPDI) && ! empty($conf->global->MAIN_ADD_PDF_BACKGROUND)) {
-					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . $conf->global->MAIN_ADD_PDF_BACKGROUND);
+				if (!getDolGlobalString('MAIN_DISABLE_FPDI') && getDolGlobalString('MAIN_ADD_PDF_BACKGROUND')) {
+					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . getDolGlobalString('MAIN_ADD_PDF_BACKGROUND'));
 					$tplidx = $this->pdf->importPage(1);
 				}
 
@@ -169,7 +174,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->pdf->SetCreator("Dolibarr " . DOL_VERSION);
 				$this->pdf->SetAuthor($this->outputlangs->convToOutputCharset($user->getFullName($this->outputlangs)));
 				$this->pdf->SetKeyWords($this->outputlangs->convToOutputCharset($instance_letter->ref_int) . " " . $this->outputlangs->transnoentities("Module103258Name"));
-				if (! empty($conf->global->MAIN_DISABLE_PDF_COMPRESSION))
+				if (getDolGlobalString('MAIN_DISABLE_PDF_COMPRESSION'))
 					$this->pdf->SetCompression(false);
 
 				// Set calculation of header and footer high line
@@ -186,7 +191,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->pdf->SetFont('', '', $default_font_size - 1);
 				$this->pdf->SetTextColor(0, 0, 0);
 
-				$tab_top_newpage = (empty($conf->global->MAIN_PDF_DONOTREPEAT_HEAD) ? 42 : 10);
+				$tab_top_newpage = (!getDolGlobalString('MAIN_PDF_DONOTREPEAT_HEAD') ? 42 : 10);
 				$tab_height = 130;
 				$tab_height_newpage = 150;
 
@@ -237,7 +242,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $chapter_text);
+					$chapter_text = $this->setSubstitutions($object, $chapter_text );
 
 					// merge agefodd arrays
 					//TODO : define this order on logical order by template
@@ -249,7 +254,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					// END x1
 					// rather than hard coded
 					// Sould be x4 then x3,x2 (same level) then x1
-					$chapter_text = $this->merge_array($object, $chapter_text, array(
+					$TAgfArray = array(
 							'THorairesSession',
 							'TFormationObjPeda',
 							'TStagiairesSession',
@@ -262,38 +267,14 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TFormateursSession',
 							'TConventionFinancialLine',
 							'TFormateursSessionCal'
-					));
-
-					// fix TK9360 : ce patch n'est plus utile à présent => je vire
-/*					// correction de problème de décalage de texte
-					if (preg_match('/<strong>/', $chapter_text)) {
-						$position = 0;
-
-						while ( preg_match('/<strong>/', substr($chapter_text, $position)) ) {
-							$position = strpos($chapter_text, '<strong>', $position);
-							$startStrong = $position;
-							$endStrong = strpos($chapter_text, '</strong>', $position);
-							$strong = substr($chapter_text, $startStrong + 8, $endStrong - $position - 8);
-							$style = 'font-weight:bold;';
-							$i = 0;
-							while ( @strpos($strong, '<span style=', $i) !== false ) {
-								$len = strpos(substr($strong, strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
-								$style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
-								$styleposition = strpos($strong, '<span style=', $i);
-								if (empty($styleposition)) {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, strpos($strong, '>', $o) + 1, $l);
-								} else {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, 0, strpos($strong, '<span')) . substr($strong, strpos($strong, '>') + 1, $l) . substr($strong, strripos($strong, '</span>') + 7);
-								}
-								$i += $len;
-							}
-							$chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="' . $style . '">' . $strong . '</span>' . substr($chapter_text, $endStrong + 9);
-							$position = $endStrong;
-						}
+					);
+					if(isset($conf->agefoddcertificat->enabled) && $conf->agefoddcertificat->enabled ) {
+						$TAgfArray[] = 'TSessionStagiairesCertif';
+						$TAgfArray[] = 'TSessionStagiairesCertifSoc';
 					}
-*/
+
+					$chapter_text = $this->merge_array($object, $chapter_text, $TAgfArray);
+
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
     					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
@@ -314,13 +295,13 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 					if(count($test_array) > 1) {
 						//Do not apply this stuff for trainee docuement( générated from Document per trainee, if there is a @beakpage@ in this models, the last page should not be removes
-						if(! empty($conf->global->REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP) && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
+						if(getDolGlobalString('REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP') && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
 							$this->pdf->deletePage($this->pdf->getPage());
 						}
 					}
 				}
 
-				if (!empty($conf->global->AGF_ADD_PROGRAM_TO_CONV) && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
+				if (getDolGlobalString('AGF_ADD_PROGRAM_TO_CONV') && ! empty($obj_agefodd_convention) && $obj_agefodd_convention->id > 0) {
 				    if(class_exists('Agefodd')){
 				        $agfTraining = new Agefodd($db);
 				    } elseif (class_exists('Formation')) {
@@ -359,7 +340,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$this->pdf->AliasNbPages();
 
 				$this->pdf->Close();
-
 				$this->pdf->Output($file, 'F');
 
 				// Add pdfgeneration hook
@@ -375,8 +355,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				global $action;
 				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
-				if (! empty($conf->global->MAIN_UMASK))
-					@chmod($file, octdec($conf->global->MAIN_UMASK));
+				if (getDolGlobalString('MAIN_UMASK'))
+					@chmod($file, octdec( getDolGlobalString('MAIN_UMASK')));
 
 				return 1; // Pas d'erreur
 			} else {
@@ -465,7 +445,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		$posy += 1;
 		$this->pdf->SetFont('', '', $default_font_size - 1);
 
-		if ($object->ref_client) {
+		if (\referenceletters\Tools::validateObjectProperty($object,"ref_client") &&  $object->ref_client) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
@@ -500,7 +480,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			// Show sender
 			$posy = 42;
 			$posx = $this->marge_gauche;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->page_largeur - $this->marge_droite - 80;
 			$hautcadre = 45;
 			$max_y=$posy+$hautcadre;
@@ -547,6 +527,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 }*/
 
 			$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
+			$usecontact = $usecontact ?? 0;
 			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 
 			// Show recipient
@@ -555,7 +536,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$widthrecbox = 84; // To work with US executive format
 			$posy = 42;
 			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->marge_gauche;
 
 			// Show recipient frame

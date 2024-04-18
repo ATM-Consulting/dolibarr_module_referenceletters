@@ -88,6 +88,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                         $this->outputlangs->setDefaultLang($_REQUEST['lang_id']);
                         $this->outputlangs->load('main');
                         $this->outputlangs->load('agefodd@agefodd');
+                        $this->outputlangs->load('agefoddcertificat@agefoddcertificat');
                 }
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
@@ -507,6 +508,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
 											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
 											, '{line_desc}'          => '{line_desc}'
+											, '{line_libelle}'       => '{line_libelle}'
 										));
 									}
 								} else if (TSubtotal::isSubtotal($line)) {
@@ -542,6 +544,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
 											, '{line_product_label}' => $style_start . '{line_product_label}' . $style_end
 											, '{line_desc}'          => '{line_desc}'
+											, '{line_libelle}'       => '{line_libelle}'
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_price_ht_locale}' => $style_start . '{line_price_ht_locale}' . $style_end

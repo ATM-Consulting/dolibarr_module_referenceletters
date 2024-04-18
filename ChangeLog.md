@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Version 2.17 - 29/11/2023
+
+- FIX : DA024195 - z-index select ajout de modele pdf à concatener *29/11/2023* 2.17.1
+- NEW : Compatibilité agefoddcertificat 1.12.0 *15/11/2023* 2.17.0
+- NEW : move script url mover from abricot *11/05/2022* 2.16.0
 
 ## Version 2.15 - 21/07/2022
 - FIX : Total TVA doesn't have $langs->trans - *22/01/2024* - 2.15.10
@@ -22,6 +27,7 @@ All notable changes to this project will be documented in this file.
 
 ## Version 2.13 - 15/04/2022
 
+- FIX : prod diff - add product label to substitution keys *28/02/2024* - 2.13.3
 - FIX : Ajout de clés manquantes liés aux exped alors qu'elles sont dans le modele de base *19/07/2022* - 2.13.2
 - FIX : Infinite loop and fail to generate good doc *26/04/2022* - 2.13.1
 - NEW : Add new document manage by docedit : Intervention *15/04/2022* - 2.13.0

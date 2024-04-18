@@ -54,6 +54,7 @@ class RfltrTools {
 			$outputlangs->setDefaultLang($lang_id);
 			$outputlangs->load('main');
 			$outputlangs->load('agefodd@agefodd');
+			$outputlangs->load('agefoddcertificat@agefoddcertificat');
 		} else {
 			global $langs;
 			$outputlangs=$langs;
@@ -254,15 +255,19 @@ class RfltrTools {
 					}
 
 				});
-				// Sélection du modèle et génération du document
-				$(".id_external_model").change(function() {
-
-					var path = '<?php echo $_SERVER['PHP_SELF']; ?>' + '?id=' + <?php echo GETPOST('id', 'none'); ?> + '&model=' + $(this).attr('model') + '&action=create&id_external_model=' + $(this).val();
-					// On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
-					lignetitre = $(this).parent().parent();
-					while(!lignetitre.hasClass('liste_titre')) {
-						lignetitre = lignetitre.prev();
-					}
+                // Sélection du modèle et génération du document
+                $('.id_external_model').change(function () {
+                    let model = $(this).attr('model');
+                    //Dans le cas du module agefoddcertificat il faut rediriger vers agefoddcertificat_documents.backend.php
+                    if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
+                        var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1); ?>';
+                    } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
+                    path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val();
+                    // On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
+                    lignetitre = $(this).parent().parent();
+                    while (!lignetitre.hasClass('liste_titre')) {
+                        lignetitre = lignetitre.prev();
+                    }
 					var sessiontrainerid = lignetitre.find('a').attr('name');
 					<?php
 
@@ -298,7 +303,9 @@ class RfltrTools {
 						}
 
 					?>
-
+                    if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
+                        path += '&returnurl='+'<?php echo $_SERVER['PHP_SELF']; ?>'+'?id='+ <?php echo GETPOST('id', 'int'); ?>;
+                    }
 					document.location.href=path;
 
 				});

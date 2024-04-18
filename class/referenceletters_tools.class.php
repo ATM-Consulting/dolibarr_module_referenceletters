@@ -22,8 +22,9 @@ class RfltrTools {
 	}
 
 	/**
-	 * @param $object peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
-	 * charge le modèle référence letter choisi
+	 * Charge le modèle référence letter choisi
+	 *
+	 * @param Object $object peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
 	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
 	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='') {
@@ -66,6 +67,7 @@ class RfltrTools {
 			$outputlangs=$langs;
 		}
 
+		// TODO: replace this hard-coded list with array keys of (new ReferenceLetters($db))->element_type_list.
 		$arrayObjectClass = array('Facture',
 								  'Commande',
 								  'Propal',

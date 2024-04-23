@@ -642,6 +642,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_nom'] = $line->lastname;
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
+		$resarray['line_formateur_phone_mobile'] = $line->phone_mobile;
+		$resarray['line_formateur_phone_perso'] = $line->phone_perso;
 		$resarray['line_formateur_mail'] = $line->email;
 		$resarray['line_formateur_socname'] =  $line->socname;
 		$resarray['line_formateur_address'] = $line->address;

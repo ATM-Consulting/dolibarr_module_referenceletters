@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
-
+- NEW : Hooks enabling other modules to add new DocEdit-managed document 
+  types (and one day perhaps get rid of Agefodd-specific code in DocEdit) 
+  *15/09/2022* 2.20.0
+- NEW : Add certificat_completion  generation for trainee docs / docs  - 
+*16/04/2024* - 2.20.0  
 
 ## Release 2.19 - 12/02/2024
 - FIX : DA024774 missing phone_perso & phone_mobile key  - *23/04/2024* - 2.19.3

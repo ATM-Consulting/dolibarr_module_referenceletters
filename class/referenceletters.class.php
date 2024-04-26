@@ -28,7 +28,8 @@ require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
- * Put here description of your class
+ * Classe permettant de gérer les modèles de PDF DocEdit.
+ *
  */
 class ReferenceLetters extends CommonObject
 {
@@ -81,7 +82,9 @@ class ReferenceLetters extends CommonObject
 	 */
 	function __construct($db) {
 
-		global $conf;
+		global $conf, $hookmanager;
+
+		$hookmanager->initHooks(array('referenceletters'));
 
 		$this->db = $db;
 		if (isset($conf->contract) && !empty($conf->contract->enabled)) {
@@ -311,7 +314,6 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
-
 			$Tab = array(
 			    'fiche_pedago'=>'AgfFichePedagogique'
 			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
@@ -337,7 +339,9 @@ class ReferenceLetters extends CommonObject
 			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
-			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			    ,'attestationendtraining_trainee'=>'AgfendTrainingTrainee'
+				,'linked_certificate_completion_trainee'=>'AgfLinkedDocCertificatAchievment'
+				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
 
 			if(!empty($conf->agefoddcertificat->enabled)) {
@@ -353,6 +357,12 @@ class ReferenceLetters extends CommonObject
 			}
 
 		}
+
+		// Hook permettant à d'autres modules d'ajouter des types de documents
+		// (à terme, on pourrait même utiliser ce hook dans Agefodd et débarrasser DocEdit de toute référence
+		// à Agefodd)
+		$parameters = array('element_type_list' => &$this->element_type_list);
+		$hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
 
 		return 1;
 	}
@@ -664,14 +674,16 @@ class ReferenceLetters extends CommonObject
 	}
 
 	/**
-	 * return translated label of element linked
+	 * Fonction mal nommée car elle ne retourne pas une clé de substitution.
+	 * Elle retourne un tableau associant des clés de substitution aux valeurs par lesquelles on doit remplacer les
+	 * clés.
 	 *
-	 * @param int $mode trans normal, 1 transnoentities
-	 * @return string translated element label
+	 * @param User $user
+	 * @return array
 	 *
 	 */
 	public function getSubtitutionKey($user) {
-		global $conf, $langs, $mysoc;
+		global $conf, $langs, $mysoc, $hookmanager;
 
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
@@ -762,12 +774,18 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+
+		$parameters = array('subst_array' => &$subst_array);
+		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
 
 		return $subst_array;
 	}
 
+	/**
+	 * @param array $subst_array
+	 * @return void
+	 */
 	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs, $conf;

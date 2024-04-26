@@ -539,6 +539,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
 		}
 		$resarray['line_phone'] = $tel;
+		$resarray['line_phone_pro'] = $line->tel1;
+		$resarray['line_phone_mobile'] = $line->tel2;
 		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;

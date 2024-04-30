@@ -539,6 +539,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
 		}
 		$resarray['line_phone'] = $tel;
+		$resarray['line_phone_pro'] = $line->tel1;
+		$resarray['line_phone_mobile'] = $line->tel2;
 		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;
@@ -642,6 +644,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_nom'] = $line->lastname;
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
+		$resarray['line_formateur_phone_mobile'] = $line->phone_mobile;
+		$resarray['line_formateur_phone_perso'] = $line->phone_perso;
 		$resarray['line_formateur_mail'] = $line->email;
 		$resarray['line_formateur_socname'] =  $line->socname;
 		$resarray['line_formateur_address'] = $line->address;

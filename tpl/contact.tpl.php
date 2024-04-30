@@ -13,7 +13,7 @@ print '<tr><td width="20%">' . $langs->trans("Lastname") . ' / ' . $langs->trans
 print '<td width="20%">' . $langs->trans("Firstname") . '</td><td width="30%">' . $object->firstname . '</td></tr>';
 
 // Company
-if (empty($conf->global->SOCIETE_DISABLE_CONTACTS)) {
+if (!getDolGlobalString('SOCIETE_DISABLE_CONTACTS')) {
 	if ($object->socid > 0) {
 		$objsoc = new Societe($db);
 		$objsoc->fetch($object->socid);

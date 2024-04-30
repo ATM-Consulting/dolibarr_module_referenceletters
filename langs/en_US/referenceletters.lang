@@ -68,7 +68,9 @@ RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
 RefLtrAgefodd=Sample template of Training Module
 RefLtrAgefoddConvention=Sample template of training contract
 RefLtrShipping=Sample template of SENDING SHEET
-
+AgfendTrainingTrainee=Trainee Completion Certificate
+AgfLinkedDocCertificatAchievment=Linked Document Achievement Certificate
+AgfTraineeDocCertificatAchievment=Trainee Document Achievement Certificate
 #
 # About page
 #
@@ -101,7 +103,7 @@ RefLtrNewChaters=New chapter
 RefLtrNew=New document templates
 RefLtrOptionHelp=Each line will be outputted as a new checkbox line on the document
 RefLtrBackToRefLtr=Back to letter template
-RefLtrList=Socuments templates list
+RefLtrList=Documents templates list
 RefLtrLangue=Language
 RefLtrPosition=Order number
 RefLtrOption=Options list
@@ -153,7 +155,6 @@ RefLtrOverwriteStdDocHelp=The standard document will be overwritten if it exists
 RefLtrCannotCreateDir=Unable to create directory: "%s"
 RefLtrStdDocOverwritten=The standard document (%s) was successfully replaced with the DocEdit-generated document(%s).
 RefLtrCopiedInStdDocLocation=The standard document (%s) was successfully created as a copy of the DocEdit-generated one (%s).
-
 
 #
 # Erreurs

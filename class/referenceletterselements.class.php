@@ -51,14 +51,22 @@ class ReferenceLettersElements extends CommonObject
 	public $outputref;
 	public $title_referenceletters;
 	public $lines = array();
+	public $use_custom_header;
+	public $use_custom_footer;
+	public $header;
+	public $footer;
+	public $use_landscape_format;
+	/** @var CommonObject|TObjetStd $srcobject */
+	public $srcobject;
 
 	/**
 	 * Constructor
 	 *
 	 * @param DoliDb $db Database handler
 	 */
-	function __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
+
 		return 1;
 	}
 
@@ -69,7 +77,7 @@ class ReferenceLettersElements extends CommonObject
 	 * @param int $notrigger 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, Id of created object if OK
 	 */
-	function create($user, $notrigger = 0) {
+	public function create($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -149,7 +157,7 @@ class ReferenceLettersElements extends CommonObject
 		dol_syslog(get_class($this) . "::create sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
-			$error ++;
+			$error++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 
@@ -169,14 +177,16 @@ class ReferenceLettersElements extends CommonObject
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::create " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
-			return - 1 * $error;
+
+			return -1 * $error;
 		} else {
 			$this->db->commit();
+
 			return $this->id;
 		}
 	}
@@ -187,7 +197,7 @@ class ReferenceLettersElements extends CommonObject
 	 * @param int $id Id object
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function fetch($id) {
+	public function fetch($id) {
 		global $langs;
 		$sql = "SELECT";
 		$sql .= " t.rowid,";
@@ -250,7 +260,8 @@ class ReferenceLettersElements extends CommonObject
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetch " . $this->error, LOG_ERR);
-			return - 1;
+
+			return -1;
 		}
 	}
 
@@ -285,7 +296,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " ,p.title as title_referenceletters";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements as t";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "referenceletters as p ON p.rowid=t.fk_referenceletters";
-		$sql .= " WHERE t.entity IN (".getEntity("referenceletters", 1).")";
+		$sql .= " WHERE t.entity IN (" . getEntity("referenceletters", 1) . ")";
 		$sql .= " AND t.fk_element = " . $element_id;
 		$sql .= " AND t.element_type = '" . $this->db->escape($element_type) . "'";
 
@@ -304,7 +315,7 @@ class ReferenceLettersElements extends CommonObject
 			if ($num > 0) {
 				$this->lines = array();
 
-				while ( $obj = $this->db->fetch_object($resql) ) {
+				while ($obj = $this->db->fetch_object($resql)) {
 
 					$line = new ReferenceLettersElementsLine();
 
@@ -334,7 +345,8 @@ class ReferenceLettersElements extends CommonObject
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetchAllByElement " . $this->error, LOG_ERR);
-			return - 1;
+
+			return -1;
 		}
 	}
 
@@ -371,7 +383,7 @@ class ReferenceLettersElements extends CommonObject
 		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
 
 		if (is_array($filter)) {
-			foreach ( $filter as $key => $value ) {
+			foreach ($filter as $key => $value) {
 				if ($key == 't.element_type') {
 					$sql .= ' AND ' . $key . '=\'' . $this->db->escape($value) . '\'';
 				} elseif ($key !== 'search_company' && $key !== 'search_ref') {
@@ -391,7 +403,7 @@ class ReferenceLettersElements extends CommonObject
 			if ($num > 0) {
 				$this->lines = array();
 				$num = 0;
-				while ( $obj = $this->db->fetch_object($resql) ) {
+				while ($obj = $this->db->fetch_object($resql)) {
 
 					$addline = true;
 					// Search for company need to be calculated
@@ -407,12 +419,12 @@ class ReferenceLettersElements extends CommonObject
 						$result = $object_src->fetch($obj->fk_element);
 						if ($result < 0) {
 							$this->errors[] = $object_src->error;
-							$error ++;
+							$error++;
 						}
 						if (method_exists($object_src, 'fetch_thirdparty')) {
 							$result = $object_src->fetch_thirdparty();
 							if ($result < 0) {
-								$error ++;
+								$error++;
 								$this->errors[] = $object_src->error;
 							}
 						}
@@ -433,7 +445,7 @@ class ReferenceLettersElements extends CommonObject
 					if (array_key_exists('search_ref', $filter) && ! empty($filter['search_ref'])) {
 						$object_ref = new ReferenceLetters($this->db);
 						$element_type = $langs->trans($obj->element_type);
-						include_once ($object_ref->element_type_list[$obj->element_type]['classpath'] . $object_ref->element_type_list[$obj->element_type]['class']);
+						include_once($object_ref->element_type_list[$obj->element_type]['classpath'] . $object_ref->element_type_list[$obj->element_type]['class']);
 						$class = $object_ref->element_type_list[$obj->element_type]['objectclass'];
 
 						$object_src = new $class($this->db);
@@ -457,7 +469,7 @@ class ReferenceLettersElements extends CommonObject
 					}
 
 					if ($addline) {
-						$num ++;
+						$num++;
 						$line = new ReferenceLettersElementsLine();
 
 						$line->id = $obj->rowid;
@@ -488,14 +500,15 @@ class ReferenceLettersElements extends CommonObject
 			$this->db->free($resql);
 
 			if (! empty($error)) {
-				return - 1;
+				return -1;
 			}
 
 			return $num;
 		} else {
 			$this->error = "Error " . $this->db->lasterror();
 			dol_syslog(get_class($this) . "::fetchAll " . $this->error, LOG_ERR);
-			return - 1;
+
+			return -1;
 		}
 	}
 
@@ -506,7 +519,7 @@ class ReferenceLettersElements extends CommonObject
 	 * @param int $notrigger 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function update($user = 0, $notrigger = 0) {
+	public function update($user = 0, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -563,7 +576,7 @@ class ReferenceLettersElements extends CommonObject
 		dol_syslog(get_class($this) . "::update sql=" . $sql, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if (! $resql) {
-			$error ++;
+			$error++;
 			$this->errors[] = "Error " . $this->db->lasterror();
 		}
 
@@ -583,14 +596,16 @@ class ReferenceLettersElements extends CommonObject
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::update " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
-			return - 1 * $error;
+
+			return -1 * $error;
 		} else {
 			$this->db->commit();
+
 			return 1;
 		}
 	}
@@ -602,7 +617,7 @@ class ReferenceLettersElements extends CommonObject
 	 * @param int $notrigger 0=launch triggers after, 1=disable triggers
 	 * @return int <0 if KO, >0 if OK
 	 */
-	function delete($user, $notrigger = 0) {
+	public function delete($user, $notrigger = 0) {
 		global $conf, $langs;
 		$error = 0;
 
@@ -629,7 +644,7 @@ class ReferenceLettersElements extends CommonObject
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
-				$error ++;
+				$error++;
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
@@ -642,21 +657,23 @@ class ReferenceLettersElements extends CommonObject
 			dol_syslog(get_class($this) . "::delete sql=" . $sql);
 			$resql = $this->db->query($sql);
 			if (! $resql) {
-				$error ++;
+				$error++;
 				$this->errors[] = "Error " . $this->db->lasterror();
 			}
 		}
 
 		// Commit or rollback
 		if ($error) {
-			foreach ( $this->errors as $errmsg ) {
+			foreach ($this->errors as $errmsg) {
 				dol_syslog(get_class($this) . "::delete " . $errmsg, LOG_ERR);
 				$this->error .= ($this->error ? ', ' . $errmsg : $errmsg);
 			}
 			$this->db->rollback();
-			return - 1 * $error;
+
+			return -1 * $error;
 		} else {
 			$this->db->commit();
+
 			return 1;
 		}
 	}
@@ -667,7 +684,7 @@ class ReferenceLettersElements extends CommonObject
 	 * @param int $fromid Id of object to clone
 	 * @return int New id of clone
 	 */
-	function createFromClone($fromid) {
+	public function createFromClone($fromid) {
 		global $user, $langs;
 
 		$error = 0;
@@ -690,7 +707,7 @@ class ReferenceLettersElements extends CommonObject
 		// Other options
 		if ($result < 0) {
 			$this->error = $object->error;
-			$error ++;
+			$error++;
 		}
 
 		if (! $error) {
@@ -699,10 +716,12 @@ class ReferenceLettersElements extends CommonObject
 		// End
 		if (! $error) {
 			$this->db->commit();
+
 			return $object->id;
 		} else {
 			$this->db->rollback();
-			return - 1;
+
+			return -1;
 		}
 	}
 
@@ -712,7 +731,7 @@ class ReferenceLettersElements extends CommonObject
 	 *
 	 * @return void
 	 */
-	function initAsSpecimen() {
+	public function initAsSpecimen() {
 		$this->id = 0;
 
 		$this->entity = '';
@@ -736,31 +755,31 @@ class ReferenceLettersElements extends CommonObject
 	 * @param societe $objsoc Object
 	 * @return string Reference libre pour la lead
 	 */
-	function getNextNumRef($objsoc, $fk_user = '', $element_type = '') {
+	public function getNextNumRef($objsoc, $fk_user = '', $element_type = '') {
 		global $conf, $langs;
 		$langs->load("referenceletters@referenceletters");
 
 		$dirmodels = array_merge(array(
-				'/'
+			'/'
 		), ( array ) $conf->modules_parts['models']);
 
-		if (! empty($conf->global->REF_LETTER_ADDON)) {
-			foreach ( $dirmodels as $reldir ) {
+		if (getDolGlobalString('REF_LETTER_ADDON')) {
+			foreach ($dirmodels as $reldir) {
 				$dir = dol_buildpath($reldir . "core/modules/referenceletters/");
 				if (is_dir($dir)) {
 					$handle = opendir($dir);
 					if (is_resource($handle)) {
 						$var = true;
 
-						while ( ($file = readdir($handle)) !== false ) {
-							if ($file == $conf->global->REF_LETTER_ADDON . '.php') {
+						while (($file = readdir($handle)) !== false) {
+							if ($file == getDolGlobalString('REF_LETTER_ADDON') . '.php') {
 								$file = substr($file, 0, dol_strlen($file) - 4);
 								require_once $dir . $file . '.php';
 
 								$module = new $file();
 
 								// Chargement de la classe de numerotation
-								$classname = $conf->global->REF_LETTER_ADDON;
+								$classname = getDolGlobalString('REF_LETTER_ADDON');
 
 								$obj = new $classname();
 
@@ -771,6 +790,7 @@ class ReferenceLettersElements extends CommonObject
 									return $numref;
 								} else {
 									$this->error = $obj->error;
+
 									return "";
 								}
 							}
@@ -781,6 +801,7 @@ class ReferenceLettersElements extends CommonObject
 		} else {
 			$langs->load("errors");
 			print $langs->trans("Error") . " " . $langs->trans("ErrorModuleSetupNotComplete");
+
 			return "";
 		}
 	}

@@ -1,14 +1,19 @@
 <?php
 
+
+/*
+ * This is a "namespace" class (i.e. it only has static methods).
+ *
+ */
 class RfltrTools {
 
-	static function setImgLinkToUrl($txt) {
+	public static function setImgLinkToUrl($txt) {
 
 		return strtr($txt, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
 	}
 
-	static function setImgLinkToUrlWithArray($Tab) {
+	public static function setImgLinkToUrlWithArray($Tab) {
 
 		foreach($Tab as $id_chapter=>&$TData) {
 			$TData['content_text'] = self::setImgLinkToUrl($TData['content_text']);
@@ -17,10 +22,12 @@ class RfltrTools {
 	}
 
 	/**
-	 * @param $obj peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
-	 * charge le modèle référence letter choisi
+	 * Charge le modèle référence letter choisi
+	 *
+	 * @param Object $object peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
+	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
-	static function load_object_refletter($id_object, $id_model, $obj='', $socid='', $lang_id='', $fk_training = 0) {
+	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
 
 		global $db, $conf;
 
@@ -60,6 +67,7 @@ class RfltrTools {
 			$outputlangs=$langs;
 		}
 
+		// TODO: replace this hard-coded list with array keys of (new ReferenceLetters($db))->element_type_list.
 		$arrayObjectClass = array('Facture',
 								  'Commande',
 								  'Propal',
@@ -71,13 +79,13 @@ class RfltrTools {
 								  'FactureFournisseur',
 								  'Expedition',
 								  'Fichinter');
-		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass)) {
+		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass))  {
 			$object = &$obj;
-			if (empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
+			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
 				$object->fetch_thirdparty();
 			}
 
-			if (get_class($object) === 'Contrat') {
+			if(get_class($object) === 'Contrat') {
 				$lines = $object->getLinesArray();
 				if (!empty($lines)) {
 					$object->lines_active = array();
@@ -88,14 +96,11 @@ class RfltrTools {
 				}
 			}
 		}
-		else{
-
-			$object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs, $fk_training);
-		}
+		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs, $fk_training);
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
-			if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) $langs_chapter = $object->thirdparty->default_lang;
+			if (empty($langs_chapter) && getDolGlobalString('MAIN_MULTILANGS')) $langs_chapter = $object->thirdparty->default_lang;
 			if (empty($langs_chapter)) $langs_chapter = $langs->defaultlang;
 		}
 
@@ -104,7 +109,7 @@ class RfltrTools {
 
 		$content_letter = array();
 		if (is_array($object_chapters->lines_chapters) && count($object_chapters->lines_chapters) > 0) {
-			foreach ($object_chapters->lines_chapters as $key => $line_chapter) {
+			foreach ($object_chapters->lines_chapters as $line_chapter) {
 				$options = array();
 				if (is_array($line_chapter->options_text) && count($line_chapter->options_text) > 0) {
 					foreach ($line_chapter->options_text as $key => $option_text) {
@@ -129,10 +134,9 @@ class RfltrTools {
 		$instance_letter->srcobject=$object;
 		$instance_letter->content_letter = self::setImgLinkToUrlWithArray($content_letter);
 		if(is_object($object) && empty($object->thirdparty)) $object->fetch_thirdparty();
-		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODo pour l'instant on garde le même nom de pdf que fait agefodd
+		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODO pour l'instant on garde le même nom de pdf que fait agefodd
 		$instance_letter->title = $object_refletter->title;
 		$instance_letter->fk_element = $object->id;
-
 		$instance_letter->element_type = $object_refletter->element_type;
 		$instance_letter->fk_referenceletters = $id_model;
 		$instance_letter->outputref = '';
@@ -150,7 +154,7 @@ class RfltrTools {
 	/**
 	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
 	 */
-	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training) {
+	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training = 0) {
 
 		global $db;
 		if ($fk_training == 0) {
@@ -169,7 +173,7 @@ class RfltrTools {
 
 	}
 
-	static function getAgefoddModelList() {
+	public static function getAgefoddModelList() {
 
 		global $db;
 
@@ -193,7 +197,7 @@ class RfltrTools {
 
 	}
 
-	static function getAgefoddModelListDefault() {
+	public static function getAgefoddModelListDefault() {
 
 		global $db;
 		$sql = 'SELECT rowid, title, element_type , default_doc
@@ -216,7 +220,7 @@ class RfltrTools {
 
 	}
 
-	static function getAgefoddModelListDefaultJSON() {
+	public static function getAgefoddModelListDefaultJSON() {
 		$TDefaultModel=array();
 		$TModel = self::getAgefoddModelListDefault();
 		if (is_array($TModel) && count($TModel)>0) {
@@ -231,6 +235,7 @@ class RfltrTools {
 
 	}
 
+	public static function print_js_external_models($page='document') {
 	static function print_js_external_models($page='document') {
 		?>
 
@@ -272,7 +277,7 @@ class RfltrTools {
                     if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
                         var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1); ?>';
                     } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
-                    path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val();
+                    path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo intval(GETPOST('fk_step', 'int')); ?>;
                     // On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
                     lignetitre = $(this).parent().parent();
                     while (!lignetitre.hasClass('liste_titre')) {

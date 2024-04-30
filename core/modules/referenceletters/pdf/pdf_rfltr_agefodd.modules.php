@@ -452,7 +452,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("RefCustomer") . " : " . $this->outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 
-		if ($object->thirdparty->code_client) {
+		if (is_object($object->thirdparty) &&  $object->thirdparty->code_client) {
 			$posy += 4;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
@@ -526,7 +526,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 $carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 			 }*/
 
-			$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
+			$carac_client_name =is_object($object->thirdparty) ?  $this->outputlangs->convToOutputCharset($object->thirdparty->nom) : "";
 			$usecontact = $usecontact ?? 0;
 			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 

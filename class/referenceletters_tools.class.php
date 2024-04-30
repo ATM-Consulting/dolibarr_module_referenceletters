@@ -21,15 +21,22 @@ class RfltrTools {
 		return $Tab;
 	}
 
+
 	/**
 	 * Charge le modèle référence letter choisi
 	 *
-	 * @param Object $object peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $id_object
+	 * @param $id_model
+	 * @param $object peut être une convention pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $socid
+	 * @param $lang_id
+	 * @param $fk_training
 	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
+
 	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
 
-		global $db, $conf;
+		global $db, $conf,$obj;
 
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
@@ -151,8 +158,16 @@ class RfltrTools {
 
 	}
 
+
 	/**
-	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 *  Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 * @param $id_object
+	 * @param $object_refletter
+	 * @param $socid
+	 * @param $obj_agefodd_convention
+	 * @param $outputlangs
+	 * @param $fk_training
+	 * @return mixed
 	 */
 	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training = 0) {
 

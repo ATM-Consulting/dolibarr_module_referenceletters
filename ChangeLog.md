@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
-
+- NEW : Ajout de la gestion d'un modèle de formation orphelin (non rattaché à une session) - *30/04/2024* - 2.21.0  
 - NEW : Hooks enabling other modules to add new DocEdit-managed document 
   types (and one day perhaps get rid of Agefodd-specific code in DocEdit) 
   *15/09/2022* 2.20.0

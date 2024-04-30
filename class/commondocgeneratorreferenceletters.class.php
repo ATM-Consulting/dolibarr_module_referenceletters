@@ -759,7 +759,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd_formation(Formation &$object,Translate  $outputlangs)
 	{
-		global $db, $conf, $langs;
+
+		global $db,  $langs, $extrafields;
 		$listRef = "";
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/product/class/product.class.php');
@@ -814,22 +815,24 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'];
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'];
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'];
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'];
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'];
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'];
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'];
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'];
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'];
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'];
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'];
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'];
+				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size']?? array();
+				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique']?? array();
+				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required']?? array();
+				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label']?? array();
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default']?? array();
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed']?? array();
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param']?? array();
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms']?? array();
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile']?? array();
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list']?? array();
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden']?? array();
 			}
 		}
 		$object->fetch_optionals();
-		if (is_array($e->attributes[$object->table_element]['label'])){
+		if( is_array($e->attributes[$object->table_element])
+			&& array_key_exists('label',$e->attributes[$object->table_element])
+			&& is_array($e->attributes[$object->table_element]['label'])){
 			foreach($e->attributes[$object->table_element]['label'] as $key => $val) {
 				$resarray['formation_options_'.$key] = strip_tags($e->showOutputField($key, $object->array_options['options_'.$key]));
 			}
@@ -1555,7 +1558,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+			if(is_array($extrafields->attributes[$object->table_element])
+				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
+				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {
 				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();

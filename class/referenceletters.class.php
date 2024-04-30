@@ -331,6 +331,24 @@ class ReferenceLetters extends CommonObject
 			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
 			}
 
+
+			// programme  formation initial
+			$this->element_type_list['rfltr_agefodd_formation'] = array (
+				'class' => 'agefodd_formation_catalogue.class.php',
+				'objectclass' => 'Formation',
+				'classpath' => dol_buildpath('/agefodd/class/'),
+				'trans' => 'agefodd',
+				'title' => 'AgfFormationInitiale',
+				'card' => '/agefodd/training/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
+			);
+
+			foreach ($Tab as $key => $val){
+				$this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_formation'];
+				$this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
+
 		}
 
 		return 1;
@@ -752,9 +770,51 @@ class ReferenceLetters extends CommonObject
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
+		//if(isset($subst_array['Formation'])) unset($subst_array['Formation']);
 
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
-		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+		//$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+
+		// formation initiale
+		$subst_array[$langs->trans('AgfFormationInitiale')] = array(
+
+		'formation_nom'=>'Intitulé de la formation'
+		,'formation_ref'=>'Référence de la formation'
+		,'formation_statut'=>'Statut de la formation'
+		,'formation_duree' => 'Durée de la formation'
+		,'formation_but'=>'But de la formation'
+		,'formation_methode'=>'Methode de formation'
+
+		,'formation_nb_place_dispo'=>'nombre de places disponibles'
+		,'formation_nb_inscription_mini'=> "Nombre minimum d'inscrits pour confirmer la session"
+		,'formation_category'=>'Catégorie formation'
+		,'formation_category_bpf'=>'Catégorie de formation prestation (BPF)'
+		,'formation_product'=>'Produit ou service associé'
+		,'formation_type_public'=>'Type de public'
+		,'formation_methode_pedago'=>'Méthodes pédagogiques'
+		,'formation_documents'=>'Documents nécessaires à la formation'
+		,'formation_equipements'=>'Equipements nécessaires à la formation'
+		,'formation_pre_requis'=>'Pré-requis'
+		,'formation_moyens_peda'=>'Moyens pédagogiques'
+		,'formation_sanction'=>'Sanction de la formation'
+		,'formation_competences'=>'Liste des compétences visées'
+		,'formation_nature'=>'Nature de l’action concourant au développement des compétences'
+		,'formation_Accessibility_Handicap'=>'Accessible aux personnes handicapés'
+		,'AgfMentorList'=>'Liste des référents'
+		,'Mentor_administrator'=>'Référent Administratif'
+		,'Mentor_pedagogique'=>'Référent pédagogique'
+		,'Mentor_handicap'	=>'Référent handicap'
+
+		);
+
+		$extrafields = new ExtraFields($this->db);
+		//Extrafield Formation
+		$formation_extralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
+		if(!empty($formation_extralabels)) {
+			foreach($formation_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('AgfFormationInitiale')]['formation_options_'.$extrakey] = 'Champ complémentaire Formation : '.$extralabel;
+			}
+		}
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'

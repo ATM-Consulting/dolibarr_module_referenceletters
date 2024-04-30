@@ -208,6 +208,7 @@ RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de t
 RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
 RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
 RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
+
 #
 # Tags lignes
 #

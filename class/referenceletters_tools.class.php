@@ -20,7 +20,7 @@ class RfltrTools {
 	 * @param $obj peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
 	 * charge le modèle référence letter choisi
 	 */
-	static function load_object_refletter($id_object, $id_model, $obj='', $socid='', $lang_id='') {
+	static function load_object_refletter($id_object, $id_model, $obj='', $socid='', $lang_id='', $fk_training = 0) {
 
 		global $db, $conf;
 
@@ -71,13 +71,13 @@ class RfltrTools {
 								  'FactureFournisseur',
 								  'Expedition',
 								  'Fichinter');
-		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass))  {
+		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass)) {
 			$object = &$obj;
-			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
+			if (empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
 				$object->fetch_thirdparty();
 			}
 
-			if(get_class($object) === 'Contrat') {
+			if (get_class($object) === 'Contrat') {
 				$lines = $object->getLinesArray();
 				if (!empty($lines)) {
 					$object->lines_active = array();
@@ -88,7 +88,10 @@ class RfltrTools {
 				}
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
+		else{
+
+			$object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs, $fk_training);
+		}
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
@@ -129,6 +132,7 @@ class RfltrTools {
 		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODo pour l'instant on garde le même nom de pdf que fait agefodd
 		$instance_letter->title = $object_refletter->title;
 		$instance_letter->fk_element = $object->id;
+
 		$instance_letter->element_type = $object_refletter->element_type;
 		$instance_letter->fk_referenceletters = $id_model;
 		$instance_letter->outputref = '';
@@ -146,14 +150,20 @@ class RfltrTools {
 	/**
 	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
 	 */
-	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='') {
+	static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training) {
 
 		global $db;
-
-		dol_include_once('/agefodd/class/agsession.class.php');
-		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
-		$object->fetch($id_object);
-		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
+		if ($fk_training == 0) {
+			dol_include_once('/agefodd/class/agsession.class.php');
+			$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
+			$object->fetch($id_object);
+		}else{
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+			$object = new $object_refletter->element_type_list['rfltr_agefodd_formation']['objectclass']($db);
+			$object->fetch($fk_training);
+		}
+		// on load les informations de l'object
+		$object->load_all_data_agefodd($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 

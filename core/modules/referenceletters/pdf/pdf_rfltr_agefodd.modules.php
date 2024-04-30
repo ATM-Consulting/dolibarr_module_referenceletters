@@ -69,7 +69,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param bool $isCertif
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false) {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_training = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -92,11 +92,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$agf_session->fetch($courrier);
 			}
 
-			$id_object= $agf_session->id;
+			$id_object= !empty($agf_session->id) ?  $agf_session->id : $id_object;
 		}
 
 		// Chargement du modèle utilisé
-		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
+		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
         $instance_letter = $tmpTab[0];
         $object = $tmpTab[1];
 

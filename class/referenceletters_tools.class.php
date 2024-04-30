@@ -236,7 +236,7 @@ class RfltrTools {
 	}
 
 	public static function print_js_external_models($page='document') {
-	static function print_js_external_models($page='document') {
+
 		?>
 
 		<script type="text/javascript">

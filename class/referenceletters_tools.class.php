@@ -21,15 +21,22 @@ class RfltrTools {
 		return $Tab;
 	}
 
+
 	/**
 	 * Charge le modèle référence letter choisi
 	 *
-	 * @param Object $object peut être une convetion pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $id_object
+	 * @param $id_model
+	 * @param $object peut être une convention pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $socid
+	 * @param $lang_id
+	 * @param $fk_training
 	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
-	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='') {
 
-		global $db, $conf;
+	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
+
+		global $db, $conf,$obj;
 
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
@@ -96,7 +103,7 @@ class RfltrTools {
 				}
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
+		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs, $fk_training);
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
@@ -151,17 +158,31 @@ class RfltrTools {
 
 	}
 
+
 	/**
-	 * Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 *  Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 * @param $id_object
+	 * @param $object_refletter
+	 * @param $socid
+	 * @param $obj_agefodd_convention
+	 * @param $outputlangs
+	 * @param $fk_training
+	 * @return mixed
 	 */
-	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='') {
+	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training = 0) {
 
 		global $db;
-
-		dol_include_once('/agefodd/class/agsession.class.php');
-		$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
-		$object->fetch($id_object);
-		$object->load_all_data_agefodd_session($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
+		if ($fk_training == 0) {
+			dol_include_once('/agefodd/class/agsession.class.php');
+			$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
+			$object->fetch($id_object);
+		}else{
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+			$object = new $object_refletter->element_type_list['rfltr_agefodd_formation']['objectclass']($db);
+			$object->fetch($fk_training);
+		}
+		// on load les informations de l'object
+		$object->load_all_data_agefodd($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 
@@ -230,7 +251,7 @@ class RfltrTools {
 	}
 
 	public static function print_js_external_models($page='document') {
-	static function print_js_external_models($page='document') {
+
 		?>
 
 		<script type="text/javascript">

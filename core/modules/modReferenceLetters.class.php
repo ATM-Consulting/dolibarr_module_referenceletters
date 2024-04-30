@@ -61,9 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
-
-		$this->version = '2.20.0';
-
+		$this->version = '2.21.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);

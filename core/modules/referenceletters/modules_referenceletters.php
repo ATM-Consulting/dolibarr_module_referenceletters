@@ -751,8 +751,19 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 		}
 
-		if (get_class($object) === 'Agsession') {
+		if (get_class($object) === 'Agsession' ) {
 			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$substitution_array = array();
+			if (is_array($tmparray) && count($tmparray) > 0) {
+				foreach ( $tmparray as $key => $value ) {
+					$substitution_array['{' . $key . '}'] = RfltrTools::setImgLinkToUrl($value);
+				}
+				$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+			}
+		}
+
+		if (get_class($object) === 'Formation' ) {
+			$tmparray = $this->get_substitutionsarray_agefodd_formation($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {

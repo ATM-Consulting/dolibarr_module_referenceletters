@@ -372,6 +372,7 @@ class ReferenceLetters extends CommonObject
 			foreach ($Tab as $key => $val){
 				$this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_formation'];
 				$this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
 		}
 
 		// Hook permettant à d'autres modules d'ajouter des types de documents

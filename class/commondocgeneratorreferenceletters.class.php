@@ -1563,7 +1563,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 		}
 
-        var_dump($array_to_fill);
 		return $array_to_fill;
 	}
 }

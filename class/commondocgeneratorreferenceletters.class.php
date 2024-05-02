@@ -485,7 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -756,6 +756,95 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
+	 * executée depuis la fiche formation
+	 * @param Formation $object
+	 * @param string $outputlangs
+	 * @return array
+	 */
+	public function get_substitutionsarray_agefodd_formation(Formation &$object,Translate  $outputlangs)
+	{
+
+		global $db,  $langs, $extrafields;
+		$listRef = "";
+		dol_include_once('/agefodd/class/html.formagefodd.class.php');
+		dol_include_once('/product/class/product.class.php');
+		$formAgefodd = new FormAgefodd($db);
+		$resarray = array();
+
+		$resarray['formation_nom']=$object->intitule;
+		$resarray['formation_ref']=$object->ref_obj;
+		$resarray['formation_statut']=$object->getLibStatut();
+		$resarray['formation_duree' ]= $object->duree;
+		$resarray['formation_but']=$object->but;
+		$resarray['formation_methode']=$object->methode;
+		$resarray['formation_nb_place_dispo']=$object->nb_place;
+		$resarray['formation_nb_inscription_mini']= $object->nb_subscribe_min;
+		$resarray['formation_category']=$object->category_lib;
+		$resarray['formation_category_bpf']=$object->category_lib_bpf;
+		$prod = new Product($db);
+		$res = $prod->fetch($object->fk_product);
+		if ($res)
+		$resarray['formation_product']=$prod->label;
+		$resarray['formation_type_public']=$object->public;
+		$resarray['formation_methode_pedago']=$object->methode;
+		$resarray['formation_documents']=$object->note1;
+		$resarray['formation_equipements']=$object->note2;
+		$resarray['formation_pre_requis']=$object->prerequis;
+		$resarray['formation_moyens_peda']=$object->pedago_usage;
+		$resarray['formation_sanction']=$object->sanction;
+		$resarray['formation_nature']= $formAgefodd->select_formation_nature_action($object->fk_nature_action_code, '', '', '', '', 'view');
+		$resarray['formation_Accessibility_Handicap']=$object->accessibility_handicap == 0 ? 'Non' : 'Oui';
+		$arrpeda= explode(',', $object->formation_obj_peda);
+		$tmp="";
+		foreach ($arrpeda as $peda) {
+			$tmp .= $peda . "<br>";
+		}
+		$resarray['formation_competences']=$tmp;
+
+		$localuser = new User($db);
+		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_ADMIN'));
+		$resarray['Mentor_administrator']	=  $localuser->getFullName($langs); 'Référent Administratif';
+		$listRef = $localuser->getFullName($langs);
+		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_PEDAGO'));
+		$resarray['Mentor_pedagogique']	=  $localuser->getFullName($langs);
+		$listRef .= ', '.$localuser->getFullName($langs);
+		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_HANDICAP'));
+		$resarray['Mentor_handicap'	]	=  $localuser->getFullName($langs); 'Référent handicap';
+		$listRef .= ', '.$localuser->getFullName($langs);
+		$resarray['AgfMentorList']=$listRef;
+   		// -----------
+
+		$e = new ExtraFields($db);
+		$e->fetch_name_optionals_label($object->table_element);
+		if(floatval(DOL_VERSION) >= 16) {
+			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size']?? array();
+				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique']?? array();
+				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required']?? array();
+				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label']?? array();
+				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default']?? array();
+				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed']?? array();
+				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param']?? array();
+				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms']?? array();
+				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile']?? array();
+				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list']?? array();
+				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden']?? array();
+			}
+		}
+		$object->fetch_optionals();
+		if( is_array($e->attributes[$object->table_element])
+			&& array_key_exists('label',$e->attributes[$object->table_element])
+			&& is_array($e->attributes[$object->table_element]['label'])){
+			foreach($e->attributes[$object->table_element]['label'] as $key => $val) {
+				$resarray['formation_options_'.$key] = strip_tags($e->showOutputField($key, $object->array_options['options_'.$key]));
+			}
+		}
+
+		return $resarray;
+	}
+	/**
 	 *
 	 * @param CommonObject $object Object
 	 * @param Translate $outputlangs Translate instance
@@ -763,7 +852,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionsarray_agefodd(&$object, $outputlangs)
 	{
-		global $db, $conf,$langs;
+		global $db, $langs;
+
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
@@ -784,6 +874,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+
 
 		if(!empty($object->fk_product)) {
 			$p = new Product($db);
@@ -860,14 +951,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['session_nb_days'] = $object->session_nb_days?? '';
 		$resarray['trainer_datehourtextline'] = $object->trainer_datehourtextline?? '';
 		$resarray['trainer_datetextline'] = $object->trainer_datetextline?? '';
-    $resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
-    $resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
-    $resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
-    $resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
-    $resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
-    $resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
-    $resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
-    $resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
+		$resarray['stagiaire_presence_total'] = $object->stagiaire_presence_total?? '';
+		$resarray['stagiaire_presence_bloc'] = $object->stagiaire_presence_bloc?? '';
+		$resarray['time_stagiaire_temps_realise_total'] = $object->time_stagiaire_temps_realise_total?? '';
+		$resarray['stagiaire_temps_realise_total'] = $object->stagiaire_temps_realise_total?? '';
+		$resarray['time_stagiaire_temps_att_total'] = $object->time_stagiaire_temps_att_total?? '';
+		$resarray['stagiaire_temps_att_total'] = $object->stagiaire_temps_att_total?? '';
+		$resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
+		$resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
  		$resarray['trainer_cost_planned'] = price($object->cost_trainer_planned ?? '');
 
 
@@ -897,18 +988,33 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-
+		// cela devrait être toujours vrai ici
 		if (! empty($object->fk_formation_catalogue)) {
 
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+
+
+			// est ce que j'ai une copie de la formation de la formation dans session_catalogue ?
+			// dit autrement est ce que j'ai modifié le receuil depuis l'onglet receuil de la formation ?
+			//
 
 			if (class_exists('Agefodd')) {
 				$catalogue = new Agefodd($db);
 			} elseif (class_exists('Formation')) {
 				$catalogue = new Formation($db);
 			}
+			$sessionFormation = new SessionCatalogue($this->db);
+			$res = $sessionFormation->fetchSessionCatalogue($object->id);
 
-			$catalogue->fetch($object->fk_formation_catalogue);
+			if ($res > 0 ){
+				$catalogue = $sessionFormation;
+			}else{
+				$catalogue->fetch($object->fk_formation_catalogue);
+			}
+
+			// ajouter les peda ici pour
+
+
 			$resarray['formation_but'] = $catalogue->but;
 			$resarray['formation_ref'] = $catalogue->ref_obj;
 			$resarray['formation_refint'] = $catalogue->ref_interne;
@@ -946,6 +1052,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 				}
 			}
+
 			if (isset($e->attributes[$catalogue->table_element]['label']) && is_array($e->attributes[$catalogue->table_element]['label'])){
 				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
 					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
@@ -966,17 +1073,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		dol_include_once('/agefodd/class/agefodd_place.class.php');
 		$agf_place = new Agefodd_place($db);
 		if(! empty($fk_place)) $agf_place->fetch($fk_place);
-		$resarray['formation_lieu'] = strip_tags($agf_place->ref_interne);
-		$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-		$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-		$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+		// Lieu
+		$resarray['formation_lieu'] 				= strip_tags($agf_place->ref_interne);
+		$resarray['formation_lieu_adresse'] 		= strip_tags($agf_place->adresse);
+		$resarray['formation_lieu_cp'] 				= strip_tags($agf_place->cp);
+		$resarray['formation_lieu_ville'] 			= strip_tags($agf_place->ville);
 		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
 		// fix TK9760
-		$resarray['formation_lieu_acces'] = str_replace('&amp;', '&', $agf_place->acces_site);
-		$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
-		$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-		$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-		$resarray['formation_lieu_divers'] = $agf_place->note1;
+		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_phone'] 			= dol_print_phone($agf_place->tel, $agf_place->country_code);
+		$resarray['formation_lieu_horaires'] 		= strip_tags($agf_place->timeschedule);
+		$resarray['formation_lieu_notes'] 			= strip_tags($agf_place->notes);
+		$resarray['formation_lieu_divers'] 			= $agf_place->note1;
 
 
 		// Add ICS link replacement to mails
@@ -1453,9 +1561,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
-			if(!empty($object->table_element) && $extrafields->attributes[$object->table_element]['loaded'] > 0) {
-                $extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-                $extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+			if(!empty($object->table_element) 
+			is_array($extrafields->attributes[$object->table_element])
+				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
+				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {
+                		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+                		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
 				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();
@@ -1562,6 +1673,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 		}
+
 
 		return $array_to_fill;
 	}

@@ -71,7 +71,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0) {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -94,11 +94,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$agf_session->fetch($courrier);
 			}
 
-			$id_object= $agf_session->id;
+			$id_object= !empty($agf_session->id) ?  $agf_session->id : $id_object;
 		}
 
 		// Chargement du modèle utilisé
-		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang);
+		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
         $instance_letter = $tmpTab[0];
         $object = $tmpTab[1];
 
@@ -242,7 +242,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					}
 
 					// Remplacement des tags par les bonnes valeurs
-					$chapter_text = $this->setSubstitutions($object, $chapter_text);
+					$chapter_text = $this->setSubstitutions($object, $chapter_text );
 
 					// merge agefodd arrays
 					//TODO : define this order on logical order by template
@@ -275,36 +275,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 					$chapter_text = $this->merge_array($object, $chapter_text, $TAgfArray);
 
-					// fix TK9360 : ce patch n'est plus utile à présent => je vire
-/*					// correction de problème de décalage de texte
-					if (preg_match('/<strong>/', $chapter_text)) {
-						$position = 0;
-
-						while ( preg_match('/<strong>/', substr($chapter_text, $position)) ) {
-							$position = strpos($chapter_text, '<strong>', $position);
-							$startStrong = $position;
-							$endStrong = strpos($chapter_text, '</strong>', $position);
-							$strong = substr($chapter_text, $startStrong + 8, $endStrong - $position - 8);
-							$style = 'font-weight:bold;';
-							$i = 0;
-							while ( @strpos($strong, '<span style=', $i) !== false ) {
-								$len = strpos(substr($strong, strpos($strong, '<span style="', $i) + 13), '">', $i) - strpos($strong, '<span style="', $i);
-								$style .= substr($strong, strpos($strong, '<span style="', $i) + 13, $len) . ';';
-								$styleposition = strpos($strong, '<span style=', $i);
-								if (empty($styleposition)) {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, strpos($strong, '>', $o) + 1, $l);
-								} else {
-									$l = strripos($strong, '</span>', $i) - strpos($strong, '>', $i) - 1;
-									$strong = substr($strong, 0, strpos($strong, '<span')) . substr($strong, strpos($strong, '>') + 1, $l) . substr($strong, strripos($strong, '</span>') + 7);
-								}
-								$i += $len;
-							}
-							$chapter_text = substr($chapter_text, 0, $startStrong) . '<span style="' . $style . '">' . $strong . '</span>' . substr($chapter_text, $endStrong + 9);
-							$position = $endStrong;
-						}
-					}
-*/
 					$test_array = explode('@breakpage@', $chapter_text);
 					foreach ($test_array as $chapter_text){
     					$test = $this->pdf->writeHTMLCell(0, 0, $posX, $posY, $this->outputlangs->convToOutputCharset($chapter_text), 0, 1, false, true);
@@ -482,7 +452,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			$this->pdf->MultiCell(100, 3, $this->outputlangs->transnoentities("RefCustomer") . " : " . $this->outputlangs->convToOutputCharset($object->ref_client), '', 'R');
 		}
 
-		if ($object->thirdparty->code_client) {
+		if (is_object($object->thirdparty) &&  $object->thirdparty->code_client) {
 			$posy += 4;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);
@@ -556,7 +526,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 $carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
 			 }*/
 
-			$carac_client_name = $this->outputlangs->convToOutputCharset($object->thirdparty->nom);
+			$carac_client_name =is_object($object->thirdparty) ?  $this->outputlangs->convToOutputCharset($object->thirdparty->nom) : "";
 			$usecontact = $usecontact ?? 0;
 			$carac_client = pdf_build_address($this->outputlangs, $this->emetteur, $object->thirdparty, ($usecontact ? $object->contact : ''), $usecontact, 'target');
 

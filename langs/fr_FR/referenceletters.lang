@@ -68,7 +68,9 @@ RefLtrAgefodd=Exemple de modèle pour le module Formation
 RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
 RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 RefLtrShipping=Exemple de modèle de BON DE LIVRAISON
-
+AgfendTrainingTrainee=Attestation de fin de formation stagiaire
+AgfLinkedDocCertificatAchievment=Certificat de réalisation documents liés
+AgfTraineeDocCertificatAchievment=Certificat de réalisation par stagiaire
 #
 # Page À propos
 #
@@ -208,6 +210,7 @@ RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de t
 RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
 RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
 RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
+
 #
 # Tags lignes
 #

@@ -2,8 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
-
-
+- NEW : Ajout de la gestion d'un modèle de formation orphelin (non rattaché à une session) - *30/04/2024* - 2.21.0  
+- NEW : Hooks enabling other modules to add new DocEdit-managed document 
+  types (and one day perhaps get rid of Agefodd-specific code in DocEdit) 
+  *15/09/2022* 2.20.0
+- NEW : Add certificat_completion  generation for trainee docs / docs  - 
+*16/04/2024* - 2.20.0  
 
 ## Release 2.19 - 12/02/2024
 - FIX : DA024820 trainee extrafields wasn't working properly  - *02/05/2024* - 2.19.5

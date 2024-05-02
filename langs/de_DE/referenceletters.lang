@@ -69,7 +69,9 @@ RefLtrAgefoddConvention=Sample template of training contract
 About = Über
 ReferenceLettersAbout = Über Brief Vorlagen
 ReferenceLettersAboutPage = Brief Vorlagen Über Seite
-
+AgfendTrainingTrainee=Ausbildungsteilnehmer-Zeugnis
+AgfLinkedDocCertificatAchievment=Bescheinigung über die Erstellung verknüpfter Dokumente
+AgfTraineeDocCertificatAchievment=Bescheinigung über die Erstellung durch den Auszubildenden
 #
 # Menu
 #

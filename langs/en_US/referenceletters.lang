@@ -68,7 +68,9 @@ RefLtrSupplierOrders=Sample template of SUPPLIER ORDER
 RefLtrAgefodd=Sample template of Training Module
 RefLtrAgefoddConvention=Sample template of training contract
 RefLtrShipping=Sample template of SENDING SHEET
-
+AgfendTrainingTrainee=Trainee Completion Certificate
+AgfLinkedDocCertificatAchievment=Linked Document Achievement Certificate
+AgfTraineeDocCertificatAchievment=Trainee Document Achievement Certificate
 #
 # About page
 #

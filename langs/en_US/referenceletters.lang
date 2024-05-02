@@ -161,3 +161,5 @@ RefLtrCopiedInStdDocLocation=The standard document (%s) was successfully created
 #
 RefLtrErrorCannotRecognizeModel=DocEdit technical error : cannot recognize model type
 
+RefLtrSubstAgefoddListSteps=Steps (List of Agefodd data "TSteps" or "TStepsDistanciel" or "TStepsPresentiel")
+RefLtrSubstAgefoddStep=Step line

@@ -210,6 +210,8 @@ RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de t
 RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
 RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
 RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
+RefLtrSubstAgefoddListSteps=Etapes (Liste de données Agefodd "TSteps" ou "TStepsDistanciel" ou "TStepsPresentiel")
+RefLtrSubstAgefoddStep=Ligne d'étape
 
 #
 # Tags lignes

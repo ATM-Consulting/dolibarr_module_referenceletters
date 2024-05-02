@@ -921,11 +921,20 @@ class ReferenceLetters extends CommonObject
 				,'presta_soc_tvaintra'	=> $langs->trans('PrestaSocTvaIntra')
 				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
 				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
+
+				,'objvar_object_steps_date_text_without_tr' => 'Dates de toutes les étapes sans les heures'
+				,'objvar_object_steps_date_text' => 'Dates de toutes les étapes avec les heures'
+
+				,'objvar_object_steps_facetoface_date_text_without_tr' => 'Dates des étapes présentielles sans les heures'
+				,'objvar_object_steps_facetoface_date_text' => 'Dates des étapes présentielles avec les heures'
+
+				,'objvar_object_steps_remote_date_text' => 'Dates des étapes distancielles'
+
 		);
 
 		// Liste de données - Participants
 		$moreTrad = '';
-		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		if(!empty($conf->agefoddcertificat->enabled)) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilite'=>'Civilité'
 				,'line_nom'=>'Nom participant'
@@ -961,13 +970,35 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
-		if($conf->agefoddcertificat->enabled) {
+		if(!empty($conf->agefoddcertificat->enabled)) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_fin'] = 'Date de fin du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_alerte'] = 'Date d\'alerte du certificat';
 		}
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListSteps')] = array(
+			'line_step_label' => 'Label de l\'étape',
+			'line_step_date_start' => 'Date de début de l\'étape',
+			'line_step_date_end' => 'Date de fin de l\'étape',
+			'line_step_duration' => 'Durée de l\'étape',
+			'line_step_lieu' => 'Lieu de la formation',
+			'line_step_lieu_adresse' => 'Adresse du lieu de l\'étape',
+			'line_step_lieu_cp' => 'Code postal du lieu de l\'étape',
+			'line_step_lieu_ville' => 'Ville du lieu de l\'étape',
+			'line_step_lieu_acces' => 'Instruction d\'accès au lieu lieu de l\'étape',
+			'line_step_lieu_horaires' => 'Horaires du lieu de l\'étape',
+			'line_step_lieu_notes' => 'Commentaire du lieu de l\'étape',
+			'line_step_lieu_divers' => 'Infos Repas, Hébergements, divers'
+		);
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddStep')] = array(
+			'step_label' => 'Label de l\'étape',
+			'step_date_start' => 'Date de début de l\'étape',
+			'step_date_end' => 'Date de fin de l\'étape',
+			'step_duration' => 'Durée de l\'étape',
+		);
 
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
@@ -1015,7 +1046,7 @@ class ReferenceLetters extends CommonObject
 				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
 			}
 		}
-		if($conf->agefoddcertificat->enabled) {
+		if(!empty($conf->agefoddcertificat->enabled)) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';

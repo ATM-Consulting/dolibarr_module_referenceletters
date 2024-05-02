@@ -134,3 +134,6 @@ RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.
+
+RefLtrSubstAgefoddListSteps=Pasos (Lista de datos de Agefodd "TSteps" o "TStepsDistanciel" o "TStepsPresentiel")
+RefLtrSubstAgefoddStep=Línea de paso

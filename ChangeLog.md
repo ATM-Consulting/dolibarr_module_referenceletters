@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 *16/04/2024* - 2.20.0  
 
 ## Release 2.19 - 12/02/2024
+- FIX : DA024820 trainee extrafields wasn't working properly  - *02/05/2024* - 2.19.5
 - FIX : DA024774 missing phone_perso & phone_mobile key  - *23/04/2024* - 2.19.3
 - FIX : DA024698/DA024701 docedit pdf generation when creating objects  - *21/03/2024* - 2.19.2
 - FIX : DA024630 warning  - *21/03/2024* - 2.19.2  

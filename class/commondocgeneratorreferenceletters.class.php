@@ -520,16 +520,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $db, $conf, $langs;
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
+        dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
-		// Substitutions tableau de participants :
-		$resarray = array();
-		$resarray['line_poste'] = $line->poste;
-		$resarray['line_civilite'] = $line->civilitel;
-		$resarray['line_civilite_short'] = $line->civilite;
-		$resarray['line_nom'] = $line->nom;
-		$resarray['line_prenom'] = $line->prenom;
-		$resarray['line_type'] = $line->type;
-		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+        // Substitutions tableau de participants :
+        $sessionStag = new Agefodd_session_stagiaire($this->db);
+        $resarray = array();
+        $resarray['line_poste'] = $line->poste;
+        $resarray['line_civilite'] = $line->civilitel;
+        $resarray['line_civilite_short'] = $line->civilite;
+        $resarray['line_nom'] = $line->nom;
+        $resarray['line_prenom'] = $line->prenom;
+        $resarray['line_type'] = $line->type;
+        $resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_statut'] = $sessionStag->LibStatut($line->status_in_session);
 		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
 		$tel = $line->tel1;

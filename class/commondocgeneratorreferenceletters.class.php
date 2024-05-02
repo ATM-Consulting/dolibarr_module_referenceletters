@@ -1562,7 +1562,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
 			if(!empty($object->table_element) 
-			is_array($extrafields->attributes[$object->table_element])
+			    && is_array($extrafields->attributes[$object->table_element])
 				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
 				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {
                 		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();

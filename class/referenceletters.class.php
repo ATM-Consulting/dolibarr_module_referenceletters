@@ -852,7 +852,8 @@ class ReferenceLetters extends CommonObject
 		$moreTrad = '';
 		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
-				'line_civilite'=>'Civilité'
+				'line_civilitel'=>'Libellé civilité'
+				,'line_civilitel'=>'Code civilité'
 				,'line_nom'=>'Nom participant'
 				,'line_prenom'=>'Prénom participant'
 				,'line_nom_societe'=>'Société du participant'

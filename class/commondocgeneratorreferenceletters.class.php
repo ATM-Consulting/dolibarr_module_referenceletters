@@ -520,16 +520,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $db, $conf, $langs;
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
+        dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
-		// Substitutions tableau de participants :
-		$resarray = array();
-		$resarray['line_poste'] = $line->poste;
-		$resarray['line_civilite'] = $line->civilitel;
-		$resarray['line_civilite_short'] = $line->civilite;
-		$resarray['line_nom'] = $line->nom;
-		$resarray['line_prenom'] = $line->prenom;
-		$resarray['line_type'] = $line->type;
-		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+        // Substitutions tableau de participants :
+        $sessionStag = new Agefodd_session_stagiaire($this->db);
+        $resarray = array();
+        $resarray['line_poste'] = $line->poste;
+        $resarray['line_civilite'] = $line->civilitel;
+        $resarray['line_civilite_short'] = $line->civilite;
+        $resarray['line_nom'] = $line->nom;
+        $resarray['line_prenom'] = $line->prenom;
+        $resarray['line_type'] = $line->type;
+        $resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_statut'] = $sessionStag->LibStatut($line->status_in_session);
 		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
 		$tel = $line->tel1;
@@ -539,6 +542,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
 		}
 		$resarray['line_phone'] = $tel;
+		$resarray['line_phone_pro'] = $line->tel1;
+		$resarray['line_phone_mobile'] = $line->tel2;
 		$resarray['line_email'] = $line->email;
 		$resarray['line_siret'] = $line->thirdparty->idprof2;
 		$resarray['line_birthplace'] = $line->place_birth;
@@ -642,6 +647,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_nom'] = $line->lastname;
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
+		$resarray['line_formateur_phone_mobile'] = $line->phone_mobile;
+		$resarray['line_formateur_phone_perso'] = $line->phone_perso;
 		$resarray['line_formateur_mail'] = $line->email;
 		$resarray['line_formateur_socname'] =  $line->socname;
 		$resarray['line_formateur_address'] = $line->address;
@@ -1449,9 +1456,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
-			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+			if(!empty($object->table_element) && $extrafields->attributes[$object->table_element]['loaded'] > 0) {
+                $extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+                $extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
 				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();
@@ -1558,7 +1565,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 		}
-
 
 		return $array_to_fill;
 	}

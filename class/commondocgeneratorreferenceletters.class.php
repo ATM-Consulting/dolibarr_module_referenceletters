@@ -520,15 +520,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		global $db, $conf, $langs;
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
-		// Substitutions tableau de participants :
-		$resarray = array();
-		$resarray['line_poste'] = $line->poste;
-		$resarray['line_civilite'] = $line->civilitel;
-		$resarray['line_civilite_short'] = $line->civilite;
-		$resarray['line_nom'] = $line->nom;
-		$resarray['line_prenom'] = $line->prenom;
-		$resarray['line_type'] = $line->type;
-		$resarray['line_birthday'] = dol_print_date($line->date_birth);
+        dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
+
+        // Substitutions tableau de participants :
+        $sessionStag = new Agefodd_session_stagiaire($this->db);
+        $resarray = array();
+        $resarray['line_poste'] = $line->poste;
+        $resarray['line_civilite'] = $line->civilitel;
+        $resarray['line_civilite_short'] = $line->civilite;
+        $resarray['line_nom'] = $line->nom;
+        $resarray['line_prenom'] = $line->prenom;
+        $resarray['line_type'] = $line->type;
+        $resarray['line_birthday'] = dol_print_date($line->date_birth);
+		$resarray['line_statut'] = $sessionStag->LibStatut($line->status_in_session);
 		$resarray['line_place_birth'] = $line->place_birth;
 		$resarray['line_birthdayformated'] = $line->datebirthformated;
 		$tel = $line->tel1;
@@ -766,6 +770,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
 		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
 		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+
 		return $resarray;
 	}
 
@@ -888,6 +893,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+
 
 		if(!empty($object->fk_product)) {
 			$p = new Product($db);
@@ -1579,11 +1585,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
-			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if(is_array($extrafields->attributes[$object->table_element])
+			if(!empty($object->table_element) 
+			    && is_array($extrafields->attributes[$object->table_element])
 				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
 				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+                		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+                		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
 				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
 				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();

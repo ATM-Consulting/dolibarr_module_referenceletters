@@ -136,3 +136,11 @@ RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.
+
+RefLtrSubstAgefoddListSteps=Schritte (Liste der Agefodd-Daten "TSteps" oder "TStepsDistanciel" oder "TSTepsPresentiel")
+RefLtrSubstAgefoddStep=Schrittszeile
+StepsDateTextWithoutTr = Daten aller Schritte ohne Stunden
+StepsDateText = Daten aller Schritte mit Zeitangaben
+StepsFaceToFaceDateTextWithoutTr = Termine der Präsenzphasen ohne Stunden
+StepsFaceToFaceDateText = Termine der Präsenzphasen mit den Stunden
+StepsRemoteDateText = Termine der Fernstudienabschnitte

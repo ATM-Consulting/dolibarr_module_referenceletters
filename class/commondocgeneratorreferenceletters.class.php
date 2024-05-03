@@ -683,23 +683,39 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 			if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'];
-				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'];
-				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'];
-				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'];
-				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'];
-				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'];
-				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'];
-				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'];
-				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'];
-				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'];
-				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'];
-				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'];
+				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? '';
+				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? '';
+				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? '';
+				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'] ?? '';
+				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'] ?? '';
+				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'] ?? '';
+				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'] ?? '';
+				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'] ?? '';
+				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'] ?? '';
+				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'] ?? '';
+				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'] ?? '';
+				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'] ?? '';
 			}
 		}
 		if ($fetchoptionnals) {
 			$line->fetch_optionals($line->rowid, $extralabels);
 		}
+
+		if(getDolGlobalInt('AGF_USE_STEPS')){
+			$resarray['line_step_label'] = $line->label;
+			$resarray['line_step_date_start'] = dol_print_date($line->date_start, 'day');
+			$resarray['line_step_date_end'] = dol_print_date($line->date_end, 'day');
+			$resarray['line_step_duration'] = $line->duration != null ? $line->duration : '';
+			// Lieu
+			$resarray['line_step_lieu'] = strip_tags($line->place->ref_interne);
+			$resarray['line_step_lieu_adresse'] = strip_tags($line->place->adresse);
+			$resarray['line_step_lieu_cp'] = strip_tags($line->place->cp);
+			$resarray['line_step_lieu_ville'] = strip_tags($line->place->ville);
+			$resarray['line_step_lieu_acces'] = str_replace('&amp;', '&', $line->place->acces_site);
+			$resarray['line_step_lieu_horaires'] = strip_tags($line->place->timeschedule);
+			$resarray['line_step_lieu_divers'] = $line->place->note1;
+		}
+
 
 		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
 			$extrafields = new ExtraFields($this->db);
@@ -1069,9 +1085,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		$fk_place = $object->placeid;
-		if(!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
+		if (!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
 			$fk_place = $agfStep->fk_place;
 		}
+
+		$resarray['step_label'] = $agfStep->label;
+		$resarray['step_date_start'] = dol_print_date($agfStep->date_start, 'day');
+		$resarray['step_date_end'] = dol_print_date($agfStep->date_end, 'day');
+		$resarray['step_duration'] = $agfStep->duration;
 
 		dol_include_once('/agefodd/class/agefodd_place.class.php');
 		$agf_place = new Agefodd_place($db);
@@ -1536,7 +1557,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		else
 		{
-			$showsize=round($size);
+			$showsize=round(floatval($size));
 			if ($showsize > 48) $showsize=48;
 		}
 

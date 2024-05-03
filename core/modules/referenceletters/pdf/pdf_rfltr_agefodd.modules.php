@@ -266,7 +266,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TStagiairesSessionConvention',
 							'TFormateursSession',
 							'TConventionFinancialLine',
-							'TFormateursSessionCal'
+							'TFormateursSessionCal',
+							'TSteps',
+							'TStepsDistanciel',
+							'TStepsPresentiel'
 					);
 					if(isset($conf->agefoddcertificat->enabled) && $conf->agefoddcertificat->enabled ) {
 						$TAgfArray[] = 'TSessionStagiairesCertif';

@@ -137,3 +137,8 @@ RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into docume
 
 RefLtrSubstAgefoddListSteps=Pasos (Lista de datos de Agefodd "TSteps" o "TStepsDistanciel" o "TStepsPresentiel")
 RefLtrSubstAgefoddStep=Línea de paso
+StepsDateTextWithoutTr = Fechas de todas las etapas sin horarios
+StepsDateText = Fechas y horarios de todas las etapas
+StepsFaceToFaceDateTextWithoutTr = Fechas de las sesiones presenciales sin horas
+StepsFaceToFaceDateText = Fechas y horarios de las sesiones presenciales
+StepsRemoteDateText = Fechas de las etapas a distancia

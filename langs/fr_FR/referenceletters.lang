@@ -196,6 +196,13 @@ PrestaSocTvaIntra = N° de TVA Intracommunautaire de la société du prestataire
 PrestaSocNotePublic = Note publique de la société du prestataire
 PrestaSocNotePrivate = Note privée de la société du prestataire
 
+
+StepsDateTextWithoutTr=Dates de toutes les étapes sans les heures
+StepsDateText=Dates de toutes les étapes avec les heures
+StepsFaceToFaceDateTextWithoutTr=Dates des étapes présentielles sans les heures
+StepsFaceToFaceDateText=Dates des étapes présentielles avec les heures
+StepsRemoteDateText=Dates des étapes distancielles
+
 #
 # Substitutions Agefodd
 #

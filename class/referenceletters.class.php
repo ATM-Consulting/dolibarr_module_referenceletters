@@ -922,13 +922,13 @@ class ReferenceLetters extends CommonObject
 				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
 				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
 
-				,'objvar_object_steps_date_text_without_tr' => 'Dates de toutes les étapes sans les heures'
-				,'objvar_object_steps_date_text' => 'Dates de toutes les étapes avec les heures'
+				,'objvar_object_steps_date_text_without_tr' => $langs->trans('StepsDateTextWithoutTr')
+				,'objvar_object_steps_date_text' => $langs->trans('StepsDateText')
 
-				,'objvar_object_steps_facetoface_date_text_without_tr' => 'Dates des étapes présentielles sans les heures'
-				,'objvar_object_steps_facetoface_date_text' => 'Dates des étapes présentielles avec les heures'
+				,'objvar_object_steps_facetoface_date_text_without_tr' => $langs->trans('StepsFaceToFaceDateTextWithoutTr')
+				,'objvar_object_steps_facetoface_date_text' => $langs->trans('StepsFaceToFaceDateText')
 
-				,'objvar_object_steps_remote_date_text' => 'Dates des étapes distancielles'
+				,'objvar_object_steps_remote_date_text' => $langs->trans('StepsRemoteDateText')
 
 		);
 

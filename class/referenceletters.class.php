@@ -28,7 +28,8 @@ require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
- * Put here description of your class
+ * Classe permettant de gérer les modèles de PDF DocEdit.
+ *
  */
 class ReferenceLetters extends CommonObject
 {
@@ -81,7 +82,9 @@ class ReferenceLetters extends CommonObject
 	 */
 	function __construct($db) {
 
-		global $conf;
+		global $conf, $hookmanager;
+
+		$hookmanager->initHooks(array('referenceletters'));
 
 		$this->db = $db;
 		if (isset($conf->contract) && !empty($conf->contract->enabled)) {
@@ -311,7 +314,6 @@ class ReferenceLetters extends CommonObject
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
-
 			$Tab = array(
 			    'fiche_pedago'=>'AgfFichePedagogique'
 			    ,'fiche_pedago_modules'=>'AgfFichePedagogiqueModule'
@@ -337,7 +339,9 @@ class ReferenceLetters extends CommonObject
 			    ,'courrier'=>'Courrier'
 			    ,'convocation_trainee'=>'Convocation Stagiaire'
 			    ,'attestation_trainee'=>'Attestation stagiaire'
-			    ,'attestationendtraining_trainee'=>'Attestation de fin de formation stagiaire'
+			    ,'attestationendtraining_trainee'=>'AgfendTrainingTrainee'
+				,'linked_certificate_completion_trainee'=>'AgfLinkedDocCertificatAchievment'
+				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
 
 			if(!empty($conf->agefoddcertificat->enabled)) {
@@ -352,7 +356,30 @@ class ReferenceLetters extends CommonObject
 			    $this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
 			}
 
+
+			// programme  formation initial
+			$this->element_type_list['rfltr_agefodd_formation'] = array (
+				'class' => 'agefodd_formation_catalogue.class.php',
+				'objectclass' => 'Formation',
+				'classpath' => dol_buildpath('/agefodd/class/'),
+				'trans' => 'agefodd',
+				'title' => 'AgfFormationInitiale',
+				'card' => '/agefodd/training/card.php',
+				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
+			);
+
+			foreach ($Tab as $key => $val){
+				$this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_formation'];
+				$this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
+			}
 		}
+
+		// Hook permettant à d'autres modules d'ajouter des types de documents
+		// (à terme, on pourrait même utiliser ce hook dans Agefodd et débarrasser DocEdit de toute référence
+		// à Agefodd)
+		$parameters = array('element_type_list' => &$this->element_type_list);
+		$hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
 
 		return 1;
 	}
@@ -664,14 +691,16 @@ class ReferenceLetters extends CommonObject
 	}
 
 	/**
-	 * return translated label of element linked
+	 * Fonction mal nommée car elle ne retourne pas une clé de substitution.
+	 * Elle retourne un tableau associant des clés de substitution aux valeurs par lesquelles on doit remplacer les
+	 * clés.
 	 *
-	 * @param int $mode trans normal, 1 transnoentities
-	 * @return string translated element label
+	 * @param User $user
+	 * @return array
 	 *
 	 */
 	public function getSubtitutionKey($user) {
-		global $conf, $langs, $mysoc;
+		global $conf, $langs, $mysoc, $hookmanager;
 
 		require_once 'commondocgeneratorreferenceletters.class.php';
 		$langs->load('admin');
@@ -762,12 +791,18 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-
 		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+
+		$parameters = array('subst_array' => &$subst_array);
+		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
 
 		return $subst_array;
 	}
 
+	/**
+	 * @param array $subst_array
+	 * @return void
+	 */
 	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs, $conf;
@@ -775,6 +810,46 @@ class ReferenceLetters extends CommonObject
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
 
+		// formation initiale
+		$subst_array[$langs->trans('AgfFormationInitiale')] = array(
+
+		'formation_nom'=>'Intitulé de la formation'
+		,'formation_ref'=>'Référence de la formation'
+		,'formation_statut'=>'Statut de la formation'
+		,'formation_duree' => 'Durée de la formation'
+		,'formation_but'=>'But de la formation'
+		,'formation_methode'=>'Methode de formation'
+
+		,'formation_nb_place_dispo'=>'nombre de places disponibles'
+		,'formation_nb_inscription_mini'=> "Nombre minimum d'inscrits pour confirmer la session"
+		,'formation_category'=>'Catégorie formation'
+		,'formation_category_bpf'=>'Catégorie de formation prestation (BPF)'
+		,'formation_product'=>'Produit ou service associé'
+		,'formation_type_public'=>'Type de public'
+		,'formation_methode_pedago'=>'Méthodes pédagogiques'
+		,'formation_documents'=>'Documents nécessaires à la formation'
+		,'formation_equipements'=>'Equipements nécessaires à la formation'
+		,'formation_pre_requis'=>'Pré-requis'
+		,'formation_moyens_peda'=>'Moyens pédagogiques'
+		,'formation_sanction'=>'Sanction de la formation'
+		,'formation_competences'=>'Liste des compétences visées'
+		,'formation_nature'=>'Nature de l’action concourant au développement des compétences'
+		,'formation_Accessibility_Handicap'=>'Accessible aux personnes handicapés'
+		,'AgfMentorList'=>'Liste des référents'
+		,'Mentor_administrator'=>'Référent Administratif'
+		,'Mentor_pedagogique'=>'Référent pédagogique'
+		,'Mentor_handicap'	=>'Référent handicap'
+
+		);
+
+		$extrafields = new ExtraFields($this->db);
+		//Extrafield Formation
+		$formation_extralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
+		if(!empty($formation_extralabels)) {
+			foreach($formation_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('AgfFormationInitiale')]['formation_options_'.$extrakey] = 'Champ complémentaire Formation : '.$extralabel;
+			}
+		}
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['trainer_cost_planned'] = 'Coût planifié formateur';
@@ -846,11 +921,20 @@ class ReferenceLetters extends CommonObject
 				,'presta_soc_tvaintra'	=> $langs->trans('PrestaSocTvaIntra')
 				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
 				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
+
+				,'objvar_object_steps_date_text_without_tr' => $langs->trans('StepsDateTextWithoutTr')
+				,'objvar_object_steps_date_text' => $langs->trans('StepsDateText')
+
+				,'objvar_object_steps_facetoface_date_text_without_tr' => $langs->trans('StepsFaceToFaceDateTextWithoutTr')
+				,'objvar_object_steps_facetoface_date_text' => $langs->trans('StepsFaceToFaceDateText')
+
+				,'objvar_object_steps_remote_date_text' => $langs->trans('StepsRemoteDateText')
+
 		);
 
 		// Liste de données - Participants
 		$moreTrad = '';
-		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		if(!empty($conf->agefoddcertificat->enabled)) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilitel'=>'Libellé civilité'
 				,'line_civilitel'=>'Code civilité'
@@ -888,13 +972,35 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
-		if($conf->agefoddcertificat->enabled) {
+		if(!empty($conf->agefoddcertificat->enabled)) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_fin'] = 'Date de fin du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_alerte'] = 'Date d\'alerte du certificat';
 		}
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListSteps')] = array(
+			'line_step_label' => 'Label de l\'étape',
+			'line_step_date_start' => 'Date de début de l\'étape',
+			'line_step_date_end' => 'Date de fin de l\'étape',
+			'line_step_duration' => 'Durée de l\'étape',
+			'line_step_lieu' => 'Lieu de la formation',
+			'line_step_lieu_adresse' => 'Adresse du lieu de l\'étape',
+			'line_step_lieu_cp' => 'Code postal du lieu de l\'étape',
+			'line_step_lieu_ville' => 'Ville du lieu de l\'étape',
+			'line_step_lieu_acces' => 'Instruction d\'accès au lieu lieu de l\'étape',
+			'line_step_lieu_horaires' => 'Horaires du lieu de l\'étape',
+			'line_step_lieu_notes' => 'Commentaire du lieu de l\'étape',
+			'line_step_lieu_divers' => 'Infos Repas, Hébergements, divers'
+		);
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddStep')] = array(
+			'step_label' => 'Label de l\'étape',
+			'step_date_start' => 'Date de début de l\'étape',
+			'step_date_end' => 'Date de fin de l\'étape',
+			'step_duration' => 'Durée de l\'étape',
+		);
 
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
@@ -949,7 +1055,7 @@ class ReferenceLetters extends CommonObject
 				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
 			}
 		}
-		if($conf->agefoddcertificat->enabled) {
+		if(!empty($conf->agefoddcertificat->enabled)) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';

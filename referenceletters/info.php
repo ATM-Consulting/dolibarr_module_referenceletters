@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,7 @@ require_once ('../lib/referenceletters.lib.php');
 require_once (DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php');
 
 // Security check
-if (! $user->rights->referenceletters->read)
-	accessforbidden();
+if (! rl_userHasRight($user, 'referenceletters', 'read')) accessforbidden();
 
 $id = GETPOST('id', 'int');
 

@@ -133,10 +133,10 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 				$this->page_largeur,
 				$this->page_hauteur
 		);
-		$this->marge_gauche = isset($conf->global->MAIN_PDF_MARGIN_LEFT) ? $conf->global->MAIN_PDF_MARGIN_LEFT : 10;
-		$this->marge_droite = isset($conf->global->MAIN_PDF_MARGIN_RIGHT) ? $conf->global->MAIN_PDF_MARGIN_RIGHT : 10;
-		$this->marge_haute = isset($conf->global->MAIN_PDF_MARGIN_TOP) ? $conf->global->MAIN_PDF_MARGIN_TOP : 10;
-		$this->marge_basse = isset($conf->global->MAIN_PDF_MARGIN_BOTTOM) ? $conf->global->MAIN_PDF_MARGIN_BOTTOM : 10;
+		$this->marge_gauche = floatval(getDolGlobalString('MAIN_PDF_MARGIN_LEFT', '10'));
+		$this->marge_droite = floatval(getDolGlobalString('MAIN_PDF_MARGIN_RIGHT', '10'));
+		$this->marge_haute = floatval(getDolGlobalInt('MAIN_PDF_MARGIN_TOP', '10'));
+		$this->marge_basse = floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM', '10'));
 
 		$this->option_logo = 1; // Affiche logo
 
@@ -151,7 +151,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 		$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 28;
 		$this->posxpuht=$this->page_largeur - $this->marge_droite;
 
-		if (!empty($conf->global->SHIPPING_PDF_DISPLAY_AMOUNT_HT)) {	// Show also the prices
+		if (getDolGlobalString('SHIPPING_PDF_DISPLAY_AMOUNT_HT')) {	// Show also the prices
 			$this->posxweightvol=$this->page_largeur - $this->marge_droite - 118;
 			$this->posxqtyordered=$this->page_largeur - $this->marge_droite - 96;
 			$this->posxqtytoship=$this->page_largeur - $this->marge_droite - 68;
@@ -159,7 +159,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 			$this->posxtotalht=$this->page_largeur - $this->marge_droite - 20;
 		}
 
-		$this->posxpicture=$this->posxweightvol - (empty($conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH)?20:$conf->global->MAIN_DOCUMENTS_WITH_PICTURE_WIDTH);	// width of images
+		$this->posxpicture=  $this->posxweightvol - floatval(getDolGlobalString('MAIN_DOCUMENTS_WITH_PICTURE_WIDTH', '20')) ;	// width of images
 
 		if ($this->page_largeur < 210) // To work with US executive format
 		{
@@ -169,7 +169,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 		    $this->posxqtytoship-=20;
 		}
 
-		if (! empty($conf->global->SHIPPING_PDF_HIDE_ORDERED))
+		if (getDolGlobalString('SHIPPING_PDF_HIDE_ORDERED'))
 		{
 		    $this->posxweightvol += ($this->posxqtytoship - $this->posxqtyordered);
 		    $this->posxpicture += ($this->posxqtytoship - $this->posxqtyordered);
@@ -297,7 +297,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 			// Show sender
 			$posy = 42;
 			$posx = $this->marge_gauche;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->page_largeur - $this->marge_droite - 80;
 			$hautcadre = 45;
 
@@ -336,7 +336,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 			// Recipient name
 			if (! empty($usecontact)) {
 				// On peut utiliser le nom de la societe du contact
-				if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
+				if (getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))
 					$socname = $object->contact->socname;
 				else
 					$socname = $object->thirdparty->nom;
@@ -353,7 +353,7 @@ class pdf_rfltr_shipping extends ModelePDFReferenceLetters
 				$widthrecbox = 84; // To work with US executive format
 			$posy = 42;
 			$posx = $this->page_largeur - $this->marge_droite - $widthrecbox;
-			if (! empty($conf->global->MAIN_INVERT_SENDER_RECIPIENT))
+			if (getDolGlobalString('MAIN_INVERT_SENDER_RECIPIENT'))
 				$posx = $this->marge_gauche;
 
 			// Show recipient frame

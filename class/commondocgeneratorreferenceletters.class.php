@@ -485,7 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -1060,7 +1060,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                     if($key== 'date_birth') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
                     }
-                    if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
+                    if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
 					// Fix display vars according object

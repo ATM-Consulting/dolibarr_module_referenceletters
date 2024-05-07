@@ -485,7 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))

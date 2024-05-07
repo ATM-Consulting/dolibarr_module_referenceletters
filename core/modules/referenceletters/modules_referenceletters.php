@@ -436,7 +436,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 					if (! empty($object->{$element_array})) {
 
-						foreach ( $object->{$element_array} as $line ) {
+						foreach ( $object->{$element_array} as  $line ) {
+
+							if($conf->subtotal->enabled && TSubtotal::isModSubtotalLine($line) && $line->info_bits == 8) {
+								$tmpListLines = $listlines->xml;
+								$listlines->xml = '@breakpage@' .$listlines->xml;
+							}
 
 							if (method_exists($this, 'get_substitutionarray_lines_agefodd') && strpos(get_class($this), 'agefodd') !== false) {
 								$tmparray = $this->get_substitutionarray_lines_agefodd($line, $this->outputlangs, false);
@@ -550,7 +555,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 											'{line_price_ht_locale}' => $style_start . '{line_price_ht_locale}' . $style_end
 										));
 									}
-									// var_dump($listlines->xml);exit;
 								}
 							}
 							if (!empty($listlines)) {
@@ -561,6 +565,9 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 								$res = $listlines->merge();
 
 								$listlines->xml = $listlines->savxml = $oldline;
+							}
+							if($conf->subtotal->enabled && TSubtotal::isModSubtotalLine($line) && $line->info_bits == 8) {
+								$listlines->xml = $tmpListLines;
 							}
 						}
 					}

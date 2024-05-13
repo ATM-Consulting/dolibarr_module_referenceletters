@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
+
+
+
+## Release 2.21 - 13/05/2024
+
 - NEW : Ajout de boucles TSteps, TStepsPrésentiel, TStepsDistanciel - *03/05/2024* - 2.21.0
   - Création des clés permettant l'affichage des étapes avec/sans créneaux horaires présentielles et/ou distancielles
 - NEW : Ajout de la gestion d'un modèle de formation orphelin (non rattaché à une session) - *30/04/2024* - 2.21.0  

@@ -437,7 +437,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if (! empty($object->{$element_array})) {
 
 						foreach ( $object->{$element_array} as  $line ) {
-
 							if(!empty($conf->subtotal->enabled) && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
 								$tmpListLines = $listlines->xml;
 								$listlines->xml = '@breakpage@' .$listlines->xml;

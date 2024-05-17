@@ -565,7 +565,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 								$listlines->xml = $listlines->savxml = $oldline;
 							}
-							if($conf->subtotal->enabled && TSubtotal::isModSubtotalLine($line) && $line->info_bits == 8) {
+							if(!empty($conf->subtotal->enabled) && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
 								$listlines->xml = $tmpListLines;
 							}
 						}

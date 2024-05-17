@@ -69,7 +69,9 @@ RefLtrAgefoddConvention=Sample template of training contract
 About = Über
 ReferenceLettersAbout = Über Brief Vorlagen
 ReferenceLettersAboutPage = Brief Vorlagen Über Seite
-
+AgfendTrainingTrainee=Ausbildungsteilnehmer-Zeugnis
+AgfLinkedDocCertificatAchievment=Bescheinigung über die Erstellung verknüpfter Dokumente
+AgfTraineeDocCertificatAchievment=Bescheinigung über die Erstellung durch den Auszubildenden
 #
 # Menu
 #
@@ -134,3 +136,11 @@ RefLtrUnvailable = Désactivé
 RefLtrUnactive = Désactiver
 
 RefLtrCannotCopyFile=Cannot replace standard PDF. it still available into document generated list.
+
+RefLtrSubstAgefoddListSteps=Schritte (Liste der Agefodd-Daten "TSteps" oder "TStepsDistanciel" oder "TSTepsPresentiel")
+RefLtrSubstAgefoddStep=Schrittszeile
+StepsDateTextWithoutTr = Daten aller Schritte ohne Stunden
+StepsDateText = Daten aller Schritte mit Zeitangaben
+StepsFaceToFaceDateTextWithoutTr = Termine der Präsenzphasen ohne Stunden
+StepsFaceToFaceDateText = Termine der Präsenzphasen mit den Stunden
+StepsRemoteDateText = Termine der Fernstudienabschnitte

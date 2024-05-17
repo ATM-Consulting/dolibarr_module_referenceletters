@@ -68,7 +68,9 @@ RefLtrAgefodd=Exemple de modèle pour le module Formation
 RefLtrAgefoddConvention=Exemple de modèle de convention pour le module Formation
 RefLtrAgefoddFichePresence=Exemple de modèle de feuille d'émargement vide pour le module Formation
 RefLtrShipping=Exemple de modèle de BON DE LIVRAISON
-
+AgfendTrainingTrainee=Attestation de fin de formation stagiaire
+AgfLinkedDocCertificatAchievment=Certificat de réalisation documents liés
+AgfTraineeDocCertificatAchievment=Certificat de réalisation par stagiaire
 #
 # Page À propos
 #
@@ -194,6 +196,13 @@ PrestaSocTvaIntra = N° de TVA Intracommunautaire de la société du prestataire
 PrestaSocNotePublic = Note publique de la société du prestataire
 PrestaSocNotePrivate = Note privée de la société du prestataire
 
+
+StepsDateTextWithoutTr=Dates de toutes les étapes sans les heures
+StepsDateText=Dates de toutes les étapes avec les heures
+StepsFaceToFaceDateTextWithoutTr=Dates des étapes présentielles sans les heures
+StepsFaceToFaceDateText=Dates des étapes présentielles avec les heures
+StepsRemoteDateText=Dates des étapes distancielles
+
 #
 # Substitutions Agefodd
 #
@@ -208,6 +217,9 @@ RefLtrTStagiairesSessionConvention=Participants (uniquement dans un modéle de t
 RefLtrTrainerLetterMissions=Formateurs temps (uniquement dans un modéle de type Lettre de missions formateur)
 RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par participants")
 RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
+RefLtrSubstAgefoddListSteps=Etapes (Liste de données Agefodd "TSteps" ou "TStepsDistanciel" ou "TStepsPresentiel")
+RefLtrSubstAgefoddStep=Ligne d'étape
+
 #
 # Tags lignes
 #

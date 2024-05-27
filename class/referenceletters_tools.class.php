@@ -36,7 +36,7 @@ class RfltrTools {
 
 	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
 
-		global $db, $conf,$obj;
+		global $db, $conf;
 
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
@@ -86,8 +86,9 @@ class RfltrTools {
 								  'FactureFournisseur',
 								  'Expedition',
 								  'Fichinter');
-		if(is_object($obj) && in_array(get_class($obj), $arrayObjectClass))  {
-			$object = &$obj;
+
+		if(is_object($object) && in_array(get_class($object), $arrayObjectClass))  {
+
 			if(empty($object->thirdparty) && is_callable(array($object, 'fetch_thirdparty'))) {
 				$object->fetch_thirdparty();
 			}
@@ -103,7 +104,7 @@ class RfltrTools {
 				}
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs, $fk_training);
+		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {

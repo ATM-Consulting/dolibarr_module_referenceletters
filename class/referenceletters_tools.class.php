@@ -87,15 +87,7 @@ class RfltrTools {
 				}
 			}
 		}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
-=======
 		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
->>>>>>> Stashed changes
-=======
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
->>>>>>> Stashed changes
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {

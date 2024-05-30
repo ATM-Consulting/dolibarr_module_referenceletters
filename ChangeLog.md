@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Release 2.19 - 12/02/2024
+- FIX : DA024991 - les infos de conventions n'étaient pas passés - *30/05/2024* - 2.19.8
 - FIX : DA024939 - Handle break page with subtotal - *17/05/2024* - 2.19.7
 - FIX : DA024875 some keys were missing  - *02/05/2024* - 2.19.6
 - FIX : DA024820 trainee extrafields wasn't working properly  - *02/05/2024* - 2.19.5

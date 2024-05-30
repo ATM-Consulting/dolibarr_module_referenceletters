@@ -27,7 +27,6 @@ class RfltrTools {
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		dol_include_once('/referenceletters/class/referenceletterselements.class.php');
 		dol_include_once('/referenceletters/class/referenceletterschapters.class.php');
-
 		$object_refletter = new Referenceletters($db);
 		$res_fetch = $object_refletter->fetch($id_model);
 
@@ -88,7 +87,11 @@ class RfltrTools {
 				}
 			}
 		}
+<<<<<<< Updated upstream
 		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $obj, $outputlangs);
+=======
+		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
+>>>>>>> Stashed changes
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {

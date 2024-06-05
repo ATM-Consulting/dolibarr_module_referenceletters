@@ -144,3 +144,5 @@ StepsDateText = Daten aller Schritte mit Zeitangaben
 StepsFaceToFaceDateTextWithoutTr = Termine der Präsenzphasen ohne Stunden
 StepsFaceToFaceDateText = Termine der Präsenzphasen mit den Stunden
 StepsRemoteDateText = Termine der Fernstudienabschnitte
+FinanciersTrainee = Alle Geldgeber des Teilnehmers
+AlternateFinancierTrainee = Der alternative Finanzier des Teilnehmers

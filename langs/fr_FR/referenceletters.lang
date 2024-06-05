@@ -203,6 +203,9 @@ StepsFaceToFaceDateTextWithoutTr=Dates des étapes présentielles sans les heure
 StepsFaceToFaceDateText=Dates des étapes présentielles avec les heures
 StepsRemoteDateText=Dates des étapes distancielles
 
+FinanciersTrainee=Tous les financeurs du participant
+AlternateFinancierTrainee=Le financeur alternatif du participant
+
 #
 # Substitutions Agefodd
 #
@@ -219,7 +222,6 @@ RefLtrTraineeDoc=Participant (uniquement dans un modéle de type "Document par p
 RefLtrAccessHandicapTitle=Accessible aux personnes handicapés
 RefLtrSubstAgefoddListSteps=Etapes (Liste de données Agefodd "TSteps" ou "TStepsDistanciel" ou "TStepsPresentiel")
 RefLtrSubstAgefoddStep=Ligne d'étape
-
 #
 # Tags lignes
 #

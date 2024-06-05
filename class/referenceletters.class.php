@@ -922,6 +922,7 @@ class ReferenceLetters extends CommonObject
 				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
 				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
 
+				// Etapes
 				,'objvar_object_steps_date_text_without_tr' => $langs->trans('StepsDateTextWithoutTr')
 				,'objvar_object_steps_date_text' => $langs->trans('StepsDateText')
 
@@ -929,6 +930,7 @@ class ReferenceLetters extends CommonObject
 				,'objvar_object_steps_facetoface_date_text' => $langs->trans('StepsFaceToFaceDateText')
 
 				,'objvar_object_steps_remote_date_text' => $langs->trans('StepsRemoteDateText')
+
 
 		);
 
@@ -956,6 +958,9 @@ class ReferenceLetters extends CommonObject
                 ,'line_type'=>'Type de financement'
                 ,'line_code_societe'=> 'Code de la société du participant'
 				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
+				// Financeurs
+				,'line_financiers_trainee' => $langs->trans('FinanciersTrainee')
+				,'line_alternate_financier_trainee' => $langs->trans('AlternateFinancierTrainee')
 		);
 		$extrafields = new ExtraFields($this->db);
 		$stag_extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
@@ -1002,6 +1007,18 @@ class ReferenceLetters extends CommonObject
 			'step_duration' => 'Durée de l\'étape',
 		);
 
+		$subst_array[$langs->trans('RefLtrSubstAgefoddListFinanciers')] = array(
+			'line_financier_name' => 'Nom du financeur',
+			'line_financier_address' => 'Adresse du financeur',
+			'line_financier_city' => 'Ville du financeur',
+		);
+
+		$subst_array[$langs->trans('RefLtrSubstAgefoddFinancier')] = array(
+			'financier_name' => 'Nom du financeur',
+			'financier_address' => 'Adresse du financeur',
+			'financier_city' => 'Ville du financeur',
+		);
+
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
 				'line_date_session'=>'Date de la session'
@@ -1042,6 +1059,9 @@ class ReferenceLetters extends CommonObject
             ,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
             ,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
             ,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
+			// Financeurs
+			,'objvar_object_financiers_trainee' => $langs->trans('FinanciersTrainee')
+			,'objvar_object_alternate_financier_trainee' => $langs->trans('AlternateFinancierTrainee')
 		);
 
 		if(!empty($stag_extralabels)) {

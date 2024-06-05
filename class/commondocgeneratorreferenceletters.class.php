@@ -549,6 +549,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_birthplace'] = $line->place_birth;
 		$resarray['line_code_societe'] = $line->soccode;
 		$resarray['line_nom_societe'] = $line->socname;
+		$resarray['line_financiers_trainee'] = Agefodd_session_stagiaire::getFinanciersByTrainee($line->stagerowid);
+		$resarray['line_alternate_financier_trainee'] = Agefodd_session_stagiaire::getAlternateFinancierByTrainee($line->stagerowid);
 		$resarray['line_stagiaire_presence_bloc'] = $line->stagiaire_presence_bloc;
 		$resarray['line_stagiaire_presence_total'] = $line->stagiaire_presence_total;
 		$resarray['line_time_stagiaire_temps_realise_total'] = $line->time_stagiaire_temps_realise_total;
@@ -1585,7 +1587,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
-			if(!empty($object->table_element) 
+			if(!empty($object->table_element)
 			    && is_array($extrafields->attributes[$object->table_element])
 				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
 				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {

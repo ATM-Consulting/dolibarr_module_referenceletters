@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Release 2.21 - 13/05/2024
 
-- NEW : Ajout de nouvelles clés : financeurs et financeur_alternatif - *05/06/2024* - 2.21.2
+- FIX : Clés manquantes : financeurs et financeur_alternatif - *05/06/2024* - 2.21.2
 - FIX : DA024980 SQL Error : renamed $obj to $object - *24/05/2024* - 2.21.1
 - NEW : Ajout de boucles TSteps, TStepsPrésentiel, TStepsDistanciel - *03/05/2024* - 2.21.0
   - Création des clés permettant l'affichage des étapes avec/sans créneaux horaires présentielles et/ou distancielles

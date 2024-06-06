@@ -168,3 +168,5 @@ StepsDateText = Dates and times of all stages
 StepsFaceToFaceDateTextWithoutTr = Dates of face-to-face sessions without hours
 StepsFaceToFaceDateText = Dates and times of face-to-face sessions
 StepsRemoteDateText = Remote stage dates
+FinanciersTrainee = All the participant's financial backers
+AlternateFinancierTrainee = The participant's alternative financier

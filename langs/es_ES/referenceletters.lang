@@ -142,3 +142,5 @@ StepsDateText = Fechas y horarios de todas las etapas
 StepsFaceToFaceDateTextWithoutTr = Fechas de las sesiones presenciales sin horas
 StepsFaceToFaceDateText = Fechas y horarios de las sesiones presenciales
 StepsRemoteDateText = Fechas de las etapas a distancia
+FinanciersTrainee = Todos los financiadores del participante
+AlternateFinancierTrainee = El financiador alternativo del participante

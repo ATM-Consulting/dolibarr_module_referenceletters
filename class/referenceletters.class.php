@@ -852,8 +852,7 @@ class ReferenceLetters extends CommonObject
 		$moreTrad = '';
 		if($conf->agefoddcertificat->enabled) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
-				'line_civilitel'=>'Libellé civilité'
-				,'line_civilitel'=>'Code civilité'
+				'line_civilite'=>'Civilité'
 				,'line_nom'=>'Nom participant'
 				,'line_prenom'=>'Prénom participant'
 				,'line_nom_societe'=>'Société du participant'
@@ -862,15 +861,11 @@ class ReferenceLetters extends CommonObject
 				,'line_societe_zip'=>'Code postal de la société du participant'
 				,'line_societe_mail'=>'Adresse mail de la société du participant'
 				,'line_poste'=>'Poste occupé au sein de sa société'
-				,'line_phone'=>'Téléphone pro / Téléphone mobile'
-				,'line_phone_pro'=>'Téléphone pro'
-				,'line_phone_mobile'=>'Téléphone mobile'
 				,'line_email' => 'Email du participant'
 				,'line_siret' => 'SIRET de la société du participant'
 				,'line_birthday' => 'Date de naissance du participant'
 				,'line_birthplace'=>'Lieu de naissance du participant'
-                ,'line_type'=>'Type de financement'
-                ,'line_code_societe'=> 'Code de la société du participant'
+				,'line_code_societe'=> 'Code de la société du participant'
 				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
 		);
 		$extrafields = new ExtraFields($this->db);
@@ -908,8 +903,6 @@ class ReferenceLetters extends CommonObject
 				'line_formateur_nom'=>'Nom du formateur'
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_phone'=>'Téléphone du formateur'
-				,'line_formateur_phone_mobile'=>'Téléphone mobile du formateur'
-				,'line_formateur_phone_perso'=>'Téléphone perso du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
 				,'line_formateur_address'=>'Adresse du formateur'
 				,'line_formateur_town'=>'Ville du formateur'
@@ -919,7 +912,7 @@ class ReferenceLetters extends CommonObject
 		);
 
 		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(
-		    'objvar_object_stagiaire_civilitel'=>'Civilité du stagiaire'
+		    'objvar_object_stagiaire_civilite'=>'Civilité du stagiaire'
 		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
 		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
 		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
@@ -929,13 +922,6 @@ class ReferenceLetters extends CommonObject
 			,'objvar_object_stagiaire_soctown' => 'Ville de la société du participant'
 			,'objvar_object_lieu_adresse' => 'Adresse du lieu'
 			,'objvar_object_lieu_ref_interne' => 'Ref interne du lieu'
-            ,'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
-            ,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
-            ,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
-            ,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
-            ,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
-            ,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
-            ,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
 		);
 
 		if(!empty($stag_extralabels)) {
@@ -1009,6 +995,14 @@ class ReferenceLetters extends CommonObject
 
 		);
 
+		$subst_array[$langs->trans('RefLtrTStagiairesSessionConvention')]=array(
+			'line_civilite'=>'Civilité'
+			,'line_nom'=>'Nom participant'
+			,'line_prenom'=>'Prénom participant'
+			,'line_nom_societe'=>'Société du participant'
+			,'line_poste'=>'Poste occupé au sein de sa société'
+			,'line_type'=>'Type de financement'
+		);
 
 		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
 			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
@@ -1017,6 +1011,15 @@ class ReferenceLetters extends CommonObject
 			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda du formateur'
 		);
 
+		$subst_array[$langs->trans('RefLtrTraineeDoc')]=array(
+			'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
+			,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
+			,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
+			,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
+			,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
+			,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
+			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
+		);
 
 		// Réservé aux lignes de contrats
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';

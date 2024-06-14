@@ -246,7 +246,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$hideref = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_REF');
 						$backup_forceDisableConcatPdf = !empty($object->forceDisableConcatPdf);
 						$object->forceDisableConcatPdf = 1;
-						$object->context['docEditPdfGeneration'] = true;
+						$object->context['docEditPdfGeneration'] = true; // Empêche le changement de ref sur le module propalhistory
+
 						$result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
 						$object->forceDisableConcatPdf = $backup_forceDisableConcatPdf;
 						if ($result <= 0)

@@ -424,7 +424,6 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 		$object_refletters = new Referenceletters($db);
 		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
-
 		if ($result<0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {

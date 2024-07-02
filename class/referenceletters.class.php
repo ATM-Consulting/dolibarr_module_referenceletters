@@ -1007,18 +1007,6 @@ class ReferenceLetters extends CommonObject
 			'step_duration' => 'Durée de l\'étape',
 		);
 
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListFinanciers')] = array(
-			'line_financier_name' => 'Nom du financeur',
-			'line_financier_address' => 'Adresse du financeur',
-			'line_financier_city' => 'Ville du financeur',
-		);
-
-		$subst_array[$langs->trans('RefLtrSubstAgefoddFinancier')] = array(
-			'financier_name' => 'Nom du financeur',
-			'financier_address' => 'Adresse du financeur',
-			'financier_city' => 'Ville du financeur',
-		);
-
 		// Liste de données - Horaires
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
 				'line_date_session'=>'Date de la session'

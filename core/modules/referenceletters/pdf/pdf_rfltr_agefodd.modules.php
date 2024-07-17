@@ -271,7 +271,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TStepsDistanciel',
 							'TStepsPresentiel'
 					);
-					if(isset($conf->agefoddcertificat->enabled) && $conf->agefoddcertificat->enabled ) {
+					if(isModEnabled('agefoddcertificat') ) {
 						$TAgfArray[] = 'TSessionStagiairesCertif';
 						$TAgfArray[] = 'TSessionStagiairesCertifSoc';
 					}

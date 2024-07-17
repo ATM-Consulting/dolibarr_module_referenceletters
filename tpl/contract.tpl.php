@@ -35,7 +35,7 @@ print '<tr><td>'.$langs->trans("Date").'</td>';
 print '<td colspan="3">'.dol_print_date($object->date_contrat,"dayhour")."</td></tr>\n";
 
 // Projet
-if (! empty($conf->projet->enabled))
+if (isModEnabled('projet'))
 {
 	$langs->load("projects");
 	print '<tr><td>';

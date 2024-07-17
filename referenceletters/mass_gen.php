@@ -544,7 +544,7 @@ function _list_thirdparty()
 		$fieldstosearchall['s.idprof5'] = 'ProfId5';
 	if (($tmp = $langs->transnoentities("ProfId6".$mysoc->country_code)) && $tmp != "ProfId6".$mysoc->country_code && $tmp != '-')
 		$fieldstosearchall['s.idprof6'] = 'ProfId6';
-	if (!empty($conf->barcode->enabled))
+	if (isModEnabled('barcode'))
 		$fieldstosearchall['s.barcode'] = 'Gencod';
 
 // Define list of fields to show into list
@@ -568,11 +568,11 @@ function _list_thirdparty()
 		's.rowid' => array('label' => "TechnicalID", 'checked' => (getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0), 'enabled' => (getDolGlobalString('MAIN_SHOW_TECHNICAL_ID') ? 1 : 0)),
 		's.nom' => array('label' => "ThirdPartyName", 'checked' => 1),
 		's.name_alias' => array('label' => "AliasNameShort", 'checked' => 1),
-		's.barcode' => array('label' => "Gencod", 'checked' => 1, 'enabled' => (!empty($conf->barcode->enabled))),
+		's.barcode' => array('label' => "Gencod", 'checked' => 1, 'enabled' => (isModEnabled('barcode'))),
 		's.code_client' => array('label' => "CustomerCodeShort", 'checked' => $checkedcustomercode),
-		's.code_fournisseur' => array('label' => "SupplierCodeShort", 'checked' => $checkedsuppliercode, 'enabled' => (!empty($conf->fournisseur->enabled))),
+		's.code_fournisseur' => array('label' => "SupplierCodeShort", 'checked' => $checkedsuppliercode, 'enabled' => (isModEnabled('fournisseur'))),
 		's.code_compta' => array('label' => "CustomerAccountancyCodeShort", 'checked' => $checkedcustomeraccountcode),
-		's.code_compta_fournisseur' => array('label' => "SupplierAccountancyCodeShort", 'checked' => $checkedsupplieraccountcode, 'enabled' => (!empty($conf->fournisseur->enabled))),
+		's.code_compta_fournisseur' => array('label' => "SupplierAccountancyCodeShort", 'checked' => $checkedsupplieraccountcode, 'enabled' => (isModEnabled('fournisseur'))),
 		's.town' => array('label' => "Town", 'checked' => 1),
 		's.zip' => array('label' => "Zip", 'checked' => 1),
 		'state.nom' => array('label' => "State", 'checked' => 0),
@@ -928,7 +928,7 @@ function _list_thirdparty()
 		$sql .= " AND s.client = 0 AND s.fournisseur = 0";
 	if ($search_status != '' && $search_status >= 0)
 		$sql .= " AND s.status = ".$db->escape($search_status);
-	if (!empty($conf->barcode->enabled) && $search_barcode)
+	if (isModEnabled('barcode') && $search_barcode)
 		$sql .= natural_search("s.barcode", $search_barcode);
 	if ($search_type_thirdparty > 0)
 		$sql .= " AND s.fk_typent IN (".$search_type_thirdparty.')';
@@ -1068,7 +1068,7 @@ function _list_thirdparty()
 		'presend' => $langs->trans("SendByMail"),
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
-//if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
+//if($user->hasRight('societe', 'creer')) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
 	if (rl_userHasRight($user,'societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
@@ -1117,7 +1117,7 @@ function _list_thirdparty()
 	$moreforfilter = '';
 	if (empty($type) || $type == 'c' || $type == 'p')
 	{
-		if (!empty($conf->categorie->enabled))
+		if (isModEnabled('categorie'))
 		{
 			require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 			$moreforfilter .= '<div class="divsearchfield">';
@@ -1128,7 +1128,7 @@ function _list_thirdparty()
 	}
 	if (empty($type) || $type == 'f')
 	{
-		if (!empty($conf->categorie->enabled))
+		if (isModEnabled('categorie'))
 		{
 			require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 			$moreforfilter .= '<div class="divsearchfield">';
@@ -1722,7 +1722,7 @@ function _list_thirdparty()
 				$companystatic->name_alias = '';
 				$s .= $companystatic->getNomUrl(0, 'prospect', 0, 1);
 			}
-			if (!empty($conf->fournisseur->enabled) && $obj->fournisseur)
+			if (isModEnabled('fournisseur') && $obj->fournisseur)
 			{
 				if ($s)
 					$s .= " / ";
@@ -2119,7 +2119,7 @@ function _list_contact()
 		'p.phone_mobile' => array('label' => "PhoneMobile", 'checked' => 1),
 		'p.fax' => array('label' => "Fax", 'checked' => 1),
 		'p.email' => array('label' => "EMail", 'checked' => 1),
-		'p.skype' => array('label' => "Skype", 'checked' => 1, 'enabled' => (!empty($conf->skype->enabled))),
+		'p.skype' => array('label' => "Skype", 'checked' => 1, 'enabled' => (isModEnabled('skype'))),
 		'p.thirdparty' => array('label' => "ThirdParty", 'checked' => 1, 'enabled' => !getDolGlobalString('SOCIETE_DISABLE_CONTACTS')),
 		'p.priv' => array('label' => "ContactVisibility", 'checked' => 1, 'position' => 200),
 		'p.datec' => array('label' => "DateCreationShort", 'checked' => 0, 'position' => 500),
@@ -2443,7 +2443,7 @@ function _list_contact()
 //    'presend'=>$langs->trans("SendByMail"),
 //    'builddoc'=>$langs->trans("PDFMerge"),
 	);
-//if($user->rights->societe->creer) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
+//if($user->hasRight('societe', 'creer')) $arrayofmassactions['createbills']=$langs->trans("CreateInvoiceForThisCustomer");
 	if (rl_userHasRight($user,'societe', 'supprimer'))
 		$arrayofmassactions['predelete'] = $langs->trans("Delete");
 	if (in_array($massaction, array('presend', 'predelete')))
@@ -2480,7 +2480,7 @@ function _list_contact()
 	}
 
 	$moreforfilter = '';
-	if (!empty($conf->categorie->enabled))
+	if (isModEnabled('categorie'))
 	{
 		require_once DOL_DOCUMENT_ROOT.'/categories/class/categorie.class.php';
 		$moreforfilter .= '<div class="divsearchfield">';
@@ -2804,7 +2804,7 @@ function _list_contact()
 		// Skype
 		if (!empty($arrayfields['p.skype']['checked']))
 		{
-			if (!empty($conf->skype->enabled))
+			if (isModEnabled('skype'))
 			{
 				print '<td>'.dol_print_skype($obj->skype, $obj->rowid, $obj->socid, 'AC_SKYPE', 18).'</td>';
 			}

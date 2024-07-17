@@ -87,7 +87,7 @@ class ReferenceLetters extends CommonObject
 		$hookmanager->initHooks(array('referenceletters'));
 
 		$this->db = $db;
-		if (isset($conf->contract) && !empty($conf->contract->enabled)) {
+		if (isset($conf->contract) && isModEnabled('contract')) {
 			$this->element_type_list['contract'] = array (
 				'class' => 'contrat.class.php',
 				'securityclass' => 'contrat',
@@ -106,7 +106,7 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->contract->dir_output
 		);
 		}
-		if (isset($conf->societe) && !empty($conf->societe->enabled)) {
+		if (isset($conf->societe) && isModEnabled('societe')) {
 			$this->element_type_list['thirdparty'] = array(
 				'class' => 'societe.class.php',
 				'securityclass' => 'societe',
@@ -138,7 +138,7 @@ class ReferenceLetters extends CommonObject
 				'card' => 'contact/card.php',
 				'substitution_method' => 'get_substitutionarray_contact'
 		);
-		if (isset($conf->propal) && !empty($conf->propal->enabled)){
+		if (isset($conf->propal) && isModEnabled('propal')){
 			$this->element_type_list['propal'] = array (
 				'class' => 'propal.class.php',
 				'securityclass' => 'propal',
@@ -159,7 +159,7 @@ class ReferenceLetters extends CommonObject
 		);
 		}
 
-		if (property_exists($conf, 'facture') && !empty($conf->facture->enabled) || property_exists($conf, 'invoice') && !empty($conf->invoice->enabled) ){
+		if (property_exists($conf, 'facture') && isModEnabled('facture') || property_exists($conf, 'invoice') && isModEnabled('invoice') ){
 			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
@@ -178,7 +178,7 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->invoice->dir_output
 		);
 		}
-		if (property_exists($conf, 'commande') && !empty($conf->commande->enabled) || property_exists($conf, 'order') && !empty($conf->order->enabled) ){
+		if (property_exists($conf, 'commande') && isModEnabled('commande') || property_exists($conf, 'order') && isModEnabled('order') ){
 
 			$this->element_type_list['order'] = array (
 					'class' => 'commande.class.php',
@@ -198,7 +198,7 @@ class ReferenceLetters extends CommonObject
 					'document_dir' => $conf->commande->dir_output
 			);
 		}
-		if (isset($conf->fournisseur) && !empty($conf->fournisseur->enabled)) {
+		if (isset($conf->fournisseur) && isModEnabled('fournisseur')) {
 			$this->element_type_list['order_supplier'] = array(
 				'class' => 'fournisseur.commande.class.php',
 				'securityclass' => 'fournisseur',
@@ -218,7 +218,7 @@ class ReferenceLetters extends CommonObject
 				'document_dir' => $conf->fournisseur->commande->dir_output
 			);
 		}
-		if ( isset($conf->supplier_proposal) && !empty($conf->supplier_proposal->enabled) ) {
+		if ( isset($conf->supplier_proposal) && isModEnabled('supplier_proposal') ) {
 			$this->element_type_list['supplier_proposal'] = array(
 				'class' => 'supplier_proposal.class.php',
 				'securityclass' => 'supplier_proposal',
@@ -238,7 +238,7 @@ class ReferenceLetters extends CommonObject
 				'document_dir' => $conf->supplier_proposal->dir_output
 			);
 		}
-		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
+		if (isset($conf->expedition) && isModEnabled('expedition')) {
 			$this->element_type_list['expedition'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
@@ -258,7 +258,7 @@ class ReferenceLetters extends CommonObject
 				'document_dir' => $conf->expedition->dir_output
 			);
 		}
-		if (isset($conf->expedition) && !empty($conf->expedition->enabled)) {
+		if (isset($conf->expedition) && isModEnabled('expedition')) {
 			$this->element_type_list['shipping'] = array (
 				'class' => 'expedition.class.php',
 				'securityclass' => 'expedition',
@@ -274,7 +274,7 @@ class ReferenceLetters extends CommonObject
 				'substitution_method_line' => 'get_substitutionarray_lines'
 		);
 		}
-		if (isset($conf->ficheinter) && !empty($conf->ficheinter->enabled)) {
+		if (isset($conf->ficheinter) && isModEnabled('ficheinter')) {
 			$this->element_type_list['fichinter'] = array(
 				'class' => 'fichinter.class.php',
 				'securityclass' => 'fichinter',
@@ -300,7 +300,7 @@ class ReferenceLetters extends CommonObject
 		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]='Yes';
 		$this->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO]='No';
 
-		if(!empty($conf->agefodd->enabled)) {
+		if(isModEnabled('agefodd')) {
 
 			// Convention de formation
 			$this->element_type_list['rfltr_agefodd_convention'] = array (
@@ -344,7 +344,7 @@ class ReferenceLetters extends CommonObject
 				,'certificate_completion_trainee'=>'AgfTraineeDocCertificatAchievment'
 			);
 
-			if(!empty($conf->agefoddcertificat->enabled)) {
+			if(isModEnabled('agefoddcertificat')) {
 				$Tab['certificateA4']='CertifTemplateA4';
 				$Tab['certificatecard']='CertifTemplateCredit';
 				$Tab['certificateA4_trainee']='CertifTemplateA4ByTrainee';
@@ -791,7 +791,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+		if(isModEnabled('agefodd')) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		$parameters = array('subst_array' => &$subst_array);
 		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
@@ -936,7 +936,7 @@ class ReferenceLetters extends CommonObject
 
 		// Liste de données - Participants
 		$moreTrad = '';
-		if(!empty($conf->agefoddcertificat->enabled)) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		if(isModEnabled('agefoddcertificat')) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilitel'=>'Libellé civilité'
 				,'line_civilitel'=>'Code civilité'
@@ -977,7 +977,7 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
-		if(!empty($conf->agefoddcertificat->enabled)) {
+		if(isModEnabled('agefoddcertificat')) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
@@ -1063,7 +1063,7 @@ class ReferenceLetters extends CommonObject
 				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
 			}
 		}
-		if(!empty($conf->agefoddcertificat->enabled)) {
+		if(isModEnabled('agefoddcertificat')) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';

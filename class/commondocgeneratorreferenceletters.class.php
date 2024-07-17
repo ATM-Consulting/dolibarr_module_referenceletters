@@ -241,13 +241,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			if (get_class($object) === 'Facture') {
 
 				$array_other['deja_paye'] = $array_other['somme_avoirs'] = price(0, 0, $outputlangs);
-				$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
+				$total_ttc = (isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
 				$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
 				if (! empty($array_other['liste_paiements'])) {
 
-					$deja_regle = $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-					$creditnoteamount = $object->getSumCreditNotesUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-					$depositsamount = $object->getSumDepositsUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
+					$deja_regle = $object->getSommePaiement((isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? 1 : 0);
+					$creditnoteamount = $object->getSumCreditNotesUsed((isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? 1 : 0);
+					$depositsamount = $object->getSumDepositsUsed((isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? 1 : 0);
 
 					// Already paid + Deposits
 					$array_other['deja_paye'] = price($deja_regle + $depositsamount, 0, $outputlangs);
@@ -349,18 +349,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$prev_progress = $line->get_prev_progress($object->id);
 					if ($prev_progress > 0 && ! empty($line->situation_percent)) // Compute progress from previous situation
 					{
-						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+						if (isModEnabled('multicurrency') && $object->multicurrency_tx != 1)
 							$tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
 						else
 							$tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
 					} else {
-						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+						if (isModEnabled('multicurrency') && $object->multicurrency_tx != 1)
 							$tvaligne = $sign * $line->multicurrency_total_tva;
 						else
 							$tvaligne = $sign * $line->total_tva;
 					}
 				} else {
-					if (!empty($conf->multicurrency->enabled) && $object->multicurrency_tx != 1)
+					if (isModEnabled('multicurrency') && $object->multicurrency_tx != 1)
 						$tvaligne = $line->multicurrency_total_tva;
 					else
 						$tvaligne = $line->total_tva;
@@ -415,7 +415,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$text = $outputlangs->trans("UnknownType");
 
 				$date = dol_print_date($obj->datef, 'day', false, $outputlangs, true);
-				$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
+				$amount = price((isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
 				$invoice_ref = $invoice->ref;
 				$TPayments[] = array(
 						$date,
@@ -443,7 +443,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$sign = - 1;
 			while ( $row = $db->fetch_object($resql) ) {
 				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
-				$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
+				$amount = price($sign * ((isModEnabled('multicurrency') && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
 				$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
 				$num = $row->num;
 
@@ -488,7 +488,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
-		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
+		if(empty($resarray['line_desc']) && isModEnabled('subtotal'))
 		{
 			dol_include_once('/subtotal/class/subtotal.class.php');
 
@@ -576,7 +576,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
-		if($conf->agefoddcertificat->enabled) {
+		if(isModEnabled('agefoddcertificat')) {
 			// Certificats
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);

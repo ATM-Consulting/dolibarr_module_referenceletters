@@ -236,22 +236,22 @@ class modReferenceLetters extends DolibarrModules
 		// Example:
 		// $this->tabs = array();
 		// // To add a new tab identified by code tabname1
-		// 'objecttype:+tabname1:Title1:langfile@referenceletters:$user->rights->referenceletters->read:/referenceletters/mynewtab1.php?id=__ID__',
+		// 'objecttype:+tabname1:Title1:langfile@referenceletters:$user->hasRight('referenceletters', 'read'):/referenceletters/mynewtab1.php?id=__ID__',
 		// // To add another new tab identified by code tabname2
-		// 'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
+		// 'objecttype:+tabname2:Title2:langfile@referenceletters:$user->hasRight('othermodule', 'read'):/referenceletters/mynewtab2.php?id=__ID__',
 		// // To remove an existing tab identified by code tabname
 		// 'objecttype:-tabname'
 
 		$this->tabs = array (
-				'contract:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
-				'thirdparty:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
-				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
-				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
-				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
-				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
-				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal',
-				'supplier_order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order_supplier',
-				//'delivery:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=expedition'
+				'contract:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
+				'thirdparty:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
+				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
+				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
+				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
+				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
+				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal',
+				'supplier_order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order_supplier',
+				//'delivery:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight('referenceletters', 'use'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=expedition'
 		);
 
 		// where objecttype can be
@@ -272,7 +272,7 @@ class modReferenceLetters extends DolibarrModules
 		// 'categories_x' to add a tab in category view
 		// (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
 		// Dictionnaries
-		if (! isset($conf->referenceletters->enabled)) {
+		if (! isModEnabled('referenceletters')) {
 			$conf->referenceletters = ( object ) array ();
 			$conf->referenceletters->enabled = 0;
 		}
@@ -341,8 +341,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/index.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 100,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight('referenceletters', 'read')',
+				'perms' => '$user->hasRight('referenceletters', 'read')',
 				'target' => '',
 				'user' => 0
 		);
@@ -356,8 +356,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 101,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight('referenceletters', 'read')',
+				'perms' => '$user->hasRight('referenceletters', 'read')',
 				'target' => '',
 				'user' => 0
 		);
@@ -371,8 +371,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 102,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight('referenceletters', 'read')',
+				'perms' => '$user->hasRight('referenceletters', 'read')',
 				'target' => '',
 				'user' => 0
 		);
@@ -386,8 +386,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/card.php?action=create',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 103,
-				'enabled' => '$user->rights->referenceletters->write',
-				'perms' => '$user->rights->referenceletters->write',
+				'enabled' => '$user->hasRight('referenceletters', 'write')',
+				'perms' => '$user->hasRight('referenceletters', 'write')',
 				'target' => '',
 				'user' => 0
 		);
@@ -401,8 +401,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list_instance.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 104,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight('referenceletters', 'read')',
+				'perms' => '$user->hasRight('referenceletters', 'read')',
 				'target' => '',
 				'user' => 0
 		);
@@ -416,8 +416,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/mass_gen.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 104,
-				'enabled' => '$user->rights->referenceletters->write',
-				'perms' => '$user->rights->referenceletters->write',
+				'enabled' => '$user->hasRight('referenceletters', 'write')',
+				'perms' => '$user->hasRight('referenceletters', 'write')',
 				'target' => '',
 				'user' => 0
 		);

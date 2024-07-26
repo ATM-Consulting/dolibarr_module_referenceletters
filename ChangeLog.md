@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
-
+- NEW : Compat V20 et php 8.2 - *26/07/2024* - 2.22.0
 
 
 ## Release 2.21 - 13/05/2024

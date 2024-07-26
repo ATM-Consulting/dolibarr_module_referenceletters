@@ -179,10 +179,10 @@ if ($resql != - 1) {
 		print '<td>' . $object->displayElementElement(0,$line->element_type) . '</td>';
 
 		//Status
-		print '<td>' . $langs->trans($object->TStatus[$line->status]) . '</td>';
+		print '<td>' . $langs->trans($object->TStatus[$line->status] ?? '') . '</td>';
 
 		//Status
-		print '<td>' . $langs->trans($object->TDefaultDoc[$line->default_doc]) . '</td>';
+		print '<td>' . $langs->trans($object->TDefaultDoc[$line->default_doc] ?? '') . '</td>';
 
 		print '<td align="center"><a href="card.php?id=' . $line->id . '&action=edit">' . img_picto($langs->trans('Edit'), 'edit') . '</a></td>';
 

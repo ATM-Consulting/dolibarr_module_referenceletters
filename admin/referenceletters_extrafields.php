@@ -121,7 +121,7 @@ print "</tr>\n";
 $var = True;
 $urlToken = '';
 if (function_exists('newToken')) $urlToken = "&token=".newToken();
-if (!empty($extrafields->attribute_type)){
+if (!empty($extrafields->attribute_type && is_array($extrafields->attribute_type))){
 	foreach ($extrafields->attribute_type as $key => $value) {
 		$var = ! $var;
 		print "<tr " . $bc[$var] . ">";

@@ -488,7 +488,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
-		if(empty($resarray['line_desc']) && ! isModEnabled('subtotal'))
+		if(empty($resarray['line_desc']) && isModEnabled('subtotal'))
 		{
 			dol_include_once('/subtotal/class/subtotal.class.php');
 
@@ -1614,7 +1614,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// phpcs:enable
 		global $conf;
-		if (!empty($extrafields->attribute_label )){
+		if (!empty($extrafields->attribute_label && is_array($extrafields->attribute_label))){
 			foreach($extrafields->attribute_label as $key=>$label)
 			{
 				if($extrafields->attribute_type[$key] == 'price')

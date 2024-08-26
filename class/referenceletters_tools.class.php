@@ -182,8 +182,12 @@ class RfltrTools {
 			$object = new $object_refletter->element_type_list['rfltr_agefodd_formation']['objectclass']($db);
 			$object->fetch($fk_training);
 		}
-		// on load les informations de l'object
-		$object->load_all_data_agefodd($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
+		// on load les informations de l'object (la méthode n'a pas le même nom selon la version d'Agefodd)
+		$agefoddInfoLoader = 'load_all_data_agefodd';
+		if (! method_exists($object, $agefoddInfoLoader)) {
+			$agefoddInfoLoader = 'load_all_data_agefodd_session';
+		}
+		$object->$agefoddInfoLoader($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 

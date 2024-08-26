@@ -63,7 +63,7 @@ class modReferenceLetters extends DolibarrModules
 		// Possible values for version are: 'development', 'experimental' or version
 
 
-		$this->version = '2.21.4';
+		$this->version = '2.21.5';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);

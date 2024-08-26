@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## Release 2.21 - 13/05/2024
 
+- FIX : DA025424 incompatibilité avec Agefodd 7 - *26/08/2024* - 2.21.5
 - FIX : Retour sécuridis BUG enregeistrement PDF lié à PropalHistory et son changement de ref propal - *14/06/2024* - 2.21.4
 - FIX : DA025049 Erreur d'affichage sur l'onglet modéle de document sur fiche commande fournisseur - *12/06/2024* - 2.21.3
 - FIX : Clés manquantes : financeurs et financeur_alternatif - *05/06/2024* - 2.21.2

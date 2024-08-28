@@ -147,6 +147,8 @@ class pdf_rfltr_default extends CommonDocGenerator
 		        $test=$conf->{strtolower(get_class($object))}->dir_output;
 
 		        dol_copy($file, $file_dest);
+
+		        $this->result = array('fullpath'=>$file_dest);
 		    }
 
 // 		    // Header sur la même page pour annuler le traitement standard de génération de PDF

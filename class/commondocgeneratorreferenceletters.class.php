@@ -1193,8 +1193,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						// Attention, ce test est différent d'un isset()
 						if (is_array($object->array_options) && count($object->array_options)>0 && array_key_exists('options_'.$key_opt, $object->array_options))
 						{
-							$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_'.$key_opt]);
-
+							$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_'.$key_opt],'', $object->table_element);
 							$array_other['object_options_'.$key_opt] = $val;
 							$array_other['object_array_options_options_'.$key_opt] = $val;
 						}
@@ -1301,7 +1300,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			    $hidden=(($list == 0)  ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 		}
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
@@ -1610,8 +1609,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'] ?? array();
 			}
 		}
-
-
 		// phpcs:enable
 		global $conf;
 		if (!empty($extrafields->attribute_label && is_array($extrafields->attribute_label))){
@@ -1705,8 +1702,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 			}
 		}
+		// Ajout des extrafields des object coeurs dans la selection des substitutions
 
+		if (array_key_exists('label',$extrafields->attributes[$object->table_element]) &&is_array($extrafields->attributes[$object->table_element]['label']) && !empty($extrafields->attributes[$object->table_element]['label'])) {
+			foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+				//Add value to store
+				if (array_key_exists('options_'.$key,$object->array_options)){
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+				}
 
+			}
+		}
 		return $array_to_fill;
 	}
 }

@@ -1702,18 +1702,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 			}
 		}
-
-
-		// POUR LE MOMENT ON N'AJOUTE QUE LSE EXTRAFIELDS DE COMMANDE FOURNISSEURS
-		echo '<pre>' . var_export(get_class($object), true) . '</pre>';
-		$TallowedExtraInModeles = array('CommandeFournisseur','Facture');
-		if ( in_array(get_class($object), $TallowedExtraInModeles) ){
-			// Ajout des extrafields dans la selection des substitutions
-			if (!empty($extrafields->attributes[$object->table_element]['label'])) {
-				foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
-					//Add value to store
-					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
-				}
+		// Ajout des extrafields des object coeurs dans la selection des substitutions
+		if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+			foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+				//Add value to store
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
 			}
 		}
 		return $array_to_fill;

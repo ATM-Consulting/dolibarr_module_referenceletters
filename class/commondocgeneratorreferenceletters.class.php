@@ -89,9 +89,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['object_references'] = '';
 			}
 		}
-		if ($object->element == 'commandeFournisseur'){
-
-		}
 		// contact emetteur
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';

@@ -63,7 +63,7 @@ class modReferenceLetters extends DolibarrModules
 		// Possible values for version are: 'development', 'experimental' or version
 
 
-		$this->version = '2.22.0';
+		$this->version = '2.23.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -491,7 +491,9 @@ class modReferenceLetters extends DolibarrModules
 				];
 			}
 		}
+
 		if ($this->needUpdate('2.20.0')) {
+
 			$this->db->query("ALTER TABLE ".MAIN_DB_PREFIX."referenceletters MODIFY COLUMN element_type VARCHAR(150);");
 		}
 

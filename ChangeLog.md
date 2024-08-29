@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
+- NEW : Gestion des extrafields de cmmande fournisseurs  - *29/08/2024* - 2.23.0  
+
 ## Release 2.22 - 07/08/2024
 - NEW : Compat V20 et php 8.2 - *26/07/2024* - 2.22.0
 

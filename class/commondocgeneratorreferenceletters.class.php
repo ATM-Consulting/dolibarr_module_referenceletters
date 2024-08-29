@@ -1703,7 +1703,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 		// Ajout des extrafields des object coeurs dans la selection des substitutions
-		if (!empty($extrafields->attributes[$object->table_element]['label'])) {
+
+		if (array_key_exists('label',$extrafields->attributes[$object->table_element]) && !empty($extrafields->attributes[$object->table_element]['label'])) {
 			foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
 				//Add value to store
 				if (array_key_exists('options_'.$key,$object->array_options)){

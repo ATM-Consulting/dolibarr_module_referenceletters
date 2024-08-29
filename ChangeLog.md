@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
+## Release 2.23 - 29/08/2024
 - NEW : Gestion des extrafields de cmmande fournisseurs  - *29/08/2024* - 2.23.0  
 
 ## Release 2.22 - 07/08/2024

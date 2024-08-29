@@ -1706,7 +1706,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (!empty($extrafields->attributes[$object->table_element]['label'])) {
 			foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
 				//Add value to store
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+				if (array_key_exists('options_'.$key,$object->array_options)){
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+				}
+
 			}
 		}
 		return $array_to_fill;

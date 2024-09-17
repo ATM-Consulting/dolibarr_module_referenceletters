@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
-- NEW : Gestion des extrafields de cmmande fournisseurs  - *29/08/2024* - 2.23.0  
+- FIX : Gestion des extrafields : vérification si l'objet n'a pas table_element a null et si cet élément possède des attributs de type "label"  - *17/09/2024* - 2.23.1
+- NEW : Gestion des extrafields de commande fournisseurs  - *29/08/2024* - 2.23.0  
 
 ## Release 2.22 - 07/08/2024
 - NEW : Compat V20 et php 8.2 - *26/07/2024* - 2.22.0

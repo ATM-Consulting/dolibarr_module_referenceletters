@@ -1703,14 +1703,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 		// Ajout des extrafields des object coeurs dans la selection des substitutions
+		if ($object->table_element != null) {
+			if (array_key_exists('label', $extrafields->attributes[$object->table_element])
+				&& is_array($extrafields->attributes[$object->table_element]['label'])
+				&& $extrafields->attributes[$object->table_element]['label'] !== null
+				&& !empty($extrafields->attributes[$object->table_element]['label'])) {
 
-		if (array_key_exists('label',$extrafields->attributes[$object->table_element]) &&is_array($extrafields->attributes[$object->table_element]['label']) && !empty($extrafields->attributes[$object->table_element]['label'])) {
-			foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
-				//Add value to store
-				if (array_key_exists('options_'.$key,$object->array_options)){
-					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+				foreach ($extrafields->attributes[$object->table_element]['label'] as $key => $val) {
+					// Add value to store
+					if (array_key_exists('options_'.$key, $object->array_options)) {
+						$array_to_fill = array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+					}
 				}
-
 			}
 		}
 		return $array_to_fill;

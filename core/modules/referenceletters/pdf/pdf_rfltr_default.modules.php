@@ -144,7 +144,6 @@ class pdf_rfltr_default extends CommonDocGenerator
 		            dol_mkdir($dir_dest);
 		        }
 		        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
-		        $test=$conf->{strtolower(get_class($object))}->dir_output;
 
 		        dol_copy($file, $file_dest);
 		    }

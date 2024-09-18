@@ -464,6 +464,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
 					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
+					// si null warning qui fait péter le js pour ajouter les modéles à la liste
 					if (!empty($object_refletters->lines)) {
 						$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
 					}

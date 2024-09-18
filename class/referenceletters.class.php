@@ -795,7 +795,6 @@ class ReferenceLetters extends CommonObject
 
 		$parameters = array('subst_array' => &$subst_array);
 		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
-
 		return $subst_array;
 	}
 

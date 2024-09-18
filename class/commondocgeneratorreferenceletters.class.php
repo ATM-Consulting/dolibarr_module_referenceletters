@@ -212,7 +212,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
         // Multicurrency
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
-
 		return $resarray;
 	}
 
@@ -280,7 +279,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 		}
-		// var_dump($array_other);exit;
 		return $array_other;
 	}
 
@@ -1211,7 +1209,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 
 				if (! is_array($value) && ! is_object($value)) {
-                    if($key== 'date_birth') {
+                    if($key== 'date_birth' || $key == 'datec') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
                     }
                     if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')

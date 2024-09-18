@@ -496,13 +496,35 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
-		if(empty($resarray['line_qty_shipped'])) $resarray['line_qty_shipped'] = price2num($line->qty_shipped);
-		if(empty($resarray['line_qty_asked'])) $resarray['line_qty_asked'] = price2num($line->qty_asked);
-		if(empty($resarray['line_weight'])) $resarray['line_weight'] = price2num($line->weight);
-		if(empty($resarray['line_vol'])) $resarray['line_vol'] = price2num($line->volume);
+		// Vérification des propriétés avant de les utiliser
+
+		if (isset($line->date_ouverture)) {
+			$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
+		}
+
+		if (isset($line->date_ouverture_prevue)) {
+			$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
+		}
+
+		if (isset($line->date_fin_validite)) {
+			$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		}
+
+		if (isset($line->qty_shipped) && empty($resarray['line_qty_shipped'])) {
+			$resarray['line_qty_shipped'] = price2num($line->qty_shipped);
+		}
+
+		if (isset($line->qty_asked) && empty($resarray['line_qty_asked'])) {
+			$resarray['line_qty_asked'] = price2num($line->qty_asked);
+		}
+
+		if (isset($line->weight) && empty($resarray['line_weight'])) {
+			$resarray['line_weight'] = price2num($line->weight);
+		}
+
+		if (isset($line->volume) && empty($resarray['line_vol'])) {
+			$resarray['line_vol'] = price2num($line->volume);
+		}
 
 		return $resarray;
 	}

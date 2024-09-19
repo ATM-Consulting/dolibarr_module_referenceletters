@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
+- FIX : Affichage des extrafields de lignes dans la liste des tags - *19/09/2024* - 2.23.3
 - FIX : Beaucoup de warning - *18/09/2024* - 2.23.2
 - FIX : Gestion des extrafields : vérification si l'objet n'a pas table_element a null et si cet élément possède des attributs de type "label"  - *17/09/2024* - 2.23.1
 - NEW : Gestion des extrafields de commande fournisseurs  - *29/08/2024* - 2.23.0  

@@ -110,7 +110,6 @@ class pdf_rfltr_default extends CommonDocGenerator
 		$instance_letter = $instances[0];
 
 		if(empty($instance_letter->ref_int)) $instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $instance_letter->element_type);
-		//$instance_letter->create($user);
 		// Création du PDF
 		$result = referenceletters_pdf_create($db, $object, $instance_letter, $outputlangs, $instance_letter->element_type);
 
@@ -144,15 +143,8 @@ class pdf_rfltr_default extends CommonDocGenerator
 		            dol_mkdir($dir_dest);
 		        }
 		        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
-		        $test=$conf->{strtolower(get_class($object))}->dir_output;
-
 		        dol_copy($file, $file_dest);
 		    }
-
-// 		    // Header sur la même page pour annuler le traitement standard de génération de PDF
-// 		    $field_id = 'id';
-// 		    if(get_class($object) === 'Facture') $field_id = 'facid';
-// 		    header('location: '.$_SERVER['PHP_SELF'].'?id='.GETPOST($field_id, 'none')); exit;
 		    return 1;
 		}
 	}

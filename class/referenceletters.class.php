@@ -178,8 +178,8 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->invoice->dir_output
 		);
 		}
-		if (isModEnabled('order') ){
-
+		//jusqu'en v19 il faut conserver commande
+		if (isModEnabled('commande') ){
 			$this->element_type_list['order'] = array (
 					'class' => 'commande.class.php',
 					'securityclass' => 'commande',

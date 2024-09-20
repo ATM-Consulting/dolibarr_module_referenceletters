@@ -425,12 +425,12 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 		$object_refletters = new Referenceletters($db);
 		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
 
-		if ($result<0) {
+		if ($result < 0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {
 			if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
 				foreach($object_refletters->lines as $line) {
-					$TModelsID[] = array('id'=>$line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
+					$TModelsID[] = array('id' => $line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
 				}
 			}
 		}
@@ -449,7 +449,6 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				{
 					modelgeneric[0].remove();
 				}
-
 				<?php
 
 
@@ -465,7 +464,10 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
 					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
-					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+					// si null warning qui fait péter le js pour ajouter les modéles à la liste
+					if (!empty($object_refletters->lines)) {
+						$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+					}
 					if(empty($object->array_options['options_rfltr_model_id'])) {
 						// Si modele jamais généré avec un docedit déjà existant
 						// Alors on voit s'il y a un document docedit apr défaut

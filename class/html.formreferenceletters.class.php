@@ -263,7 +263,7 @@ class FormReferenceLetters extends Form
 	}
 
 	/**
-	 *
+	 * Add list of substitute key
 	 *
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
@@ -279,9 +279,9 @@ class FormReferenceLetters extends Form
 		print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
 		print '</div>';
 
-		$subs_array=$reflettersobject->getSubtitutionKey($user);
+		$subs_array = $reflettersobject->getSubtitutionKey($user);
 
-		$html='<div id="accordion-refltertags" >';
+		$html = '<div id="accordion-refltertags" >';
 
 		if (is_array($subs_array) && count($subs_array)>0) {
 			foreach($subs_array as $block=>$data) {

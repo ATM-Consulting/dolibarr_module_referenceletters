@@ -543,7 +543,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                                     }
 									if (!empty($listlines)) {
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
+											'<tr' => '<tr bgcolor="'.getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb' ).'" align="right" '
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end

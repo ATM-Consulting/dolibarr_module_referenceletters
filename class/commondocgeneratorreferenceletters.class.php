@@ -974,6 +974,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		$resarray['formation_statut'] = $object->statuslib ?? '';
+		$resarray['formation_id'] = $object->fk_formation_catalogue ?? '';
 		$resarray['formation_duree'] = $object->duree?? '';
 		$resarray['formation_duree_session'] = $object->duree_session?? '';
 		$resarray['formation_commercial'] = $object->commercialname?? '';

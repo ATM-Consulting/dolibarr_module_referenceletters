@@ -831,6 +831,8 @@ class ReferenceLetters extends CommonObject
 
 		'formation_nom'=>'Intitulé de la formation'
 		,'formation_ref'=>'Référence de la formation'
+		,'formation_id'=>'Id de la formation'
+		,'formation_programme'=>'Programme de la formation'
 		,'formation_statut'=>'Statut de la formation'
 		,'formation_duree' => 'Durée de la formation'
 		,'formation_but'=>'But de la formation'
@@ -874,6 +876,8 @@ class ReferenceLetters extends CommonObject
 				'formation_nom'=>'Intitulé de la formation'
 				,'formation_nom_custo'=>'Intitulé formation (pour les documents PDF)'
 				,'formation_ref'=>'Référence de la formation'
+				,'formation_id'=>'Id de la formation'
+				,'formation_programme'=>'Programme de la formation'
 				,'formation_statut'=>'Statut de la formation'
 		        ,'formation_date_debut' => 'Date de début de la formation'
 		        ,'formation_date_debut_formated' => 'Date de début de la formation mise en forme'
@@ -907,6 +911,7 @@ class ReferenceLetters extends CommonObject
 		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules (Nom prenom)'
 		        ,'objvar_object_trainer_text_invert'=>'Tous les foramteurs séparés par des virgules (Prenom nom)'
 		        ,'objvar_object_id'=>'Id de la session'
+
 		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
 		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
 			    ,'AgfMentorList'=>'Liste des référents'

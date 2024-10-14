@@ -61,9 +61,7 @@ class modReferenceLetters extends DolibarrModules
 		// (where XXX is value of numeric property 'numero' of module)
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
-
-
-		$this->version = '2.21.7';
+		$this->version = '2.22.0';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -158,7 +156,7 @@ class modReferenceLetters extends DolibarrModules
 		);
 		// Minimum version of Dolibarr required by module
 		$this->need_dolibarr_version = array (
-				12,
+				16,
 				0
 		);
 		$this->langfiles = array (
@@ -272,7 +270,7 @@ class modReferenceLetters extends DolibarrModules
 		// 'categories_x' to add a tab in category view
 		// (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
 		// Dictionnaries
-		if (! isset($conf->referenceletters->enabled)) {
+		if (! isModEnabled('referenceletters')) {
 			$conf->referenceletters = ( object ) array ();
 			$conf->referenceletters->enabled = 0;
 		}

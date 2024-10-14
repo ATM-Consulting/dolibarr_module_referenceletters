@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## Release 2.21 - 13/05/2024
 
+- FIX : DA025482 Clés manquantes : formation_id formation_programme *14/10/2024* - 2.21.7
 - FIX : DA025482 Formatage du champs datec - *12/09/2024* - 2.21.6
 - FIX : DA025424 incompatibilité avec Agefodd 7 - *26/08/2024* - 2.21.5
 - FIX : Retour sécuridis BUG enregeistrement PDF lié à PropalHistory et son changement de ref propal - *14/06/2024* - 2.21.4

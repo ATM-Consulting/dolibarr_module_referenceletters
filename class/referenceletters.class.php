@@ -178,8 +178,8 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->invoice->dir_output
 		);
 		}
-		if (isModEnabled('order') ){
-
+		//jusqu'en v19 il faut conserver commande
+		if (isModEnabled('commande') ){
 			$this->element_type_list['order'] = array (
 					'class' => 'commande.class.php',
 					'securityclass' => 'commande',
@@ -711,6 +711,7 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
 
+
         complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
 
 		foreach ( $this->element_type_list as $type => $item ) {
@@ -722,7 +723,11 @@ class ReferenceLetters extends CommonObject
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 
-				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+				// ajout d'une jointure afin de récupérer un objet dont la ligne d'extrafields est initialisé dans la table
+				$sql = 'SELECT o.rowid FROM ' . $this->db->prefix() . $testObj->table_element . ' as o';
+				$sql .= ' INNER JOIN ' . $this->db->prefix() . $testObj->table_element . '_extrafields as oe ON o.rowid = oe.fk_object';
+				$sql .= ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+
 				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 				$resql = $this->db->query($sql);
 				if ($resql) {
@@ -758,6 +763,19 @@ class ReferenceLetters extends CommonObject
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
 					}
+					// retourner les substitutions des extrafields de lignes
+					if (method_exists($testObj, 'fetch_lines')) {
+						$testObj->fetch_lines();
+						$TextrafieldsLinesArray = [];
+
+						foreach ($testObj->lines as $line) {
+							foreach ( $line->array_options as $key => $value ) {
+								$TextrafieldsLinesArray['line_' . $key] = $value;
+							}
+						}
+
+						$subst_array[$langs->trans('RefLtrLines')] = array_merge($subst_array[$langs->trans($item['title'])], $TextrafieldsLinesArray);
+					}
 
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
 				} else {
@@ -765,7 +783,6 @@ class ReferenceLetters extends CommonObject
 							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
 					);
 				}
-				//TODO : add line replacement
 			}
 		}
 
@@ -1076,8 +1093,8 @@ class ReferenceLetters extends CommonObject
 		}
 
 		// Tags des lignes
-		$subst_array[$langs->trans('RefLtrLines')] = array(
-				'line_fulldesc'=>'Description complète',
+		$Tlines = array(
+			'line_fulldesc'=>'Description complète',
 				'line_product_ref'=>'Référence produit',
 				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
 				'line_product_label'=>'Libellé produit',
@@ -1110,6 +1127,13 @@ class ReferenceLetters extends CommonObject
 				'line_date_end_locale'=>'Date fin service format 1',
 				'line_date_end_rfc'=>'Date fin service format 2',
 		);
+		if (is_array($subst_array[$langs->trans('RefLtrLines')])) {
+			$subst_array[$langs->trans('RefLtrLines')] = array_merge($subst_array[$langs->trans('RefLtrLines')], $Tlines);
+		} else {
+			// si le tableau n'est pas créé en amont par l'ajout des extrafields
+			$subst_array[$langs->trans('RefLtrLines')] = $Tlines;
+		}
+
 
 		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
 			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',

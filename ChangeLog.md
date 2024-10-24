@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
+- FIX : DA025643 - Chargement des extrafields pour les stagaires - *24/10/2024* - 2.23.5
 - FIX : Prise de en compte de la conf de backgroundcolor soustotal - *19/09/2024* - 2.23.4
 - FIX : Affichage des extrafields de lignes dans la liste des tags - *19/09/2024* - 2.23.3
 - FIX : Beaucoup de warning - *18/09/2024* - 2.23.2

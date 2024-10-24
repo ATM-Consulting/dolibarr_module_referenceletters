@@ -738,10 +738,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_step_lieu_divers'] = $line->place->note1;
 		}
 
-
 		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
+
 			if(floatval(DOL_VERSION) >= 16) {
 				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
 				if($extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
@@ -759,9 +759,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'];
 				}
 			}
+			$line->agefodd_stagiaire->fetch_optionals();
 			$line->array_options=$line->agefodd_stagiaire->array_options;
 		}
-
 		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
 
 		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)

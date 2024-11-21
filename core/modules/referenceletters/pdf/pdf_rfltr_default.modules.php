@@ -144,6 +144,8 @@ class pdf_rfltr_default extends CommonDocGenerator
 		        }
 		        $file_dest = $dir_dest . '/' . $objectref . '.pdf';
 		        dol_copy($file, $file_dest);
+
+		        $this->result = array('fullpath'=>$file_dest);
 		    }
 		    return 1;
 		}

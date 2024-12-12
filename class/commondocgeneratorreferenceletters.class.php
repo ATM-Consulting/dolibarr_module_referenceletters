@@ -429,8 +429,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$sql .= " cp.code";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf, " . MAIN_DB_PREFIX . "paiement as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as cp ON p.fk_paiement = cp.id ";
-		if (( float ) DOL_VERSION > 6)
-			$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity apparaît en 7.0
+		$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity apparaît en 7.0
 		$sql .= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = " . $object->id;
 		$sql .= " ORDER BY p.datep";
 
@@ -1296,13 +1295,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile = !empty($attributes['langfile'][$key]) ? $attributes['langfile'][$key] : null;
 			$list = !empty($attributes['list'][$key]) ? $attributes['list'][$key] : null;
 			$ishidden = !empty($attributes['ishidden'][$key]) ? $attributes['ishidden'][$key] : null;
+			$hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 
-			if( (float) DOL_VERSION < 7 ) {
-			    $hidden= ($ishidden == 0 ?  1 : 0);
-			}
-			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
-			}
 
 		}
 		else
@@ -1320,13 +1314,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$langfile=$extrafields->attribute_langfile[$key] ?? '';
 			$list=$extrafields->attribute_list[$key] ?? '';
 			$ishidden=$extrafields->attribute_hidden[$key] ?? '';
+			$hidden=(($list == 0)  ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 
-			if( (float) DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 0 ?  1 : 0);
-			}
-			else{
-			    $hidden=(($list == 0)  ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
-			}
 		}
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
 

@@ -10,11 +10,8 @@
 	print '<td colspan="5">';
 
 	 $fieldfac = $fieldfac ?? "";
-	if (floatval(DOL_VERSION) > 9) {
-		$fieldfac .= "ref";
-	} else {
-		$fieldfac .= " facnumber";
-	}
+	 $fieldfac .= "ref";
+
 	print $form->showrefnav($object, 'ref', $linkback, 1, $fieldfac, 'ref', $morehtmlref ?? '');
 	print '</td></tr>';
 

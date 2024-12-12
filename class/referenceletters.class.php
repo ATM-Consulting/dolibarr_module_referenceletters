@@ -127,7 +127,7 @@ class ReferenceLetters extends CommonObject
 		}
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
-				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
+				'securityclass' => 'contact',
 				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
@@ -808,7 +808,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		//Todo  : a faire seulement sur les object agefodd
-		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+		if(isModEnabled("agefodd")) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 
 		$parameters = array('subst_array' => &$subst_array);
 		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
@@ -957,7 +957,7 @@ class ReferenceLetters extends CommonObject
 
 		// Liste de données - Participants
 		$moreTrad = '';
-		if(!empty($conf->agefoddcertificat->enabled)) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
+		if(isModEnabled("agefoddcertificat")) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
 		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
 				'line_civilitel'=>'Libellé civilité'
 				,'line_civilitel'=>'Code civilité'
@@ -998,7 +998,7 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
-		if(!empty($conf->agefoddcertificat->enabled)) {
+		if(isModEnabled("agefoddcertificat")) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
@@ -1084,7 +1084,7 @@ class ReferenceLetters extends CommonObject
 				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
 			}
 		}
-		if(!empty($conf->agefoddcertificat->enabled)) {
+		if(isModEnabled("agefoddcertificat")) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';

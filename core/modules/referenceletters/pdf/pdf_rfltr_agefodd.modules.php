@@ -271,7 +271,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 							'TStepsDistanciel',
 							'TStepsPresentiel'
 					);
-					if(isset($conf->agefoddcertificat->enabled) && $conf->agefoddcertificat->enabled ) {
+					if(isModEnabled("agefoddcertificat") ) {
 						$TAgfArray[] = 'TSessionStagiairesCertif';
 						$TAgfArray[] = 'TSessionStagiairesCertifSoc';
 					}
@@ -520,7 +520,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			 // Recipient name
 			 if (! empty($usecontact)) {
 			 // On peut utiliser le nom de la societe du contact
-			 if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
+			 if (! empty(getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT')))
 			 $socname = $object->contact->socname;
 			 else
 			 $socname = $object->thirdparty->nom;

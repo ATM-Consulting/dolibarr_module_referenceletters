@@ -324,7 +324,7 @@ if ($action == 'create' && rl_userHasRight($user, 'referenceletters', 'write')) 
 	/*
 	 * Show object in view mode
 	*/
-	if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION')  && rl_userHasRight($user, 'referenceletters', 'write')  && floatval(DOL_VERSION) >= 11) {
+	if(getDolGlobalString('DOCEDIT_CHAPTERS_INLINE_EDITION')  && rl_userHasRight($user, 'referenceletters', 'write')) {
 		print '<script>' . "\n";
 		print ' CKEDITOR.disableAutoInline = false;' . "\n";
 		print '</script>' . "\n";

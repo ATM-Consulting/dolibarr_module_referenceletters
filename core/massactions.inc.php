@@ -129,14 +129,14 @@ if ($massaction == 'presend')
 	include_once DOL_DOCUMENT_ROOT.'/core/class/html.formmail.class.php';
 	$formmail = new FormMail($db);
 	$formmail->withform = -1;
-	$formmail->fromtype = (GETPOST('fromtype', 'none') ? GETPOST('fromtype', 'none') : (!empty($conf->global->MAIN_MAIL_DEFAULT_FROMTYPE) ? $conf->global->MAIN_MAIL_DEFAULT_FROMTYPE : 'user'));
+	$formmail->fromtype = (GETPOST('fromtype', 'none') ? GETPOST('fromtype', 'none') : getDolGlobalString('MAIN_MAIL_DEFAULT_FROMTYPE', 'user'));
 
 	if ($formmail->fromtype === 'user')
 	{
 		$formmail->fromid = $user->id;
 	}
 	$formmail->trackid = $trackid;
-	if (!empty($conf->global->MAIN_EMAIL_ADD_TRACK_ID) && ($conf->global->MAIN_EMAIL_ADD_TRACK_ID & 2)) // If bit 2 is set
+	if (getDolGlobalString('MAIN_EMAIL_ADD_TRACK_ID') && ( getDolGlobalInt('MAIN_EMAIL_ADD_TRACK_ID') & 2)) // If bit 2 is set
 	{
 		include DOL_DOCUMENT_ROOT.'/core/lib/functions2.lib.php';
 		$formmail->frommail = dolAddEmailTrackId($formmail->frommail, $trackid);
@@ -149,7 +149,7 @@ if ($massaction == 'presend')
 	$formmail->withto = empty($liste) ? (GETPOST('sendto', 'alpha') ? GETPOST('sendto', 'alpha') : array()) : $liste;
 	$formmail->withtofree = empty($liste) ? 1 : 0;
 	$formmail->withtocc = 1;
-	$formmail->withtoccc = $conf->global->MAIN_EMAIL_USECCC;
+	$formmail->withtoccc = getDolGlobalInt('MAIN_EMAIL_USECCC');
 	$formmail->withtopic = 'DocEdit';
 	$formmail->withfile = 2;
 	// $formmail->withfile = 2; Not yet supported in mass action
@@ -162,7 +162,7 @@ if ($massaction == 'presend')
 	// Make substitution in email content
 	$substitutionarray = getCommonSubstitutionArray($langs, 0, null, $object);
 	$substitutionarray['__EMAIL__'] = $sendto;
-	$substitutionarray['__CHECK_READ__'] = (is_object($object) && is_object($object->thirdparty)) ? '<img src="'.DOL_MAIN_URL_ROOT.'/public/emailing/mailing-read.php?tag='.$object->thirdparty->tag.'&securitykey='.urlencode($conf->global->MAILING_EMAIL_UNSUBSCRIBE_KEY).'" width="1" height="1" style="width:1px;height:1px" border="0"/>' : '';
+	$substitutionarray['__CHECK_READ__'] = (is_object($object) && is_object($object->thirdparty)) ? '<img src="'.DOL_MAIN_URL_ROOT.'/public/emailing/mailing-read.php?tag='.$object->thirdparty->tag.'&securitykey='.urlencode(getDolGlobalString('MAILING_EMAIL_UNSUBSCRIBE_KEY')).'" width="1" height="1" style="width:1px;height:1px" border="0"/>' : '';
 	$substitutionarray['__PERSONALIZED__'] = ''; // deprecated
 	$substitutionarray['__CONTACTCIVNAME__'] = '';
 
@@ -180,10 +180,10 @@ if ($massaction == 'presend')
 	$formmail->param['models_id'] = GETPOST('modelmailselected', 'int');
 	$formmail->param['id'] = join(',', $arrayofselected);
 	// $formmail->param['returnurl']=$_SERVER["PHP_SELF"].'?id='.$object->id;
-	if (!empty($conf->global->MAILING_LIMIT_SENDBYWEB) && count($listofselectedthirdparties) > $conf->global->MAILING_LIMIT_SENDBYWEB)
+	if (getDolGlobalString('MAILING_LIMIT_SENDBYWEB') && count($listofselectedthirdparties) > getDolGlobalInt('MAILING_LIMIT_SENDBYWEB'))
 	{
 		$langs->load("errors");
-		print img_warning().' '.$langs->trans('WarningNumberOfRecipientIsRestrictedInMassAction', $conf->global->MAILING_LIMIT_SENDBYWEB);
+		print img_warning().' '.$langs->trans('WarningNumberOfRecipientIsRestrictedInMassAction', getdolglobalInt('MAILING_LIMIT_SENDBYWEB'));
 		print ' - <a href="javascript: window.history.go(-1)">'.$langs->trans("GoBack").'</a>';
 		$arrayofmassactions = array();
 	}

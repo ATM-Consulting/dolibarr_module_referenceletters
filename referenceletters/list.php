@@ -34,7 +34,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/class/html.formother.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 
 // Security check
-if (! $user->rights->referenceletters->read)
+if (! rl_userHasRight($user,'referenceletters', 'read'))
 	accessforbidden();
 
 $langs->load("referenceletters@referenceletters");
@@ -108,7 +108,7 @@ $newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
 // Count total nb of records
 $nbtotalofrecords = 0;
 
-if (empty($conf->global->MAIN_DISABLE_FULL_SCANLIST)) {
+if (!getDolGlobalString('MAIN_DISABLE_FULL_SCANLIST')) {
 	$nbtotalofrecords = $object->fetch_all($sortorder, $sortfield, 0, 0, $filter);
 }
 $resql = $object->fetch_all($sortorder, $sortfield, $conf->liste_limit, $offset, $filter);

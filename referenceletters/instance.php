@@ -138,7 +138,7 @@ if ($action == 'buildoc') {
 		$object_element->footer = RfltrTools::setImgLinkToUrl(GETPOST('footer', 'none'));
 		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
-		if (empty($langs_chapter) && ! empty($conf->global->MAIN_MULTILANGS)) {
+		if (empty($langs_chapter) && getDolGlobalString('MAIN_MULTILANGS')) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter)) {
@@ -203,7 +203,7 @@ if ($action == 'buildoc') {
 		$object_element->use_landscape_format = GETPOST('use_landscape_format', 'none');
 
 
-		if (! empty($conf->global->MAIN_MULTILANGS)) {
+		if (getDolGlobalString('MAIN_MULTILANGS')) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter))
@@ -247,7 +247,7 @@ if ($action == 'buildoc') {
 
 	// Define output language
 	$outputlangs = $langs;
-	if (! empty($conf->global->MAIN_MULTILANGS)) {
+	if (getDolGlobalString('MAIN_MULTILANGS')) {
 		$outputlangs = new Translate("", $conf);
 		$newlang = $object->thridparty->default_lang;
 		$outputlangs->setDefaultLang($newlang);
@@ -271,7 +271,7 @@ if ($action == 'buildoc') {
 
 		exit();
 	}
-} elseif ($action == 'confirm_delete' && $confirm == 'yes' && $user->rights->referenceletters->delete) {
+} elseif ($action == 'confirm_delete' && $confirm == 'yes' && rl_userHasRight($user,'referenceletters', 'delete')) {
 	$result = $object_element->fetch($refletterelemntid);
 	if ($result < 0) {
 		setEventMessage($object_element->error, 'errors');
@@ -406,7 +406,7 @@ print '</form>';
 // New letter
 if (! empty($idletter)) {
 	if ($action == 'selectmodel') {
-		if (! empty($conf->global->MAIN_MULTILANGS)) {
+		if (getDolGlobalString('MAIN_MULTILANGS')) {
 			$langs_chapter = $object->thirdparty->default_lang;
 		}
 		if (empty($langs_chapter))
@@ -460,7 +460,7 @@ if (! empty($idletter)) {
 			print $langs->trans('RefLtrREF_LETTER_OUTPUTREFLET');
 			print '</td>';
 			print '<td>';
-			print '<input type="checkbox" class="flat" name="outputref" '.(!empty($conf->global->REF_LETTER_OUTPUTREFLET)?'checked="checked"':'').' id="outputref" value="1">';
+			print '<input type="checkbox" class="flat" name="outputref" '.(getDolGlobalString('REF_LETTER_OUTPUTREFLET')?'checked="checked"':'').' id="outputref" value="1">';
 			print '</td>';
 			print '</tr>';
 
@@ -500,9 +500,9 @@ if (! empty($idletter)) {
 					print '<td>';
 
 					$nbrows = ROWS_2;
-					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+					if (getDolGlobalString('MAIN_INPUT_DESC_HEIGHT'))
+						$nbrows = getDolGlobalInt('MAIN_INPUT_DESC_HEIGHT');
+					$enable = getDolGlobalInt('FCKEDITOR_ENABLE_SOCIETE');
 					$doleditor = new DolEditor('content_text_' . $line_chapter->id, $line_chapter->content_text, '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 					$doleditor->Create();
 					print '</td>';
@@ -548,7 +548,7 @@ if (! empty($idletter)) {
             print '<td><label for="overwrite_std_doc">'.$form->textwithpicto(
                     $langs->trans('RefLtrOverwriteStdDoc'),
                     $langs->trans('RefLtrOverwriteStdDocHelp')).'</label></td>';
-            $checkedStatus = isset($conf->global->DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT) ? 'checked="checked"' : '';
+            $checkedStatus = getDolGlobalString('DOCEDIT_OVERWRITE_STD_DOC_BY_DEFAULT');
             print '<td><input type="checkbox" name="overwrite_std_doc" id="overwrite_std_doc" value="1" '.$checkedStatus.' /></td>';
             print '</tr>';
 
@@ -651,9 +651,9 @@ if (! empty($refletterelemntid)) {
 
 					require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 					$nbrows = ROWS_2;
-					if (! empty($conf->global->MAIN_INPUT_DESC_HEIGHT))
-						$nbrows = $conf->global->MAIN_INPUT_DESC_HEIGHT;
-					$enable = (isset($conf->global->FCKEDITOR_ENABLE_SOCIETE) ? $conf->global->FCKEDITOR_ENABLE_SOCIETE : 0);
+					if (getDolGlobalString('MAIN_INPUT_DESC_HEIGHT'))
+						$nbrows = getDolGlobalInt('MAIN_INPUT_DESC_HEIGHT');
+					$enable = getDolGlobalInt('FCKEDITOR_ENABLE_SOCIETE');
 					$doleditor = new DolEditor('content_text_' . $key, $line_chapter['content_text'], '', 150, 'dolibarr_notes_encoded', '', false, true, $enable, $nbrows, 70);
 					$doleditor->Create();
 					print '</td>';

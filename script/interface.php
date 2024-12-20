@@ -65,7 +65,7 @@ switch ($set) {
 	    );
 
 	    //$Tjson = array_merge($Tjson, $_POST);
-	    if (!empty($user->rights->referenceletters->write))
+	    if (rl_userHasRight($user,'referenceletters', 'write'))
 	    {
     	    if( $type == 'chapter_text'){
     	        $object_chapters = new ReferenceLettersChapters($db);
@@ -99,7 +99,7 @@ switch ($set) {
 			,'message' => ''
 		);
 
-		if (!empty($user->rights->referenceletters->write))	{
+		if (rl_userHasRight($user,'referenceletters', 'write'))	{
 			$id=GETPOST('id','int');
 			$field=GETPOST('field','alpha');
 			$value=GETPOST('value','int');

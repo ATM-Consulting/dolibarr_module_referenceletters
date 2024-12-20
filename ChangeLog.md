@@ -60,6 +60,7 @@ All notable changes to this project will be documented in this file.
 
 
 ## Release 2.15 - 21/07/2022
+- FIX : DA025829 - missing employing org help substitution field  *20/12/2024* - 2.15.11
 - FIX : Total TVA doesn't have $langs->trans - *22/01/2024* - 2.15.10
 - FIX : DA024017 tms doesn't have a default value - *24/10/2023* - 2.15.9
 - FIX : remove strip tags - *19/07/2023* - 2.15.8

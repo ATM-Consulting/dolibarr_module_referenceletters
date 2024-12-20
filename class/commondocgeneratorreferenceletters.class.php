@@ -485,7 +485,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -552,22 +552,37 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
 		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
 		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
-
-		$resarray['line_societe_address'] = $line->societe_address;
-		$resarray['line_societe_zip'] = $line->societe_zip;
-		$resarray['line_societe_town'] = $line->societe_town;
+		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat < 2.17
+			$resarray['line_societe_address'] = $line->societe_address;
+			$resarray['line_societe_zip'] = $line->societe_zip;
+			$resarray['line_societe_town'] = $line->societe_town;
+		}
+		else {
+			$resarray['line_societe_address'] = $line->agefodd_stagiaire->thirdparty->address;
+			$resarray['line_societe_zip'] = $line->agefodd_stagiaire->thirdparty->zip;
+			$resarray['line_societe_town'] = $line->agefodd_stagiaire->thirdparty->town;
+			$resarray['line_societe_mail'] = $line->agefodd_stagiaire->thirdparty->email;
+			$extrafields = new ExtraFields($this->db);
+			$extrafields->fetch_name_optionals_label($line->agefodd_stagiaire->thirdparty->element, true);
+			$resarray = $this->fill_substitutionarray_with_extrafields($line->agefodd_stagiaire->thirdparty, $resarray, $extrafields, 'line_societe', $langs);
+		}
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
 
-                // Certificats
-                dol_include_once('/agefodd/class/agefodd_stagiaire_certif.class.php');
-                $agf_certif = new Agefodd_stagiaire_certif($db);
-                if($agf_certif->fetch(0, $line->id, $line->sessid) > 0) {
-                        $resarray['line_certif_code'] = $agf_certif->certif_code;
-                        $resarray['line_certif_label'] = $agf_certif->certif_label;
-                        $resarray['line_certif_date_debut'] = dol_print_date($agf_certif->certif_dt_start);
-                        $resarray['line_certif_date_fin'] = dol_print_date($agf_certif->certif_dt_end);
-                }
+		if($conf->agefoddcertificat->enabled) {
+			// Certificats
+			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
+			$agf_certif = new AgefoddCertificat($db);
+			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid, 'isDeleted' => 0));
+			if(is_array($TCertif) && count($TCertif) > 0) {
+				$agf_certif = array_shift($TCertif);
+				$resarray['line_certif_code'] = $agf_certif->number;
+				$resarray['line_certif_label'] = $agf_certif->label;
+				$resarray['line_certif_date_debut'] = dol_print_date($agf_certif->date_start);
+				$resarray['line_certif_date_fin'] = dol_print_date($agf_certif->date_end);
+				$resarray['line_certif_date_alerte'] = dol_print_date($agf_certif->date_warning);
+			}
+		}
 
 		// Display session stagiaire heure
 		if(!empty($line->sessid) && !empty($line->id))
@@ -628,6 +643,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_prenom'] = $line->firstname;
 		$resarray['line_formateur_phone'] = $line->phone;
 		$resarray['line_formateur_mail'] = $line->email;
+		$resarray['line_formateur_socname'] =  $line->socname;
+		$resarray['line_formateur_address'] = $line->address;
+		$resarray['line_formateur_town'] = $line->town;
+		$resarray['line_formateur_zip'] = $line->zip;
 		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
 
 		// Substitutions tableau des objectif :
@@ -1041,7 +1060,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                     if($key== 'date_birth') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
                     }
-                    if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
+                    if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
 					// Fix display vars according object

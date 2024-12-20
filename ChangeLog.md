@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 
 
 
+## Version 2.17 - 29/11/2023
+
+- FIX : DA024954 - Certif Code de type price - *07/05/2024* 2.17.2
+- FIX : DA024195 - z-index select ajout de modele pdf à concatener *29/11/2023* 2.17.1
+- NEW : Compatibilité agefoddcertificat 1.12.0 *15/11/2023* 2.17.0
+- NEW : move script url mover from abricot *11/05/2022* 2.16.0
 
 ## Version 2.15 - 21/07/2022
 - FIX : DA025829 - missing employing org help substitution field  *20/12/2024* - 2.15.11  

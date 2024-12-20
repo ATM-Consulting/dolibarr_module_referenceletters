@@ -747,9 +747,10 @@ class ReferenceLetters extends CommonObject
 
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
-
+		//Important  :  les informations  seront loadées via [objet] :  agsession [fonction] :  load_all_data_agefodd_session
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
 		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
+		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_societe_name'] = 'Structure employeuse du formateur';
 
 		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
 				'formation_nom'=>'Intitulé de la formation'
@@ -850,7 +851,8 @@ class ReferenceLetters extends CommonObject
 				,'line_formateur_prenom'=>'Prénom du formateur'
 				,'line_formateur_phone'=>'Téléphone du formateur'
 				,'line_formateur_mail'=>'Adresse mail du formateur'
-				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
+				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)',
+
 		);
 
 		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(

@@ -145,6 +145,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$this->pdf->setPrintFooter(true);
 
 				$this->pdf->SetFont(pdf_getPDFFont($this->outputlangs));
+
 				// Set path to the background PDF File
 				if (!getDolGlobalString('MAIN_DISABLE_FPDI') && getDolGlobalString('MAIN_ADD_PDF_BACKGROUND')) {
 					$pagecount = $this->pdf->setSourceFile($conf->mycompany->dir_output . '/' . getDolGlobalString('MAIN_ADD_PDF_BACKGROUND'));
@@ -152,6 +153,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$tplidx = $this->pdf->importPage(1);
 					}
 				}
+
 
 				$this->pdf->Open();
 				$this->pdf->SetDrawColor(128, 128, 128);
@@ -244,6 +246,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 						$hideref = getDolGlobalInt('MAIN_GENERATE_DOCUMENTS_HIDE_REF');
 						$backup_forceDisableConcatPdf = !empty($object->forceDisableConcatPdf);
 						$object->forceDisableConcatPdf = 1;
+						$object->context['docEditPdfGeneration'] = true;
 						$result= $object->generateDocument($documentModel, $this->outputlangs, $hidedetails, $hidedesc, $hideref, null);
 						$object->forceDisableConcatPdf = $backup_forceDisableConcatPdf;
 						if ($result <= 0)
@@ -251,8 +254,8 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							setEventMessages($object->error, $object->errors, 'errors');
 						} else {
 							$this->pdf->setPrintHeader(false);
-							$objectrefpdf = dol_sanitizeFileName($object->ref);
 
+							$objectrefpdf = dol_sanitizeFileName($object->ref);
 							if (strpos($doctype,'&')) {
 								$TDoctypes=explode('&',$doctype);
 								$doctype=$TDoctypes[0];

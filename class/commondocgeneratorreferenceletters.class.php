@@ -326,9 +326,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return number|array[]|number[][]
 	 */
 	public static function get_detail_tva(&$object, &$outputlangs) {
-		global $conf, $langs;
-
-		$langs->load("referenceletters@referenceletters");
+		global $conf;
 
 		if (! is_array($object->lines))
 			return 0;
@@ -368,8 +366,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 				if ($object->remise_percent)
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
-				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
+				if(empty($TTva['Total TVA ' . round($vatrate, 2) . '%'])) $TTva['Total TVA ' . round($vatrate, 2) . '%'] = 0;
+				$TTva['Total TVA ' . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}
 
@@ -485,7 +483,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
 		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
+		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service 
 		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -764,6 +762,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
 
+		$fk_step = intval(GETPOST('fk_step', 'int'));
+		if($fk_step > 0) {
+			$agfStep = new Agefodd_step($this->db);
+			$agfStep->fetch($fk_step);
+		}
+
 		$formAgefodd = new FormAgefodd($db);
 
 		$resarray = array();
@@ -780,6 +784,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$p->fetch($object->fk_product);
 			$resarray['formation_ref_produit'] = $p->ref;
 		}
+
 
 		// Substitution concernant le prestataire
 		$TDefaultSub = array('presta_lastname', 'presta_firstname', 'presta_soc_name','presta_soc_id','presta_soc_name',
@@ -947,23 +952,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		}
 
-		if (! empty($object->placeid)) {
-			dol_include_once('/agefodd/class/agefodd_place.class.php');
-			$agf_place = new Agefodd_place($db);
-			$agf_place->fetch($object->placeid);
-
-			$resarray['formation_lieu'] = $object->placecode;
-			$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
-			$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
-			$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
-			// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
-			// fix TK9760
-			$resarray['formation_lieu_acces'] = str_replace('&amp;','&',$agf_place->acces_site);
-			$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
-			$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
-			$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
-			$resarray['formation_lieu_divers'] = $agf_place->note1;
+		$fk_place = $object->placeid;
+		if(!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
+			$fk_place = $agfStep->fk_place;
 		}
+
+		dol_include_once('/agefodd/class/agefodd_place.class.php');
+		$agf_place = new Agefodd_place($db);
+		if(! empty($fk_place)) $agf_place->fetch($fk_place);
+		$resarray['formation_lieu'] = strip_tags($agf_place->ref_interne);
+		$resarray['formation_lieu_adresse'] = strip_tags($agf_place->adresse);
+		$resarray['formation_lieu_cp'] = strip_tags($agf_place->cp);
+		$resarray['formation_lieu_ville'] = strip_tags($agf_place->ville);
+		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
+		// fix TK9760
+		$resarray['formation_lieu_acces'] = str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_phone'] = dol_print_phone($agf_place->tel, $agf_place->country_code);
+		$resarray['formation_lieu_horaires'] = strip_tags($agf_place->timeschedule);
+		$resarray['formation_lieu_notes'] = strip_tags($agf_place->notes);
+		$resarray['formation_lieu_divers'] = $agf_place->note1;
+
 
 		// Add ICS link replacement to mails
 		$downloadIcsLink = dol_buildpath('public/agenda/agendaexport.php', 2) . '?format=ical&type=event';
@@ -1067,7 +1075,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                     if($key== 'date_birth') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
                     }
-                    if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
+                    if (is_numeric($value) && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
 					// Fix display vars according object

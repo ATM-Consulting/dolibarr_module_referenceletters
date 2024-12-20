@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 
 
 
-
+## Release 2.19 - 12/02/2024
+- FIX : DA024630 warning  - *21/03/2024* - 2.19.2  
+- FIX : fix line mail to line_email  in referenceletter.class  - *12/03/2024* - 2.19.1  
+- NEW : Compatibility with agefodd step - *08/02/2024* - 2.19.0
 
 ## Release 2.18 - 10/01/2024
 - NEW : COMPATV19 - *11/12/2023* - 2.18.0  
@@ -14,8 +17,6 @@ All notable changes to this project will be documented in this file.
 - NEW : Add substitution in agefodd to be able to use trainer cost planned *21/03/2022* - 2.18.0
 
 ## Release 2.17 - 29/11/2023
-- FIX : DA024954 - Certif Code de type price - *07/05/2024* 2.17.2
-
 - FIX : DA024195 - z-index select ajout de modele pdf à concatener *29/11/2023* 2.17.1
 - NEW : Compatibilité agefoddcertificat 1.12.0 *15/11/2023* 2.17.0
 - NEW : move script url mover from abricot *11/05/2022* 2.16.0

@@ -68,9 +68,10 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param string $socid socid
 	 * @param int $courrier id session
 	 * @param bool $isCertif
+	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false) {
+	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0) {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
@@ -129,12 +130,14 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		if ($dir_output) {
 
 			// $deja_regle = 0;
-			// var_dump($file);exit;
 			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
 			$dir = $dir_output;
-
+			if($fk_step > 0) {
+				//Si on est sur un modele trainee, on nous file quand même un $socid qui est l'id du trainee ... =)
+				if(substr($this->instance_letter->element_type, -8) ==='_trainee') $dir = getStrStepDir($id_object, 0, $fk_step);
+				else $dir = getStrStepDir($id_object, $socid, $fk_step);
+			}
 			if(!$isCertif) $file = $dir . '/' . $file;
-
 			if (! file_exists($dir)) {
 				if (dol_mkdir($dir) < 0) {
 					$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);

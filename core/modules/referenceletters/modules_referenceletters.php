@@ -840,6 +840,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
+
 		$tmparray['object_incoterms']='';
         if(isModEnabled("incoterm") && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";

@@ -62,8 +62,6 @@ class modReferenceLetters extends DolibarrModules
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
 
-
-
 		$this->version = '2.23.6';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';

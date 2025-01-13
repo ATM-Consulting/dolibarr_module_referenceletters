@@ -1173,9 +1173,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (! empty($object)) {
 
 			foreach ( $object as $key => $value ) {
-
+				$isStagiaireSocExtrafields = strpos($key, 'stagiaire_soc_options')  !== false;
 				if ($key == 'db') continue;
-				else if ($key == 'array_options' && is_object($object))
+				else if ($key == 'array_options' && is_object($object) || $isStagiaireSocExtrafields)
 				{
 					// Inspiration depuis Dolibarr ( @see CommonDocGenerator::get_substitutionarray_object() )
 					// à la différence que si l'objet n'a pas de ligne extrafield en BDD, le tag {objvar_object_array_options_options_XXX} affichera vide
@@ -1183,6 +1183,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					// Retrieve extrafields
 					if (substr($object->element, 0, 7) === 'agefodd') $extrafieldkey=$object->table_element;
 					else $extrafieldkey=$object->element;
+					if($isStagiaireSocExtrafields) $extrafieldkey = 'societe';
 
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
@@ -1208,7 +1209,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							}
 						}
 					}
-					foreach ($extralabels as $key_opt => $label_opt)
+					if($isStagiaireSocExtrafields) {
+						foreach ($extralabels as $key_opt => $label_opt) {
+							$extraKey = str_replace('stagiaire_soc_options_', '', $key);
+							if($key_opt === $extraKey) {
+								$val = $this->showOutputFieldValue($extrafields, $key_opt, $value);
+								$array_other['object_' . $sub_element_label . $key] = $val;
+							}
+						}
+					} else {
+						foreach ($extralabels as $key_opt => $label_opt)
 					{
 						$array_other['object_options_'.$key_opt] =  '';
 						$array_other['object_array_options_options_'.$key_opt] =  ''; // backward compatibility
@@ -1218,6 +1228,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_'.$key_opt],'', $object->table_element);
 							$array_other['object_options_'.$key_opt] = $val;
 							$array_other['object_array_options_options_'.$key_opt] = $val;
+
 						}
 					}
 
@@ -1231,6 +1242,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					if (! $reflection->isPublic())
 						continue;
 				}
+
+
 
 				if (! is_array($value) && ! is_object($value)) {
                     if($key== 'date_birth' || $key == 'datec') {
@@ -1259,6 +1272,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 		}
+
 		return $array_other;
 	}
 

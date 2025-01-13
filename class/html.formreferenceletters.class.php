@@ -193,7 +193,7 @@ class FormReferenceLetters extends Form
 		}
 		require_once 'referenceletters.class.php';
 		$refletter = new Referenceletters($this->db);
-
+		$refletter->TDefaultDoc = $refletter->TDefaultDoc ?? [];
 		$status_array+=$refletter->TDefaultDoc;
 
 		foreach($status_array as $key=>$val) {

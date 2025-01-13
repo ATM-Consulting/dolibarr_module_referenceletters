@@ -62,7 +62,7 @@ class modReferenceLetters extends DolibarrModules
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
 
-		$this->version = '2.22.0';
+		$this->version = '2.23.6';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -147,7 +147,7 @@ class modReferenceLetters extends DolibarrModules
 
 		// Dependencies
 		// List of modules id that must be enabled if this module is enabled
-		$this->depends = array ('modFckeditor');
+		$this->depends = array();
 		// List of modules id to disable if this one is disabled
 		$this->requiredby = array ();
 		// Minimum version of PHP required by module
@@ -340,8 +340,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/index.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 100,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight("referenceletters", "read")',
+				'perms' => '$user->hasRight("referenceletters", "read")',
 				'target' => '',
 				'user' => 0
 		);
@@ -355,8 +355,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 101,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight("referenceletters", "read")',
+				'perms' => '$user->hasRight("referenceletters", "read")',
 				'target' => '',
 				'user' => 0
 		);
@@ -370,8 +370,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 102,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight("referenceletters", "read")',
+				'perms' => '$user->hasRight("referenceletters", "read")',
 				'target' => '',
 				'user' => 0
 		);
@@ -385,8 +385,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/card.php?action=create',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 103,
-				'enabled' => '$user->rights->referenceletters->write',
-				'perms' => '$user->rights->referenceletters->write',
+				'enabled' => '$user->hasRight("referenceletters", "write")',
+				'perms' => '$user->hasRight("referenceletters", "write")',
 				'target' => '',
 				'user' => 0
 		);
@@ -400,8 +400,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/list_instance.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 104,
-				'enabled' => '$user->rights->referenceletters->read',
-				'perms' => '$user->rights->referenceletters->read',
+				'enabled' => '$user->hasRight("referenceletters", "read")',
+				'perms' => '$user->hasRight("referenceletters", "read")',
 				'target' => '',
 				'user' => 0
 		);
@@ -415,8 +415,8 @@ class modReferenceLetters extends DolibarrModules
 				'url' => '/referenceletters/referenceletters/mass_gen.php',
 				'langs' => 'referenceletters@referenceletters',
 				'position' => 104,
-				'enabled' => '$user->rights->referenceletters->write',
-				'perms' => '$user->rights->referenceletters->write',
+				'enabled' => '$user->hasRight("referenceletters", "write")',
+				'perms' => '$user->hasRight("referenceletters", "write")',
 				'target' => '',
 				'user' => 0
 		);
@@ -490,7 +490,9 @@ class modReferenceLetters extends DolibarrModules
 				];
 			}
 		}
+
 		if ($this->needUpdate('2.20.0')) {
+
 			$this->db->query("ALTER TABLE ".MAIN_DB_PREFIX."referenceletters MODIFY COLUMN element_type VARCHAR(150);");
 		}
 
@@ -532,11 +534,11 @@ class modReferenceLetters extends DolibarrModules
 	 */
 	public function needUpdate($targetVersion){
 		global $conf;
-		if (empty($conf->global->REFERENCELETTERS_MOD_LAST_RELOAD_VERSION)) {
+		if (!getDolGlobalString('REFERENCELETTERS_MOD_LAST_RELOAD_VERSION')) {
 			return true;
 		}
 
-		if(versioncompare(explode('.',$targetVersion), explode('.', $conf->global->REFERENCELETTERS_MOD_LAST_RELOAD_VERSION))>0){
+		if(versioncompare(explode('.',$targetVersion), explode('.', getDolGlobalString('REFERENCELETTERS_MOD_LAST_RELOAD_VERSION')))>0){
 			return true;
 		}
 

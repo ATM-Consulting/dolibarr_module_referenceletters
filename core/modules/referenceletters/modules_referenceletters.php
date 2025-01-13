@@ -408,7 +408,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 		dol_include_once('/referenceletters/class/odf_rfltr.class.php');
-		if (isset($conf->subtotal->enabled) && $conf->subtotal->enabled && isset($conf->subtotal->enabled) && $conf->subtotal->enabled ) {
+		if (isModEnabled("subtotal") && isModEnabled("subtotal") ) {
 			dol_include_once('/subtotal/class/subtotal.class.php');
 		}
 		if (! class_exists('Product')) {
@@ -438,7 +438,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if (! empty($object->{$element_array})) {
 
 						foreach ( $object->{$element_array} as  $line ) {
-							if(!empty($conf->subtotal->enabled) && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
+							if(isModEnabled("subtotal") && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
 								$tmpListLines = $listlines->xml;
 								$listlines->xml = '@breakpage@' .$listlines->xml;
 							}
@@ -461,7 +461,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 							);
 							$action = "builddoc";
 							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-							if ($conf->subtotal->enabled) {
+							if (isModEnabled("subtotal")) {
 								if (TSubtotal::isModSubtotalLine($line)) {
 									$tmparray['line_up_locale'] = '';
 									$tmparray['line_price_ht_locale'] = '';
@@ -481,7 +481,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 								}
 							}
 
-							if (! empty($conf->subtotal->enabled))
+							if (isModEnabled("subtotal"))
 							{
 								if (TSubtotal::isTitle($line)) {
                                     if (getDolGlobalString('SUBTOTAL_TITLE_STYLE'))
@@ -543,7 +543,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                                     }
 									if (!empty($listlines)) {
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
-											'<tr' => '<tr bgcolor="#E6E6E6" align="right" '
+											'<tr' => '<tr bgcolor="'.getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb' ).'" align="right" '
 										));
 										$listlines->xml = $listlines->savxml = strtr($listlines->xml, array(
 											'{line_fulldesc}'        => $style_start . '{line_fulldesc}' . $style_end
@@ -566,7 +566,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 
 								$listlines->xml = $listlines->savxml = $oldline;
 							}
-							if(!empty($conf->subtotal->enabled) && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
+							if(isModEnabled("subtotal") && class_exists('TSubtotal') && method_exists(TSubtotal::class, 'hasBreakPage') && TSubtotal::hasBreakPage($line)) {
 								$listlines->xml = $tmpListLines;
 							}
 						}
@@ -842,7 +842,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$tmparray = $this->get_substitutionarray_each_var_object($object, $outputlangs);
 
 		$tmparray['object_incoterms']='';
-        if(!empty($conf->incoterm->enabled) && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
+        if(isModEnabled("incoterm") && isset($object->fk_incoterms) && !empty($object->fk_incoterms)){
             $sql = "SELECT code FROM llx_c_incoterms WHERE rowid='".$object->fk_incoterms."'";
             $resql=$this->db->query($sql);
             if ($resql) {

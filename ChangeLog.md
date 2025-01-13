@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
+## Release 2.23 - 29/08/2024
+- FIX : Compat 21 - *10/12/2024* - 2.23.6
+- FIX : DA025643 - Chargement des extrafields pour les stagaires - *24/10/2024* - 2.23.5
+- FIX : Prise de en compte de la conf de backgroundcolor soustotal - *19/09/2024* - 2.23.4
+- FIX : Affichage des extrafields de lignes dans la liste des tags - *19/09/2024* - 2.23.3
+- FIX : Beaucoup de warning - *18/09/2024* - 2.23.2
+- FIX : Gestion des extrafields : vérification si l'objet n'a pas table_element a null et si cet élément possède des attributs de type "label"  - *17/09/2024* - 2.23.1
+- NEW : Gestion des extrafields de commande fournisseurs  - *29/08/2024* - 2.23.0  
+
 ## Release 2.22 - 07/08/2024
 - NEW : Compat V20 et php 8.2 - *26/07/2024* - 2.22.0
 

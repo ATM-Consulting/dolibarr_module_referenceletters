@@ -1734,7 +1734,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// Ajout des extrafields des object coeurs dans la selection des substitutions
 		if ($object->table_element != null) {
-			if (array_key_exists('label', $extrafields->attributes[$object->table_element])
+			if (!empty($extrafields->attributes[$object->table_element])
+				&& array_key_exists('label', $extrafields->attributes[$object->table_element])
 				&& is_array($extrafields->attributes[$object->table_element]['label'])
 				&& $extrafields->attributes[$object->table_element]['label'] !== null
 				&& !empty($extrafields->attributes[$object->table_element]['label'])) {

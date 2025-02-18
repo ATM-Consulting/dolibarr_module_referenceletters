@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
+- FIX :  DA026043 Fatal à la génération d'une convocation - *04/02/2025* - 2.23.7
 - FIX : Compat 21 - *10/12/2024* - 2.23.6
 - FIX : DA025643 - Chargement des extrafields pour les stagaires - *24/10/2024* - 2.23.5
 - FIX : Prise de en compte de la conf de backgroundcolor soustotal - *19/09/2024* - 2.23.4

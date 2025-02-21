@@ -257,7 +257,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				$referenceLetters = new Referenceletters($db);
 
 				// Fetch all reference letters
-				$fetchResult = $referenceLetters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type' => $elementType, 't.status' => 1));
+				$fetchResult = $referenceLetters->fetch_all('ASC', 't.rowid', 0, 0, ['t.element_type' => $elementType, 't.status' => ReferenceLetters::STATUS_VALIDATED]);
 				// If an error occurs, display an error message
 				if ($fetchResult < 0) {
 					setEventMessages(null, $referenceLetters->errors, 'errors');
@@ -304,11 +304,11 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 		?>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
-                var selectElement = document.getElementById("model");
-                var selectedModelId = null;
+                let selectElement = document.getElementById("model");
+                let selectedModelId = null;
 
 				<?php foreach ($modelsData as $model) { ?>
-                    var option = new Option('<?php echo addslashes($model['title']); ?>', 'rfltr_<?php echo $model['id']; ?>', false);
+                let option = new Option('<?php echo addslashes($model['title']); ?>', 'rfltr_<?php echo $model['id']; ?>', false);
                     selectElement.appendChild(option);
 
                     <?php if (!empty($model['default_doc'])) { ?>
@@ -319,7 +319,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
                 // If a default model is found, select it
                 if (selectedModelId) {
                     selectElement.value = 'rfltr_' + selectedModelId;
-                    var changeEvent = new Event('change');
+                    let changeEvent = new Event('change');
                     selectElement.dispatchEvent(changeEvent);
                 }
             });

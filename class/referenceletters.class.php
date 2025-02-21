@@ -159,7 +159,7 @@ class ReferenceLetters extends CommonObject
 		);
 		}
 
-		if (isModEnabled('invoice') ){
+		if (isModEnabled('facture') ){
 			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',

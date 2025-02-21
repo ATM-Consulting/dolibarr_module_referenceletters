@@ -247,10 +247,86 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				}
 			}
 
+			if ($action === 'create') {
+				// Determine the element type to use based on the condition
+				$elementType = ($object->element !== 'order_supplier') ? $object->element : $object->table_element;
+                if($elementType == 'facture') $elementType = 'invoice';
+
+				// Include the necessary file and instantiate the Referenceletters object
+				require_once __DIR__.'/referenceletters.class.php';
+				$referenceLetters = new Referenceletters($db);
+
+				// Fetch all reference letters
+				$fetchResult = $referenceLetters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type' => $elementType, 't.status' => 1));
+				// If an error occurs, display an error message
+				if ($fetchResult < 0) {
+					setEventMessages(null, $referenceLetters->errors, 'errors');
+				} else {
+					// Prepare model data from fetched reference lines
+					$modelsData = self::prepareModelsData($referenceLetters->lines);
+
+					// Generate the JavaScript for adding options and selection
+					echo self::generateModelSelectionScript($modelsData);
+				}
+			}
 		}
 
 		return 0;
 
+	}
+
+
+	/**
+	 * Prepares the model data from the fetched reference lines.
+	 *
+	 * @param array|null $referenceLines The lines fetched from the Referenceletters object.
+	 * @return array An array of model data containing 'id', 'title', and 'default_doc'.
+	 */
+	static function prepareModelsData(?array $referenceLines): array {
+		return array_map(function($line) {
+			return [
+				'id' => $line->id,
+				'title' => $line->title,
+				'default_doc' => $line->default_doc,
+			];
+		}, $referenceLines ?? []);
+	}
+
+	/**
+	 * Generates the JavaScript for adding options to the select element and selecting a model.
+	 *
+	 * @param array $modelsData The data of the models to be added to the select.
+	 * @return string The generated JavaScript as a string.
+	 */
+	static function generateModelSelectionScript(array $modelsData): string {
+		ob_start(); // Start capturing the output
+
+		?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var selectElement = document.getElementById("model");
+                var selectedModelId = null;
+
+				<?php foreach ($modelsData as $model) { ?>
+                    var option = new Option('<?php echo addslashes($model['title']); ?>', 'rfltr_<?php echo $model['id']; ?>', false);
+                    selectElement.appendChild(option);
+
+                    <?php if (!empty($model['default_doc'])) { ?>
+                        selectedModelId = "<?php echo $model['id']; ?>";
+                    <?php } ?>
+				<?php } ?>
+
+                // If a default model is found, select it
+                if (selectedModelId) {
+                    selectElement.value = 'rfltr_' + selectedModelId;
+                    var changeEvent = new Event('change');
+                    selectElement.dispatchEvent(changeEvent);
+                }
+            });
+        </script>
+		<?php
+
+		return ob_get_clean(); // Return the captured output
 	}
 
 

@@ -564,7 +564,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_phone_pro'] = $line->tel1;
 		$resarray['line_phone_mobile'] = $line->tel2;
 		$resarray['line_email'] = $line->email;
-		$resarray['line_siret'] = $line->thirdparty->idprof2;
+		if (isset($line->thirdparty) && !is_null($line->thirdparty)) {
+			$resarray['line_siret'] = $line->thirdparty->idprof2 ?? '';
+		}
 		$resarray['line_birthplace'] = $line->place_birth;
 		$resarray['line_code_societe'] = $line->soccode;
 		$resarray['line_nom_societe'] = $line->socname;
@@ -660,40 +662,71 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Substitutions tableau d'horaires
-		$resarray['line_date_session'] = dol_print_date($line->date_session);
-		$resarray['line_heure_debut_session'] = dol_print_date($line->heured, 'hour');
-		$resarray['line_heure_fin_session'] = dol_print_date($line->heuref, 'hour');
+		$resarray['line_date_session'] = property_exists($line, 'date_session') ? dol_print_date($line->date_session) : '';
+		$resarray['line_heure_debut_session'] = property_exists($line, 'heured') ? dol_print_date($line->heured, 'hour') : '';
+		$resarray['line_heure_fin_session'] = property_exists($line, 'heuref') ? dol_print_date($line->heuref, 'hour') : '';
 
 		// Substitutions tableau des formateurs :
-		$resarray['line_formateur_nom'] = $line->lastname;
-		$resarray['line_formateur_prenom'] = $line->firstname;
-		$resarray['line_formateur_phone'] = $line->phone;
-		$resarray['line_formateur_phone_mobile'] = $line->phone_mobile;
-		$resarray['line_formateur_phone_perso'] = $line->phone_perso;
-		$resarray['line_formateur_mail'] = $line->email;
-		$resarray['line_formateur_socname'] =  $line->socname;
-		$resarray['line_formateur_address'] = $line->address;
-		$resarray['line_formateur_town'] = $line->town;
-		$resarray['line_formateur_zip'] = $line->zip;
-		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
-
-		// Substitutions tableau des objectif :
-		$resarray['line_objpeda_rang'] = $line->priorite;
-		$resarray['line_objpeda_description'] = $line->intitule;
+		$resarray['line_formateur_nom'] = property_exists($line, 'lastname') ? $line->lastname : '';
+		$resarray['line_formateur_prenom'] = property_exists($line, 'firstname') ? $line->firstname : '';
+		$resarray['line_formateur_phone'] = property_exists($line, 'phone') ? $line->phone : '';
+		$resarray['line_formateur_phone_mobile'] = property_exists($line, 'phone_mobile') ? $line->phone_mobile : '';
+		$resarray['line_formateur_phone_perso'] = property_exists($line, 'phone_perso') ? $line->phone_perso : '';
+		$resarray['line_formateur_mail'] = property_exists($line, 'email') ? $line->email : '';
+		$resarray['line_formateur_socname'] = property_exists($line, 'socname') ? $line->socname : '';
+		$resarray['line_formateur_address'] = property_exists($line, 'address') ? $line->address : '';
+		$resarray['line_formateur_town'] = property_exists($line, 'town') ? $line->town : '';
+		$resarray['line_formateur_zip'] = property_exists($line, 'zip') ? $line->zip : '';
+		$resarray['line_formateur_statut'] = (property_exists($line, 'labelstatut') && is_array($line->labelstatut) && property_exists($line, 'trainer_status'))
+			? ($line->labelstatut[$line->trainer_status] ?? '')
+			: '';
 
 		// Substitutions tableau des élément financier :
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
 		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
-        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>");
-//		$resarray['line_fin_desciption_light'] = $line->form_label;
-		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
-		$resarray['line_fin_qty'] = $line->qty;
-		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);
-		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);
-		$resarray['line_fin_amount_ttc'] = price($line->total_ttc, 0, $outputlangs, 1, - 1, 2);
-		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent, $outputlangs);
-		$resarray['line_fin_pu_ht'] = price($line->price, 0, $outputlangs, 1, - 1, 2);
+		// Description (avec strip_tags)
+		$resarray['line_fin_desciption'] = property_exists($line, 'description')
+			? strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>")
+			: '';
+
+	// Description light (commentée, donc pas activée)
+	// $resarray['line_fin_desciption_light'] = property_exists($line, 'form_label') ? $line->form_label : '';
+
+	// Description light short
+		$resarray['line_fin_desciption_light_short'] = property_exists($line, 'form_label_short')
+			? $line->form_label_short
+			: '';
+
+	// Quantité
+		$resarray['line_fin_qty'] = property_exists($line, 'qty')
+			? $line->qty
+			: '';
+
+	// Taux de TVA (attention: vatrate() peut nécessiter une valeur par défaut)
+		$resarray['line_fin_tva_tx'] = property_exists($line, 'tva_tx')
+			? vatrate($line->tva_tx, 1)
+			: vatrate(0, 1); // ou vatrate('', 1) selon ta fonction
+
+	// Montant HT (price() nécessite une valeur)
+		$resarray['line_fin_amount_ht'] = property_exists($line, 'total_ht')
+			? price($line->total_ht, 0, $outputlangs, 1, -1, 2)
+			: price(0, 0, $outputlangs, 1, -1, 2);
+
+	// Montant TTC (idem)
+		$resarray['line_fin_amount_ttc'] = property_exists($line, 'total_ttc')
+			? price($line->total_ttc, 0, $outputlangs, 1, -1, 2)
+			: price(0, 0, $outputlangs, 1, -1, 2);
+
+	// Remise (dol_print_reduction() nécessite une valeur)
+		$resarray['line_fin_discount'] = property_exists($line, 'remise_percent')
+			? dol_print_reduction($line->remise_percent, $outputlangs)
+			: dol_print_reduction(0, $outputlangs);
+
+	// Prix unitaire HT (price() nécessite une valeur)
+		$resarray['line_fin_pu_ht'] = property_exists($line, 'price')
+			? price($line->price, 0, $outputlangs, 1, -1, 2)
+			: price(0, 0, $outputlangs, 1, -1, 2);
 
 		// Retrieve extrafields
 		$extrafieldkey = $line->element;
@@ -703,19 +736,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? '';
-				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? '';
-				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? '';
-				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'] ?? '';
-				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'] ?? '';
-				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'] ?? '';
-				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'] ?? '';
-				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'] ?? '';
-				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'] ?? '';
-				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'] ?? '';
-				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'] ?? '';
-				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'] ?? '';
+			if (isset($extrafields->attributes['agefodd_stagiaire']['loaded']) &&  $extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+				$extrafields->attribute_type = isset($extrafields->attributes[$extrafieldkey]['type']) ? $extrafields->attributes[$extrafieldkey]['type'] : '';
+				$extrafields->attribute_size = isset($extrafields->attributes[$extrafieldkey]['size']) ? $extrafields->attributes[$extrafieldkey]['size'] : '';
+				$extrafields->attribute_unique = isset($extrafields->attributes[$extrafieldkey]['unique']) ? $extrafields->attributes[$extrafieldkey]['unique'] : '';
+				$extrafields->attribute_required = isset($extrafields->attributes[$extrafieldkey]['required']) ? $extrafields->attributes[$extrafieldkey]['required'] : '';
+				$extrafields->attribute_label = isset($extrafields->attributes[$extrafieldkey]['label']) ? $extrafields->attributes[$extrafieldkey]['label'] : '';
+				$extrafields->attribute_default = isset($extrafields->attributes[$extrafieldkey]['default']) ? $extrafields->attributes[$extrafieldkey]['default'] : '';
+				$extrafields->attribute_computed = isset($extrafields->attributes[$extrafieldkey]['computed']) ? $extrafields->attributes[$extrafieldkey]['computed'] : '';
+				$extrafields->attribute_param = isset($extrafields->attributes[$extrafieldkey]['param']) ? $extrafields->attributes[$extrafieldkey]['param'] : '';
+				$extrafields->attribute_perms = isset($extrafields->attributes[$extrafieldkey]['perms']) ? $extrafields->attributes[$extrafieldkey]['perms'] : '';
+				$extrafields->attribute_langfile = isset($extrafields->attributes[$extrafieldkey]['langfile']) ? $extrafields->attributes[$extrafieldkey]['langfile'] : '';
+				$extrafields->attribute_list = isset($extrafields->attributes[$extrafieldkey]['list']) ? $extrafields->attributes[$extrafieldkey]['list'] : '';
+				$extrafields->attribute_hidden = isset($extrafields->attributes[$extrafieldkey]['hidden']) ? $extrafields->attributes[$extrafieldkey]['hidden'] : '';
 			}
 		}
 		if ($fetchoptionnals) {
@@ -743,20 +776,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			if(floatval(DOL_VERSION) >= 16) {
 				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
-					$extrafields->attribute_type = $extrafields->attributes['agefodd_stagiaire']['type'];
-					$extrafields->attribute_size = $extrafields->attributes['agefodd_stagiaire']['size'];
-					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
-					$extrafields->attribute_required = $extrafields->attributes['agefodd_stagiaire']['required'];
-					$extrafields->attribute_label = $extrafields->attributes['agefodd_stagiaire']['label'];
-					$extrafields->attribute_default = $extrafields->attributes['agefodd_stagiaire']['default'];
-					$extrafields->attribute_computed = $extrafields->attributes['agefodd_stagiaire']['computed'];
-					$extrafields->attribute_param = $extrafields->attributes['agefodd_stagiaire']['param'];
-					$extrafields->attribute_perms = $extrafields->attributes['agefodd_stagiaire']['perms'];
-					$extrafields->attribute_langfile = $extrafields->attributes['agefodd_stagiaire']['langfile'];
-					$extrafields->attribute_list = $extrafields->attributes['agefodd_stagiaire']['list'];
-					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'];
+				if (isset($extrafields->attributes['agefodd_stagiaire']['loaded']) && $extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
+					$agefodd = $extrafields->attributes['agefodd_stagiaire'];
+					$extrafields->attribute_type = isset($agefodd['type']) ? $agefodd['type'] : '';
+					$extrafields->attribute_size = isset($agefodd['size']) ? $agefodd['size'] : '';
+					$extrafields->attribute_unique = isset($agefodd['unique']) ? $agefodd['unique'] : '';
+					$extrafields->attribute_required = isset($agefodd['required']) ? $agefodd['required'] : '';
+					$extrafields->attribute_label = isset($agefodd['label']) ? $agefodd['label'] : '';
+					$extrafields->attribute_default = isset($agefodd['default']) ? $agefodd['default'] : '';
+					$extrafields->attribute_computed = isset($agefodd['computed']) ? $agefodd['computed'] : '';
+					$extrafields->attribute_param = isset($agefodd['param']) ? $agefodd['param'] : '';
+					$extrafields->attribute_perms = isset($agefodd['perms']) ? $agefodd['perms'] : '';
+					$extrafields->attribute_langfile = isset($agefodd['langfile']) ? $agefodd['langfile'] : '';
+					$extrafields->attribute_list = isset($agefodd['list']) ? $agefodd['list'] : '';
+					$extrafields->attribute_hidden = isset($agefodd['hidden']) ? $agefodd['hidden'] : '';
 				}
+
 			}
 			$line->agefodd_stagiaire->fetch_optionals();
 			$line->array_options=$line->agefodd_stagiaire->array_options;
@@ -788,9 +823,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Spé pour les contrats
-		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		$resarray['date_ouverture'] = property_exists($line, 'date_ouverture') ? dol_print_date($line->date_ouverture, 'day', 'tzuser') : '';
+		$resarray['date_ouverture_prevue'] = property_exists($line, 'date_ouverture_prevue') ? dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser') : '';
+		$resarray['date_fin_validite'] = property_exists($line, 'date_fin_validite') ? dol_print_date($line->date_fin_validite, 'day', 'tzuser') : '';
 
 		return $resarray;
 	}
@@ -1111,10 +1146,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$fk_place = $agfStep->fk_place;
 		}
 
-		$resarray['step_label'] = $agfStep->label;
-		$resarray['step_date_start'] = dol_print_date($agfStep->date_start, 'day');
-		$resarray['step_date_end'] = dol_print_date($agfStep->date_end, 'day');
-		$resarray['step_duration'] = $agfStep->duration;
+		if (isset($agfStep) && !is_null($agfStep)) {
+			$resarray['step_label'] = property_exists($agfStep, 'label') ? $agfStep->label : '';
+			$resarray['step_date_start'] = property_exists($agfStep, 'date_start') ? dol_print_date($agfStep->date_start, 'day') : '';
+			$resarray['step_date_end'] = property_exists($agfStep, 'date_end') ? dol_print_date($agfStep->date_end, 'day') : '';
+			$resarray['step_duration'] = property_exists($agfStep, 'duration') ? $agfStep->duration : '';
+		} else {
+			$resarray['step_label'] = '';
+			$resarray['step_date_start'] = '';
+			$resarray['step_date_end'] = '';
+			$resarray['step_duration'] = '';
+		}
 
 		dol_include_once('/agefodd/class/agefodd_place.class.php');
 		$agf_place = new Agefodd_place($db);

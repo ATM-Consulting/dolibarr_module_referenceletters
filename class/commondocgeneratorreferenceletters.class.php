@@ -364,9 +364,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$tvaligne = $line->total_tva;
 				}
 
-				if ($object->remise_percent)
+				if (isset($object->remise_percent)) {
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				}
+				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])){
+					$TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				}
 				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}
@@ -893,19 +896,27 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$e->fetch_name_optionals_label($object->table_element);
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size']?? array();
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique']?? array();
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required']?? array();
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label']?? array();
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default']?? array();
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed']?? array();
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param']?? array();
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms']?? array();
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile']?? array();
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list']?? array();
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden']?? array();
+			if (
+				isset($extrafields->attributes) &&
+				is_array($extrafields->attributes) &&
+				isset($object->table_element) &&
+				isset($extrafields->attributes[$object->table_element]) &&
+				isset($extrafields->attributes[$object->table_element]['loaded'])
+			) {
+				if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
+					$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
+					$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size']?? array();
+					$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique']?? array();
+					$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required']?? array();
+					$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label']?? array();
+					$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default']?? array();
+					$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed']?? array();
+					$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param']?? array();
+					$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms']?? array();
+					$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile']?? array();
+					$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list']?? array();
+					$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden']?? array();
+				}
 			}
 		}
 		$object->fetch_optionals();

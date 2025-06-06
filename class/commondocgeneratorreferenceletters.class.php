@@ -364,7 +364,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$tvaligne = $line->total_tva;
 				}
 
-				if (isset($object->remise_percent)) {
+				if (isset($object->remise_percent) && !empty($object->remise_percent)) {
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
 				}
 				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])){

@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
+- FIX : remove warning  - *06/06/2025* - 2.23.10  
 - FIX : warning generation - *27/05/2025* - 2.23.9  
 - FIX : DA026076 Pre-selected model for document - *21/02/2025* - 2.23.8
 - FIX : DA026043 Fatal à la génération d'une convocation - *04/02/2025* - 2.23.7

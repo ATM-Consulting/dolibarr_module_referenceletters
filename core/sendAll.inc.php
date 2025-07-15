@@ -239,7 +239,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 					} else {
 						$result = $mailfile->sendfile();
 						if ($result) {
-							// FIXME This must be moved into the trigger for action $trigger_name
+							// FIXME This must be moved into the trigger for action $triggersendname
 							if (isModEnabled('dolimail')) {
 								$mid = (GETPOST('mid', 'int') ? GETPOST('mid', 'int') : 0); // Original mail id is set ?
 								if ($mid) {
@@ -276,11 +276,11 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 								}
 
 								// Call of triggers
-								if (! empty($trigger_name)) {
+								if (! empty($triggersendname)) {
 									include_once DOL_DOCUMENT_ROOT . '/core/class/interfaces.class.php';
 									$interface = new Interfaces($db);
 
-									$result = $interface->run_triggers($trigger_name, $object, $user, $langs, $conf);
+									$result = $interface->run_triggers($triggersendname, $object, $user, $langs, $conf);
 									if ($result < 0) {
 										setEventMessages($interface->error, $interface->errors, 'errors');
 									}

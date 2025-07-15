@@ -34,7 +34,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 {
 	/**
 	 *
-	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
+	 * @var array Hook results. Propagated to $this->results for later reuse
 	 */
 	public $results = array ();
 
@@ -176,7 +176,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				$reshook = $hookmanager->executeHooks('overrideRefForFileName', $parameters, $instance_letter->srcobject, $action);
 				if ($reshook > 0) {
 					// override default behaviour with hook results
-					$srcobjRef = $hookmanager->resPrint;
+					$srcobjRef = $this->resprints;
 				}
 
 				$destdir = $document_dir . '/' . $srcobjRef;

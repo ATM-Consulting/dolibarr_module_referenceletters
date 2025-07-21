@@ -1305,8 +1305,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						continue;
 				}
 
-
-
 				if (! is_array($value) && ! is_object($value)) {
                     if($key== 'date_birth' || $key == 'datec') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);

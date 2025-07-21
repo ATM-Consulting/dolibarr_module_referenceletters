@@ -546,7 +546,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray = array();
 
 			if ($line instanceof AgfObjPedaLine) {
-				return $resarray;
+				$resarray['line_objpeda_description'] = $line->intitule;
 			}
 			if ($line instanceof Agefodd_stagiaire) {
 				// Substitutions tableau de participants :
@@ -1110,9 +1110,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}else{
 				$catalogue->fetch($object->fk_formation_catalogue);
 			}
-
-			// ajouter les peda ici pour
-
 
 			$resarray['formation_but'] = $catalogue->but;
 			$resarray['formation_ref'] = $catalogue->ref_obj;

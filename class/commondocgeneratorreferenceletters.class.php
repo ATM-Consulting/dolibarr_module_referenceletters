@@ -1307,14 +1307,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
 	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
+
+					if ($key == "address") {
+						echo "la";
+					}
+
 					if (is_callable($methodVariable, false, $callable_name)){
 						if (method_exists($object, 'referenceletter_showPublicOutputField')) {
 							$value = $object->referenceletter_showPublicOutputField($key, $value);
-						}else{
-							$value  = '';
 						}
 					}
-
 
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {

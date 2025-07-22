@@ -780,7 +780,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 		}
 
-		if (get_class($object)=='Expedition') {
+		if (get_class($object) == 'Expedition') {
 			/** @var $object Expedition */
 			// Tracking number for shipping
 			if (isset($object->tracking_number) && !empty($object->tracking_number) && is_callable(array($object, 'getUrlTrackingStatus'))) {

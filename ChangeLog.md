@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
-- FIX : COMPAT V22 - *15/07/2025* - 2.23.11
+- FIX : COMPAT V22 - *15/07/2025* - 2.23.12
+- FIX : remove warning  - *21/07/2025* - 2.23.11
+  +  fix objvar substitution variable
+  +  fix line_objpeda substitution variable
 - FIX : remove warning  - *06/06/2025* - 2.23.10  
 - FIX : warning generation - *27/05/2025* - 2.23.9  
 - FIX : DA026076 Pre-selected model for document - *21/02/2025* - 2.23.8

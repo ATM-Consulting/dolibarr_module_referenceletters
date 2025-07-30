@@ -88,7 +88,6 @@ if (GETPOST('removAll', 'alpha'))
 if ($massaction == 'presend')
 {
 	$langs->load("mails");
-
 	if (!GETPOST('cancel', 'alpha'))
 	{
 		$listofselectedid = array();

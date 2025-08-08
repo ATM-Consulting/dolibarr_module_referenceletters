@@ -548,7 +548,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			if ($line instanceof AgfObjPedaLine) {
 				$resarray['line_objpeda_description'] = $line->intitule;
 			}
-			if ($line instanceof Agefodd_stagiaire) {
+			if ($line instanceof Agefodd_stagiaire || $line instanceof AgfTraineeSessionLine) {
 				// Substitutions tableau de participants :
 				$sessionStag = new Agefodd_session_stagiaire($this->db);
 				$resarray['line_poste'] = $line->poste;
@@ -572,13 +572,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['line_phone_mobile'] = $line->tel2;
 				$resarray['line_email'] = $line->email;
 				if (isset($line->thirdparty) && !is_null($line->thirdparty)) {
-					$resarray['line_siret'] = $line->thirdparty->idprof2 ?? '';
+					$resarray['line_siret'] = $line->thirdparty->idprof2 ?: '';
 				}
 				$resarray['line_birthplace'] = $line->place_birth;
 				$resarray['line_code_societe'] = $line->soccode;
 				$resarray['line_nom_societe'] = $line->socname;
-				$resarray['line_financiers_trainee'] = Agefodd_session_stagiaire::getFinanciersByTrainee($line->stagerowid);
-				$resarray['line_alternate_financier_trainee'] = Agefodd_session_stagiaire::getAlternateFinancierByTrainee($line->stagerowid);
+
+				// method create in agefodd 8.0
+				if (method_exists("Agefodd_session_stagiaire","getFinanciersByTrainee" )) {
+					$resarray['line_financiers_trainee'] = Agefodd_session_stagiaire::getFinanciersByTrainee($line->stagerowid);
+				}
+				if (method_exists("Agefodd_session_stagiaire","getAlternateFinancierByTrainee" )) {
+					$resarray['line_alternate_financier_trainee'] = Agefodd_session_stagiaire::getAlternateFinancierByTrainee($line->stagerowid);
+				}
+
 				$resarray['line_stagiaire_presence_bloc'] = $line->stagiaire_presence_bloc;
 				$resarray['line_stagiaire_presence_total'] = $line->stagiaire_presence_total;
 				$resarray['line_time_stagiaire_temps_realise_total'] = $line->time_stagiaire_temps_realise_total;
@@ -618,7 +625,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					}
 				}
 
-		} elseif ($line instanceof Agefodd_sesscalendar) {
+		} elseif ($line instanceof Agefodd_sesscalendar || $line instanceof Agefodd_sesscalendar_line) {
 			// Display session stagiaire heure
 			if(!empty($line->sessid) && !empty($line->id)) {
 				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
@@ -672,7 +679,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_heure_debut_session'] = property_exists($line, 'heured') ? dol_print_date($line->heured, 'hour') : '';
 			$resarray['line_heure_fin_session'] = property_exists($line, 'heuref') ? dol_print_date($line->heuref, 'hour') : '';
 
-		} elseif ($line instanceof Agefodd_formateur) {
+		} elseif ($line instanceof Agefodd_teacher || $line instanceof AgfTrainerLine ) {
 			// Substitutions tableau des formateurs :
 			$resarray['line_formateur_nom'] = property_exists($line, 'lastname') ? $line->lastname : '';
 			$resarray['line_formateur_prenom'] = property_exists($line, 'firstname') ? $line->firstname : '';
@@ -1302,7 +1309,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						continue;
 				}
 
-				if (! is_array($value) && ! is_object($value)) {
+				if (!is_array($value) && !is_object($value)) {
                     if($key== 'date_birth' || $key == 'datec') {
                         $value = dol_print_date($value,'%d/%m/%Y','tzserver',$outputlangs);
                     }

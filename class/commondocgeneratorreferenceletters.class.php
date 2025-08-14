@@ -545,10 +545,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 			$resarray = array();
 
-			if ($line instanceof AgfObjPedaLine) {
-				$resarray['line_objpeda_description'] = $line->intitule;
-			}
-			if ($line instanceof Agefodd_stagiaire || $line instanceof AgfTraineeSessionLine) {
+			$resarray['line_objpeda_description'] = $line->intitule;
+
 				// Substitutions tableau de participants :
 				$sessionStag = new Agefodd_session_stagiaire($this->db);
 				$resarray['line_poste'] = $line->poste;
@@ -625,7 +623,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					}
 				}
 
-		} elseif ($line instanceof Agefodd_sesscalendar || $line instanceof Agefodd_sesscalendar_line) {
 			// Display session stagiaire heure
 			if(!empty($line->sessid) && !empty($line->id)) {
 				dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
@@ -679,7 +676,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_heure_debut_session'] = property_exists($line, 'heured') ? dol_print_date($line->heured, 'hour') : '';
 			$resarray['line_heure_fin_session'] = property_exists($line, 'heuref') ? dol_print_date($line->heuref, 'hour') : '';
 
-		} elseif ($line instanceof Agefodd_teacher || $line instanceof AgfTrainerLine ) {
 			// Substitutions tableau des formateurs :
 			$resarray['line_formateur_nom'] = property_exists($line, 'lastname') ? $line->lastname : '';
 			$resarray['line_formateur_prenom'] = property_exists($line, 'firstname') ? $line->firstname : '';
@@ -694,7 +690,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_formateur_statut'] = (property_exists($line, 'labelstatut') && is_array($line->labelstatut) && property_exists($line, 'trainer_status'))
 				? ($line->labelstatut[$line->trainer_status] ?? '')
 				: '';
-		} else {
 			// Substitutions tableau des élément financier :
 			// $resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
@@ -818,7 +813,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				if (!empty($extrafields) && is_array($array_key) &&!empty($array_key)) {
 					$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
 				}
-			}
+
 
 		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
 		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');

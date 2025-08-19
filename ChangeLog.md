@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 - 29/08/2024
-- FIX : COMPAT V22 - *15/07/2025* - 2.23.12
+- FIX : COMPAT V22 - *15/07/2025* - 2.23.14
+- FIX : Line substituion, delete instance of - *14/08/2025* - 2.23.13
+- FIX : substitution variable for trainee line - *08/08/2025* - 2.23.12
 - FIX : remove warning  - *21/07/2025* - 2.23.11
   +  fix objvar substitution variable
   +  fix line_objpeda substitution variable

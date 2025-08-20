@@ -90,9 +90,4 @@ class SegmentRfltr extends Segment {
 
 		return $this->xmlParsed;
 	}
-
-	public function getSavxml(): string {
-		return $this->savxml;
-	}
-
 }

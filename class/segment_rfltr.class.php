@@ -4,7 +4,7 @@ require_once DOL_DOCUMENT_ROOT . '/includes/odtphp/Segment.php';
 
 class SegmentRfltr extends Segment {
 	public $xml;
-	
+
 	/**
 	 * Constructor
 	 *
@@ -21,7 +21,7 @@ class SegmentRfltr extends Segment {
 		$this->file = new $zipHandler($this->odf->getConfig('PATH_TO_TMP'));*/
 		$this->_analyseChildren($this->xml);
 	}
-	
+
 	/**
 	 * Replace variables of the template in the XML code
 	 * All the children are also called
@@ -35,11 +35,11 @@ class SegmentRfltr extends Segment {
 		global $count;
 		if (empty($count)) $count=1;
 		else $count++;
-		
+
 		if (empty($this->savxml)) $this->savxml = $this->xml;       // Sav content of line at first line merged, so we will reuse original for next steps
 		$this->xml = $this->savxml;
 		$tmpvars = $this->vars;                                     // Store into $tmpvars so we won't modify this->vars when completing data with empty values
-		
+
 		// Search all tags fou into condition to complete $tmpvars, so we will proceed all tests even if not defined
 		$reg='@\[!--\sIF\s([{}a-zA-Z0-9\.\,_]+)\s--\]@smU';
 		preg_match_all($reg, $this->xml, $matches, PREG_SET_ORDER);
@@ -51,7 +51,7 @@ class SegmentRfltr extends Segment {
 				$tmpvars[$match[1]] = '';     // Not defined, so we set it to '', we just need entry into this->vars for next loop
 			}
 		}
-		
+
 		// Conditionals substitution
 		// Note: must be done before static substitution, else the variable will be replaced by its value and the conditional won't work anymore
 		foreach($tmpvars as $key => $value)
@@ -87,8 +87,7 @@ class SegmentRfltr extends Segment {
 		}
 		$reg = "/\[!--\sBEGIN\s$this->name\s--\](.*)\[!--\sEND\s$this->name\s--\]/sm";
 		$this->xmlParsed = preg_replace($reg, '$1', $this->xmlParsed);
-		
+
 		return $this->xmlParsed;
 	}
-	
 }

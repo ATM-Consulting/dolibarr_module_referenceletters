@@ -120,7 +120,7 @@ if (empty($sortfield)) {
 
 
 $title = $langs->trans('RefLtrListInstance');
-$trigger_name = 'SEND_REFLETTER_BY_MAIL';
+$triggersendname = 'SEND_REFLETTER_BY_MAIL';
 include '../core/sendAll.inc.php';
 llxHeader('', $title);
 $newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];

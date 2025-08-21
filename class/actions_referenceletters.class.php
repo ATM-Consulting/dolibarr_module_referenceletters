@@ -176,7 +176,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				$reshook = $hookmanager->executeHooks('overrideRefForFileName', $parameters, $instance_letter->srcobject, $action);
 				if ($reshook > 0) {
 					// override default behaviour with hook results
-					$srcobjRef = $hookmanager->resprints;
+					$srcobjRef = $hookmanager->resPrint;
 				}
 
 				$destdir = $document_dir . '/' . $srcobjRef;

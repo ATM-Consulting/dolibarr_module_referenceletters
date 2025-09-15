@@ -180,27 +180,26 @@ class FormReferenceLetters extends Form
 	 *
 	 * @param strint $selected
 	 * @param string $htmlname
-	 * @return select HTML
+	 * @return string HTML
 	 */
-	public function selectDefaultDoc($selected='',$htmlname='defaultdoc',$showempty=1) {
+	public function selectDefaultDoc($selected = '', $htmlname = 'defaultdoc', $showempty = 1) {
 		global $langs;
 
-		$status_array=array();
+		$status_array = array();
 
 		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
 		if (!empty($showempty)) {
-			$status_array[-1]='';
+			$status_array[-1] = '';
 		}
 		require_once 'referenceletters.class.php';
 		$refletter = new Referenceletters($this->db);
 		$refletter->TDefaultDoc = $refletter->TDefaultDoc ?? [];
-		$status_array+=$refletter->TDefaultDoc;
 
-		foreach($status_array as $key=>$val) {
-			if ($selected==$key) {
-				$option_selected=' selected="selected" ';
+		foreach($refletter->TDefaultDoc as $key => $val) {
+			if ($selected == $key) {
+				$option_selected = 'selected="selected" ';
 			}else {
-				$option_selected='';
+				$option_selected = '';
 			}
 
 			$select_elemnt .= '<option value="' . $key . '" '.$option_selected.'>' . $langs->trans($val) . '</option>';

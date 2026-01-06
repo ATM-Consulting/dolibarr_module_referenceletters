@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 
-- FIX : COMPAT V22 - *06/01/2026* - 2.23.16
+- FIX : COMPAT V23 - *06/01/2026* - 2.23.16
 - FIX : Default doc select - *15/09/2025* - 2.23.15
 - FIX : COMPAT V22 - *15/07/2025* - 2.23.14
 - FIX : Line substituion, delete instance of - *14/08/2025* - 2.23.13

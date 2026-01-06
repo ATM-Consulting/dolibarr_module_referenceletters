@@ -1,4 +1,19 @@
 <?php
+/* Copyright (C) 2025 ATM Consulting
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 
 if(is_file('../main.inc.php'))$dir = '../';
 else  if(is_file('../../../main.inc.php'))$dir = '../../../';
@@ -36,16 +51,16 @@ foreach ($TTables as $table => $model)
 {
     $sql = "SELECT t.rowid, t.model_pdf FROM " . MAIN_DB_PREFIX . $table . " as t WHERE model_pdf LIKE '%rfltr_%'";
     $resql = $db->query($sql);
-    
+
     if ($resql && $db->num_rows($resql))
     {
         while ($obj = $db->fetch_object($resql))
         {
             $id_model = intVal(strtr($obj->model_pdf, array('rfltr_' => '')));
-            
+
             $sql_ef = "SELECT rowid FROM ". MAIN_DB_PREFIX . $table . "_extrafields WHERE fk_object = " .$obj->rowid;
             $res_ef = $db->query($sql_ef);
-            
+
             if ($res_ef)
             {
                 if ($db->num_rows($res_ef))
@@ -58,9 +73,9 @@ foreach ($TTables as $table => $model)
                 {
                     $sql2 = "INSERT INTO " . MAIN_DB_PREFIX . $table . "_extrafields (fk_object, rfltr_model_id) VALUES (".$obj->rowid.", " . $id_model . ")";
                 }
-                
+
                 $db->query($sql2);
-                
+
             }
         }
         $updt = "UPDATE " . MAIN_DB_PREFIX . $table . " SET model_pdf = 'rfltr_dol_" .$model. "' WHERE model_pdf LIKE '%rfltr_%'";

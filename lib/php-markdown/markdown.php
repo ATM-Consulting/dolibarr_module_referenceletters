@@ -1,4 +1,19 @@
 <?php
+/* Copyright (C) 2025 ATM Consulting
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 //
 // Markdown - A text-to-HTML conversion tool for web writers
 //
@@ -406,7 +421,7 @@ class Markdown_Parser
 			  |
 				\'[^\']*\'	# text inside single quotes (tolerate ">")
 			  )*
-			)?	
+			)?
 			';
 		$content = str_repeat('
 				(?>
@@ -422,7 +437,7 @@ class Markdown_Parser
 		str_repeat('
 					  </\2\s*>	# closing nested tag
 					)
-				  |				
+				  |
 					<(?!/\2\s*>	# other tags with a different name
 				  )
 				)*', $nested_tags_level);
@@ -447,7 +462,7 @@ class Markdown_Parser
 			)
 			(						# save in $1
 
-			  # Match from `\n<tag>` to `</tag>\n`, handling nested tags 
+			  # Match from `\n<tag>` to `</tag>\n`, handling nested tags
 			  # in between.
 
 						[ ]{0,' . $less_than_tab . '}
@@ -468,7 +483,7 @@ class Markdown_Parser
 						[ ]*				# trailing spaces/tabs
 						(?=\n+|\Z)	# followed by a newline or end of document
 
-			| # Special case just for <hr />. It was easier to make a special 
+			| # Special case just for <hr />. It was easier to make a special
 			  # case than to make the other regex more complicated.
 
 						[ ]{0,' . $less_than_tab . '}
@@ -1704,7 +1719,7 @@ class Markdown_Parser
 		if (function_exists($this->utf8_strlen))
 			return;
 		$this->utf8_strlen = create_function('$text', 'return preg_match_all(
-			"/[\\\\x00-\\\\xBF]|[\\\\xC0-\\\\xFF][\\\\x80-\\\\xBF]*/", 
+			"/[\\\\x00-\\\\xBF]|[\\\\xC0-\\\\xFF][\\\\x80-\\\\xBF]*/",
 			$text, $m);');
 	}
 

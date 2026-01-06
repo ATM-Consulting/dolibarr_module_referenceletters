@@ -36,8 +36,12 @@ class TCPDFRefletters extends TCPDI
 	public $outputlangs;
 
 	//Page header
+	/**
+	 * Header
+	 * @return void
+	 */
 	public function Header() {
-		
+
 		importImageBackground($this, $this->instance_letter->fk_referenceletters);
 
 		$use_custom_header = $this->instance_letter->use_custom_header;
@@ -51,6 +55,10 @@ class TCPDFRefletters extends TCPDI
 	}
 
 	// Page footer
+	/**
+	 * Footer
+	 * @return void
+	 */
 	public function Footer() {
 		$use_custom_footer = $this->instance_letter->use_custom_footer;
 

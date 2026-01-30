@@ -33,7 +33,7 @@ require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
  */
 class ReferenceLetters extends CommonObject
 {
-	const TRIGGER_PREFIX = '';
+	const TRIGGER_PREFIX = 'REFERENCELETTERS_';
 
 	public $db; // !< To store db handler
 	public $error; // !< To return error code (or message)

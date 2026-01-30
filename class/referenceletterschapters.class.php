@@ -33,6 +33,8 @@ require_once(DOL_DOCUMENT_ROOT."/core/class/commonobject.class.php");
  */
 class ReferenceLettersChapters extends CommonObject
 {
+	const TRIGGER_PREFIX = 'REFERENCELETTERSCHAPTERS_';
+
 	public $db;							//!< To store db handler
 	public $error;							//!< To return error code (or message)
 	public $errors=array();				//!< To return several error codes (or messages)
@@ -267,6 +269,7 @@ class ReferenceLettersChapters extends CommonObject
      *  Load object in memory from the database
      *
      *  @param	int		$id    Id object
+     *  @param	string	$lang_chapter Language chapter
      *  @return int          	<0 if KO, >0 if OK
      */
     public function fetch_byrefltr($id,$lang_chapter='')

@@ -111,7 +111,7 @@ class InterfaceReferenceLetterstrigger
      * 	@param		conf		$conf		Object conf
      * 	@return		int						<0 if KO, 0 if no triggered ran, >0 if OK
      */
-    public function run_trigger($action, $object, $user, $langs, $conf)
+    public function runTrigger($action, $object, $user, $langs, $conf)
     {
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 
@@ -130,32 +130,32 @@ class InterfaceReferenceLetterstrigger
 		);
 
 		if (in_array($action, $TTriggerObjects)){
-			
+
 			$refletter = new Referenceletters($this->db);
 			$refletter->lines = array();
-			
+
 			$element = $object->element;
 			if($element === 'facture') $element = 'invoice';
 			if($element === 'commande') $element = 'order';
 			if($element === 'contrat') $element = 'contract';
-			
+
 			$TFilters = array('t.element_type' => $element, 't.status' => 1, 't.default_doc' => 1);
 			$result = $refletter->fetch_all('ASC', 't.rowid', 1, 0, $TFilters);
-			
+
 			if ($result < 0)
 			{
 				setEventMessages(null, $refletter->errors, 'errors');
 				return -1;
 			}
-			
+
 			if (empty($refletter->lines) || empty($result)) return 0;
-			
+
 			$id_model = $refletter->lines[0]->id;
-			
+
 			$object->array_options['options_rfltr_model_id'] = intval($id_model);
 			$object->insertExtraFields();
 		}
-		
+
 		return 0;
     }
 }

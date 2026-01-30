@@ -62,26 +62,15 @@ class modReferenceLetters extends DolibarrModules
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
 
-		$this->version = '2.23.15';
+		$this->version = '2.23.16';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
 		// Key used in llx_const table to save module status enabled/disabled
 		// (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
-		// Where to store the module in setup page
-		// (0=common,1=interface,2=others,3=very specific)
 		$this->special = 2;
-		// Name of image file used for this module.
-		// If file is in theme/yourtheme/img directory under name object_pictovalue.png
-		// use this->picto='pictovalue'
-		// If file is in module/img directory under name object_pictovalue.png
-		// use this->picto='pictovalue@module'
 		$this->picto = 'module.svg@referenceletters'; // mypicto@referenceletters
-		                                                    // Defined all module parts (triggers, login, substitutions, menus, css, etc...)
-		                                                    // for default path (eg: /referenceletters/core/xxxxx) (0=disable, 1=enable)
-		                                                    // for specific path of parts (eg: /referenceletters/core/modules/barcode)
-		                                                    // for specific css file (eg: /referenceletters/css/referenceletters.css.php)
 
 		$this->editor_name = 'ATM Consulting';
 		$this->editor_url = 'https://www.atm-consulting.fr';
@@ -102,24 +91,6 @@ class modReferenceLetters extends DolibarrModules
 				),
 				'triggers' => 1
 		);
-		// Set this to 1 if module has its own trigger directory
-
-		// Set this to 1 if module has its own login method directory
-		// 'login' => 0,
-		// Set this to 1 if module has its own substitution function file
-		// 'substitutions' => 0,
-		// Set this to 1 if module has its own menus handler directory
-		// 'menus' => 0,
-		// Set this to 1 if module has its own barcode directory
-		// 'barcode' => 0,
-		// Set this to 1 if module has its own models directory
-		// 'models' => 0,
-		// Set this to relative path of css if module has its own css file
-		// 'css' => '/referenceletters/css/mycss.css.php',
-		// Set here all hooks context managed by module
-		// 'hooks' => array('hookcontext1','hookcontext2')
-		// Set here all workflow context managed by module
-		// 'workflow' => array('order' => array('WORKFLOW_ORDER_AUTOCREATE_INVOICE'))
 
 		// Data directories to create when module is enabled.
 		// Example: this->dirs = array("/referenceletters/temp");
@@ -151,22 +122,13 @@ class modReferenceLetters extends DolibarrModules
 		// List of modules id to disable if this one is disabled
 		$this->requiredby = array ();
 		// Minimum version of PHP required by module
-		$this->phpmin = array (
-				7,
-				0
-		);
+		$this->phpmin = array (7, 0);
 		// Minimum version of Dolibarr required by module
-		$this->need_dolibarr_version = array (
-				16,
-				0
-		);
+		$this->need_dolibarr_version = array (16, 0);
 		$this->langfiles = array (
 				"referenceletters@referenceletters"
 		); // langfiles@referenceletters
-		   // Constants
-		   // List of particular constants to add when module is enabled
-		   // (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
-		   // Example:
+
 		$this->const[] = array (
 				'REF_LETTER_ADDON',
 				'chaine',
@@ -231,46 +193,20 @@ class modReferenceLetters extends DolibarrModules
 				1
 		);
 
-		// Array to add new pages in new tabs
-		// Example:
-		// $this->tabs = array();
-		// // To add a new tab identified by code tabname1
-		// 'objecttype:+tabname1:Title1:langfile@referenceletters:$user->rights->referenceletters->read:/referenceletters/mynewtab1.php?id=__ID__',
-		// // To add another new tab identified by code tabname2
-		// 'objecttype:+tabname2:Title2:langfile@referenceletters:$user->rights->othermodule->read:/referenceletters/mynewtab2.php?id=__ID__',
-		// // To remove an existing tab identified by code tabname
-		// 'objecttype:-tabname'
 
 		$this->tabs = array (
-				'contract:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
-				'thirdparty:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
-				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
-				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
-				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
-				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
-				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal',
-				'supplier_order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order_supplier',
-				//'delivery:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->rights->referenceletters->use:/referenceletters/referenceletters/instance.php?id=__ID__&element_type=expedition'
+				'contract:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contract',
+				'thirdparty:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=thirdparty',
+				'contact:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=contact',
+				'propal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=propal',
+				'invoice:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=invoice',
+				'order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order',
+				'supplier_proposal:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=supplier_proposal',
+				'supplier_order:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=order_supplier',
+				//'delivery:+tabReferenceLetters:RefLtrLetters:referenceletters@referenceletters:$user->hasRight(\'referenceletters\', \'use\'):/referenceletters/referenceletters/instance.php?id=__ID__&element_type=expedition'
 		);
 
-		// where objecttype can be
-		// 'thirdparty' to add a tab in third party view
-		// 'intervention' to add a tab in intervention view
-		// 'order_supplier' to add a tab in supplier order view
-		// 'invoice_supplier' to add a tab in supplier invoice view
-		// 'invoice' to add a tab in customer invoice view
-		// 'order' to add a tab in customer order view
-		// 'product' to add a tab in product view
-		// 'stock' to add a tab in stock view
-		// 'propal' to add a tab in propal view
-		// 'member' to add a tab in fundation member view
-		// 'contract' to add a tab in contract view
-		// 'user' to add a tab in user view
-		// 'group' to add a tab in group view
-		// 'contact' to add a tab in contact view
-		// 'categories_x' to add a tab in category view
-		// (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
-		// Dictionnaries
+
 		if (! isModEnabled('referenceletters')) {
 			$conf->referenceletters = ( object ) array ();
 			$conf->referenceletters->enabled = 0;
@@ -287,11 +223,6 @@ class modReferenceLetters extends DolibarrModules
 		$this->boxes[$r][1] = "box_referenceletter_elements@referenceletters";
 		$r ++;
 		$this->boxes[$r][1] = "box_referenceletter_models_archive@referenceletters";
-		// $r ++;
-		/*
-		 $this->boxes[$r][1] = "myboxb.php";
-		 $r++;
-		 */
 
 		// Permissions
 		$this->rights = array (); // Permission array used by this module

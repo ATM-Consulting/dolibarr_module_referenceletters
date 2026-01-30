@@ -59,6 +59,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 *
 	 * {@inheritdoc}
+	 * @param CommonObject $object Object
+	 * @param Translate $outputlangs Output langs
+	 * @param string $array_key Array key
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
 	public function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
@@ -218,6 +221,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 *
 	 * {@inheritdoc}
+	 * @param Translate $outputlangs Output langs
+	 * @param CommonObject|string $object Object
 	 * @see CommonDocGenerator::get_substitutionarray_other()
 	 */
 	public function get_substitutionarray_other($outputlangs, $object = '') {
@@ -473,8 +478,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object Object
+	 * @param CommonObject $line Line
 	 * @param Translate $outputlangs Translate Instance
+	 * @param int $linenumber Line number
 	 * @return number|array[]|number[][]
 	 */
 	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0)
@@ -534,8 +540,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 * Define array with couple substitution key => substitution value
 	 *
-	 * @param array $line Array of lines
+	 * @param Object $line Array of lines
 	 * @param Translate $outputlangs Lang object to use for output
+	 * @param bool $fetchoptionnals Fetch optionals
 	 * @return array Return a substitution array
 	 */
 	public function get_substitutionarray_lines_agefodd(&$line, $outputlangs, $fetchoptionnals = true) {
@@ -1220,7 +1227,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
-	 * Define array with couple subtitution key => subtitution value
+	 * Define array with couple substitution key => substitution value
 	 *
 	 * @param Object $object Dolibarr Object
 	 * @param Translate $outputlangs Language object for output

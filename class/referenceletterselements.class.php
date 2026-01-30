@@ -30,6 +30,8 @@ require_once (DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php");
  */
 class ReferenceLettersElements extends CommonObject
 {
+	const TRIGGER_PREFIX = 'REFERENCELETTERSELEMENTS_';
+
 	public $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array(); // !< To return several error codes (or messages)
@@ -268,13 +270,13 @@ class ReferenceLettersElements extends CommonObject
 	/**
 	 * Load object in memory from the database
 	 *
-	 * @param unknown $element_id
-	 * @param unknown $element_type
-	 * @param string $sortorder
-	 * @param string $sortfield
-	 * @param number $limit
-	 * @param number $offset
-	 * @return number
+	 * @param int $element_id Element Id
+	 * @param string $element_type Element Type
+	 * @param string $sortorder Order
+	 * @param string $sortfield Field
+	 * @param int $limit Limit
+	 * @param int $offset Offset
+	 * @return int
 	 */
 	public function fetchAllByElement($element_id, $element_type, $sortorder = '', $sortfield = '', $limit = 0, $offset = 0) {
 		global $langs;
@@ -751,8 +753,9 @@ class ReferenceLettersElements extends CommonObject
 	 * Returns the reference to the following non used model letters used depending on the active numbering module
 	 * defined into REF_LETTER_ADDON
 	 *
-	 * @param int $fk_user Id
 	 * @param societe $objsoc Object
+	 * @param int $fk_user Id
+	 * @param string $element_type Element type
 	 * @return string Reference libre pour la lead
 	 */
 	public function getNextNumRef($objsoc, $fk_user = '', $element_type = '') {
@@ -820,7 +823,7 @@ class ReferenceLettersElements extends CommonObject
 
 		$url = dol_buildpath('/referenceletters/referenceletters/instance.php', 1) . '?id=' . $this->fk_element . '&amp;element_type=' . $this->element_type;
 
-		$result = '<a href="' . $url . '">' . ((! empty($withpicto)) ? img_pdf($this->ref_int) : '') . $this->ref_int . '</a>';
+		$result = '<a href="' . $url . '">' . ((! empty($withpicto)) ? img_picto('', 'pdf') : '') . $this->ref_int . '</a>';
 
 		return $result;
 	}

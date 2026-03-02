@@ -113,7 +113,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				$this->outputlangs=$outputlangs;
 			}
 		}
-
+		
 
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (getDolGlobalString('MAIN_USE_FPDF'))
@@ -146,14 +146,14 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			}
 
 			if (file_exists($dir)) {
+				
 				// Create pdf instance
 				// $this->pdf = pdf_getInstance($this->format);
 				$this->pdf = pdf_getInstance_refletters($object, $instance_letter, $this, $this->format);
 				$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 				                                                             // Set calculation of header and footer high line
-				                                                             // footer high
+				                                                             // footer high			
 				$this->height_foot = $this->getRealHeightLine('foot');
-
 				$this->pdf->SetAutoPageBreak(1, $this->height_foot);
 
 				$this->pdf->setPrintHeader(true);

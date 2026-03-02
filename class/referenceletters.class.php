@@ -1069,6 +1069,16 @@ class ReferenceLetters extends CommonObject
 				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
 			}
 		}
+		//extrafield contact
+		$socpeople_extralabels = $extrafields->fetch_name_optionals_label('socpeople', true);
+		if(!empty($socpeople_extralabels)) {
+			foreach($socpeople_extralabels as $extrakey => $extralabel) {
+				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_socpeople_options_'.$extrakey] = 'Champ complémentaire contact : '.$extralabel;
+			}
+		}
+		
+		
+		
 		if(!empty($conf->agefoddcertificat->enabled)) {
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
 			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';

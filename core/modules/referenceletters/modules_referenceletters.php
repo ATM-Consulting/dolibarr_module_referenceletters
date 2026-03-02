@@ -635,14 +635,14 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$default_font_size = pdf_getPDFFontSize($this->outputlangs); // Must be after pdf_getInstance
 		$this->pdf->SetFont('', '', $default_font_size);
 		$dims = $this->pdf->getPageDimensions();
-
+		
 		if (! empty($typeprint)) {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $this->pdf->GetY(), $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 
 		} else {
 			$this->pdf->writeHTMLCell(0, 0, $dims['lm'], $dims['hk'] - $this->pdf->mybottommargin, $this->outputlangs->convToOutputCharset($this->instance_letter->footer), 0, 1);
 		}
-
+		
 		// Show page nb only on iso languages (so default Helvetica font)
 		if (strtolower(pdf_getPDFFont($this->outputlangs)) == 'helvetica' && !getDolGlobalString('MAIN_USE_FPDF') && !empty($usePageNumber))
 		{
@@ -676,7 +676,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-
+		
 		$tmparray = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -685,7 +685,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
-
+		
 		if (get_class($object) === 'Societe') {
 			$socobject = $object;
 		} else {
@@ -856,6 +856,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
                 }
             }
         }
+		
+		if (get_class($object) === 'Agefodd_stagiaire') {
+			$substitution_array = array();
+			
+			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
+		}
 
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
@@ -863,6 +869,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 				$substitution_array['{objvar_' . $key . '}'] = $value;
 			}
 
+			//print get_class($object);
 			// Traduction des conditions de règlement
 			if(! empty($substitution_array['{objvar_object_cond_reglement_code}']))
 			{
@@ -944,7 +951,6 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 */
 	public function getRealHeightLine($type = '') {
 		global $conf;
-
 		// Determine if jump pages is needed
 		$this->pdf->startTransaction();
 
@@ -971,16 +977,18 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 			} else {
 				$height = $this->_pageheadCustom($this->pdf->ref_object);
 			}
-		} elseif ($type == 'foot') {
+		} elseif ($type == 'foot') { 
 			$use_custom_footer = $this->instance_letter->use_custom_footer;
 
 			if (empty($use_custom_footer)) {
 				// HEre standard _pagefoot method return bottom margin
 				$height = $this->_pagefoot($this->pdf,$this->pdf->ref_object, $this->outputlangs);
+				
 			} else {
 				$margins = $this->pdf->getMargins();
-				$bottom_margin = $margins['bottom'];
-				$this->_pagefootCustom($this->pdf->ref_object, 'custom');
+				$bottom_margin = $margins['bottom']; 
+				$this->_pagefootCustom($this->pdf->ref_object, 'custom'); 
+				
 			}
 		}
 

@@ -34,7 +34,7 @@ class RfltrTools {
 	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
 
-	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
+	public static function load_object_refletter($id_object, $id_model, $object = null, $socid = '', $lang_id = '', $fk_training = 0) {
 
 		global $db, $conf;
 
@@ -104,7 +104,7 @@ class RfltrTools {
 				}
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
+			else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, is_object($object) ? $object : null, $outputlangs, $fk_training);
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
@@ -170,7 +170,7 @@ class RfltrTools {
 	 * @param $fk_training
 	 * @return mixed
 	 */
-	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training = 0) {
+	public static function load_agefodd_object($id_object, &$object_refletter, $socid = 0, $obj_agefodd_convention = null, $outputlangs = null, $fk_training = 0) {
 
 		global $db;
 		if ($fk_training == 0) {
@@ -187,7 +187,7 @@ class RfltrTools {
 		if (! method_exists($object, $agefoddInfoLoader)) {
 			$agefoddInfoLoader = 'load_all_data_agefodd_session';
 		}
-		$object->$agefoddInfoLoader($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
+		$object->$agefoddInfoLoader($object_refletter, (int) $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 

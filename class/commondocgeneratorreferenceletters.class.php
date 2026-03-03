@@ -43,6 +43,85 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
     public $errors = array();
 
 	/**
+	 * Return a scalar property value when available.
+	 *
+	 * @param object $object Source object.
+	 * @param string $property Property name.
+	 * @param string $default Default value.
+	 * @return string
+	 */
+	protected function getObjectPropertyValue($object, $property, $default = '')
+	{
+		if (!is_object($object) || !property_exists($object, $property) || $object->{$property} === null) {
+			return $default;
+		}
+
+		return is_scalar($object->{$property}) ? (string) $object->{$property} : $default;
+	}
+
+	/**
+	 * Return a nested property value when both levels exist.
+	 *
+	 * @param object $object Source object.
+	 * @param string $property Parent property.
+	 * @param string $nestedProperty Nested property name.
+	 * @param string $default Default value.
+	 * @return string
+	 */
+	protected function getNestedObjectPropertyValue($object, $property, $nestedProperty, $default = '')
+	{
+		if (!is_object($object) || !property_exists($object, $property) || !is_object($object->{$property})) {
+			return $default;
+		}
+
+		return $this->getObjectPropertyValue($object->{$property}, $nestedProperty, $default);
+	}
+
+	/**
+	 * Return a formatted date when the property exists.
+	 *
+	 * @param object $object Source object.
+	 * @param string $property Date property.
+	 * @param string $format Dolibarr date format key.
+	 * @param string $default Default value.
+	 * @return string
+	 */
+	protected function getFormattedDatePropertyValue($object, $property, $format = 'day', $default = '')
+	{
+		if (!is_object($object) || !property_exists($object, $property) || empty($object->{$property})) {
+			return $default;
+		}
+
+		return dol_print_date($object->{$property}, $format);
+	}
+
+	/**
+	 * Return a status label from a line dictionary.
+	 *
+	 * @param object $object Source object.
+	 * @param string $statusProperty Status property name.
+	 * @param string $labelsProperty Labels property name.
+	 * @param string $default Default value.
+	 * @return string
+	 */
+	protected function getStatusLabelValue($object, $statusProperty, $labelsProperty, $default = '')
+	{
+		if (!is_object($object)
+			|| !property_exists($object, $statusProperty)
+			|| !property_exists($object, $labelsProperty)
+			|| !is_array($object->{$labelsProperty})) {
+			return $default;
+		}
+
+		$status = $object->{$statusProperty};
+		if ($status === null || !isset($object->{$labelsProperty}[$status])) {
+			return $default;
+		}
+
+		return (string) $object->{$labelsProperty}[$status];
+	}
+
+	/**
 	 *
 	 * @param ReferenceLetters $referenceletters reference letter
 	 * @param Translate $outputlangs Translate instance
@@ -239,14 +318,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			// Liste paiements
 			if (get_class($object) === 'Facture') {
 
+				$useMulticurrency = !empty($conf->multicurrency->enabled) && !empty($object->multicurrency_tx) && $object->multicurrency_tx != 1;
+				$deja_regle = 0;
+				$creditnoteamount = 0;
+				$depositsamount = 0;
 				$array_other['deja_paye'] = $array_other['somme_avoirs'] = price(0, 0, $outputlangs);
-				$total_ttc = ($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $object->multicurrency_total_ttc : $object->total_ttc;
+				$total_ttc = $useMulticurrency ? $object->multicurrency_total_ttc : $object->total_ttc;
 				$array_other['liste_paiements'] = self::get_liste_reglements($object, $outputlangs);
 				if (! empty($array_other['liste_paiements'])) {
 
-					$deja_regle = $object->getSommePaiement(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-					$creditnoteamount = $object->getSumCreditNotesUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
-					$depositsamount = $object->getSumDepositsUsed(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? 1 : 0);
+					$deja_regle = $object->getSommePaiement($useMulticurrency ? 1 : 0);
+					$creditnoteamount = $object->getSumCreditNotesUsed($useMulticurrency ? 1 : 0);
+					$depositsamount = $object->getSumDepositsUsed($useMulticurrency ? 1 : 0);
 
 					// Already paid + Deposits
 					$array_other['deja_paye'] = price($deja_regle + $depositsamount, 0, $outputlangs);
@@ -337,10 +420,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (isset($object->type) && $object->type == 2 && getDolGlobalString('INVOICE_POSITIVE_CREDIT_NOTE'))
 			$sign = - 1;
 
-		foreach ( $object->lines as &$line ) {
-			// Do not calc VAT on text or subtotal line
-			if ($line->product_type != 9) {
-				$vatrate = $line->tva_tx;
+			foreach ( $object->lines as &$line ) {
+				// Do not calc VAT on text or subtotal line
+				if ($line->product_type != 9) {
+					$vatrate = isset($line->tva_tx) ? $line->tva_tx : 0;
 
 				// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
 				if (get_class($object) === 'Facture') {
@@ -364,7 +447,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$tvaligne = $line->total_tva;
 				}
 
-				if ($object->remise_percent)
+				if (!empty($object->remise_percent))
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
 				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
 				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
@@ -481,10 +564,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
 
-		$resarray['line_product_ref_fourn'] = $line->ref_fourn; // for supplier doc lines
-		$resarray['line_rang'] = $line->rang;
-		$resarray['line_libelle'] = $line->libelle; // récupére le libellé du produit/service
-		if(empty($resarray['line_product_label'])) $resarray['line_product_label'] = $line->label;
+		$resarray['line_product_ref_fourn'] = isset($line->ref_fourn) ? $line->ref_fourn : ''; // for supplier doc lines
+		$resarray['line_rang'] = isset($line->rang) ? $line->rang : '';
+		$resarray['line_libelle'] = isset($line->libelle) ? $line->libelle : ''; // récupére le libellé du produit/service
+		if (empty($resarray['line_product_label']) && isset($line->label)) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
 		{
@@ -496,9 +579,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		$resarray['date_ouverture'] = property_exists($line, 'date_ouverture') ? dol_print_date($line->date_ouverture, 'day', 'tzuser') : '';
+		$resarray['date_ouverture_prevue'] = property_exists($line, 'date_ouverture_prevue') ? dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser') : '';
+		$resarray['date_fin_validite'] = property_exists($line, 'date_fin_validite') ? dol_print_date($line->date_fin_validite, 'day', 'tzuser') : '';
 		if(empty($resarray['line_qty_shipped'])) $resarray['line_qty_shipped'] = price2num($line->qty_shipped);
 		if(empty($resarray['line_qty_asked'])) $resarray['line_qty_asked'] = price2num($line->qty_asked);
 		if(empty($resarray['line_weight'])) $resarray['line_weight'] = price2num($line->weight);
@@ -523,50 +606,58 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
         // Substitutions tableau de participants :
         $sessionStag = new Agefodd_session_stagiaire($this->db);
         $resarray = array();
-        $resarray['line_poste'] = $line->poste;
-        $resarray['line_civilite'] = $line->civilitel;
-        $resarray['line_civilite_short'] = $line->civilite;
-        $resarray['line_nom'] = $line->nom;
-        $resarray['line_prenom'] = $line->prenom;
-        $resarray['line_type'] = $line->type;
-        $resarray['line_birthday'] = dol_print_date($line->date_birth);
-		$resarray['line_statut'] = $sessionStag->LibStatut($line->status_in_session);
-		$resarray['line_place_birth'] = $line->place_birth;
-		$resarray['line_birthdayformated'] = $line->datebirthformated;
-		$tel = $line->tel1;
-		if (empty($tel) && !empty($line->tel2)) {
-			$tel = $line->tel2;
+        $resarray['line_poste'] = $this->getObjectPropertyValue($line, 'poste');
+        $resarray['line_civilite'] = $this->getObjectPropertyValue($line, 'civilitel');
+        $resarray['line_civilite_short'] = $this->getObjectPropertyValue($line, 'civilite');
+        $resarray['line_nom'] = $this->getObjectPropertyValue($line, 'nom');
+        $resarray['line_prenom'] = $this->getObjectPropertyValue($line, 'prenom');
+        $resarray['line_type'] = $this->getObjectPropertyValue($line, 'type');
+        $resarray['line_birthday'] = $this->getFormattedDatePropertyValue($line, 'date_birth');
+		$resarray['line_statut'] = property_exists($line, 'status_in_session') ? $sessionStag->LibStatut($line->status_in_session) : '';
+		$resarray['line_place_birth'] = $this->getObjectPropertyValue($line, 'place_birth');
+		$resarray['line_birthdayformated'] = $this->getObjectPropertyValue($line, 'datebirthformated');
+		$linePhonePro = $this->getObjectPropertyValue($line, 'tel1');
+		$linePhoneMobile = $this->getObjectPropertyValue($line, 'tel2');
+		$tel = $linePhonePro;
+		if (empty($tel) && !empty($linePhoneMobile)) {
+			$tel = $linePhoneMobile;
 		} else {
-			$tel = $line->tel1.(!empty($line->tel2)?'/'.$line->tel2:"");
+			$tel = $linePhonePro.(!empty($linePhoneMobile) ? '/'.$linePhoneMobile : "");
 		}
 		$resarray['line_phone'] = $tel;
-		$resarray['line_phone_pro'] = $line->tel1;
-		$resarray['line_phone_mobile'] = $line->tel2;
-		$resarray['line_email'] = $line->email;
-		$resarray['line_siret'] = $line->thirdparty->idprof2;
-		$resarray['line_birthplace'] = $line->place_birth;
-		$resarray['line_code_societe'] = $line->soccode;
-		$resarray['line_nom_societe'] = $line->socname;
-		$resarray['line_financiers_trainee'] = Agefodd_session_stagiaire::getFinanciersByTrainee($line->stagerowid);
-		$resarray['line_alternate_financier_trainee'] = Agefodd_session_stagiaire::getAlternateFinancierByTrainee($line->stagerowid);
-		$resarray['line_stagiaire_presence_bloc'] = $line->stagiaire_presence_bloc;
-		$resarray['line_stagiaire_presence_total'] = $line->stagiaire_presence_total;
-		$resarray['line_time_stagiaire_temps_realise_total'] = $line->time_stagiaire_temps_realise_total;
-		$resarray['line_stagiaire_temps_realise_total'] = $line->stagiaire_temps_realise_total;
-		$resarray['line_time_stagiaire_temps_att_total'] = $line->time_stagiaire_temps_att_total;
-		$resarray['line_stagiaire_temps_att_total'] = $line->stagiaire_temps_att_total;
-		$resarray['line_time_stagiaire_temps_realise_att_total'] = $line->time_stagiaire_temps_realise_att_total;
-		$resarray['line_stagiaire_temps_realise_att_total'] = $line->stagiaire_temps_realise_att_total;
-		if(empty($line->agefodd_stagiaire->thirdparty)) { //Retro compat < 2.17
-			$resarray['line_societe_address'] = $line->societe_address;
-			$resarray['line_societe_zip'] = $line->societe_zip;
-			$resarray['line_societe_town'] = $line->societe_town;
+		$resarray['line_phone_pro'] = $linePhonePro;
+		$resarray['line_phone_mobile'] = $linePhoneMobile;
+		$resarray['line_email'] = $this->getObjectPropertyValue($line, 'email');
+		$resarray['line_siret'] = $this->getNestedObjectPropertyValue($line, 'thirdparty', 'idprof2');
+		$resarray['line_birthplace'] = $this->getObjectPropertyValue($line, 'place_birth');
+		$resarray['line_code_societe'] = $this->getObjectPropertyValue($line, 'soccode');
+		$resarray['line_nom_societe'] = $this->getObjectPropertyValue($line, 'socname');
+		$lineStageRowId = property_exists($line, 'stagerowid') ? (int) $line->stagerowid : 0;
+		$resarray['line_financiers_trainee'] = $lineStageRowId > 0 ? Agefodd_session_stagiaire::getFinanciersByTrainee($lineStageRowId) : '';
+		$resarray['line_alternate_financier_trainee'] = $lineStageRowId > 0 ? Agefodd_session_stagiaire::getAlternateFinancierByTrainee($lineStageRowId) : '';
+		$resarray['line_stagiaire_presence_bloc'] = $this->getObjectPropertyValue($line, 'stagiaire_presence_bloc');
+		$resarray['line_stagiaire_presence_total'] = $this->getObjectPropertyValue($line, 'stagiaire_presence_total');
+		$resarray['line_time_stagiaire_temps_realise_total'] = $this->getObjectPropertyValue($line, 'time_stagiaire_temps_realise_total');
+		$resarray['line_stagiaire_temps_realise_total'] = $this->getObjectPropertyValue($line, 'stagiaire_temps_realise_total');
+		$resarray['line_time_stagiaire_temps_att_total'] = $this->getObjectPropertyValue($line, 'time_stagiaire_temps_att_total');
+		$resarray['line_stagiaire_temps_att_total'] = $this->getObjectPropertyValue($line, 'stagiaire_temps_att_total');
+		$resarray['line_time_stagiaire_temps_realise_att_total'] = $this->getObjectPropertyValue($line, 'time_stagiaire_temps_realise_att_total');
+		$resarray['line_stagiaire_temps_realise_att_total'] = $this->getObjectPropertyValue($line, 'stagiaire_temps_realise_att_total');
+		$hasTraineeThirdparty = is_object($line)
+			&& property_exists($line, 'agefodd_stagiaire')
+			&& is_object($line->agefodd_stagiaire)
+			&& property_exists($line->agefodd_stagiaire, 'thirdparty')
+			&& is_object($line->agefodd_stagiaire->thirdparty);
+		if(!$hasTraineeThirdparty) { //Retro compat < 2.17
+			$resarray['line_societe_address'] = $this->getObjectPropertyValue($line, 'societe_address');
+			$resarray['line_societe_zip'] = $this->getObjectPropertyValue($line, 'societe_zip');
+			$resarray['line_societe_town'] = $this->getObjectPropertyValue($line, 'societe_town');
 		}
 		else {
-			$resarray['line_societe_address'] = $line->agefodd_stagiaire->thirdparty->address;
-			$resarray['line_societe_zip'] = $line->agefodd_stagiaire->thirdparty->zip;
-			$resarray['line_societe_town'] = $line->agefodd_stagiaire->thirdparty->town;
-			$resarray['line_societe_mail'] = $line->agefodd_stagiaire->thirdparty->email;
+			$resarray['line_societe_address'] = $this->getNestedObjectPropertyValue($line->agefodd_stagiaire, 'thirdparty', 'address');
+			$resarray['line_societe_zip'] = $this->getNestedObjectPropertyValue($line->agefodd_stagiaire, 'thirdparty', 'zip');
+			$resarray['line_societe_town'] = $this->getNestedObjectPropertyValue($line->agefodd_stagiaire, 'thirdparty', 'town');
+			$resarray['line_societe_mail'] = $this->getNestedObjectPropertyValue($line->agefodd_stagiaire, 'thirdparty', 'email');
 			$extrafields = new ExtraFields($this->db);
 			$extrafields->fetch_name_optionals_label($line->agefodd_stagiaire->thirdparty->element, true);
 			$resarray = $this->fill_substitutionarray_with_extrafields($line->agefodd_stagiaire->thirdparty, $resarray, $extrafields, 'line_societe', $langs);
@@ -639,50 +730,50 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Substitutions tableau d'horaires
-		$resarray['line_date_session'] = dol_print_date($line->date_session);
-		$resarray['line_heure_debut_session'] = dol_print_date($line->heured, 'hour');
-		$resarray['line_heure_fin_session'] = dol_print_date($line->heuref, 'hour');
+		$resarray['line_date_session'] = $this->getFormattedDatePropertyValue($line, 'date_session');
+		$resarray['line_heure_debut_session'] = $this->getFormattedDatePropertyValue($line, 'heured', 'hour');
+		$resarray['line_heure_fin_session'] = $this->getFormattedDatePropertyValue($line, 'heuref', 'hour');
 
 		// Substitutions tableau des formateurs :
-		$resarray['line_formateur_nom'] = $line->lastname;
-		$resarray['line_formateur_prenom'] = $line->firstname;
-		$resarray['line_formateur_phone'] = $line->phone;
-		$resarray['line_formateur_phone_mobile'] = $line->phone_mobile;
-		$resarray['line_formateur_phone_perso'] = $line->phone_perso;
-		$resarray['line_formateur_mail'] = $line->email;
-		$resarray['line_formateur_socname'] =  $line->socname;
-		$resarray['line_formateur_address'] = $line->address;
-		$resarray['line_formateur_town'] = $line->town;
-		$resarray['line_formateur_zip'] = $line->zip;
-		$resarray['line_formateur_statut'] = $line->labelstatut[$line->trainer_status];
+		$resarray['line_formateur_nom'] = $this->getObjectPropertyValue($line, 'lastname');
+		$resarray['line_formateur_prenom'] = $this->getObjectPropertyValue($line, 'firstname');
+		$resarray['line_formateur_phone'] = $this->getObjectPropertyValue($line, 'phone');
+		$resarray['line_formateur_phone_mobile'] = $this->getObjectPropertyValue($line, 'phone_mobile');
+		$resarray['line_formateur_phone_perso'] = $this->getObjectPropertyValue($line, 'phone_perso');
+		$resarray['line_formateur_mail'] = $this->getObjectPropertyValue($line, 'email');
+		$resarray['line_formateur_socname'] =  $this->getObjectPropertyValue($line, 'socname');
+		$resarray['line_formateur_address'] = $this->getObjectPropertyValue($line, 'address');
+		$resarray['line_formateur_town'] = $this->getObjectPropertyValue($line, 'town');
+		$resarray['line_formateur_zip'] = $this->getObjectPropertyValue($line, 'zip');
+		$resarray['line_formateur_statut'] = $this->getStatusLabelValue($line, 'trainer_status', 'labelstatut');
 
 		// Substitutions tableau des objectif :
-		$resarray['line_objpeda_rang'] = $line->priorite;
-		$resarray['line_objpeda_description'] = $line->intitule;
+		$resarray['line_objpeda_rang'] = $this->getObjectPropertyValue($line, 'priorite');
+		$resarray['line_objpeda_description'] = $this->getObjectPropertyValue($line, 'intitule');
 
 		// Substitutions tableau des élément financier :
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
 		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
-        $resarray['line_fin_desciption'] = strip_tags($line->description, "<br><p><ul><ol><li><span><div><tr><td><th><table>");
+        $resarray['line_fin_desciption'] = strip_tags($this->getObjectPropertyValue($line, 'description'), "<br><p><ul><ol><li><span><div><tr><td><th><table>");
 //		$resarray['line_fin_desciption_light'] = $line->form_label;
-		$resarray['line_fin_desciption_light_short'] = $line->form_label_short;
-		$resarray['line_fin_qty'] = $line->qty;
-		$resarray['line_fin_tva_tx'] = vatrate($line->tva_tx, 1);
-		$resarray['line_fin_amount_ht'] = price($line->total_ht, 0, $outputlangs, 1, - 1, 2);
-		$resarray['line_fin_amount_ttc'] = price($line->total_ttc, 0, $outputlangs, 1, - 1, 2);
-		$resarray['line_fin_discount'] = dol_print_reduction($line->remise_percent, $outputlangs);
-		$resarray['line_fin_pu_ht'] = price($line->price, 0, $outputlangs, 1, - 1, 2);
+		$resarray['line_fin_desciption_light_short'] = $this->getObjectPropertyValue($line, 'form_label_short');
+		$resarray['line_fin_qty'] = $this->getObjectPropertyValue($line, 'qty');
+		$resarray['line_fin_tva_tx'] = property_exists($line, 'tva_tx') ? vatrate($line->tva_tx, 1) : '';
+		$resarray['line_fin_amount_ht'] = property_exists($line, 'total_ht') ? price($line->total_ht, 0, $outputlangs, 1, - 1, 2) : '';
+		$resarray['line_fin_amount_ttc'] = property_exists($line, 'total_ttc') ? price($line->total_ttc, 0, $outputlangs, 1, - 1, 2) : '';
+		$resarray['line_fin_discount'] = property_exists($line, 'remise_percent') ? dol_print_reduction($line->remise_percent, $outputlangs) : '';
+		$resarray['line_fin_pu_ht'] = property_exists($line, 'price') ? price($line->price, 0, $outputlangs, 1, - 1, 2) : '';
 
 		// Retrieve extrafields
-		$extrafieldkey = $line->element;
+		$extrafieldkey = $this->getObjectPropertyValue($line, 'element');
 		$array_key = "line";
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
 		if(floatval(DOL_VERSION) >= 16) {
 			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
+			if (!empty($extrafieldkey) && !empty($extrafields->attributes[$extrafieldkey]['loaded'])) {
 				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? '';
 				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? '';
 				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? '';
@@ -702,18 +793,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		if(getDolGlobalInt('AGF_USE_STEPS')){
-			$resarray['line_step_label'] = $line->label;
-			$resarray['line_step_date_start'] = dol_print_date($line->date_start, 'day');
-			$resarray['line_step_date_end'] = dol_print_date($line->date_end, 'day');
-			$resarray['line_step_duration'] = $line->duration != null ? $line->duration : '';
+			$resarray['line_step_label'] = $this->getObjectPropertyValue($line, 'label');
+			$resarray['line_step_date_start'] = $this->getFormattedDatePropertyValue($line, 'date_start', 'day');
+			$resarray['line_step_date_end'] = $this->getFormattedDatePropertyValue($line, 'date_end', 'day');
+			$resarray['line_step_duration'] = property_exists($line, 'duration') && $line->duration !== null ? $line->duration : '';
 			// Lieu
-			$resarray['line_step_lieu'] = strip_tags($line->place->ref_interne);
-			$resarray['line_step_lieu_adresse'] = strip_tags($line->place->adresse);
-			$resarray['line_step_lieu_cp'] = strip_tags($line->place->cp);
-			$resarray['line_step_lieu_ville'] = strip_tags($line->place->ville);
-			$resarray['line_step_lieu_acces'] = str_replace('&amp;', '&', $line->place->acces_site);
-			$resarray['line_step_lieu_horaires'] = strip_tags($line->place->timeschedule);
-			$resarray['line_step_lieu_divers'] = $line->place->note1;
+			$resarray['line_step_lieu'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'ref_interne'));
+			$resarray['line_step_lieu_adresse'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'adresse'));
+			$resarray['line_step_lieu_cp'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'cp'));
+			$resarray['line_step_lieu_ville'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'ville'));
+			$resarray['line_step_lieu_acces'] = str_replace('&amp;', '&', $this->getNestedObjectPropertyValue($line, 'place', 'acces_site'));
+			$resarray['line_step_lieu_horaires'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'timeschedule'));
+			$resarray['line_step_lieu_notes'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'notes'));
+			$resarray['line_step_lieu_divers'] = $this->getNestedObjectPropertyValue($line, 'place', 'note1');
 		}
 
 
@@ -722,7 +814,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
 			if(floatval(DOL_VERSION) >= 16) {
 				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if($extrafields->attributes['agefodd_stagiaire']['loaded'] > 0) {
+				if (!empty($extrafields->attributes['agefodd_stagiaire']['loaded'])) {
 					$extrafields->attribute_type = $extrafields->attributes['agefodd_stagiaire']['type'];
 					$extrafields->attribute_size = $extrafields->attributes['agefodd_stagiaire']['size'];
 					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
@@ -734,7 +826,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields->attribute_perms = $extrafields->attributes['agefodd_stagiaire']['perms'];
 					$extrafields->attribute_langfile = $extrafields->attributes['agefodd_stagiaire']['langfile'];
 					$extrafields->attribute_list = $extrafields->attributes['agefodd_stagiaire']['list'];
-					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'];
+					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'] ?? array();
 				}
 			}
 			$line->array_options=$line->agefodd_stagiaire->array_options;
@@ -767,9 +859,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// Spé pour les contrats
-		$resarray['date_ouverture'] = dol_print_date($line->date_ouverture, 'day', 'tzuser');
-		$resarray['date_ouverture_prevue'] = dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser');
-		$resarray['date_fin_validite'] = dol_print_date($line->date_fin_validite, 'day', 'tzuser');
+		$resarray['date_ouverture'] = property_exists($line, 'date_ouverture') ? dol_print_date($line->date_ouverture, 'day', 'tzuser') : '';
+		$resarray['date_ouverture_prevue'] = property_exists($line, 'date_ouverture_prevue') ? dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser') : '';
+		$resarray['date_fin_validite'] = property_exists($line, 'date_fin_validite') ? dol_print_date($line->date_fin_validite, 'day', 'tzuser') : '';
 
 		return $resarray;
 	}
@@ -805,15 +897,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if ($res)
 		$resarray['formation_product']=$prod->label;
 		$resarray['formation_type_public']=$object->public;
+		$resarray['formation_type_stagiaire']=$object->public;
 		$resarray['formation_methode_pedago']=$object->methode;
 		$resarray['formation_documents']=$object->note1;
 		$resarray['formation_equipements']=$object->note2;
 		$resarray['formation_pre_requis']=$object->prerequis;
+		$resarray['formation_prerequis']=$object->prerequis;
+		$resarray['formation_programme']=$object->programme;
 		$resarray['formation_moyens_peda']=$object->pedago_usage;
+		$resarray['formation_moyens_pedagogique']=$object->pedago_usage;
 		$resarray['formation_sanction']=$object->sanction;
 		$resarray['formation_nature']= $formAgefodd->select_formation_nature_action($object->fk_nature_action_code, '', '', '', '', 'view');
 		$resarray['formation_Accessibility_Handicap']=$object->accessibility_handicap == 0 ? 'Non' : 'Oui';
-		$arrpeda= explode(',', $object->formation_obj_peda);
+		$arrpeda= explode(',', $object->formation_obj_peda ?? '');
 		$tmp="";
 		foreach ($arrpeda as $peda) {
 			$tmp .= $peda . "<br>";
@@ -853,13 +949,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 		$object->fetch_optionals();
-		if( is_array($e->attributes[$object->table_element])
-			&& array_key_exists('label',$e->attributes[$object->table_element])
-			&& is_array($e->attributes[$object->table_element]['label'])){
-			foreach($e->attributes[$object->table_element]['label'] as $key => $val) {
-				$resarray['formation_options_'.$key] = strip_tags($e->showOutputField($key, $object->array_options['options_'.$key]));
+			if( is_array($e->attributes[$object->table_element])
+				&& array_key_exists('label',$e->attributes[$object->table_element])
+				&& is_array($e->attributes[$object->table_element]['label'])){
+				foreach($e->attributes[$object->table_element]['label'] as $key => $val) {
+					$fieldValue = '';
+					if (is_array($object->array_options) && array_key_exists('options_'.$key, $object->array_options)) {
+						$fieldValue = $object->array_options['options_'.$key];
+					}
+					$resarray['formation_options_'.$key] = strip_tags($e->showOutputField($key, $fieldValue));
+				}
 			}
-		}
 
 		return $resarray;
 	}
@@ -873,6 +973,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		global $db, $langs;
 
+		$agfStep = null;
 
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
@@ -1090,10 +1191,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$fk_place = $agfStep->fk_place;
 		}
 
-		$resarray['step_label'] = $agfStep->label;
-		$resarray['step_date_start'] = dol_print_date($agfStep->date_start, 'day');
-		$resarray['step_date_end'] = dol_print_date($agfStep->date_end, 'day');
-		$resarray['step_duration'] = $agfStep->duration;
+		$resarray['step_label'] = !empty($agfStep->label) ? $agfStep->label : '';
+		$resarray['step_date_start'] = !empty($agfStep->date_start) ? dol_print_date($agfStep->date_start, 'day') : '';
+		$resarray['step_date_end'] = !empty($agfStep->date_end) ? dol_print_date($agfStep->date_end, 'day') : '';
+		$resarray['step_duration'] = !empty($agfStep->duration) ? $agfStep->duration : '';
 
 		dol_include_once('/agefodd/class/agefodd_place.class.php');
 		$agf_place = new Agefodd_place($db);
@@ -1169,23 +1270,26 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
 					if(floatval(DOL_VERSION) >= 16) {
 						if (isset($extrafields)) {
-							$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-							if ($extrafields->attributes[$extrafieldkey]['loaded'] > 0) {
-								$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? array();
-								$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size']?? array();
-								$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique']?? array();
-								$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required']?? array();
-								$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label']?? array();
-								$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default']?? array();
-								$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed']?? array();
-								$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param']?? array();
-								$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms']?? array();
-								$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile']?? array();
-								$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list']?? array();
-								$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden']?? array();
+								$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
+								$extrafields->attribute_default = $extrafields->attribute_computed = $extrafields->attribute_perms = $extrafields->attribute_langfile = array();
+								$extrafields->attribute_list = $extrafields->attribute_hidden = $extrafields->attribute_elementtype = array();
+									if (!empty($extrafields->attributes[$extrafieldkey]) && !empty($extrafields->attributes[$extrafieldkey]['loaded'])) {
+										$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? array();
+										$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? array();
+										$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? array();
+										$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'] ?? array();
+									$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'] ?? array();
+									$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'] ?? array();
+									$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'] ?? array();
+									$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'] ?? array();
+									$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'] ?? array();
+									$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'] ?? array();
+									$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'] ?? array();
+									$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden']?? array();
+									$extrafields->attribute_elementtype = $extrafields->attributes[$extrafieldkey]['elementtype']?? array();
+								}
 							}
 						}
-					}
 					if($isStagiaireSocExtrafields) {
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$extraKey = str_replace('stagiaire_soc_options_', '', $key);
@@ -1242,6 +1346,35 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
+
+			// Keep legacy trainee aliases resolvable even when no current trainee context exists.
+			if (is_object($object) && get_class($object) === 'Agsession') {
+				$traineeRpps = '';
+				$traineeSocRpps = '';
+				$traineeSocAdeli = '';
+
+				if (!empty($object->stagiaire_soc_options_rpps)) {
+					$traineeSocRpps = $object->stagiaire_soc_options_rpps;
+				}
+				if (!empty($object->stagiaire_soc_options_adeli)) {
+					$traineeSocAdeli = $object->stagiaire_soc_options_adeli;
+				}
+				if (!empty($object->stagiaire) && is_object($object->stagiaire)) {
+					if (!empty($object->stagiaire->thirdparty) && !empty($object->stagiaire->thirdparty->array_options) && is_array($object->stagiaire->thirdparty->array_options)) {
+						if (!empty($object->stagiaire->thirdparty->array_options['options_rpps'])) {
+							$traineeSocRpps = $object->stagiaire->thirdparty->array_options['options_rpps'];
+						}
+						if (!empty($object->stagiaire->thirdparty->array_options['options_adeli'])) {
+							$traineeSocAdeli = $object->stagiaire->thirdparty->array_options['options_adeli'];
+						}
+					}
+				}
+
+				$traineeRpps = $traineeSocRpps;
+				$array_other['object_stagiaire_rpps'] = $traineeRpps;
+				$array_other['object_stagiaire_soc_options_rpps'] = $traineeSocRpps;
+				$array_other['object_stagiaire_soc_options_adeli'] = $traineeSocAdeli;
+			}
 		}
 
 		return $array_other;
@@ -1277,7 +1410,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$perms=$extrafields->attributes[$extrafieldsobjectkey]['perms'][$key];
 			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
 			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
-			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key];
+			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key] ?? 0;
 
 			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
@@ -1287,21 +1420,21 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 
 		}
-		else
-		{
-			$elementtype=$extrafields->attribute_elementtype[$key];	// seems not used
-			$label=$extrafields->attribute_label[$key];
-			$type=$extrafields->attribute_type[$key];
-			$size=$extrafields->attribute_size[$key];
-			$default=$extrafields->attribute_default[$key];
-			$computed=$extrafields->attribute_computed[$key];
-			$unique=$extrafields->attribute_unique[$key];
-			$required=$extrafields->attribute_required[$key];
-			$param=$extrafields->attribute_param[$key];
-			$perms=$extrafields->attribute_perms[$key];
-			$langfile=$extrafields->attribute_langfile[$key];
-			$list=$extrafields->attribute_list[$key];
-			$ishidden=$extrafields->attribute_hidden[$key];
+			else
+			{
+				$elementtype=$extrafields->attribute_elementtype[$key] ?? '';	// seems not used
+				$label=$extrafields->attribute_label[$key] ?? '';
+				$type=$extrafields->attribute_type[$key] ?? '';
+				$size=$extrafields->attribute_size[$key] ?? '';
+				$default=$extrafields->attribute_default[$key] ?? '';
+				$computed=$extrafields->attribute_computed[$key] ?? '';
+				$unique=$extrafields->attribute_unique[$key] ?? '';
+				$required=$extrafields->attribute_required[$key] ?? '';
+				$param=$extrafields->attribute_param[$key] ?? array();
+				$perms=$extrafields->attribute_perms[$key] ?? '';
+				$langfile=$extrafields->attribute_langfile[$key] ?? '';
+				$list=$extrafields->attribute_list[$key] ?? 0;
+				$ishidden=$extrafields->attribute_hidden[$key] ?? 0;
 
 			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
@@ -1631,7 +1764,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 			elseif($extrafields->attribute_type[$key] == 'select')
 			{
-				$object->array_options['options_'.$key] = $extrafields->attribute_param[$key]['options'][$object->array_options['options_'.$key]];
+				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
+				if (isset($extrafields->attribute_param[$key]['options'][$currentValue])) {
+					$object->array_options['options_'.$key] = $extrafields->attribute_param[$key]['options'][$currentValue];
+				} else {
+					$object->array_options['options_'.$key] = '';
+				}
 			}
 			elseif($extrafields->attribute_type[$key] == 'checkbox') {
 				$valArray=explode(',', $object->array_options['options_'.$key]);
@@ -1663,16 +1801,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
 				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
-			}
-			elseif($extrafields->attribute_type[$key] == 'datetime')
-			{
-				$datetime = $object->array_options['options_'.$key];
-				$object->array_options['options_'.$key] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour'):'');                            // using company output language
-				$object->array_options['options_'.$key.'_locale'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhour', 'tzserver', $outputlangs):'');    // using output language format
-				$object->array_options['options_'.$key.'_rfc'] = ($datetime!="0000-00-00 00:00:00"?dol_print_date($object->array_options['options_'.$key], 'dayhourrfc'):'');                             // international format
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
-			}
+				}
+					elseif($extrafields->attribute_type[$key] == 'datetime')
+					{
+						$datetime = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
+						$object->array_options['options_'.$key] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour') : '');                            // using company output language
+						$object->array_options['options_'.$key.'_locale'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour', 'tzserver', $outputlangs) : '');    // using output language format
+						$object->array_options['options_'.$key.'_rfc'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhourrfc') : '');                             // international format
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
+				}
 			elseif($extrafields->attribute_type[$key] == 'link')
 			{
 				$id = $object->array_options['options_'.$key];
@@ -1700,14 +1838,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 			elseif($extrafields->attribute_type[$key] == 'sellist') {
-				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $object->array_options['options_'.$key]);
+				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
+				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $currentValue);
 			}
 			elseif($extrafields->attribute_type[$key] == 'chkbxlst')
 			{
-				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $object->array_options['options_'.$key]);
+				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
+				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $currentValue);
 			}
 
-			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => $object->array_options['options_'.$key]));
+			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => (isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '')));
 		}
 
 

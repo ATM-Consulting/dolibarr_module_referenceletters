@@ -25,6 +25,7 @@
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT . "/core/class/commonobject.class.php";
 require_once DOL_DOCUMENT_ROOT . "/core/class/extrafields.class.php";
+require_once __DIR__ . '/catalog/substitutioncatalogpresentationbuilder.class.php';
 // require_once(DOL_DOCUMENT_ROOT."/product/class/product.class.php");
 
 /**
@@ -368,11 +369,6 @@ class ReferenceLetters extends CommonObject
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
-
-			foreach ($Tab as $key => $val){
-				$this->element_type_list['rfltr_agefodd_'.$key] = $this->element_type_list['rfltr_agefodd_formation'];
-				$this->element_type_list['rfltr_agefodd_'.$key]['title'] = $val;
-			}
 		}
 
 		// Hook permettant à d'autres modules d'ajouter des types de documents
@@ -703,15 +699,31 @@ class ReferenceLetters extends CommonObject
 		global $conf, $langs, $mysoc, $hookmanager;
 
 		require_once 'commondocgeneratorreferenceletters.class.php';
+		require_once __DIR__ . '/catalog/substitutioncatalogbuilder.class.php';
 		$langs->load('admin');
+
+		$mailOnlyTags = array(
+			'__AGENDATOKEN__',
+			'__FORMDATESESSION__',
+			'__FORMINTITULE__',
+			'__TRAINER_1_EXTRAFIELD_XXXX__',
+			'__CERTIFICAT_NUMBER__',
+			'__CERTIFICAT_STAGIAIRE_LASTNAME__',
+			'__CERTIFICAT_STAGIAIRE_FIRSTNAME__',
+			'__CERTIFICAT_DATE_START__',
+			'__CERTIFICAT_DATE_END__',
+		);
 
 		$subst_array = array();
 		$docgen = new CommonDocGeneratorReferenceLetters($this->db);
+		$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, $docgen, $langs);
+		$currentCatalogObject = null;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
 
         complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
+		$catalogBuilder->sanitizeGlobalCatalogKeys($subst_array[$langs->trans('Other')], $mailOnlyTags);
 
 		foreach ( $this->element_type_list as $type => $item ) {
 			if ($this->element_type == $type) {
@@ -733,9 +745,13 @@ class ReferenceLetters extends CommonObject
 				}
 				if (! empty($obj->rowid) && $num > 0) {
 					$testObj->fetch($obj->rowid);
+					$currentCatalogObject = $testObj;
 
 					if (method_exists($testObj, 'fetch_thirdparty')) {
 						$testObj->fetch_thirdparty();
+						if (!empty($testObj->thirdparty) && is_object($testObj->thirdparty) && method_exists($testObj->thirdparty, 'fetch_optionals')) {
+							$testObj->thirdparty->fetch_optionals();
+						}
 					}
 
 					$array_second_thirdparty_object = array ();
@@ -750,6 +766,8 @@ class ReferenceLetters extends CommonObject
 					}else {
 						dol_syslog($item['substitution_method']);
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
+						$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
 					}
 
 					if (! empty($testObj->thirdparty->id)) {
@@ -760,10 +778,40 @@ class ReferenceLetters extends CommonObject
 					}
 
 					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+					$catalogBuilder->appendThirdpartyCatalogKeys($subst_array[$langs->trans($item['title'])], !empty($testObj->thirdparty) ? $testObj->thirdparty : null);
+
+					$contextOther = $docgen->get_substitutionarray_other($langs, $testObj);
+					complete_substitutions_array($contextOther, $langs, $testObj);
+					$catalogBuilder->sanitizeGlobalCatalogKeys($contextOther, $mailOnlyTags);
+					$subst_array[$langs->trans('Other')] = array_merge($subst_array[$langs->trans('Other')], $contextOther);
 				} else {
-					$subst_array[$langs->trans($item['title'])] = array (
-							$langs->trans('RefLtrNoneExists', $langs->trans($item['title'])) => $langs->trans('RefLtrNoneExists', $langs->trans($item['title']))
-					);
+					$array_second_thirdparty_object = array ();
+					$currentCatalogObject = $testObj;
+					if($testObj->element == 'societe'){
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
+
+						foreach ($array_first_thirdparty_object as $key => $value) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
+						}
+						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
+					}else {
+						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
+						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
+						$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
+
+						$thirdpartyStatic = new Societe($this->db);
+						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($thirdpartyStatic, $langs);
+						foreach ($array_first_thirdparty_object as $key => $value) {
+							$array_second_thirdparty_object['cust_' . $key] = $value;
+						}
+						$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+						$catalogBuilder->appendThirdpartyCatalogKeys($subst_array[$langs->trans($item['title'])], $thirdpartyStatic);
+					}
+
+					$contextOther = $docgen->get_substitutionarray_other($langs, $testObj);
+					complete_substitutions_array($contextOther, $langs, $testObj);
+					$catalogBuilder->sanitizeGlobalCatalogKeys($contextOther, $mailOnlyTags);
+					$subst_array[$langs->trans('Other')] = array_merge($subst_array[$langs->trans('Other')], $contextOther);
 				}
 				//TODO : add line replacement
 			}
@@ -782,20 +830,264 @@ class ReferenceLetters extends CommonObject
 		}
 		if (! empty($obj->rowid) && $num > 0) {
 			$testObj->fetch($obj->rowid);
+		}
+		$catalogBuilder->appendReferenceLetterCatalogKeys($subst_array, $testObj);
 
-			$subst_array[$langs->trans('Module103258Name')] = $docgen->get_substitutionarray_refletter($testObj, $langs);
-		} else {
-			$subst_array[$langs->trans('Module103258Name')] = array (
-					$langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name'))) => $langs->trans('RefLtrNoneExists', $langs->trans($langs->trans('Module103258Name')))
-			);
+		$catalogBuilder->appendDocumentLineCatalogKeys($subst_array);
+
+		// Les groupes Agefodd ne doivent etre visibles que sur les documents Agefodd.
+		if(!empty($conf->agefodd->enabled) && $this->isAgefoddElementType($this->element_type)) {
+			$this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
 		}
 
-		//Todo  : a faire seulement sur les object agefodd
-		if(!empty($conf->agefodd->enabled)) $this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+		// Fallback generique: si le catalogue detecte de nouvelles cles, on les remonte au moins
+		// dans des groupes avances, sans attendre un ajout manuel dans getSubtitutionKey().
+		$catalogBuilder->appendDetectedCatalogKeys($subst_array, $this->element_type, $currentCatalogObject, array(
+			'is_agefodd' => $this->isAgefoddElementType($this->element_type),
+			'is_agefodd_formation' => $this->isAgefoddFormationElementType($this->element_type),
+		));
+
+		$catalogBuilder->relocateTechnicalGlobalCatalogKeys(
+			$subst_array,
+			$langs->trans('Other'),
+			$langs->trans('RefLtrTechnicalConstantsTitle'),
+			$mailOnlyTags
+		);
 
 		$parameters = array('subst_array' => &$subst_array);
 		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
 		return $subst_array;
+	}
+
+	/**
+	 * Build the presentation catalog shown in DocEdit UI.
+	 *
+	 * @param User $user Current user.
+	 * @return array
+	 */
+	public function getSubtitutionKeyPresentation($user)
+	{
+		global $langs;
+
+		$builder = new SubstitutionCatalogPresentationBuilder($langs);
+		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user));
+	}
+
+	/**
+	 * Build the full DocEdit UI catalog with scalar tags and loop metadata.
+	 *
+	 * @param User $user Current user.
+	 * @return array<string,mixed>
+	 */
+	public function getSubtitutionKeyUiData($user)
+	{
+		return array(
+			'tags' => $this->getSubtitutionKeyPresentation($user),
+			'loops' => $this->getLoopCatalogPresentation(),
+		);
+	}
+
+	/**
+	 * Return the loops available for the current document type.
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	public function getLoopCatalogPresentation()
+	{
+		global $conf, $langs;
+
+		$loops = array();
+
+		if (!$this->isAgefoddElementType($this->element_type)) {
+			$item = isset($this->element_type_list[$this->element_type]) ? $this->element_type_list[$this->element_type] : array();
+			if (!empty($item['substitution_method_line'])) {
+				$loops[] = $this->buildLoopDefinition(
+					'lines',
+					$langs->trans('RefLtrLines'),
+					'Boucle des lignes standard du document courant.',
+					array('line_fulldesc', 'line_product_ref', 'line_qty', 'line_price_ht_locale'),
+					$langs->trans('RefLtrLines')
+				);
+
+				if ($this->element_type === 'contract') {
+					$loops[] = $this->buildLoopDefinition(
+						'lines_active',
+						'Lignes actives du contrat',
+						'Boucle reservee aux lignes de contrat actives.',
+						array('line_fulldesc', 'line_date_start_locale', 'line_date_end_locale', 'line_price_ht_locale'),
+						$langs->trans('RefLtrLines')
+					);
+				}
+			}
+
+			return $loops;
+		}
+
+		if (!$this->isAgefoddSessionElementType($this->element_type)) {
+			return $loops;
+		}
+
+		$loops[] = $this->buildLoopDefinition(
+			'THorairesSession',
+			'Horaires de session',
+			'Boucle des horaires de la session.',
+			array('line_date_session', 'line_heure_debut_session', 'line_heure_fin_session'),
+			'Agefodd Liste des horaires'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TFormationObjPeda',
+			'Objectifs pedagogiques',
+			'Boucle des objectifs pedagogiques de la session.',
+			array('line_objpeda_rang', 'line_objpeda_description'),
+			'Agefodd Liste des objectifs pedagogiques'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSession',
+			'Participants',
+			'Boucle de la liste complete des participants.',
+			array('line_nom', 'line_prenom', 'line_email', 'line_statut'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionPresent',
+			'Participants presents',
+			'Boucle des participants presentes dans la session.',
+			array('line_nom', 'line_prenom', 'line_statut', 'line_stagiaire_presence_total'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionSoc',
+			'Participants par societe',
+			'Boucle des participants regroupes par societe.',
+			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_email'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionSocPresent',
+			'Participants presents par societe',
+			'Boucle des participants presents regroupes par societe.',
+			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_statut'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionSocConfirm',
+			'Participants confirmes par societe',
+			'Boucle des participants confirmes regroupes par societe.',
+			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_email'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionSocMore',
+			'Participants par societe (detail complementaire)',
+			'Boucle complementaire de participants regroupes par societe.',
+			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_type'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStagiairesSessionConvention',
+			'Participants convention',
+			'Boucle reservee aux participants de convention.',
+			array('line_nom', 'line_prenom', 'line_email', 'line_financiers_trainee'),
+			'Agefodd Liste des participants'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TFormateursSession',
+			'Formateurs',
+			'Boucle des formateurs rattaches a la session.',
+			array('line_formateur_nom', 'line_formateur_prenom', 'line_formateur_mail', 'line_formateur_phone'),
+			'Agefodd Liste des formateurs'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TConventionFinancialLine',
+			'Lignes financieres convention',
+			'Boucle des lignes financieres de convention.',
+			array('line_fin_desciption', 'line_fin_qty', 'line_fin_amount_ht', 'line_fin_amount_ttc'),
+			'Agefodd Lignes financieres session'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TFormateursSessionCal',
+			'Agenda formateur',
+			'Boucle du calendrier formateur.',
+			array('line_formateur_nom', 'line_date_session', 'line_heure_debut_session', 'line_heure_fin_session'),
+			'Agefodd Agenda formateur'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TSteps',
+			'Etapes',
+			'Boucle de toutes les etapes de la session.',
+			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_lieu'),
+			'Agefodd Liste des etapes'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStepsDistanciel',
+			'Etapes distancielles',
+			'Boucle des etapes distancielles.',
+			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_duration'),
+			'Agefodd Liste des etapes'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TStepsPresentiel',
+			'Etapes presentiel',
+			'Boucle des etapes en presentiel.',
+			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_lieu'),
+			'Agefodd Liste des etapes'
+		);
+
+		if (!empty($conf->agefoddcertificat->enabled)) {
+			$loops[] = $this->buildLoopDefinition(
+				'TSessionStagiairesCertif',
+				'Certificats stagiaires',
+				'Boucle des certificats relies aux stagiaires.',
+				array('line_certif_code', 'line_certif_label', 'line_certif_date_debut', 'line_certif_date_fin'),
+				'Agefodd Liste des participants'
+			);
+			$loops[] = $this->buildLoopDefinition(
+				'TSessionStagiairesCertifSoc',
+				'Certificats stagiaires par societe',
+				'Boucle des certificats stagiaires regroupes par societe.',
+				array('line_nom_societe', 'line_certif_code', 'line_certif_label', 'line_certif_date_fin'),
+				'Agefodd Liste des participants'
+			);
+		}
+
+		return $loops;
+	}
+
+	/**
+	 * Build one UI descriptor for a BEGIN/END loop.
+	 *
+	 * @param string $segment Segment name.
+	 * @param string $label User-facing label.
+	 * @param string $description Loop description.
+	 * @param array<int,string> $sampleTags Representative tags available inside the loop.
+	 * @param string $groupLabel UI group label containing the related fields.
+	 * @return array<string,mixed>
+	 */
+	protected function buildLoopDefinition($segment, $label, $description, array $sampleTags, $groupLabel = '')
+	{
+		global $langs;
+
+		$exampleTag = !empty($sampleTags) ? $sampleTags[0] : '';
+		$example = '[!-- BEGIN ' . $segment . ' --]' . "\n";
+		if ($exampleTag !== '') {
+			$example .= '{' . $exampleTag . '}' . "\n";
+		}
+		$example .= '[!-- END ' . $segment . ' --]';
+
+		$groupUsageLabel = '';
+		if ($groupLabel !== '') {
+			$groupUsageLabel = is_object($langs) ? $langs->trans('RefLtrLoopGroupUsage', $groupLabel) : 'Voir les champs dans le bloc : ' . $groupLabel;
+		}
+
+		return array(
+			'segment' => $segment,
+			'label' => $label,
+			'description' => $description,
+			'sample_tags' => $sampleTags,
+			'group_label' => $groupLabel,
+			'group_usage_label' => $groupUsageLabel,
+			'syntax' => $example,
+		);
 	}
 
 	/**
@@ -806,336 +1098,74 @@ class ReferenceLetters extends CommonObject
 
 		global $langs, $conf;
 
+		$isFormationDoc = $this->isAgefoddFormationElementType($this->element_type);
+		$isTrainerDoc = $this->isAgefoddTrainerElementType($this->element_type);
+		$isTraineeDoc = $this->isAgefoddTraineeElementType($this->element_type);
+		$isConventionDoc = $this->isAgefoddConventionElementType($this->element_type);
+		$isSessionDoc = $this->isAgefoddSessionElementType($this->element_type);
+
+		$groupLabels = array(
+			'formation_catalogue' => 'Agefodd Formation catalogue',
+			'trainer_mission' => 'Agefodd Formateur mission',
+			'session' => 'Agefodd Session courante',
+			'participants' => 'Agefodd Liste des participants',
+			'steps' => 'Agefodd Liste des etapes',
+			'step' => 'Agefodd Etape courante',
+			'horaires' => 'Agefodd Liste des horaires',
+			'formateurs' => 'Agefodd Liste des formateurs',
+			'financial_lines' => 'Agefodd Lignes financieres session',
+			'pedagogic_objectives' => 'Agefodd Liste des objectifs pedagogiques',
+			'trainee' => 'Agefodd Stagiaire courant',
+			'convention' => 'Agefodd Convention',
+			'trainer_times' => 'Agefodd Agenda formateur',
+		);
+
+		$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, new CommonDocGeneratorReferenceLetters($this->db), $langs);
+
 		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
 		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
 
-		// formation initiale
-		$subst_array[$langs->trans('AgfFormationInitiale')] = array(
-
-		'formation_nom'=>'Intitulé de la formation'
-		,'formation_ref'=>'Référence de la formation'
-		,'formation_id'=>'Id de la formation'
-		,'formation_programme'=>'Programme de la formation'
-		,'formation_statut'=>'Statut de la formation'
-		,'formation_duree' => 'Durée de la formation'
-		,'formation_but'=>'But de la formation'
-		,'formation_methode'=>'Methode de formation'
-
-		,'formation_nb_place_dispo'=>'nombre de places disponibles'
-		,'formation_nb_inscription_mini'=> "Nombre minimum d'inscrits pour confirmer la session"
-		,'formation_category'=>'Catégorie formation'
-		,'formation_category_bpf'=>'Catégorie de formation prestation (BPF)'
-		,'formation_product'=>'Produit ou service associé'
-		,'formation_type_public'=>'Type de public'
-		,'formation_methode_pedago'=>'Méthodes pédagogiques'
-		,'formation_documents'=>'Documents nécessaires à la formation'
-		,'formation_equipements'=>'Equipements nécessaires à la formation'
-		,'formation_pre_requis'=>'Pré-requis'
-		,'formation_moyens_peda'=>'Moyens pédagogiques'
-		,'formation_sanction'=>'Sanction de la formation'
-		,'formation_competences'=>'Liste des compétences visées'
-		,'formation_nature'=>'Nature de l’action concourant au développement des compétences'
-		,'formation_Accessibility_Handicap'=>'Accessible aux personnes handicapés'
-		,'AgfMentorList'=>'Liste des référents'
-		,'Mentor_administrator'=>'Référent Administratif'
-		,'Mentor_pedagogique'=>'Référent pédagogique'
-		,'Mentor_handicap'	=>'Référent handicap'
+		$subst_array[$groupLabels['session']] = array(
 
 		);
 
-		$extrafields = new ExtraFields($this->db);
-		//Extrafield Formation
-		$formation_extralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
-		if(!empty($formation_extralabels)) {
-			foreach($formation_extralabels as $extrakey => $extralabel) {
-				$subst_array[$langs->trans('AgfFormationInitiale')]['formation_options_'.$extrakey] = 'Champ complémentaire Formation : '.$extralabel;
+		$catalogBuilder->appendScopedAgefoddCatalogKeys($subst_array, $groupLabels, array(
+			'is_agefodd' => true,
+			'is_session_doc' => $isSessionDoc,
+			'is_convention_doc' => $isConventionDoc,
+			'is_trainee_doc' => $isTraineeDoc,
+			'is_trainer_doc' => $isTrainerDoc,
+		));
+
+		if ($isFormationDoc) {
+			unset($subst_array[$groupLabels['trainer_mission']]);
+			unset($subst_array[$groupLabels['session']]);
+			unset($subst_array[$groupLabels['participants']]);
+			unset($subst_array[$groupLabels['steps']]);
+			unset($subst_array[$groupLabels['step']]);
+			unset($subst_array[$groupLabels['horaires']]);
+			unset($subst_array[$groupLabels['formateurs']]);
+			unset($subst_array[$groupLabels['financial_lines']]);
+			unset($subst_array[$groupLabels['pedagogic_objectives']]);
+			unset($subst_array[$groupLabels['trainee']]);
+			unset($subst_array[$groupLabels['convention']]);
+			unset($subst_array[$groupLabels['trainer_times']]);
+		} elseif ($isSessionDoc) {
+			if (!$isTrainerDoc) {
+				unset($subst_array[$groupLabels['trainer_mission']]);
+				unset($subst_array[$groupLabels['trainer_times']]);
 			}
-		}
-		//Important  :  les informations  seront loadées via [objet] :  agsession [fonction] :  load_all_data_agefodd_session
-		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_lastname'] = 'Nom du formateur';
-		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_firstname'] = 'Prénom du formateur';
-		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['trainer_cost_planned'] = 'Coût planifié formateur';
-		$subst_array[$langs->trans('AgfTrainerMissionLetter')]['objvar_object_formateur_session_societe_name'] = 'Structure employeuse du formateur';
 
-		$subst_array[$langs->trans('RefLtrSubstAgefodd')] = array(
-				'formation_nom'=>'Intitulé de la formation'
-				,'formation_nom_custo'=>'Intitulé formation (pour les documents PDF)'
-				,'formation_ref'=>'Référence de la formation'
-				,'formation_id'=>'Id de la formation'
-				,'formation_programme'=>'Programme de la formation'
-				,'formation_statut'=>'Statut de la formation'
-		        ,'formation_date_debut' => 'Date de début de la formation'
-		        ,'formation_date_debut_formated' => 'Date de début de la formation mise en forme'
-		        ,'formation_date_fin' => 'Date de fin de la formation'
-		        ,'formation_date_fin_formated' => 'Date de fin de la formation mise en forme'
-				,'objvar_object_date_text'=>'Date de la session'
-		        ,'formation_duree' => 'Durée de la formation'
-		        ,'formation_duree_session' => 'Durée de la session'
-		        ,'session_nb_days' => 'Nombre de jours dans le calendrier de la session'
-				,'formation_commercial'=>'commercial en charge de la formation'
-				,'formation_commercial_phone'=>'téléphone commercial en charge de la formation'
-				,'formation_commercial_mobile_phone'=>'téléphone mobile du commercial en charge de la formation'
-				,'formation_commercial_mail'=>'email commercial en charge de la formation'
-				,'formation_societe'=>'Société concernée'
-		        ,'formation_but'=>'But de la formation'
-		        ,'formation_methode'=>'Methode de formation'
-		        ,'formation_nb_stagiaire'=>'Nombre de stagiaire de la formation'
-		        ,'formation_type_stagiaire'=>'Caractéristiques des stagiaires'
-		        ,'formation_documents'=>'Documents nécessaires à la formation'
-		        ,'formation_equipements'=>'Equipements nécessaires à la formation'
-		        ,'formation_lieu'=>'Lieu de la formation'
-		        ,'formation_lieu_adresse'=>'Adresse du lieu de formation'
-		        ,'formation_lieu_cp'=>'Code postal du lieu de formation'
-		        ,'formation_lieu_ville'=>'Ville du lieu de formation'
-		        ,'formation_lieu_acces'=>'Instruction d\'accès au lieu lieu de formation'
-		        ,'formation_lieu_horaires'=>'Horaires du lieu de formation'
-		        ,'formation_lieu_notes'=>'Commentaire du lieu de formation'
-		        ,'formation_lieu_divers'=>'Infos Repas, Hébergements, divers'
-				,'formation_Accessibility_Handicap_label'=>'Titre Accessibilité Handicap'
-				,'formation_Accessibility_Handicap'=>'Accessible aux personnes handicapés'
-		        ,'objvar_object_trainer_text'=>'Tous les foramteurs séparés par des virgules (Nom prenom)'
-		        ,'objvar_object_trainer_text_invert'=>'Tous les foramteurs séparés par des virgules (Prenom nom)'
-		        ,'objvar_object_id'=>'Id de la session'
-
-		        ,'objvar_object_dthour_text'=>'Tous les horaires au format texte avec retour à la ligne'
-		        ,'objvar_object_trainer_day_cost'=>'Cout formateur (cout/nb de creneaux)'
-			    ,'AgfMentorList'=>'Liste des référents'
-				,'Mentor_administrator'=>'Référent Administratif'
-				,'Mentor_pedagogique'=>'Référent pédagogique'
-				,'Mentor_handicap'	=>'Référent handicap'
-				,'presta_lastname'	=>$langs->trans('PrestaLastname')
-				,'presta_firstname'	=>$langs->trans('PrestaFirstname')
-				,'presta_soc_name'	=>$langs->trans('PrestaSocName')
-				,'presta_soc_id' 	=> $langs->trans('PrestaSocId')
-				,'presta_soc_name_alias'	=> $langs->trans('PrestaSocNameAlias')
-				,'presta_soc_code_client'	=> $langs->trans('PrestaSocCode')
-				,'presta_soc_code_fournisseur'	=> $langs->trans('PrestaSocSupplier')
-				,'presta_soc_email'	=> $langs->trans('PrestaSocEmail')
-				,'presta_soc_phone'	=> $langs->trans('PrestaSocPhone')
-				,'presta_soc_fax'	=> $langs->trans('PrestaSocFax')
-				,'presta_soc_address'	=> $langs->trans('PrestaSocAddress')
-				,'presta_soc_zip'	=> $langs->trans('PrestaSocZip')
-				,'presta_soc_town'	=> $langs->trans('PrestaSocTown')
-				,'presta_soc_country_id'	=> $langs->trans('PrestaSocCountryId')
-				,'presta_soc_country_code'	=> $langs->trans('PrestaSocCountryCode')
-				,'presta_soc_idprof1'	=> $langs->trans('PrestaSocIdprof1')
-				,'presta_soc_idprof2'	=> $langs->trans('PrestaSocIdprof2')
-				,'presta_soc_idprof3'	=> $langs->trans('PrestaSocIdprof3')
-				,'presta_soc_idprof4'	=> $langs->trans('PrestaSocIdprof4')
-				,'presta_soc_idprof5'	=> $langs->trans('PrestaSocIdprof5')
-				,'presta_soc_idprof6'	=> $langs->trans('PrestaSocIdprof6')
-				,'presta_soc_tvaintra'	=> $langs->trans('PrestaSocTvaIntra')
-				,'presta_soc_note_public'	=> $langs->trans('PrestaSocNotePublic')
-				,'presta_soc_note_private'	=> $langs->trans('PrestaSocNotePrivate')
-
-				// Etapes
-				,'objvar_object_steps_date_text_without_tr' => $langs->trans('StepsDateTextWithoutTr')
-				,'objvar_object_steps_date_text' => $langs->trans('StepsDateText')
-
-				,'objvar_object_steps_facetoface_date_text_without_tr' => $langs->trans('StepsFaceToFaceDateTextWithoutTr')
-				,'objvar_object_steps_facetoface_date_text' => $langs->trans('StepsFaceToFaceDateText')
-
-				,'objvar_object_steps_remote_date_text' => $langs->trans('StepsRemoteDateText')
-
-
-		);
-
-		// Liste de données - Participants
-		$moreTrad = '';
-		if(!empty($conf->agefoddcertificat->enabled)) $moreTrad = $langs->trans('RefLtrSubstAgefoddListParticipantsCertif');
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)] = array(
-				'line_civilitel'=>'Libellé civilité'
-				,'line_civilitel'=>'Code civilité'
-				,'line_nom'=>'Nom participant'
-				,'line_prenom'=>'Prénom participant'
-				,'line_nom_societe'=>'Société du participant'
-				,'line_societe_address'=>'Adresse de la société du participant'
-				,'line_societe_town'=>'Ville de la société du participant'
-				,'line_societe_zip'=>'Code postal de la société du participant'
-				,'line_societe_mail'=>'Adresse mail de la société du participant'
-				,'line_poste'=>'Poste occupé au sein de sa société'
-				,'line_phone'=>'Téléphone pro / Téléphone mobile'
-				,'line_phone_pro'=>'Téléphone pro'
-				,'line_phone_mobile'=>'Téléphone mobile'
-				,'line_email' => 'Email du participant'
-				,'line_siret' => 'SIRET de la société du participant'
-				,'line_birthday' => 'Date de naissance du participant'
-				,'line_birthplace'=>'Lieu de naissance du participant'
-                ,'line_type'=>'Type de financement'
-                ,'line_code_societe'=> 'Code de la société du participant'
-				,'line_stagiaire_presence_total' => 'Temps de présence total stagiare'
-				// Financeurs
-				,'line_financiers_trainee' => $langs->trans('FinanciersTrainee')
-				,'line_alternate_financier_trainee' => $langs->trans('AlternateFinancierTrainee')
-		);
-		$extrafields = new ExtraFields($this->db);
-		$stag_extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
-		if(!empty($stag_extralabels)) {
-			foreach($stag_extralabels as $extrakey => $extralabel) {
-				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
+			if (!$isTraineeDoc) {
+				unset($subst_array[$groupLabels['trainee']]);
 			}
-		}
-		//Extrafield tiers
-		$soc_extralabels = $extrafields->fetch_name_optionals_label('societe', true);
-		if(!empty($soc_extralabels)) {
-			foreach($soc_extralabels as $extrakey => $extralabel) {
-				$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_societe_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
+
+			if (!$isConventionDoc) {
+				unset($subst_array[$groupLabels['convention']]);
 			}
+
+			unset($subst_array[$langs->trans('RefLtrLines')]);
 		}
-
-		if(!empty($conf->agefoddcertificat->enabled)) {
-			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_code'] = 'Numéro du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_label'] = 'Libellé du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_debut'] = 'Date de début du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_fin'] = 'Date de fin du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddListParticipants', $moreTrad)]['line_certif_date_alerte'] = 'Date d\'alerte du certificat';
-		}
-
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListSteps')] = array(
-			'line_step_label' => 'Label de l\'étape',
-			'line_step_date_start' => 'Date de début de l\'étape',
-			'line_step_date_end' => 'Date de fin de l\'étape',
-			'line_step_duration' => 'Durée de l\'étape',
-			'line_step_lieu' => 'Lieu de la formation',
-			'line_step_lieu_adresse' => 'Adresse du lieu de l\'étape',
-			'line_step_lieu_cp' => 'Code postal du lieu de l\'étape',
-			'line_step_lieu_ville' => 'Ville du lieu de l\'étape',
-			'line_step_lieu_acces' => 'Instruction d\'accès au lieu lieu de l\'étape',
-			'line_step_lieu_horaires' => 'Horaires du lieu de l\'étape',
-			'line_step_lieu_notes' => 'Commentaire du lieu de l\'étape',
-			'line_step_lieu_divers' => 'Infos Repas, Hébergements, divers'
-		);
-
-		$subst_array[$langs->trans('RefLtrSubstAgefoddStep')] = array(
-			'step_label' => 'Label de l\'étape',
-			'step_date_start' => 'Date de début de l\'étape',
-			'step_date_end' => 'Date de fin de l\'étape',
-			'step_duration' => 'Durée de l\'étape',
-		);
-
-		// Liste de données - Horaires
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListHoraires')] = array(
-				'line_date_session'=>'Date de la session'
-				,'line_heure_debut_session'=>'Heure début session'
-				,'line_heure_fin_session'=>'Heure fin session'
-		);
-
-		// Liste de données - Formateurs
-		$subst_array[$langs->trans('RefLtrSubstAgefoddListFormateurs')] = array(
-				'line_formateur_nom'=>'Nom du formateur'
-				,'line_formateur_prenom'=>'Prénom du formateur'
-				,'line_formateur_phone'=>'Téléphone du formateur'
-				,'line_formateur_phone_mobile'=>'Téléphone mobile du formateur'
-				,'line_formateur_phone_perso'=>'Téléphone perso du formateur'
-				,'line_formateur_mail'=>'Adresse mail du formateur'
-				,'line_formateur_address'=>'Adresse du formateur'
-				,'line_formateur_town'=>'Ville du formateur'
-				,'line_formateur_zip'=>'Code postal du formateur'
-				,'line_formateur_socname'=>'Nom de la société associée au formateur'
-				,'line_formateur_statut'=>'Statut du formateur (Présent, Confirmé, etc...)'
-		);
-
-		$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')] = array(
-		    'objvar_object_stagiaire_civilitel'=>'Civilité du stagiaire'
-		    ,'objvar_object_stagiaire_nom'=>'Nom du stagiaire'
-		    ,'objvar_object_stagiaire_prenom'=>'Prénom du stagiaire'
-		    ,'objvar_object_stagiaire_mail'=>'Email du stagiaire'
-			,'objvar_object_stagiaire_socname' => 'Société du participant'
-			,'objvar_object_stagiaire_socaddr' => 'Adresse de la société du participant'
-			,'objvar_object_stagiaire_soczip' => 'Code postal de la société du participant'
-			,'objvar_object_stagiaire_soctown' => 'Ville de la société du participant'
-			,'objvar_object_lieu_adresse' => 'Adresse du lieu'
-			,'objvar_object_lieu_ref_interne' => 'Ref interne du lieu'
-            ,'stagiaire_presence_total'=> 'Nombre d heure de présence par participants'
-            ,'stagiaire_presence_bloc'=> 'Présentation en bloc des heures de présences participants'
-            ,'stagiaire_temps_realise_total'=> 'Nombre d heure des sessions au statut "Réalisé"'
-            ,'stagiaire_temps_att_total'=> 'Nombre d heure des sessions au statut "Annulé trop tard"'
-            ,'stagiaire_temps_realise_att_total'=> 'Nombre d heure des sessions au statut "Réalisé" + "Annulé trop tard"'
-            ,'formation_agenda_ics' => 'Lien ICS de l\'agenda des participants'
-            ,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda des participants'
-			// Financeurs
-			,'objvar_object_financiers_trainee' => $langs->trans('FinanciersTrainee')
-			,'objvar_object_alternate_financier_trainee' => $langs->trans('AlternateFinancierTrainee')
-		);
-
-		if(!empty($stag_extralabels)) {
-			foreach($stag_extralabels as $extrakey => $extralabel) {
-				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_options_'.$extrakey] = 'Champ complémentaire : '.$extralabel;
-			}
-		}
-		//Extrafield tiers
-		if(!empty($soc_extralabels)) {
-			foreach($soc_extralabels as $extrakey => $extralabel) {
-				$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_soc_options_'.$extrakey] = 'Champ complémentaire société : '.$extralabel;
-			}
-		}
-		if(!empty($conf->agefoddcertificat->enabled)) {
-			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_code'] = 'Numéro du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_label'] = 'Libellé du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_debut'] = 'Date de début du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_fin'] = 'Date de fin du certificat';
-			$subst_array[$langs->trans('RefLtrSubstAgefoddStagiaire')]['objvar_object_stagiaire_certif_date_alerte'] = 'Date d\'alerte du certificat';
-		}
-
-		// Tags des lignes
-		$subst_array[$langs->trans('RefLtrLines')] = array(
-				'line_fulldesc'=>'Description complète',
-				'line_product_ref'=>'Référence produit',
-				'line_product_ref_fourn'=>'Référence produit fournisseur (pour les documents fournisseurs)',
-				'line_product_label'=>'Libellé produit',
-				'line_libelle'=>'Libellé du produit/service', // Ajout du libellé des produit/service
-				'line_product_type'=>'Type produit',
-				'line_desc'=>'Description',
-				'line_vatrate'=>'Taux de TVA',
-				'line_up'=>'Prix unitaire (format numérique)',
-				'line_multicurrency_subprice'=>'Prix unitaire devisé (format numérique)',
-				'line_up_locale'=>'Prix unitaire (format prix)',
-				'line_multicurrency_subprice_locale'=>'Prix unitaire devisé (format prix)',
-				'line_qty'=>'Qté ligne',
-				'line_discount_percent'=>'Remise ligne',
-				'line_price_ht'=>'Total HT ligne (format numérique)',
-				'line_multicurrency_total_ht'=>'Total HT ligne devisé (format numérique)',
-				'line_price_ttc'=>'Total TTC ligne (format numérique)',
-				'line_multicurrency_total_ttc'=>'Total TTC ligne devisé (format numérique)',
-				'line_price_ht_locale'=>'Total HT ligne (format prix)',
-				'line_multicurrency_total_ht_locale'=>'Total HT ligne devisé (format prix)',
-				'line_price_ttc_locale'=>'Total TTC ligne (format prix)',
-				'line_multicurrency_total_ttc_locale'=>'Total TTC ligne devisé (format prix)',
-                                'line_price_vat'=>'Montant TVA (format numérique)',
-                                'line_price_vat_locale'=>'Montant TVA (format prix)',
-
-				// Dates
-				'line_date_start'=>'Date début service',
-				'line_date_start_locale'=>'Date début service format 1',
-				'line_date_start_rfc'=>'Date début service format 2',
-				'line_date_end'=>'Date fin service',
-				'line_date_end_locale'=>'Date fin service format 1',
-				'line_date_end_rfc'=>'Date fin service format 2',
-		);
-
-		$subst_array[$langs->trans('RefLtrSubstConvention')]=array(
-			'objvar_object_signataire_intra'=>'Nom du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_poste'=>'Poste du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_mail'=>'Mail du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_phone'=>'Téléphone du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_inter'=>'Nom des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_poste'=>'Poste des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_mail'=>'Mail des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_phone'=>'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_convention_notes'=>'commentaire de la convention',
-			'objvar_object_convention_id'=>'identifiant unique de la convention',
-			'objvar_object_signataire_intra_prof1'=>'siret du signataire',
-			'objvar_object_signataire_intra_prof2'=>'siren du signataire',
-
-		);
-
-
-		$subst_array[$langs->trans('RefLtrTrainerLetterMissions')]=array(
-			'trainer_datehourtextline'=>'Horaire(s) calendrier formateur'
-			,'trainer_datetextline'=>'Date(s) calendrier formateur'
-			,'formation_agenda_ics' => 'Lien ICS de l\'agenda du formateur'
-			,'formation_agenda_ics_url' => 'URL du lien ICS de l\'agenda du formateur'
-		);
 
 
 		// Réservé aux lignes de contrats
@@ -1143,7 +1173,41 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
 
+		if ($this->isAgefoddElementType($this->element_type)) {
+			unset($subst_array[$langs->trans('RefLtrLines')]);
+		}
 
+
+	}
+
+	protected function isAgefoddElementType($elementType)
+	{
+		return is_string($elementType) && strpos($elementType, 'rfltr_agefodd_') === 0;
+	}
+
+	protected function isAgefoddFormationElementType($elementType)
+	{
+		return $elementType === 'rfltr_agefodd_formation';
+	}
+
+	protected function isAgefoddSessionElementType($elementType)
+	{
+		return $this->isAgefoddElementType($elementType) && !$this->isAgefoddFormationElementType($elementType);
+	}
+
+	protected function isAgefoddTrainerElementType($elementType)
+	{
+		return in_array($elementType, array('rfltr_agefodd_mission_trainer', 'rfltr_agefodd_contrat_trainer'), true);
+	}
+
+	protected function isAgefoddTraineeElementType($elementType)
+	{
+		return is_string($elementType) && preg_match('/_trainee$/', $elementType);
+	}
+
+	protected function isAgefoddConventionElementType($elementType)
+	{
+		return $elementType === 'rfltr_agefodd_convention';
 	}
 
 	/**

@@ -196,6 +196,38 @@ class SubstitutionCatalogPresentationBuilder
 			return $this->formatCurrentObjectOptionDescription($tag);
 		}
 
+		if (strpos($tag, 'objvar_object_contact_') === 0) {
+			return 'Propriete technique contact - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_contact_')));
+		}
+
+		if (strpos($tag, 'objvar_object_thirdparty_') === 0) {
+			return 'Propriete technique tiers - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_thirdparty_')));
+		}
+
+		if (strpos($tag, 'objvar_object_user_') === 0) {
+			return 'Propriete technique utilisateur - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_user_')));
+		}
+
+		if (strpos($tag, 'objvar_object_formation_') === 0) {
+			return 'Propriete technique formation - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_formation_')));
+		}
+
+		if (strpos($tag, 'objvar_object_array_options_options_') === 0) {
+			return 'Options techniques de l\'objet - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_array_options_options_')));
+		}
+
+		if (strpos($tag, 'objvar_object_options_') === 0) {
+			return 'Champs complementaires techniques - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_options_')));
+		}
+
+		if (strpos($tag, 'objvar_object_linkedObjectsFullLoaded_') === 0) {
+			return 'Objet lie charge - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_linkedObjectsFullLoaded_')));
+		}
+
+		if (strpos($tag, 'objvar_object_') === 0) {
+			return $this->getCurrentObjectLabel() . ' avance - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_')));
+		}
+
 		$prefixedDescriptions = array(
 			'object_' => $this->getCurrentObjectLabel(),
 			'cust_company_' => 'Tiers client',
@@ -476,6 +508,22 @@ class SubstitutionCatalogPresentationBuilder
 			return $this->langs->trans('RefLtrCatalogUsageTechnical');
 		}
 
+		if (strpos($tag, 'objvar_object_contact_') === 0) {
+			return $this->langs->trans('RefLtrCatalogUsageObjvarContact');
+		}
+		if (strpos($tag, 'objvar_object_thirdparty_') === 0) {
+			return $this->langs->trans('RefLtrCatalogUsageObjvarThirdparty');
+		}
+		if (strpos($tag, 'objvar_object_user_') === 0) {
+			return $this->langs->trans('RefLtrCatalogUsageObjvarUser');
+		}
+		if (strpos($tag, 'objvar_object_formation_') === 0) {
+			return $this->langs->trans('RefLtrCatalogUsageObjvarFormation');
+		}
+		if (strpos($tag, 'objvar_object_') === 0) {
+			return $this->langs->trans('RefLtrCatalogUsageObjvarObject');
+		}
+
 		return $this->langs->trans('RefLtrCatalogUsageDirect');
 	}
 
@@ -493,6 +541,10 @@ class SubstitutionCatalogPresentationBuilder
 			return false;
 		}
 
+		if ($this->isGenericDetectedDescription($sampleValue)) {
+			return false;
+		}
+
 		if (strpos($tag, '__[') === 0 && substr($tag, -3) === ']__') {
 			return false;
 		}
@@ -502,6 +554,25 @@ class SubstitutionCatalogPresentationBuilder
 		}
 
 		return (strpos((string) $block, 'Agefodd ') === 0);
+	}
+
+	/**
+	 * Ignore generic detected wording so family-based wording can take over.
+	 *
+	 * @param string $sampleValue
+	 * @return bool
+	 */
+	protected function isGenericDetectedDescription($sampleValue)
+	{
+		$value = trim((string) $sampleValue);
+		if ($value === '') {
+			return false;
+		}
+
+		return (
+			strpos($value, 'Cle avancee detectee automatiquement : ') === 0
+			|| strpos($value, 'Cle detectee automatiquement : ') === 0
+		);
 	}
 
 	/**

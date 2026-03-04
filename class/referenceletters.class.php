@@ -853,7 +853,7 @@ class ReferenceLetters extends CommonObject
 
 		// Fallback generique: si le catalogue detecte de nouvelles cles, on les remonte au moins
 		// dans des groupes avances, sans attendre un ajout manuel dans getSubtitutionKey().
-		$catalogBuilder->appendDetectedCatalogKeys($subst_array, $this->element_type, $currentCatalogObject, array(
+		$catalogBuilder->appendDetectedCatalogKeys($subst_array, (string) $this->element_type, $currentCatalogObject, array(
 			'is_agefodd' => $this->isAgefoddElementType($this->element_type),
 			'is_agefodd_formation' => $this->isAgefoddFormationElementType($this->element_type),
 		));
@@ -882,7 +882,7 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 
 		$builder = new SubstitutionCatalogPresentationBuilder($langs, $this->db);
-		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user), $this->element_type, $this->lastCatalogUiObject);
+		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user), (string) $this->element_type, $this->lastCatalogUiObject);
 	}
 
 	/**

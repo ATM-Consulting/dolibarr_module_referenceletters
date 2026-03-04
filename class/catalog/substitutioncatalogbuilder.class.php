@@ -182,7 +182,7 @@ class SubstitutionCatalogBuilder
 	 * @param array<string,mixed> $context
 	 * @return void
 	 */
-	public function appendDetectedCatalogKeys(array &$substArray, ?string $elementType, ?object $object = null, array $context = array()): void
+	public function appendDetectedCatalogKeys(array &$substArray, $elementType, ?object $object = null, array $context = array()): void
 	{
 		if (!is_object($object)) {
 			return;
@@ -226,7 +226,7 @@ class SubstitutionCatalogBuilder
 	 * @param array<string,mixed> $context
 	 * @return array<string,array<string,mixed>>
 	 */
-	public function buildDetectedCatalogMetadata(?string $elementType, ?object $object = null, array $context = array()): array
+	public function buildDetectedCatalogMetadata($elementType, ?object $object = null, array $context = array()): array
 	{
 		if (!is_object($object)) {
 			return array();
@@ -259,7 +259,17 @@ class SubstitutionCatalogBuilder
 	{
 		$tags = array();
 
-		$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_each_var_object($object, $this->langs, true), 'dynamic_object');
+		$this->mergeDetectedTags($tags, $this->prefixKeys($this->docgen->get_substitutionarray_each_var_object($object, $this->langs, true), 'objvar_'), 'dynamic_object');
+
+		$dynamicMap = $this->docgen->get_substitutionarray_each_var_object($object, $this->langs, true);
+		if (is_array($dynamicMap)) {
+			if (!empty($dynamicMap['object_cond_reglement_code'])) {
+				$tags['objvar_object_cond_reglement_doc'] = array('source' => 'dynamic_object');
+			}
+			if (!empty($dynamicMap['object_mode_reglement_code'])) {
+				$tags['objvar_object_mode_reglement'] = array('source' => 'dynamic_object');
+			}
+		}
 
 		if (method_exists($this->docgen, 'get_substitutionarray_object')) {
 			$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_object($object, $this->langs), 'object');

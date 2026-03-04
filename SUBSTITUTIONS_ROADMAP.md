@@ -8,6 +8,14 @@ Objectif final :
 - toute cle visible et pertinente doit etre correctement convertie dans le bon contexte
 - toute valeur vide doit etre qualifiee explicitement : vide normal ou vide anormal
 
+Recadrage PM/CDP :
+
+- tout champ accessible dans `referenceletters` doit etre visible dans l'UI du bon contexte
+- tout champ visible doit etre substitue dans le bon contexte
+- les listes repeteees et leurs champs font partie du meme contrat
+- les champs techniques / legacy / `objvar_*` doivent aussi rester visibles s'ils sont substituables
+- le livrable attendu est un dossier de conformite defendable, pas seulement du code
+
 ## Regles de travail
 
 - ne pas corriger des tags au hasard sans les rattacher a une famille d'objets
@@ -21,6 +29,156 @@ Objectif final :
   - donnees reellement chargees par l'objet source
 
 ## Chantiers
+
+### A. Dossier de conformite exhaustive
+
+Statut : `in_progress`
+
+But :
+
+- produire la preuve defendable attendue par le CDP / client
+
+Actions :
+
+- produire une matrice exhaustive champ par champ
+- rattacher chaque ligne CSV client a un statut explicite
+- qualifier chaque champ :
+  - visible en UI ou non
+  - accessible au runtime ou non
+  - substitue ou non
+  - champ direct / dans une liste / technique
+- rattacher chaque verification a un mode de preuve :
+  - audit automatique
+  - rendu reel
+  - verification manuelle ciblee
+
+Livrables :
+
+- matrice exhaustive de conformite
+- annexe CSV client requalifiee ligne par ligne
+- synthese de couverture par `element_type`
+
+Definition of done :
+
+- pour tout champ substituable, on sait dire s'il est visible en UI
+- pour tout champ visible, on sait dire s'il a ete substitue et comment cela a ete prouve
+- aucune ligne issue des CSV client ne reste sans statut
+
+Etat courant :
+
+- matrice exhaustive en place :
+  - [referenceletters_compliance_matrix.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_compliance_matrix.csv)
+- synthese en place :
+  - [referenceletters_compliance_summary.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_compliance_summary.csv)
+- requalification CSV client en place :
+  - [referenceletters_client_csv_requalification.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_client_csv_requalification.csv)
+- worklist d'action en place :
+  - [referenceletters_compliance_action_worklist.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_compliance_action_worklist.csv)
+
+Photo honnete actuelle :
+
+- `17198` lignes dans la matrice
+- `2898` `ok`
+- `14152` `technical_visible`
+- `0` `technical_runtime_only`
+- `0` `runtime_only_gap`
+- `48` `excluded_mail_placeholder`
+- `60` `excluded_external_placeholder`
+- `34` `excluded_sensitive_tag`
+- `6` `excluded_internal_runtime_tag`
+
+Lecture correcte :
+
+- le socle de preuve existe enfin
+- la matrice est maintenant alignee avec la popin reelle en contexte objet
+- les faux positifs restants du worklist fonctionnel ont ete filtres a la source
+- il n'y a plus de gap popup/runtime non explique dans la matrice
+- le reliquat est maintenant integralement requalifie en exclusions explicites
+- la conformite n'est donc plus bloquee par un manque de couverture, mais par la validation finale de la politique d'exclusion
+
+Repartition actuelle du reliquat technique :
+
+- `excluded_external_placeholder` : placeholders certificat hors contrat DocEdit
+- `excluded_mail_placeholder` : placeholders mail/session hors contrat DocEdit
+- `excluded_sensitive_tag` : mots de passe / secrets / tokens
+- `excluded_internal_runtime_tag` : internals de bookkeeping runtime (`linkedObjects*`, `obj_peda`)
+
+Rapport de familles :
+
+- [referenceletters_technical_runtime_only_families.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_technical_runtime_only_families.csv)
+
+Prochaine etape obligatoire avant cloture :
+
+- valider explicitement la politique d'exclusion dans le dossier de livraison
+- lancer la campagne finale exhaustive type par type via le runtime reel
+- faire une passe UI finale courte sur les documents critiques
+- puis figer la matrice et le bundle de preuve
+
+Mode d'execution maintenant recommande :
+
+- ne plus rouvrir de gros chantier de refacto
+- ne plus corriger "au fil de l'eau"
+- travailler par `element_type`
+- pour chaque type :
+  - verifier l'objet/seed de reference
+  - generer le modele complet
+  - comparer popup / runtime / rendu reel
+  - verifier les listes repetees
+  - consigner le resultat dans la campagne finale et la matrice
+- corriger uniquement les ecarts effectivement reproduits
+
+Mode de validation recommande jusqu'a la livraison :
+
+- ne pas lancer une campagne manuelle champ par champ sans outillage
+- s'appuyer sur une preuve mixte :
+  - inventaire automatique popup/runtime
+  - generation de modeles complets par type
+  - campagne finale type par type via le runtime reel
+  - rendu reel / smoke / validation de modeles actifs
+  - verification manuelle ciblee sur les ecrans critiques
+- la matrice de conformite reste la source de verite finale
+
+Outillage final ajoute :
+
+- [final_validation_campaign.php](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/script/final_validation_campaign.php)
+
+Livrables attendus de cette campagne :
+
+- [referenceletters_final_validation_summary.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_final_validation_summary.csv)
+- [referenceletters_final_validation_fields.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_final_validation_fields.csv)
+- [referenceletters_final_validation_loops.csv](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/csvFocomed/referenceletters_final_validation_loops.csv)
+
+Avancement de campagne au 2026-03-04 :
+
+- chunk 1 execute avec :
+  - `php -d session.save_path=/tmp custom/referenceletters/script/final_validation_campaign.php --limit=5 --no-seed=1`
+- types couverts :
+  - `contact`
+  - `contract`
+  - `expedition`
+  - `fichinter`
+  - `invoice`
+- resultat brut :
+  - `5/5` en statut `gap`
+  - `0` `runtime_only_gap`
+  - `0` `unresolved`
+  - ecarts concentres sur `ui_only_gap` et `ui_context_gap`
+- point structurel notable du lot :
+  - `expedition` presente un ecart de boucle `lines` visible en UI mais non accessible au runtime sur l'echantillon courant
+- familles dominantes observees :
+  - `contact` : `cust_contactclient*`, `object_*`, `devise_label`
+  - `contract` : `cust_contactclient_SALESREPSIGN_1_*`
+  - `expedition` : `line_*`, `date_ouverture*`, `date_fin_validite`, `devise_label`
+  - `fichinter` : `cust_contactclient_CUSTOMER_1_*`
+  - `invoice` : `cust_contactclient_SERVICE_1_*`
+- lecture de travail :
+  - pas de nouveau trou `runtime -> popup`
+  - premier signal surtout sur une surexposition UI ou sur des familles contextuelles mal qualifiees dans certains echantillons
+  - aucune correction a lancer avant analyse type par type de ces familles
+- suite imposee :
+  - poursuivre la campagne par chunks
+  - qualifier chaque famille en `surexposition UI` / `contexte echantillon` / `tag contextuel acceptable`
+  - ne corriger que les ecarts reproduits et expliques
 
 ### 0. Cadrage et inventaire
 
@@ -213,7 +371,7 @@ Point de vigilance :
 
 ### 2. Stabilisation du moteur scalaire
 
-Statut : `pending`
+Statut : `in_progress`
 
 But :
 
@@ -239,9 +397,16 @@ Definition of done :
 
 - plus aucune cle scalaire visible ne reste non convertie quand la donnee pertinente existe
 
+Etat courant :
+
+- beaucoup de correctifs ont deja ete appliques sur les substitutions scalaires et les presentations UI
+- les validations reelles et les campagnes smoke ont deja fourni une base solide
+- mais cette etape n'est plus suffisante seule :
+  - elle doit maintenant etre rattachee a la matrice exhaustive de conformite
+
 ### 3. Stabilisation des segments et boucles
 
-Statut : `pending`
+Statut : `in_progress`
 
 But :
 
@@ -258,6 +423,19 @@ Actions :
   - horaires
   - formateurs
   - objectifs pedagogiques
+
+Etat courant :
+
+- les listes repeteees et les champs `line_*` ont ete clarifies dans l'UI
+- les modeles complets par type ont ete regeneres avec les boucles reintroduites proprement
+- les types a lignes standard (`order`, `invoice`, `propal`, `contract`, `order_supplier`, `supplier_proposal`, `fichinter`) ont des chapitres de boucle stockes correctement en base
+- les cas restants a `0` boucle sont actuellement lies a des jeux de donnees / contextes non charges, pas a un bug generique du generateur
+
+Definition of done :
+
+- chaque liste repetee disponible est visible
+- ses champs associes sont visibles
+- la boucle rend bien des lignes en sortie
 
 ## Etat de sortie actuel
 
@@ -580,10 +758,31 @@ Actions :
 - maintenir le README
 - ajouter si besoin des scripts d'audit reproductibles
 - consigner les decisions sur les cles non pertinentes ou volontairement vides
+- documenter la phase de preuve exhaustive
+- documenter le plan de cloture jusqu'a la livraison
 
 Definition of done :
 
 - une equipe peut reprendre le chantier sans reverse engineering supplementaire
+
+Etat courant :
+
+- README, roadmap, note de preuve et synthese CDP existent
+- mais la cloture formelle demande encore :
+  - la matrice exhaustive
+  - la requalification finale des CSV clients
+  - la note de cloture de conformite
+
+## Prochaine sequence jusqu'a la livraison
+
+1. Produire la matrice exhaustive de conformite
+2. Rattacher les CSV clients a cette matrice
+3. Completer les jeux de donnees si un contexte manque encore
+4. Rejouer les validations finales sur les types critiques
+5. Corriger uniquement les ecarts reveles
+6. Figer le dossier de preuve
+7. Faire la passe UI finale courte
+8. Livrer au CDP le bundle complet
 
 ## Suivi des lots
 
@@ -674,6 +873,36 @@ Priorites confirmees par les rapports :
   - `1` ancien tag legacy `line_civilitel`
 
 ## Journal de mise a jour
+
+### 2026-03-04 - point d'etape honnete
+
+Etat du chantier :
+
+- le socle technique a ete fortement assaini
+- l'UI DocEdit est beaucoup plus coherente qu'au depart
+- les jeux de donnees locaux riches existent
+- les modeles complets par type existent
+- plusieurs ecarts reels de substitutions / popup / boucles ont deja ete corriges
+
+Mais :
+
+- le chantier n'est plus un chantier de refacto large
+- il est maintenant un chantier de **preuve exhaustive**
+- le manque principal n'est plus un trou technique massif
+- le manque principal est l'absence de **matrice finale champ par champ**
+
+Decision de conduite :
+
+- ne plus ouvrir de refacto lourde sans besoin concret
+- produire la matrice exhaustive de conformite
+- rattacher les CSV clients a cette matrice
+- corriger uniquement les ecarts reveles
+- livrer ensuite un bundle de preuve ferme
+
+Position actuelle :
+
+- etat de pre-livraison technique : bon
+- etat de cloture contractuelle / preuve : non atteint
 
 - 2026-03-03 : debut de refacto du catalogue UI avec ajout de `SubstitutionCatalogBuilder`, `SubstitutionCatalogGroupingPolicy` et `SubstitutionCatalogVisibilityPolicy`
 - 2026-03-03 : `getSubtitutionKey()` complete maintenant automatiquement les cles disponibles manquantes dans des groupes `avance`
@@ -777,3 +1006,6 @@ Priorites confirmees par les rapports :
 - 2026-03-02 : correction d'un warning Agefodd sur `needforkey` non defini dans `functions_agefodd.lib.php`
 - 2026-03-02 : correction d'un warning `referenceletters` sur acces a des cles `array_options` absentes dans `commondocgeneratorreferenceletters.class.php`
 - 2026-03-02 : correction de warnings `referenceletters` sur les extrafields `select`, sur `remise_percent` absent et sur certaines proprietes de lignes de contrat non garanties
+# Delivery note
+
+- current delivery-oriented status and proof bundle are summarized in [DELIVERY_EVIDENCE.md](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/DELIVERY_EVIDENCE.md)

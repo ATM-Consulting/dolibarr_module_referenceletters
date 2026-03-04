@@ -34,6 +34,11 @@ class SubstitutionCatalogContactProvider implements SubstitutionCatalogProviderI
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
+		$elementType = isset($context['element_type']) ? (string) $context['element_type'] : '';
+		if (in_array($elementType, array('contact', 'thirdparty'), true)) {
+			return;
+		}
+
 		$object = isset($context['object']) ? $context['object'] : null;
 		if (!is_object($object) || !method_exists($object, 'liste_type_contact')) {
 			return;

@@ -1,5 +1,19 @@
 # ReferenceLetters
 
+Delivery snapshot:
+
+- see [DELIVERY_EVIDENCE.md](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/DELIVERY_EVIDENCE.md) for the current delivery-oriented status, proof sources, local test dataset, and remaining gaps versus the original substitution spec.
+- see [LIVRABLE_CDP.md](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/LIVRABLE_CDP.md) for the short functional-facing delivery summary intended for a PM/CDP audience.
+
+Delivery posture after PM/CDP clarification:
+
+- the target is now an exhaustive and defensible compliance proof
+- every accessible field must be visible in the popup for the current context
+- every visible field must be really substituted in the correct context
+- repeated lists and their fields are part of the same requirement
+- technical and legacy substitutable fields must stay visible
+- the next phase is therefore a proof phase, not a new refactor phase
+
 Module de generation de documents personnalises pour Dolibarr.
 
 Ce README documente le module `referenceletters` avec un angle volontairement centre sur son fonctionnement propre et sur son integration avec `agefodd`, sans chercher a documenter le reste d'Agefodd.
@@ -9,6 +23,14 @@ Objectif de maintenance du chantier substitutions :
 - toutes les cles pertinentes doivent etre visibles dans l'UI DocEdit
 - toutes les cles visibles et pertinentes doivent etre effectivement converties dans l'outil
 - toute valeur vide doit etre interpretable : vide normal ou vide anormal
+
+Critere de conformite actuellement retenu :
+
+- tout champ accessible dans `referenceletters` doit etre visible dans la popin correspondant au contexte courant
+- tout champ visible dans la popin doit etre substitue dans le bon contexte
+- les listes repeteees et leurs champs font partie du meme contrat
+- les champs techniques / legacy / `objvar_*` restent visibles s'ils sont substituables
+- la preuve attendue doit etre tracable et defendable
 
 ## Objectif du module
 
@@ -213,6 +235,62 @@ Recommendation de maintenance :
   - `script/validation/`
   - `script/audit/`
   - `script/support/`
+
+## Ce qu'il faut faire maintenant
+
+Le bon travail restant n'est plus une nouvelle vague de dev generique. Le bon travail restant est une phase de preuve de conformite.
+
+Ordre recommande :
+
+1. figer le perimetre de preuve "a date" :
+   - tout ce que le code actuel rend substituable doit etre visible
+   - tout ce que l'UI affiche doit etre substitue
+2. produire une matrice exhaustive de conformite :
+   - `element_type`
+   - `groupe UI`
+   - `tag`
+   - `champ direct / dans une liste / technique`
+   - `visible_dans_ui`
+   - `accessible_runtime`
+   - `substitution_verifiee`
+   - `preuve`
+   - `jeu_de_donnees`
+   - `statut`
+   - `commentaire`
+3. rattacher chaque ligne des CSV clients a un statut explicite
+4. rejouer les validations finales sur les objets critiques
+5. corriger uniquement les ecarts reveles
+6. figer le dossier de preuve de livraison
+
+Campagne finale disponible :
+
+- [final_validation_campaign.php](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/script/final_validation_campaign.php)
+
+Cette campagne :
+
+- regenere le modele complet par type
+- recharge le contexte reel du type
+- rend le modele via le moteur `referenceletters`
+- produit une preuve par champ, par liste repetee, et par type
+
+## Recommandation de pilotage
+
+Position recommandee :
+
+- ne plus lancer de grosse refacto
+- ne plus corriger au ressenti
+- produire une preuve exhaustive et tracable
+- livrer ensuite :
+  - synthese CDP
+  - note de preuve detaillee
+  - annexes CSV requalifiees
+  - jeux de donnees de test
+  - liste des scripts utilises
+
+Point critique :
+
+- dans un contexte client tatillon ou conflictuel, le README et quelques scripts ne suffisent pas
+- le vrai livrable de protection est une matrice exhaustive champ par champ
   - `script/archive/`
 
 ## Concepts fonctionnels

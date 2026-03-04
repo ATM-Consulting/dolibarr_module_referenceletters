@@ -58,9 +58,9 @@ class SubstitutionCatalogStandardProvider implements SubstitutionCatalogProvider
 	 * @param array<string,mixed> $substArray
 	 * @return void
 	 */
-	public function appendDocumentLineCatalogKeys(array &$substArray): void
+	public function appendDocumentLineCatalogKeys(array &$substArray, bool $hasDocumentLines = false): void
 	{
-		$this->getProvider('document_line')->appendCatalogKeys($substArray, array());
+		$this->getProvider('document_line')->appendCatalogKeys($substArray, array('has_document_lines' => $hasDocumentLines));
 	}
 
 	/**

@@ -241,6 +241,7 @@ RefLtrLoopSectionNotice=Les tags préfixés par <code>line_</code> ne fonctionne
 RefLtrLoopSyntax=Syntaxe
 RefLtrLoopMarker=Repère
 RefLtrLoopGroupUsage=Voir les champs dans le bloc : %s
+RefLtrBlockLoopsNotice=Les champs de ce bloc s'utilisent dans les listes répétées : %s.
 RefLtrTechnicalConstantsTitle=Constantes techniques
 RefLtrTechnicalConstantsNotice=Section exhaustive des constantes de configuration. Elles restent disponibles, mais elles sont plus techniques et moins stables fonctionnellement.
 RefLtrCatalogTypeDirect=Champ direct

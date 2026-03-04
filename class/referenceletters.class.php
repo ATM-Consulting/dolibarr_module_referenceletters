@@ -60,6 +60,13 @@ class ReferenceLetters extends CommonObject
 	public $footer;
 
 	/**
+	 * Last sample object used to build the UI catalog for the current element type.
+	 *
+	 * @var object|null
+	 */
+	protected $lastCatalogUiObject = null;
+
+	/**
 	 * Draft status
 	 */
 	const STATUS_DRAFT = 0;
@@ -718,6 +725,7 @@ class ReferenceLetters extends CommonObject
 		$docgen = new CommonDocGeneratorReferenceLetters($this->db);
 		$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, $docgen, $langs);
 		$currentCatalogObject = null;
+		$this->lastCatalogUiObject = null;
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
@@ -833,7 +841,10 @@ class ReferenceLetters extends CommonObject
 		}
 		$catalogBuilder->appendReferenceLetterCatalogKeys($subst_array, $testObj);
 
-		$catalogBuilder->appendDocumentLineCatalogKeys($subst_array);
+		$catalogBuilder->appendDocumentLineCatalogKeys(
+			$subst_array,
+			!empty($this->element_type_list[$this->element_type]['substitution_method_line'])
+		);
 
 		// Les groupes Agefodd ne doivent etre visibles que sur les documents Agefodd.
 		if(!empty($conf->agefodd->enabled) && $this->isAgefoddElementType($this->element_type)) {
@@ -856,6 +867,7 @@ class ReferenceLetters extends CommonObject
 
 		$parameters = array('subst_array' => &$subst_array);
 		$hookmanager->executeHooks('referencelettersCompleteSubstitutionArray', $parameters, $this);
+		$this->lastCatalogUiObject = $currentCatalogObject;
 		return $subst_array;
 	}
 
@@ -869,8 +881,8 @@ class ReferenceLetters extends CommonObject
 	{
 		global $langs;
 
-		$builder = new SubstitutionCatalogPresentationBuilder($langs);
-		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user));
+		$builder = new SubstitutionCatalogPresentationBuilder($langs, $this->db);
+		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user), $this->element_type, $this->lastCatalogUiObject);
 	}
 
 	/**
@@ -1131,6 +1143,7 @@ class ReferenceLetters extends CommonObject
 
 		$catalogBuilder->appendScopedAgefoddCatalogKeys($subst_array, $groupLabels, array(
 			'is_agefodd' => true,
+			'is_formation_doc' => $isFormationDoc,
 			'is_session_doc' => $isSessionDoc,
 			'is_convention_doc' => $isConventionDoc,
 			'is_trainee_doc' => $isTraineeDoc,

@@ -26,7 +26,7 @@ class SubstitutionCatalogAgefoddFormationProvider implements SubstitutionCatalog
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
-		if (empty($context['is_agefodd'])) {
+		if (empty($context['is_agefodd']) || empty($context['is_formation_doc'])) {
 			return;
 		}
 

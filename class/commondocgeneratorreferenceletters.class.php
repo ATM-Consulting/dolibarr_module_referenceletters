@@ -562,7 +562,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		global $conf;
 
-		$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+		$resarray = parent::get_substitutionarray_lines($line, $outputlangs, 0);
 
 		$resarray['line_product_ref_fourn'] = isset($line->ref_fourn) ? $line->ref_fourn : ''; // for supplier doc lines
 		$resarray['line_rang'] = isset($line->rang) ? $line->rang : '';
@@ -837,7 +837,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
 		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');
 		if (in_array(get_class($line),$arrayTypeObj)) {
-			$resarray = parent::get_substitutionarray_lines($line, $outputlangs);
+			$resarray = parent::get_substitutionarray_lines($line, $outputlangs, 0);
 			$resarray['line_rang'] = $line->rang;
 		}
 		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';

@@ -61,9 +61,9 @@ class SubstitutionCatalogBuilder
 	 * @param array<string,mixed> $substArray
 	 * @return void
 	 */
-	public function appendDocumentLineCatalogKeys(array &$substArray): void
+	public function appendDocumentLineCatalogKeys(array &$substArray, bool $hasDocumentLines = false): void
 	{
-		$this->getProvider('standard')->appendDocumentLineCatalogKeys($substArray);
+		$this->getProvider('standard')->appendDocumentLineCatalogKeys($substArray, $hasDocumentLines);
 	}
 
 	/**
@@ -177,16 +177,18 @@ class SubstitutionCatalogBuilder
 	 * Append automatically detected keys that are not already listed in UI groups.
 	 *
 	 * @param array<string,mixed> $substArray
-	 * @param string $elementType
+	 * @param string|null $elementType
 	 * @param object|null $object
 	 * @param array<string,mixed> $context
 	 * @return void
 	 */
-	public function appendDetectedCatalogKeys(array &$substArray, string $elementType, ?object $object = null, array $context = array()): void
+	public function appendDetectedCatalogKeys(array &$substArray, ?string $elementType, ?object $object = null, array $context = array()): void
 	{
 		if (!is_object($object)) {
 			return;
 		}
+
+		$elementType = (string) $elementType;
 
 		$isAgefodd = !empty($context['is_agefodd']);
 		$isAgefoddFormation = !empty($context['is_agefodd_formation']);
@@ -219,16 +221,18 @@ class SubstitutionCatalogBuilder
 	/**
 	 * Build metadata for all detected keys, including keys already visible in the UI.
 	 *
-	 * @param string $elementType
+	 * @param string|null $elementType
 	 * @param object|null $object
 	 * @param array<string,mixed> $context
 	 * @return array<string,array<string,mixed>>
 	 */
-	public function buildDetectedCatalogMetadata(string $elementType, ?object $object = null, array $context = array()): array
+	public function buildDetectedCatalogMetadata(?string $elementType, ?object $object = null, array $context = array()): array
 	{
 		if (!is_object($object)) {
 			return array();
 		}
+
+		$elementType = (string) $elementType;
 
 		$isAgefodd = !empty($context['is_agefodd']);
 		$isAgefoddFormation = !empty($context['is_agefodd_formation']);
@@ -274,11 +278,13 @@ class SubstitutionCatalogBuilder
 		}
 
 		if (!empty($object->lines) && is_array($object->lines)) {
+			require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
+
 			foreach ($object->lines as $line) {
 				if (!is_object($line)) {
 					continue;
 				}
-				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_lines($line, $this->langs), 'line');
+				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_lines($line, $this->langs, 0), 'line');
 				break;
 			}
 		}

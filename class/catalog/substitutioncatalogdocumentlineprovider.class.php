@@ -25,6 +25,10 @@ class SubstitutionCatalogDocumentLineProvider implements SubstitutionCatalogProv
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
+		if (empty($context['has_document_lines'])) {
+			return;
+		}
+
 		$this->langs->load('admin');
 		$substArray[$this->langs->trans('RefLtrLines')] = array(
 			'line_fulldesc' => 'Description complète',

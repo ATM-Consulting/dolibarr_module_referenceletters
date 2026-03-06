@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 ### UNRELEASED
 
 ## Release 2.23 
+- FIX : Missing Extrafield agefodd - *06/01/2026* - 2.23.17
 - FIX : COMPAT V23 - *06/01/2026* - 2.23.16
 - FIX : Default doc select - *15/09/2025* - 2.23.15
 - FIX : COMPAT V22 - *15/07/2025* - 2.23.14

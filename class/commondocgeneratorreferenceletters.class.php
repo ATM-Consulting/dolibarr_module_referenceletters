@@ -1242,7 +1242,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$array_other = array();
 
 		if (! empty($object)) {
-
+			if (is_object($object) && method_exists($object, 'fetch_optionals')) {
+				$object->fetch_optionals();
+			}
 			foreach ( $object as $key => $value ) {
 				$isStagiaireSocExtrafields = strpos($key, 'stagiaire_soc_options')  !== false;
 				if ($key == 'db') continue;
@@ -1291,7 +1293,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$array_other['object_options_' . $key_opt] = '';
 							$array_other['object_array_options_options_' . $key_opt] = ''; // backward compatibility
-							// Attention, ce test est différent d'un isset()
 							if (is_array($object->array_options) && count($object->array_options) > 0 && array_key_exists('options_' . $key_opt, $object->array_options)) {
 								$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_' . $key_opt], '', $object->table_element);
 								$array_other['object_options_' . $key_opt] = $val;
@@ -1335,9 +1336,37 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
+			$this->fillMissingExtrafields($array_other, $object, (isset($extrafields) ? $extrafields : null));
+		}
+		return $array_other;
+	}
+	/**
+	 * Méthode de secours pour injecter les extrafields si la boucle principale échoue
+	 */
+	private function fillMissingExtrafields(&$array_other, $object, $extrafields = null)
+	{
+		if (!is_object($object) || empty($object->array_options) || !is_array($object->array_options)) return;
+
+		// Si extrafields n'a pas été passé, on l'instancie proprement ici au cas où
+		if (!is_object($extrafields)) {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+			$extrafields = new ExtraFields($this->db);
 		}
 
-		return $array_other;
+		foreach ($object->array_options as $optKey => $optVal) {
+			$cleanKey = str_replace('options_', '', $optKey);
+			$targetKey = 'object_options_' . $cleanKey;
+
+			if (empty($array_other[$targetKey])) {
+				// Utilisation de la valeur brute si showOutputFieldValue n'est pas dispo
+				$val = (is_object($extrafields) && method_exists($this, 'showOutputFieldValue'))
+					? $this->showOutputFieldValue($extrafields, $cleanKey, $optVal, '', $object->table_element)
+					: $optVal;
+
+				$array_other[$targetKey] = $val;
+				$array_other['formation_options_' . $cleanKey] = $val;
+			}
+		}
 	}
 
 	/**

@@ -1338,9 +1338,17 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		return $array_other;
 	}
 	/**
-	 * Méthode de secours pour injecter les extrafields si la boucle principale échoue
+	 * Fallback method to inject extrafields into the substitution array
+	 * if the main loop failed to detect them.
+	 * * It ensures that all object attributes (including Agefodd sessions)
+	 * are available as tags with several prefix variants (object_, formation_, options_).
+	 *
+	 * @param  array        $array_other Reference to the substitution array to populate
+	 * @param  Object       $object      The Dolibarr object containing extrafields
+	 * @param  ExtraFields  $extrafields Existing ExtraFields instance (optional)
+	 * @return void
 	 */
-	private function fillMissingExtrafields(&$array_other, $object, $extrafields = null)
+	private function fillMissingExtrafields(&$array_other, $object, $extrafields = null) :void
 	{
 		if (!is_object($object) || empty($object->array_options) || !is_array($object->array_options)) return;
 

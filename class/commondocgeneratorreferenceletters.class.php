@@ -1319,9 +1319,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                     if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
-					// Fix display vars according object
-					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
-	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
 
 					if (is_callable($methodVariable, false, $callable_name)){
@@ -1347,28 +1344,27 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		if (!is_object($object) || empty($object->array_options) || !is_array($object->array_options)) return;
 
-		// Si extrafields n'a pas été passé, on l'instancie proprement ici au cas où
 		if (!is_object($extrafields)) {
 			require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 			$extrafields = new ExtraFields($this->db);
 		}
 
+		$elementKey = (isset($object->element) && substr($object->element, 0, 7) === 'agefodd') ? $object->table_element : $object->element;
+
 		foreach ($object->array_options as $optKey => $optVal) {
 			$cleanKey = str_replace('options_', '', $optKey);
-			$targetKey = 'object_options_' . $cleanKey;
+			$val = $this->showOutputFieldValue($extrafields, $cleanKey, $optVal, '', $elementKey);
 
-			if (empty($array_other[$targetKey])) {
-				// Utilisation de la valeur brute si showOutputFieldValue n'est pas dispo
-				$val = (is_object($extrafields) && method_exists($this, 'showOutputFieldValue'))
-					? $this->showOutputFieldValue($extrafields, $cleanKey, $optVal, '', $object->table_element)
-					: $optVal;
+			// 1. Pour {object_options_...} et {objvar_object_options_...}
+			$array_other['object_options_' . $cleanKey] = $val;
 
-				$array_other[$targetKey] = $val;
-				$array_other['formation_options_' . $cleanKey] = $val;
-			}
+			// 2. Pour {formation_options_...} et {objvar_formation_options_...}
+			$array_other['formation_options_' . $cleanKey] = $val;
+
+			// 3. Pour {options_...} (au cas où)
+			$array_other['options_' . $cleanKey] = $val;
 		}
 	}
-
 	/**
 	 * Override de la fonction ExtraFields::showOutputField()
 	 *

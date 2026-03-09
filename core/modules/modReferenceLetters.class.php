@@ -62,7 +62,7 @@ class modReferenceLetters extends DolibarrModules
 		$this->description = 'DocEdit (a.k.a. ReferenceLetters) allows you to create PDF templates using a wysiwyg editor';
 		// Possible values for version are: 'development', 'experimental' or version
 
-		$this->version = '2.23.16';
+		$this->version = '2.23.17';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -371,6 +371,7 @@ class modReferenceLetters extends DolibarrModules
 
 		define('INC_FROM_DOLIBARR', true);
 
+		include_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$ext = new ExtraFields($db);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'facture', 0, 0, '', '', 1, '', 0, 1);
 		$ext->addExtraField('rfltr_model_id', 'model doc edit', 'int', 0, 10, 'thirdparty', 0, 0, '', '', 1, '', 0, 1);

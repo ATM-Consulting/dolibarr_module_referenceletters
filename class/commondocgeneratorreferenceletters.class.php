@@ -1242,7 +1242,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$array_other = array();
 
 		if (! empty($object)) {
-
+			if (is_object($object) && method_exists($object, 'fetch_optionals')) {
+				$object->fetch_optionals();
+			}
 			foreach ( $object as $key => $value ) {
 				$isStagiaireSocExtrafields = strpos($key, 'stagiaire_soc_options')  !== false;
 				if ($key == 'db') continue;
@@ -1291,7 +1293,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$array_other['object_options_' . $key_opt] = '';
 							$array_other['object_array_options_options_' . $key_opt] = ''; // backward compatibility
-							// Attention, ce test est différent d'un isset()
 							if (is_array($object->array_options) && count($object->array_options) > 0 && array_key_exists('options_' . $key_opt, $object->array_options)) {
 								$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_' . $key_opt], '', $object->table_element);
 								$array_other['object_options_' . $key_opt] = $val;
@@ -1318,9 +1319,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
                     if (is_numeric($value) && strpos($key, 'certif_code') === false && strpos($key, 'zip') === false && strpos($key, 'phone') === false && strpos($key, 'cp') === false && strpos($key, 'idprof') === false && $key !== 'id' && $key !== 'convention_id')
 						$value = price($value);
 
-					// Fix display vars according object
-					// actually showPublicOutputField doesn't exist in Dolibarr but I will probably create then for Dolibarr 12
-	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
 
 					if (is_callable($methodVariable, false, $callable_name)){
@@ -1335,11 +1333,46 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
+			$this->fillMissingExtrafields($array_other, $object, (isset($extrafields) ? $extrafields : null));
 		}
-
 		return $array_other;
 	}
+	/**
+	 * Fallback method to inject extrafields into the substitution array
+	 * if the main loop failed to detect them.
+	 * * It ensures that all object attributes (including Agefodd sessions)
+	 * are available as tags with several prefix variants (object_, formation_, options_).
+	 *
+	 * @param  array        $array_other Reference to the substitution array to populate
+	 * @param  Object       $object      The Dolibarr object containing extrafields
+	 * @param  ExtraFields  $extrafields Existing ExtraFields instance (optional)
+	 * @return void
+	 */
+	private function fillMissingExtrafields(&$array_other, $object, $extrafields = null) :void
+	{
+		if (!is_object($object) || empty($object->array_options) || !is_array($object->array_options)) return;
 
+		if (!is_object($extrafields)) {
+			require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+			$extrafields = new ExtraFields($this->db);
+		}
+
+		$elementKey = (isset($object->element) && substr($object->element, 0, 7) === 'agefodd') ? $object->table_element : $object->element;
+
+		foreach ($object->array_options as $optKey => $optVal) {
+			$cleanKey = str_replace('options_', '', $optKey);
+			$val = $this->showOutputFieldValue($extrafields, $cleanKey, $optVal, '', $elementKey);
+
+			// 1. Pour {object_options_...} et {objvar_object_options_...}
+			$array_other['object_options_' . $cleanKey] = $val;
+
+			// 2. Pour {formation_options_...} et {objvar_formation_options_...}
+			$array_other['formation_options_' . $cleanKey] = $val;
+
+			// 3. Pour {options_...} (au cas où)
+			$array_other['options_' . $cleanKey] = $val;
+		}
+	}
 	/**
 	 * Override de la fonction ExtraFields::showOutputField()
 	 *

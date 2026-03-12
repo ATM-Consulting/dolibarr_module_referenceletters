@@ -785,11 +785,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		global $db,  $langs, $extrafields;
 		$listRef = "";
+		
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/product/class/product.class.php');
 		$formAgefodd = new FormAgefodd($db);
+		
 		$resarray = array();
-
 		$resarray['formation_nom']=$object->intitule;
 		$resarray['formation_ref']=$object->ref_obj;
 		$resarray['formation_statut']=$object->getLibStatut();
@@ -802,6 +803,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_category_bpf']=$object->category_lib_bpf;
 		$prod = new Product($db);
 		$res = $prod->fetch($object->fk_product);
+		
 		if ($res)
 		$resarray['formation_product']=$prod->label;
 		$resarray['formation_type_public']=$object->public;
@@ -873,7 +875,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		global $db, $langs;
 
-
+		
 		dol_include_once('/agefodd/class/html.formagefodd.class.php');
 		dol_include_once('/societe/class/societe.class.php');
 
@@ -882,7 +884,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$agfStep = new Agefodd_step($this->db);
 			$agfStep->fetch($fk_step);
 		}
-
+		
 		$formAgefodd = new FormAgefodd($db);
 
 		$resarray = array();
@@ -980,6 +982,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['time_stagiaire_temps_realise_att_total'] = $object->time_stagiaire_temps_realise_att_total?? '';
 		$resarray['stagiaire_temps_realise_att_total'] = $object->stagiaire_temps_realise_att_total?? '';
  		$resarray['trainer_cost_planned'] = price($object->cost_trainer_planned ?? '');
+		//$resarray['stagiaire_rpps'] = 'rpps1';
 
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
@@ -990,7 +993,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
 			}
         }
-
+		
         if (getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')) {
 			$u = new User($this->db);
 			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')));
@@ -998,7 +1001,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['Mentor_pedagogique'] = ucfirst($langs->trans('MentorPedago') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
 			}
 		}
-
+		
 
 		if (getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')) {
 			$u = new User($this->db);
@@ -1023,12 +1026,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			} elseif (class_exists('Formation')) {
 				$catalogue = new Formation($db);
 			}
+			
 			$sessionFormation = new SessionCatalogue($this->db);
 			$res = $sessionFormation->fetchSessionCatalogue($object->id);
 
 			if ($res > 0 ){
 				$catalogue = $sessionFormation;
 			}else{
+				$catalogue = new Formation($db);
 				$catalogue->fetch($object->fk_formation_catalogue);
 			}
 
@@ -1152,9 +1157,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (! empty($object)) {
 
 			foreach ( $object as $key => $value ) {
+				//print $key . '<br/>';
 				$isStagiaireSocExtrafields = strpos($key, 'stagiaire_soc_options')  !== false;
+				$isStagiaireSocPeopleExtrafields = strpos($key, 'object_stagiaire_rpps')  !== false;
+								
 				if ($key == 'db') continue;
-				else if ($key == 'array_options' && is_object($object) || $isStagiaireSocExtrafields)
+				else if ($key == 'array_options' && is_object($object) || ($isStagiaireSocExtrafields || $isStagiaireSocPeopleExtrafields))
 				{
 					// Inspiration depuis Dolibarr ( @see CommonDocGenerator::get_substitutionarray_object() )
 					// à la différence que si l'objet n'a pas de ligne extrafield en BDD, le tag {objvar_object_array_options_options_XXX} affichera vide
@@ -1163,7 +1171,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					if (substr($object->element, 0, 7) === 'agefodd') $extrafieldkey=$object->table_element;
 					else $extrafieldkey=$object->element;
 					if($isStagiaireSocExtrafields) $extrafieldkey = 'societe';
-
+					if($isStagiaireSocPeopleExtrafields) $extrafieldkey = 'socpeople';
+					
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
@@ -1186,9 +1195,19 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							}
 						}
 					}
+					//$array_other['object_stagiaire_socpeople_options_rpps'] = 'rpps';
 					if($isStagiaireSocExtrafields) {
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$extraKey = str_replace('stagiaire_soc_options_', '', $key);
+							if($key_opt === $extraKey) {
+								$val = $this->showOutputFieldValue($extrafields, $key_opt, $value);
+								$array_other['object_' . $sub_element_label . $key] = $val;
+							}
+						}
+					}
+					elseif($isStagiaireSocPeopleExtrafields) {
+						foreach ($extralabels as $key_opt => $label_opt) {
+							$extraKey = str_replace('stagiaire_socpeople_options_', '', $key);
 							if($key_opt === $extraKey) {
 								$val = $this->showOutputFieldValue($extrafields, $key_opt, $value);
 								$array_other['object_' . $sub_element_label . $key] = $val;

@@ -7,6 +7,24 @@
  */
 class RfltrTools {
 
+	/**
+	 * Normalize historical Agefodd DocEdit element type aliases when reading
+	 * persisted models. This keeps existing customer models visible in the UI
+	 * without changing stored data or historical Agefodd file names.
+	 *
+	 * @param string $elementType
+	 * @return string
+	 */
+	public static function normalizeAgefoddElementTypeAlias(string $elementType): string
+	{
+		$aliases = array(
+			'rfltr_agefodd_certificat_completion_trainee' => 'rfltr_agefodd_certificate_completion_trainee',
+			'rfltr_agefodd_fichepres_trainee' => 'rfltr_agefodd_fiche_presence_trainee',
+		);
+
+		return isset($aliases[$elementType]) ? $aliases[$elementType] : $elementType;
+	}
+
 	public static function setImgLinkToUrl($txt) {
 
 		if (!is_string($txt) || $txt === '') {
@@ -48,6 +66,9 @@ class RfltrTools {
 
 		$object_refletter = new Referenceletters($db);
 		$res_fetch = $object_refletter->fetch($id_model);
+		if (!empty($object_refletter->element_type)) {
+			$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+		}
 
 		//
 		if(empty($res_fetch)) {
@@ -56,6 +77,9 @@ class RfltrTools {
 
 			if(!empty($id_rfltr)) { // Il existe un modèle par défaut, on le charge
 				$object_refletter->fetch($id_rfltr);
+				if (!empty($object_refletter->element_type)) {
+					$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+				}
 			}else{
 				// sinon on prend le premier dans la liste.
 				$object_refletter->fetch_all('DESC', 'rowid', 0, 0, array('t.element_type'=>"invoice"));
@@ -63,6 +87,9 @@ class RfltrTools {
 
 				if(!empty($id_rfltr)) { // Il existe  ...  on le charge
 					$object_refletter->fetch($id_rfltr);
+					if (!empty($object_refletter->element_type)) {
+						$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+					}
 				}
 			}
 		}
@@ -224,8 +251,8 @@ class RfltrTools {
 
 			$TModels=array();
 			while($res = $db->fetch_object($resql)) {
-
-				$TModels[$res->element_type][$res->rowid]=$res->title;
+				$elementType = self::normalizeAgefoddElementTypeAlias((string) $res->element_type);
+				$TModels[$elementType][$res->rowid]=$res->title;
 
 			}
 			return $TModels;
@@ -247,6 +274,7 @@ class RfltrTools {
 
 			$TModels=array();
 			while($res = $db->fetch_object($resql)) {
+				$res->element_type = self::normalizeAgefoddElementTypeAlias((string) $res->element_type);
 
 				$TModels[]=$res;
 
@@ -311,9 +339,9 @@ class RfltrTools {
                     let model = $(this).attr('model');
                     //Dans le cas du module agefoddcertificat il faut rediriger vers agefoddcertificat_documents.backend.php
                     if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
-                        var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1); ?>';
-                    } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
-                    path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo intval(GETPOST('fk_step', 'int')); ?>;
+                        var path = '<?php echo dol_escape_js(dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1)); ?>';
+                    } else var path = '<?php echo dol_escape_js((string) $_SERVER['PHP_SELF']); ?>';
+                    path += '?id='+ <?php echo (int) GETPOST('id', 'int'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo (int) GETPOST('fk_step', 'int'); ?>;
                     var selectSocId = $(this).attr('socid');
                     var trainerCell = $(this).closest('td.trainerid');
                     var trainerId = trainerCell.length ? trainerCell.attr('trainerid') : '';

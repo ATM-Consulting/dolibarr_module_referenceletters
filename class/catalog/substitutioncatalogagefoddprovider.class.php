@@ -23,11 +23,11 @@ class SubstitutionCatalogAgefoddProvider implements SubstitutionCatalogProviderI
 	public function __construct(DoliDB $db, Translate $langs)
 	{
 		$this->providers = array(
-			'formation' => new SubstitutionCatalogAgefoddFormationProvider($db),
+			'formation' => new SubstitutionCatalogAgefoddFormationProvider($db, $langs),
 			'session' => new SubstitutionCatalogAgefoddSessionProvider($db, $langs),
 			'trainee' => new SubstitutionCatalogAgefoddTraineeProvider($db, $langs),
-			'trainer' => new SubstitutionCatalogAgefoddTrainerProvider(),
-			'convention' => new SubstitutionCatalogAgefoddConventionProvider(),
+			'trainer' => new SubstitutionCatalogAgefoddTrainerProvider($langs),
+			'convention' => new SubstitutionCatalogAgefoddConventionProvider($langs),
 		);
 	}
 

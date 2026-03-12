@@ -1,12 +1,20 @@
 <?php
 
-require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
+require_once __DIR__ . '/substitutioncatalogagefoddabstractprovider.class.php';
 
 /**
  * Provides Agefodd convention-specific catalog keys.
  */
-class SubstitutionCatalogAgefoddConventionProvider implements SubstitutionCatalogProviderInterface
+class SubstitutionCatalogAgefoddConventionProvider extends SubstitutionCatalogAgefoddAbstractProvider
 {
+	/**
+	 * @param Translate $langs
+	 */
+	public function __construct(Translate $langs)
+	{
+		parent::__construct(null, $langs);
+	}
+
 	/**
 	 * @param array<string,mixed> $substArray
 	 * @param array<string,mixed> $context
@@ -23,31 +31,19 @@ class SubstitutionCatalogAgefoddConventionProvider implements SubstitutionCatalo
 			return;
 		}
 
-		$substArray[$groupLabels['convention']] = array(
-			'objvar_object_signataire_intra' => 'Nom du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_poste' => 'Poste du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_mail' => 'Mail du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_intra_phone' => 'Téléphone du signataire des intra-entreprise (contact session)',
-			'objvar_object_signataire_inter' => 'Nom des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_poste' => 'Poste des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_mail' => 'Mail des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_signataire_inter_phone' => 'Téléphone des signataires des inter-entreprise (signataire sur le participants)',
-			'objvar_object_convention_notes' => 'commentaire de la convention',
-			'objvar_object_convention_id' => 'identifiant unique de la convention',
-			'objvar_object_convention_intro1' => 'Introduction 1 de la convention',
-			'objvar_object_convention_intro2' => 'Introduction 2 de la convention',
-			'objvar_object_convention_art1' => 'Article 1 de la convention',
-			'objvar_object_convention_art2' => 'Article 2 de la convention',
-			'objvar_object_convention_art3' => 'Article 3 de la convention',
-			'objvar_object_convention_art4' => 'Article 4 de la convention',
-			'objvar_object_convention_art5' => 'Article 5 de la convention',
-			'objvar_object_convention_art6' => 'Article 6 de la convention',
-			'objvar_object_convention_art7' => 'Article 7 de la convention',
-			'objvar_object_convention_art8' => 'Article 8 de la convention',
-			'objvar_object_convention_art9' => 'Article 9 de la convention',
-			'objvar_object_convention_sig' => 'Signature de la convention',
-			'objvar_object_signataire_intra_prof1' => 'siret du signataire',
-			'objvar_object_signataire_intra_prof2' => 'siren du signataire',
-		);
+		$substArray[$groupLabels['convention']] = $this->translateTags(array(
+			'objvar_object_signataire_intra', 'objvar_object_signataire_intra_poste',
+			'objvar_object_signataire_intra_mail', 'objvar_object_signataire_intra_phone',
+			'objvar_object_signataire_inter', 'objvar_object_signataire_inter_poste',
+			'objvar_object_signataire_inter_mail', 'objvar_object_signataire_inter_phone',
+			'objvar_object_convention_notes', 'objvar_object_convention_id',
+			'objvar_object_convention_intro1', 'objvar_object_convention_intro2',
+			'objvar_object_convention_art1', 'objvar_object_convention_art2',
+			'objvar_object_convention_art3', 'objvar_object_convention_art4',
+			'objvar_object_convention_art5', 'objvar_object_convention_art6',
+			'objvar_object_convention_art7', 'objvar_object_convention_art8',
+			'objvar_object_convention_art9', 'objvar_object_convention_sig',
+			'objvar_object_signataire_intra_prof1', 'objvar_object_signataire_intra_prof2',
+		));
 	}
 }

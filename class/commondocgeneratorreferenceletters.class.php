@@ -51,9 +51,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $default Default value.
 	 * @return string
 	 */
-	protected function getObjectPropertyValue($object, $property, $default = '')
+	protected function getObjectPropertyValue(object $object, string $property, string $default = ''): string
 	{
-		if (!is_object($object) || !property_exists($object, $property) || $object->{$property} === null) {
+		if (!property_exists($object, $property) || $object->{$property} === null) {
 			return $default;
 		}
 
@@ -69,9 +69,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $default Default value.
 	 * @return string
 	 */
-	protected function getNestedObjectPropertyValue($object, $property, $nestedProperty, $default = '')
+	protected function getNestedObjectPropertyValue(object $object, string $property, string $nestedProperty, string $default = ''): string
 	{
-		if (!is_object($object) || !property_exists($object, $property) || !is_object($object->{$property})) {
+		if (!property_exists($object, $property) || !is_object($object->{$property})) {
 			return $default;
 		}
 
@@ -87,9 +87,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $default Default value.
 	 * @return string
 	 */
-	protected function getFormattedDatePropertyValue($object, $property, $format = 'day', $default = '')
+	protected function getFormattedDatePropertyValue(object $object, string $property, string $format = 'day', string $default = ''): string
 	{
-		if (!is_object($object) || !property_exists($object, $property) || empty($object->{$property})) {
+		if (!property_exists($object, $property) || empty($object->{$property})) {
 			return $default;
 		}
 
@@ -105,10 +105,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $default Default value.
 	 * @return string
 	 */
-	protected function getStatusLabelValue($object, $statusProperty, $labelsProperty, $default = '')
+	protected function getStatusLabelValue(object $object, string $statusProperty, string $labelsProperty, string $default = ''): string
 	{
-		if (!is_object($object)
-			|| !property_exists($object, $statusProperty)
+		if (!property_exists($object, $statusProperty)
 			|| !property_exists($object, $labelsProperty)
 			|| !is_array($object->{$labelsProperty})) {
 			return $default;
@@ -532,10 +531,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 		}
+		unset($line);
 
 		// formatage sortie
 		foreach ( $TTva as $k => &$v )
 			$v = price($v);
+		unset($v);
 
 		// Retour fonction
 		return array(

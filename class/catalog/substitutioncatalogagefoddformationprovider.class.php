@@ -1,22 +1,20 @@
 <?php
 
 require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
-require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
+require_once __DIR__ . '/substitutioncatalogagefoddabstractprovider.class.php';
 
 /**
  * Provides the Agefodd formation catalogue catalog.
  */
-class SubstitutionCatalogAgefoddFormationProvider implements SubstitutionCatalogProviderInterface
+class SubstitutionCatalogAgefoddFormationProvider extends SubstitutionCatalogAgefoddAbstractProvider
 {
-	/** @var DoliDB */
-	protected $db;
-
 	/**
 	 * @param DoliDB $db
+	 * @param Translate $langs
 	 */
-	public function __construct(DoliDB $db)
+	public function __construct(DoliDB $db, Translate $langs)
 	{
-		$this->db = $db;
+		parent::__construct($db, $langs);
 	}
 
 	/**
@@ -35,58 +33,39 @@ class SubstitutionCatalogAgefoddFormationProvider implements SubstitutionCatalog
 			return;
 		}
 
-		$substArray[$groupLabels['formation_catalogue']] = array(
-			'formation_nom' => 'Intitulé de la formation',
-			'formation_ref' => 'Référence de la formation',
-			'formation_id' => 'Id de la formation',
-			'formation_programme' => 'Programme de la formation',
-			'formation_statut' => 'Statut de la formation',
-			'formation_duree' => 'Durée de la formation',
-			'formation_but' => 'But de la formation',
-			'formation_methode' => 'Methode de formation',
-			'formation_nb_place_dispo' => 'nombre de places disponibles',
-			'formation_nb_inscription_mini' => 'Nombre minimum d\'inscrits pour confirmer la session',
-			'formation_category' => 'Catégorie formation',
-			'formation_category_bpf' => 'Catégorie de formation prestation (BPF)',
-			'formation_product' => 'Produit ou service associé',
-			'formation_type_public' => 'Type de public',
-			'formation_methode_pedago' => 'Méthodes pédagogiques',
-			'formation_documents' => 'Documents nécessaires à la formation',
-			'formation_equipements' => 'Equipements nécessaires à la formation',
-			'formation_pre_requis' => 'Pré-requis',
-			'formation_moyens_peda' => 'Moyens pédagogiques',
-			'formation_sanction' => 'Sanction de la formation',
-			'formation_competences' => 'Liste des compétences visées',
-			'formation_nature' => 'Nature de l’action concourant au développement des compétences',
-			'formation_Accessibility_Handicap' => 'Accessible aux personnes handicapés',
-			'AgfMentorList' => 'Liste des référents',
-			'Mentor_administrator' => 'Référent Administratif',
-			'Mentor_pedagogique' => 'Référent pédagogique',
-			'Mentor_handicap' => 'Référent handicap'
-		);
+		$substArray[$groupLabels['formation_catalogue']] = $this->translateTags(array(
+			'formation_nom', 'formation_ref', 'formation_id', 'formation_programme', 'formation_statut',
+			'formation_duree', 'formation_but', 'formation_methode', 'formation_nb_place_dispo',
+			'formation_nb_inscription_mini', 'formation_category', 'formation_category_bpf',
+			'formation_product', 'formation_type_public', 'formation_methode_pedago',
+			'formation_documents', 'formation_equipements', 'formation_pre_requis',
+			'formation_moyens_peda', 'formation_sanction', 'formation_competences',
+			'formation_nature', 'formation_Accessibility_Handicap', 'AgfMentorList',
+			'Mentor_administrator', 'Mentor_pedagogique', 'Mentor_handicap',
+		));
 
 		$extrafields = new ExtraFields($this->db);
 		$formationExtralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
 		if (!empty($formationExtralabels)) {
 			foreach ($formationExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['formation_catalogue']]['formation_options_' . $extrakey] = 'Champ complémentaire Formation : ' . $extralabel;
+				$substArray[$groupLabels['formation_catalogue']]['formation_options_' . $extrakey] = $this->translateFormationExtraFieldLabel($extralabel);
 			}
 		}
 
 		if (!empty($groupLabels['pedagogic_objectives'])) {
-			$substArray[$groupLabels['pedagogic_objectives']] = array(
-				'line_objpeda_rang' => 'Rang de l\'objectif pédagogique',
-				'line_objpeda_description' => 'Description de l\'objectif pédagogique',
-			);
+			$substArray[$groupLabels['pedagogic_objectives']] = $this->translateTags(array(
+				'line_objpeda_rang',
+				'line_objpeda_description',
+			));
 		}
 
 		if (!empty($groupLabels['training_modules'])) {
-			$substArray[$groupLabels['training_modules']] = array(
-				'line_module_title' => 'Titre du module de formation',
-				'line_module_duration' => 'Durée du module de formation',
-				'line_module_obj_peda' => 'Objectifs pédagogiques du module',
-				'line_module_content_text' => 'Contenu du module de formation',
-			);
+			$substArray[$groupLabels['training_modules']] = $this->translateTags(array(
+				'line_module_title',
+				'line_module_duration',
+				'line_module_obj_peda',
+				'line_module_content_text',
+			));
 		}
 	}
 }

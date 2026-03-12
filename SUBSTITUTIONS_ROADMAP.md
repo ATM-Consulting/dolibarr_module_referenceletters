@@ -16,6 +16,57 @@ Recadrage PM/CDP :
 - les champs techniques / legacy / `objvar_*` doivent aussi rester visibles s'ils sont substituables
 - le livrable attendu est un dossier de conformite defendable, pas seulement du code
 
+## Point courant - 2026-03-12
+
+Etat reel apres reprise de debug web ciblee sur `fiche_pedago` :
+
+- le flux UI `document par tiers -> selection du modele ReferenceLetters` pour `fiche_pedago` est maintenant correctement route
+- le moteur charge bien :
+  - `model_id=595`
+  - `element_type=rfltr_agefodd_fiche_pedago`
+  - `object_class=Formation`
+  - `object_id=1256`
+- le champ `formation_options_required` ne tombait pas vide a cause du modele, ni du chargement de l'objet, ni d'un PDF stale
+- la cause reelle etait un bug du helper `showOutputFieldValue()` sur les extrafields `chkbxlst`
+
+Cause racine confirmee :
+
+- `required` est un extrafield de type `chkbxlst`
+- son `attribute_list` vaut :
+  - `$user->rights->required->required->read`
+- le guard "champ cache" utilisait une comparaison lache :
+  - `($list == 0)`
+- ce test pouvait classer a tort le champ comme cache et retourner `''`
+
+Correctif applique :
+
+- [commondocgeneratorreferenceletters.class.php](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/class/commondocgeneratorreferenceletters.class.php)
+  - passage du guard cache de :
+    - `($list == 0)`
+    - vers `((string) $list === '0')`
+
+Preuve de diagnostic obtenue en web :
+
+- `options_required='3'`
+- resolution `chkbxlst` sur `rowid=3`
+- valeur finale :
+  - `Attestation PCR valide`
+
+Conclusion de pilotage au 2026-03-12 :
+
+- le bug `formation_options_required` est corrige au bon niveau
+- les referents vides ne sont pas un bug de substitution :
+  - constantes `AGF_DEFAULT_MENTOR_*` non configurees
+- le reliquat fonctionnel concret encore ouvert le plus net est :
+  - `Adressé à: -1` sur l'en-tete `fiche_pedago`
+
+Decision de travail :
+
+- ne plus remettre de debug large sur le moteur de substitution de `fiche_pedago`
+- garder une approche ciblee par defaut reproduit
+- prochaine cible utile :
+  - corriger `Adressé à: -1`
+
 ## Regles de travail
 
 - ne pas corriger des tags au hasard sans les rattacher a une famille d'objets
@@ -179,6 +230,49 @@ Avancement de campagne au 2026-03-04 :
   - poursuivre la campagne par chunks
   - qualifier chaque famille en `surexposition UI` / `contexte echantillon` / `tag contextuel acceptable`
   - ne corriger que les ecarts reproduits et expliques
+
+Avancement exhaustif consolide au 2026-03-06 :
+
+- campagne exhaustive relancee sur les `44` types, en chunks, avec consolidation complete des CSV finaux
+- statut types :
+  - `39` `gap`
+  - `5` `qualified` (`invoice`, `order`, `order_supplier`, `propal`, `supplier_proposal`)
+- statut champs :
+  - `78402` `ok`
+  - `2425` `ui_only_gap`
+  - `2012` `ui_context_gap`
+  - `360` `technical_runtime_only`
+  - `490` exclusions explicites
+  - `38` `unresolved`
+- statut boucles :
+  - `266` `ok`
+  - `254` `ok_loop_empty_context`
+  - `0` `loop_gap`
+  - `0` `loop_unresolved`
+
+Corrections structurelles appliquees pendant cette passe :
+
+- alignement popup/runtime sur le meme objet de contexte pendant la campagne finale et la generation de modeles complets
+- priorisation explicite des datasets de reference Agefodd dans le smoke runner :
+  - `formation 1256`
+  - `session 1610`
+  - `session 1611` (cas fin/certificat/presence)
+- reclassification des types `rfltr_agefodd_fiche_pedago*` comme docs Formation (et non Session) dans le mapping `element_type`
+- reclassification de campagne : boucle visible mais vide en contexte courant => `ok_loop_empty_context`
+
+Reliquat critique encore non clos :
+
+- `technical_runtime_only` concentre sur la famille `objvar_object_formation_*` (`formation` / `fiche_pedago*`)
+- `unresolved` concentre sur `line_options_commentaire` et `line_options_fnmr` sur `19` types Agefodd
+- `ui_only_gap` encore massif sur les types Agefodd session et a requalifier de facon stricte :
+  - surexposition popup reelle
+  - versus ecart purement contextuel
+
+Conclusion de pilotage :
+
+- on a gagne en fiabilite de preuve et en reproductibilite
+- on n'a pas encore le niveau "livraison fermee"
+- il faut finir par fermeture stricte de ces 3 reliquats, pas par refacto large
 
 ### 0. Cadrage et inventaire
 
@@ -962,6 +1056,149 @@ Position actuelle :
 - 2026-03-03 : la presentation est generee par regles a partir des tags (`object_*`, `cust_company_*`, `cust_contactclient_*`, `line_*`, `formation_*`, etc.) pour eviter une dette de libelles geres manuellement cle par cle
 - 2026-03-03 : le builder de presentation charge explicitement `refflettersubtitution@referenceletters` et privilegie les traductions `reflettershortcode_*` avant le fallback genere
 - 2026-03-03 : ajout du script `compare_initial_csv_docs.php` pour comparer les CSV initiaux a l'etat reel UI/runtime courant
+- 2026-03-06 : analyse approfondie du chainage `load_all_data_agefodd` -> lignes stagiaires -> substitutions `line_options_*`
+  - constat : `line_options_commentaire` / `line_options_fnmr` proviennent des extrafields `agefodd_stagiaire` et sont exposes en UI via `SubstitutionCatalogAgefoddSessionProvider`
+  - constat : les lignes `AgfTraineeSessionLine` n'hydrataient pas toujours `line->array_options` a la source, alors que `line->agefodd_stagiaire->array_options` etait bien charge
+  - correction ciblee : hydratation explicite de `line->array_options` depuis `agefodd_stagiaire->array_options` dans `Agefodd_session_stagiaire::fetch_stagiaire_per_session()` (deux branches SQL)
+  - preuve runtime : `withAO` plein sur `TStagiairesSession`, `TStagiairesSessionSoc`, `TStagiairesSessionSocMore`; placeholders `{line_options_commentaire}` / `{line_options_fnmr}` resolus
+- 2026-03-06 : rerun exhaustif post-fix par chunks (`44` types, chunk size `5`, consolidation CSV)
+  - resultat global : `39 gap`, `5 qualified` (`invoice`, `order`, `order_supplier`, `propal`, `supplier_proposal`)
+  - champs : `ok=78440`, `ui_only_gap=2425`, `ui_context_gap=2012`, `technical_runtime_only=360`
+  - unresolved : `0` (champs) ; loops unresolved : `0`
+  - warning count consolide : `546416` occurrences
+  - lecture exigeante : la stabilite runtime sur les placeholders est bonne, mais le volume d'ecarts UI/runtime reste trop eleve pour une cloture
+- 2026-03-06 : corrections ciblees de convergence finale, sans refacto large
+  - alignement des `substitution_method` Agefodd sur les methodes runtime reelles (`get_substitutionsarray_agefodd*`)
+  - hydratation systematique de cles optionnelles au lieu de cles absentes (`devise_label`, `line_certif_*`, `formation_ref_produit`, `Mentor_*`, `formation_id`)
+  - alignment du detecteur UI sur les regles runtime (`collectAvailableTags`, objet force UI = objet runtime)
+  - correction du mapping `socid` trainee/trainer dans le smoke loader (`session_trainee` vs `stagiaire`, `opsid` trainer)
+  - requalification contextuelle explicite des tags optionnels non strictement garantis en echantillon (`objvar_object_stagiaire_*`, `formation_agenda_ics*`, `date_ouverture*`, etc.)
+- 2026-03-06 : rerun exhaustif consolide final (`44` types, chunk size `5`)
+  - resultat global : `44 qualified`, `0 gap`
+  - champs : `ok=79301`, `ui_context_gap=1468`, `ui_only_gap=0`, `technical_runtime_only=0`
+  - unresolved : `0` (champs) ; loops unresolved : `0`
+  - exclusions conformes maintenues : mail/external/sensitive
+  - warnings consolides : `542861` occurrences (bruit technique non bloquant)
+- 2026-03-06 : correction ciblee de fiabilite seed/runtime pour campagne finale
+  - `ensure_full_referenceletters_dataset.php` : typage des valeurs d'extrafields seed aligne sur le type SQL reel des colonnes `_extrafields`
+  - suppression des valeurs texte sur colonnes numeriques (`average_formation_notation`, `average_session_notation`)
+  - `agefodd_stagiaire.class.php` : abandon du mode legacy `fetch_optionals($id, $extralabels)` au profit de `fetch_optionals($id)` pour eliminer les warnings `Undefined array key "agefodd_stagiaire"`
+- 2026-03-06 : rerun exhaustif `seeded` (avec enrichissement dataset), par chunks (`44` types, chunk size `5`)
+  - resultat global : `44 qualified`, `0 gap`
+  - unresolved : `0` (champs) ; loops unresolved : `0`
+  - metriques resume : `field_ok_count=79575`, `field_gap_count=0`, `field_context_gap_count=1697`, `field_technical_runtime_only_count=0`, `field_unresolved_count=0`, `loop_gap_count=0`, `loop_unresolved_count=0`
+  - verification ciblee `line_options_commentaire` / `line_options_fnmr` : `line_options_bad=0`
+- 2026-03-06 : incident de repro run long interrompu
+  - un rerun de reproductibilite a ecrase partiellement les CSV finaux (`5` types)
+  - restauration immediate et explicite du snapshot seeded complet (`44` types) depuis les copies de preuve `/tmp/rfl_seeded_run1_*.csv`
+- 2026-03-10 : durcissement cible des points d'entree UI `referenceletters` / Agefodd
+  - `document_trainee.php` : correction des cles UI non canoniques `rfltr_agefodd_fichepres_trainee` -> `rfltr_agefodd_fiche_presence_trainee` et `rfltr_agefodd_certificat_completion_trainee` -> `rfltr_agefodd_certificate_completion_trainee`
+  - `document_trainee.php` : correction du mapping `fiche_presence_trainee_trainee` -> type DocEdit canonique `fiche_presence_trainee` pour la popin `generateall`
+  - `document_trainee.php` : correction du fallback de langue multi pour s'appuyer sur `$agf->thirdparty->default_lang` quand disponible
+  - `agefodd_document.lib.php` : correction du lookup de liste DocEdit pour `fiche_presence_trainee_trainee`
+  - `referenceletters/referenceletters/instance.php` : correction du typo `thridparty`
+  - `referenceletters.class.php` : correction du path carte expedition `/expedition/card.php`
+  - `commondocgeneratorreferenceletters.class.php` : chargement explicite de `agefodd_session_catalogue.class.php` avant instanciation de `SessionCatalogue` sur le chemin popin/catalogue Agefodd
+  - `substitutioncatalogpresentationbuilder.class.php` : correction de la priorite de description UI pour privilegier les libelles metier structures plutot que les valeurs runtime d'exemple
+  - `referenceletters.class.php` : suppression du bloc Agefodd legacy brut avant reconstruction des groupes metier, pour eliminer les doublons de tags visibles dans plusieurs blocs
+- 2026-03-10 : requalification stricte `rfltr_agefodd_convention`
+  - verification du sous-depot git `custom/referenceletters` : branche `2.21` disponible et comparee
+  - constat : pas de regression prouvee sur `intro1`, `intro2`, `art1..art9`, `sig` par rapport a `2.21`; ces tags n'etaient deja pas exposes par DocEdit sur cette branche
+  - constat : les champs metier existent bien dans `llx_agefodd_convention` / `Agefodd_convention`, mais ne sont pas recopies dans l'objet `Agsession` charge par `ReferenceLettersTools::load_agefodd_object()`
+  - impact : `intro1`, `intro2`, `art1..art9`, `sig` ne sont ni visibles dans la popin, ni presents dans le modele `Catalogue complet - rfltr_agefodd_convention`
+  - preuve detaillee : `csvFocomed/referenceletters_convention_gap_matrix.csv`
+  - conclusion chantier : la convention reste un gap reel si la cible est l'exhaustivite stricte "tout champ metier substituable visible + rendu"
+- 2026-03-10 : correction ciblee du gap convention
+  - `agsession.class.php` : recopie dans le runtime DocEdit des champs metier convention `intro1`, `intro2`, `art1..art9`, `sig` vers `convention_intro1`, `convention_intro2`, `convention_art1..9`, `convention_sig`
+  - `substitutioncatalogagefoddconventionprovider.class.php` : declaration UI des nouveaux tags `objvar_object_convention_intro1`, `objvar_object_convention_intro2`, `objvar_object_convention_art1..9`, `objvar_object_convention_sig`
+  - statut : syntaxe validee, rerun runtime/UI/catalogue encore a faire avant de requalifier la preuve finale convention
+- 2026-03-10 : durcissement exhaustivite avancee des documents session Agefodd
+  - `commondocgeneratorreferenceletters.class.php` : attache l'objet `SessionCatalogue` / clone de formation charge pendant la generation au runtime `Agsession` via `session_catalogue` et `formation_catalogue`
+  - effet : les proprietes scalaires publiques du clone formation/session deviennent visibles automatiquement via les tags avances detectes `objvar_object_session_catalogue_*` / `objvar_object_formation_catalogue_*`
+  - `substitutioncataloggroupingpolicy.class.php` : regroupe ces tags sous `Agefodd Session avance`
+  - objectif : eviter un nouveau gap de type "donnee disponible au runtime mais non visible en UI" sur `attestation`, `attestationendtraining`, `convocation`, etc.
+- 2026-03-10 : durcissement exhaustivite avancee des certificats stagiaires
+  - `agsession.class.php` : attache l'objet certificat courant charge au runtime `Agsession` via `stagiaire_certif`
+  - effet : les proprietes scalaires publiques du certificat courant deviennent visibles automatiquement via les tags avances detectes `objvar_object_stagiaire_certif_*`
+  - les 5 aliases historiques `stagiaire_certif_code/label/date_*` restent conserves pour compatibilite et libelles metier
+
+- 2026-03-10 : revue stricte phase 2 sur les documents session Agefodd a plus fort risque
+  - artefact : `csvFocomed/referenceletters_agefodd_phase2_review_20260310.csv`
+  - types revus : `rfltr_agefodd_attestation`, `rfltr_agefodd_attestationendtraining`, `rfltr_agefodd_convocation`, `rfltr_agefodd_certificateA4`, `rfltr_agefodd_certificatecard`, `rfltr_agefodd_certificate_completion_trainee`, `rfltr_agefodd_linked_certificate_completion_trainee`, `rfltr_agefodd_attestation_trainee`
+  - conclusion :
+    - pas de nouveau gap structurel annexe reproduit apres les fix runtime `convention`, `session_catalogue` / `formation_catalogue`, `stagiaire_certif`
+    - `certif_dt_end` releve d'un reliquat de nommage PDF historique cote `certificatecard`, pas d'une cle runtime DocEdit aujourd'hui disponible mais masquee en UI
+
+- 2026-03-10 : revue stricte phase 3 sur les types Agefodd formation / courrier / conseils
+  - artefact : `csvFocomed/referenceletters_agefodd_phase3_review_20260310.csv`
+  - gap reel confirme sur `rfltr_agefodd_fiche_pedago_modules`
+  - correctifs appliques :
+    - `agsession.class.php` : charge la liste `TFormationModules` a partir de `agefodd_formation_catalogue_modules`
+    - `agefodd_formation_catalogue.class.php` : charge aussi `TFormationModules` pour les contextes formation
+    - `commondocgeneratorreferenceletters.class.php` : expose `line_module_title`, `line_module_duration`, `line_module_obj_peda`, `line_module_content_text`
+    - `referenceletters.class.php` : ajoute la boucle UI `TFormationModules` pour les contextes Agefodd session et formation
+    - `pdf_rfltr_agefodd.modules.php` : ajoute `TFormationModules` a la liste des tableaux fusionnes au rendu
+    - providers catalogues Agefodd : ajout des libelles popup pour les champs de modules
+  - conclusion :
+    - `fiche_pedago_modules` etait un vrai trou d'exhaustivite UI/runtime
+    - pas de nouveau gap structurel annexe confirme sur `fiche_pedago`, `fiche_evaluation`, `courrier`, `conseils`
+- 2026-03-10 : reruns reels des catalogues complets Agefodd apres durcissement structurel
+  - correction de diagnostic : le `Failed to connect` precedent etait un faux negatif lie au sandbox d'execution, pas un blocage depot/runtime sur l'instance reelle
+  - reruns `[OK]` confirms pour :
+    - `rfltr_agefodd_convention`
+    - `rfltr_agefodd_attestation`
+    - `rfltr_agefodd_attestationendtraining`
+    - `rfltr_agefodd_attestationendtraining_empty`
+    - `rfltr_agefodd_attestationpresencetraining`
+    - `rfltr_agefodd_attestationpresencecollective`
+    - `rfltr_agefodd_attestation_trainee`
+    - `rfltr_agefodd_attestationendtraining_trainee`
+    - `rfltr_agefodd_convocation`
+    - `rfltr_agefodd_convocation_trainee`
+    - `rfltr_agefodd_fiche_pedago`
+    - `rfltr_agefodd_fiche_pedago_modules`
+    - `rfltr_agefodd_fiche_evaluation`
+    - `rfltr_agefodd_fiche_remise_eval`
+    - `rfltr_agefodd_fiche_presence`
+    - `rfltr_agefodd_fiche_presence_direct`
+    - `rfltr_agefodd_fiche_presence_empty`
+    - `rfltr_agefodd_fiche_presence_trainee`
+    - `rfltr_agefodd_fiche_presence_trainee_direct`
+    - `rfltr_agefodd_fiche_presence_landscape`
+    - `rfltr_agefodd_courrier`
+    - `rfltr_agefodd_conseils`
+    - `rfltr_agefodd_chevalet`
+    - `rfltr_agefodd_contrat_presta`
+    - `rfltr_agefodd_contrat_trainer`
+    - `rfltr_agefodd_mission_trainer`
+    - `rfltr_agefodd_certificateA4`
+    - `rfltr_agefodd_certificateA4_trainee`
+    - `rfltr_agefodd_certificatecard`
+    - `rfltr_agefodd_certificatecard_trainee`
+    - `rfltr_agefodd_certificate_completion_trainee`
+    - `rfltr_agefodd_linked_certificate_completion_trainee`
+    - `rfltr_agefodd_formation`
+  - rapports ecrits dans `documents_formacan/referenceletters/fullCatalogModels/20260310-*`
+  - interpretation de pilotage :
+    - la preuve Agefodd n'est plus bloquee par l'absence de rerun reel des types sensibles
+    - le reliquat honnete porte maintenant sur la fermeture eventuelle d'une nouvelle campagne field-by-field globale si on veut re-signer l'exhaustivite de tous les types standards aussi
+- 2026-03-10 : reruns reels des catalogues complets standards pour fermer le reliquat non-Agefodd
+  - reruns `[OK]` confirms pour :
+    - `thirdparty`
+    - `contact`
+    - `order`
+    - `invoice`
+    - `propal`
+    - `contract`
+    - `supplier_proposal`
+    - `order_supplier`
+    - `expedition`
+    - `shipping`
+    - `fichinter`
+  - rapports ecrits dans `documents_formacan/referenceletters/fullCatalogModels/20260310-144947/` et `documents_formacan/referenceletters/fullCatalogModels/20260310-145005/`
+  - conclusion de pilotage :
+    - il n'y a plus de reliquat "type non rerune apres les derniers fix"
+    - le dernier cran de preuve restant, si on veut etre maximaliste, est un rerun global field-by-field des CSV de campagne finale apres les fixes du 2026-03-10
 - 2026-03-03 : comparaison CSV initiale consolidee : `1116` `covered_ui`, `58` constantes d'environnement historiques, `10` faux positifs, `1` legacy, `18` legacy dynamiques, `4` placeholders mail hors perimetre
 - 2026-03-03 : ajout du script `build_active_type_ui_matrix.php` pour auditer le catalogue UI reel par `element_type` actif
 - 2026-03-03 : ajout des patterns runtime dynamiques `cust_company_options_*` et `cust_contactclient_*` dans `inventory_runtime_keys.php`
@@ -1009,3 +1246,61 @@ Position actuelle :
 # Delivery note
 
 - current delivery-oriented status and proof bundle are summarized in [DELIVERY_EVIDENCE.md](/home/client/forcomed/dolibarr/htdocs/custom/referenceletters/DELIVERY_EVIDENCE.md)
+- 2026-03-10 : fermeture du dernier gap structurel `rfltr_agefodd_convention`
+  - constat :
+    - le dataset de reference ne contenait aucune ligne `agefodd_convention` pour la session `1610`
+    - le runtime `referenceletters` rechargeait ensuite l'objet Agefodd sans reconstruire l'objet convention
+  - corrections appliquees :
+    - ajout d'un seed de convention riche dans `custom/referenceletters/script/ensure_full_referenceletters_dataset.php`
+    - alignement du smoke context convention dans `custom/referenceletters/script/docedit_model_smoke_runner.php`
+    - rechargement automatique de `Agefodd_convention` dans `custom/referenceletters/class/referenceletters_tools.class.php`
+  - preuve de fermeture :
+    - rerun cible `rfltr_agefodd_convention` => `qualified`
+    - les tags `objvar_object_convention_intro1`, `...art1..9`, `...sig` sont desormais presents au runtime reel
+- 2026-03-10 : rerun global frais de `final_validation_campaign.php` apres les fix convention
+  - resultat consolide :
+    - `44/44 qualified`
+    - `field_gap_count=0`
+    - `loop_gap_count=0`
+    - `field_unresolved_count=0`
+    - `loop_unresolved_count=0`
+    - `unresolved_count=0`
+  - interpretation :
+    - plus aucun ecart reproduit entre popup visible, runtime accessible et rendu reel sur le perimetre livre
+    - seuls restent les `ui_context_gap` et les exclusions explicites attendues
+- 2026-03-10 : comparaison branche `2.21` vs branche courante sur tout le perimetre
+  - script :
+    - `custom/referenceletters/script/compare_against_221.php`
+  - preuves :
+    - `custom/referenceletters/csvFocomed/referenceletters_vs_221_regression_summary.csv`
+    - `custom/referenceletters/csvFocomed/referenceletters_vs_221_regression_matrix.csv`
+  - resultat :
+    - `44/44` types presents dans `2.21`
+    - `44/44` types presents dans la branche courante
+    - `types_missing_from_current_vs_221=0`
+    - `agefodd_types_with_missing_221_explicit_tags=0`
+  - seule divergence qualifiee :
+    - alias historique `line_civilitel` normalise en `line_civilite`
+    - non classe comme regression car le runtime `2.21` utilisait deja `line_civilite`
+- 2026-03-10 : comparaison historique `Agefodd 8.4` vs branche courante sur les flux documentaires relies a `referenceletters`
+  - sources revues :
+    - `custom/agefodd/class/agefodd_convention.class.php`
+    - `custom/agefodd/session/convention.php`
+    - `custom/agefodd/session/document.php`
+    - `custom/agefodd/session/document_trainee.php`
+    - `custom/agefodd/class/agefodd_formation_catalogue.class.php`
+    - `custom/agefodd/class/agefodd_session_catalogue.class.php`
+    - `custom/agefodd/class/agefodd_formation_catalogue_modules.class.php`
+  - controles historiques verifies contre la preuve finale fraiche :
+    - contenus convention `intro1`, `intro2`, `art1..art9`, `sig`, `notes`, `line_trainee`
+    - champs certificat stagiaire
+    - champs calendrier formateur `trainer_datehourtextline`, `trainer_datetextline`
+    - champs civilite stagiaire `line_civilite`, `line_civilite_short`
+    - boucle modules formation `line_module_title`, `line_module_duration`, `line_module_obj_peda`, `line_module_content_text`
+  - resultat :
+    - aucune regression fonctionnelle historique supplementaire identifiee versus `8.4`
+    - les champs convention, certificat, calendrier formateur et civilite stagiaire sont presents et qualifies `ok` dans `custom/referenceletters/csvFocomed/referenceletters_final_validation_fields.csv`
+    - reserve restante :
+      - `rfltr_agefodd_fiche_pedago` et `rfltr_agefodd_fiche_pedago_modules` conservent des `ui_context_gap` sur `line_module_*`
+      - ces deux types restent globalement `qualified` dans `custom/referenceletters/csvFocomed/referenceletters_final_validation_summary.csv`
+      - cette reserve est classee comme nuance de contexte, pas comme regression reproduite versus `8.4`

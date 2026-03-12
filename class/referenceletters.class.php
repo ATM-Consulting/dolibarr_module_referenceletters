@@ -56,6 +56,7 @@ class ReferenceLetters extends CommonObject
 	public $element_type_list = array ();
 	public $lines = array ();
 	public $TStatus=array();
+	public $TDefaultDoc = array();
 	public $header;
 	public $footer;
 
@@ -65,6 +66,13 @@ class ReferenceLetters extends CommonObject
 	 * @var object|null
 	 */
 	protected $lastCatalogUiObject = null;
+
+	/**
+	 * Optional object forced into the UI catalog builder for the current element type.
+	 *
+	 * @var object|null
+	 */
+	protected $forcedCatalogUiObject = null;
 
 	/**
 	 * Draft status
@@ -257,7 +265,7 @@ class ReferenceLetters extends CommonObject
 				'title' => 'Shipment',
 				'menuloader_lib' => DOL_DOCUMENT_ROOT . '/core/lib/sendings.lib.php',
 				'menuloader_function' => 'shipping_prepare_head',
-				'card' => '/exepedition/card.php',
+				'card' => '/expedition/card.php',
 				'substitution_method' => 'get_substitutionarray_object',
 				'substitution_method_line' => 'get_substitutionarray_lines',
 				'dir_output'=>DOL_DATA_ROOT.'/expedition/sending/',
@@ -318,7 +326,7 @@ class ReferenceLetters extends CommonObject
 					'trans' => 'agefodd',
 					'title' => 'AgfConvention',
 					'card' => '/agefodd/session/card.php',
-					'substitution_method' => 'get_substitutionarray_object',
+					'substitution_method' => 'get_substitutionsarray_agefodd',
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
@@ -373,9 +381,17 @@ class ReferenceLetters extends CommonObject
 				'trans' => 'agefodd',
 				'title' => 'AgfFormationInitiale',
 				'card' => '/agefodd/training/card.php',
-				'substitution_method' => 'get_substitutionarray_object',
+				'substitution_method' => 'get_substitutionsarray_agefodd_formation',
 				'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
+
+			foreach (array(
+				'rfltr_agefodd_fiche_pedago' => 'AgfFichePedagogique',
+				'rfltr_agefodd_fiche_pedago_modules' => 'AgfFichePedagogiqueModule',
+			) as $formationType => $formationTitle) {
+				$this->element_type_list[$formationType] = $this->element_type_list['rfltr_agefodd_formation'];
+				$this->element_type_list[$formationType]['title'] = $formationTitle;
+			}
 		}
 
 		// Hook permettant à d'autres modules d'ajouter des types de documents
@@ -385,6 +401,27 @@ class ReferenceLetters extends CommonObject
 		$hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
 
 		return 1;
+	}
+
+	/**
+	 * Force the object used to build the popup catalog for the current element type.
+	 *
+	 * @param object|null $object
+	 * @return void
+	 */
+	public function setForcedCatalogUiObject($object)
+	{
+		$this->forcedCatalogUiObject = is_object($object) ? $object : null;
+	}
+
+	/**
+	 * Clear any forced popup catalog object.
+	 *
+	 * @return void
+	 */
+	public function clearForcedCatalogUiObject()
+	{
+		$this->forcedCatalogUiObject = null;
 	}
 
 
@@ -569,7 +606,7 @@ class ReferenceLetters extends CommonObject
 				$extrafields = new ExtraFields($this->db);
 				$extralabels = $extrafields->fetch_name_optionals_label($this->table_element, true);
 				if (count($extralabels) > 0) {
-					$this->fetch_optionals($this->id, $extralabels);
+					$this->fetch_optionals($this->id);
 				}
 				$this->db->free($resql);
 
@@ -742,24 +779,42 @@ class ReferenceLetters extends CommonObject
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 
-				$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
-				dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-				$resql = $this->db->query($sql);
-				if ($resql) {
-					$num = $this->db->num_rows($resql);
-					if ($num > 0) {
-						$obj = $this->db->fetch_object($resql);
+				$forcedCatalogObject = null;
+				if (is_object($this->forcedCatalogUiObject) && get_class($this->forcedCatalogUiObject) === get_class($testObj)) {
+					$forcedCatalogObject = $this->forcedCatalogUiObject;
+				}
+
+				$num = 0;
+				$obj = null;
+				if (is_object($forcedCatalogObject) && !empty($forcedCatalogObject->id)) {
+					$testObj = $forcedCatalogObject;
+					$num = 1;
+					$obj = (object) array('rowid' => (int) $forcedCatalogObject->id);
+				} else {
+					$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ORDER BY rowid ASC ' . $this->db->plimit(1);
+					dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
+					$resql = $this->db->query($sql);
+					if ($resql) {
+						$num = $this->db->num_rows($resql);
+						if ($num > 0) {
+							$obj = $this->db->fetch_object($resql);
+						}
 					}
 				}
 				if (! empty($obj->rowid) && $num > 0) {
-					$testObj->fetch($obj->rowid);
+					if (!is_object($forcedCatalogObject)) {
+						$testObj->fetch($obj->rowid);
+					}
 					$currentCatalogObject = $testObj;
 
-					if (method_exists($testObj, 'fetch_thirdparty')) {
+					if (method_exists($testObj, 'fetch_thirdparty') && (!isset($testObj->thirdparty) || !is_object($testObj->thirdparty))) {
 						$testObj->fetch_thirdparty();
-						if (!empty($testObj->thirdparty) && is_object($testObj->thirdparty) && method_exists($testObj->thirdparty, 'fetch_optionals')) {
-							$testObj->thirdparty->fetch_optionals();
-						}
+					}
+					if (!empty($testObj->thirdparty) && is_object($testObj->thirdparty) && method_exists($testObj->thirdparty, 'fetch_optionals')) {
+						$testObj->thirdparty->fetch_optionals();
+					}
+					if (method_exists($testObj, 'fetch_lines') && (!isset($testObj->lines) || !is_array($testObj->lines))) {
+						$testObj->fetch_lines();
 					}
 
 					$array_second_thirdparty_object = array ();
@@ -775,7 +830,9 @@ class ReferenceLetters extends CommonObject
 						dol_syslog($item['substitution_method']);
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
-						$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
+						if ($item['substitution_method'] === 'get_substitutionarray_object') {
+							$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
+						}
 					}
 
 					if (! empty($testObj->thirdparty->id)) {
@@ -805,7 +862,9 @@ class ReferenceLetters extends CommonObject
 					}else {
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
-						$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
+						if ($item['substitution_method'] === 'get_substitutionarray_object') {
+							$catalogBuilder->appendStandardCatalogKeys($subst_array[$langs->trans($item['title'])], $type);
+						}
 
 						$thirdpartyStatic = new Societe($this->db);
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($thirdpartyStatic, $langs);
@@ -827,7 +886,7 @@ class ReferenceLetters extends CommonObject
 
 		require_once 'referenceletterselements.class.php';
 		$testObj = new ReferenceLettersElements($this->db);
-		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ' . $this->db->plimit(1);
+		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ORDER BY rowid ASC ' . $this->db->plimit(1);
 		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
 		$resql = $this->db->query($sql);
 		if ($resql) {
@@ -935,6 +994,24 @@ class ReferenceLetters extends CommonObject
 			return $loops;
 		}
 
+		if ($this->isAgefoddFormationElementType($this->element_type)) {
+			$loops[] = $this->buildLoopDefinition(
+				'TFormationObjPeda',
+				'Objectifs pedagogiques',
+				'Boucle des objectifs pedagogiques de la formation.',
+				array('line_objpeda_rang', 'line_objpeda_description'),
+				'Agefodd Liste des objectifs pedagogiques'
+			);
+			$loops[] = $this->buildLoopDefinition(
+				'TFormationModules',
+				'Modules de formation',
+				'Boucle des modules de la formation.',
+				array('line_module_title', 'line_module_duration', 'line_module_obj_peda', 'line_module_content_text'),
+				'Agefodd Modules formation'
+			);
+			return $loops;
+		}
+
 		if (!$this->isAgefoddSessionElementType($this->element_type)) {
 			return $loops;
 		}
@@ -952,6 +1029,13 @@ class ReferenceLetters extends CommonObject
 			'Boucle des objectifs pedagogiques de la session.',
 			array('line_objpeda_rang', 'line_objpeda_description'),
 			'Agefodd Liste des objectifs pedagogiques'
+		);
+		$loops[] = $this->buildLoopDefinition(
+			'TFormationModules',
+			'Modules de formation',
+			'Boucle des modules de la formation.',
+			array('line_module_title', 'line_module_duration', 'line_module_obj_peda', 'line_module_content_text'),
+			'Agefodd Modules formation'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSession',
@@ -1120,6 +1204,7 @@ class ReferenceLetters extends CommonObject
 			'formation_catalogue' => 'Agefodd Formation catalogue',
 			'trainer_mission' => 'Agefodd Formateur mission',
 			'session' => 'Agefodd Session courante',
+			'training_modules' => 'Agefodd Modules formation',
 			'participants' => 'Agefodd Liste des participants',
 			'steps' => 'Agefodd Liste des etapes',
 			'step' => 'Agefodd Etape courante',
@@ -1132,10 +1217,18 @@ class ReferenceLetters extends CommonObject
 			'trainer_times' => 'Agefodd Agenda formateur',
 		);
 
-		$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, new CommonDocGeneratorReferenceLetters($this->db), $langs);
+			$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, new CommonDocGeneratorReferenceLetters($this->db), $langs);
 
-		// On supprime les clefs que propose automatiquement le module car presque inutiles et on les refait à la main
-		if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
+			// On supprime le bloc legacy brut du document Agefodd ainsi que l'ancien groupe Agsession
+			// pour ne conserver que les groupes metier refaits a la main.
+			$legacyTitle = '';
+			if (!empty($this->element_type_list[$this->element_type]['title'])) {
+				$legacyTitle = $langs->trans($this->element_type_list[$this->element_type]['title']);
+			}
+			if ($legacyTitle !== '' && isset($subst_array[$legacyTitle])) {
+				unset($subst_array[$legacyTitle]);
+			}
+			if(isset($subst_array['Agsession'])) unset($subst_array['Agsession']);
 
 		$subst_array[$groupLabels['session']] = array(
 
@@ -1159,7 +1252,6 @@ class ReferenceLetters extends CommonObject
 			unset($subst_array[$groupLabels['horaires']]);
 			unset($subst_array[$groupLabels['formateurs']]);
 			unset($subst_array[$groupLabels['financial_lines']]);
-			unset($subst_array[$groupLabels['pedagogic_objectives']]);
 			unset($subst_array[$groupLabels['trainee']]);
 			unset($subst_array[$groupLabels['convention']]);
 			unset($subst_array[$groupLabels['trainer_times']]);
@@ -1200,7 +1292,11 @@ class ReferenceLetters extends CommonObject
 
 	protected function isAgefoddFormationElementType($elementType)
 	{
-		return $elementType === 'rfltr_agefodd_formation';
+		return in_array($elementType, array(
+			'rfltr_agefodd_formation',
+			'rfltr_agefodd_fiche_pedago',
+			'rfltr_agefodd_fiche_pedago_modules',
+		), true);
 	}
 
 	protected function isAgefoddSessionElementType($elementType)

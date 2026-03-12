@@ -77,9 +77,9 @@ class SubstitutionCatalogStandardProvider implements SubstitutionCatalogProvider
 	 * @param array<string,mixed> $substArray
 	 * @return void
 	 */
-	public function appendThirdpartyCatalogKeys(array &$substArray): void
+	public function appendThirdpartyCatalogKeys(array &$substArray, ?object $thirdparty = null): void
 	{
-		$this->getProvider('thirdparty')->appendCatalogKeys($substArray, array());
+		$this->getProvider('thirdparty')->appendCatalogKeys($substArray, array('thirdparty' => $thirdparty));
 	}
 
 	/**

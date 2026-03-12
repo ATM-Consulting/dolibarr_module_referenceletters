@@ -95,14 +95,19 @@ class SubstitutionCatalogPresentationBuilder
 			return $translatedDescription;
 		}
 
+		$structuredDescription = $this->resolveStructuredDescription($tag, false);
+		if ($structuredDescription !== '') {
+			return $structuredDescription;
+		}
+
 		$catalogDescription = $this->resolveCatalogDescription($tag, $sampleValue, $block);
 		if ($catalogDescription !== '') {
 			return $catalogDescription;
 		}
 
-		$structuredDescription = $this->resolveStructuredDescription($tag);
-		if ($structuredDescription !== '') {
-			return $structuredDescription;
+		$genericStructuredDescription = $this->resolveStructuredDescription($tag, true);
+		if ($genericStructuredDescription !== '') {
+			return $genericStructuredDescription;
 		}
 
 		if (is_string($sampleValue) && $this->isMeaningfulTextSample($sampleValue)) {
@@ -178,7 +183,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function resolveStructuredDescription($tag)
+	protected function resolveStructuredDescription($tag, $includeGenericPrefixes = true)
 	{
 		if (preg_match('/^cust_contactclient_([A-Z_]+)_([0-9]+)_(.+)$/', $tag, $matches)) {
 			return $this->formatContactDescription($matches[1], $matches[2], $matches[3]);
@@ -228,23 +233,25 @@ class SubstitutionCatalogPresentationBuilder
 			return $this->getCurrentObjectLabel() . ' avance - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_')));
 		}
 
-		$prefixedDescriptions = array(
-			'object_' => $this->getCurrentObjectLabel(),
-			'cust_company_' => 'Tiers client',
-			'cust_contactclient' => 'Contacts client',
-			'referenceletters_' => 'DocEdit',
-			'formation_' => 'Formation',
-			'trainer_' => 'Formateur',
-			'step_' => 'Etape',
-			'current_' => 'Contexte courant',
-			'mycompany_' => 'Societe emettrice',
-			'myuser_' => 'Utilisateur courant',
-		);
+		if ($includeGenericPrefixes) {
+			$prefixedDescriptions = array(
+				'object_' => $this->getCurrentObjectLabel(),
+				'cust_company_' => 'Tiers client',
+				'cust_contactclient' => 'Contacts client',
+				'referenceletters_' => 'DocEdit',
+				'formation_' => 'Formation',
+				'trainer_' => 'Formateur',
+				'step_' => 'Etape',
+				'current_' => 'Contexte courant',
+				'mycompany_' => 'Societe emettrice',
+				'myuser_' => 'Utilisateur courant',
+			);
 
-		foreach ($prefixedDescriptions as $prefix => $label) {
-			$description = $this->formatPrefixedDescription($tag, $prefix, $label);
-			if ($description !== '') {
-				return $description;
+			foreach ($prefixedDescriptions as $prefix => $label) {
+				$description = $this->formatPrefixedDescription($tag, $prefix, $label);
+				if ($description !== '') {
+					return $description;
+				}
 			}
 		}
 

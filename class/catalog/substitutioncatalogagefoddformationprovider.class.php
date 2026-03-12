@@ -72,5 +72,21 @@ class SubstitutionCatalogAgefoddFormationProvider implements SubstitutionCatalog
 				$substArray[$groupLabels['formation_catalogue']]['formation_options_' . $extrakey] = 'Champ complémentaire Formation : ' . $extralabel;
 			}
 		}
+
+		if (!empty($groupLabels['pedagogic_objectives'])) {
+			$substArray[$groupLabels['pedagogic_objectives']] = array(
+				'line_objpeda_rang' => 'Rang de l\'objectif pédagogique',
+				'line_objpeda_description' => 'Description de l\'objectif pédagogique',
+			);
+		}
+
+		if (!empty($groupLabels['training_modules'])) {
+			$substArray[$groupLabels['training_modules']] = array(
+				'line_module_title' => 'Titre du module de formation',
+				'line_module_duration' => 'Durée du module de formation',
+				'line_module_obj_peda' => 'Objectifs pédagogiques du module',
+				'line_module_content_text' => 'Contenu du module de formation',
+			);
+		}
 	}
 }

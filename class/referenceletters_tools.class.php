@@ -9,6 +9,10 @@ class RfltrTools {
 
 	public static function setImgLinkToUrl($txt) {
 
+		if (!is_string($txt) || $txt === '') {
+			return '';
+		}
+
 		return strtr($txt, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
 	}
@@ -175,6 +179,18 @@ class RfltrTools {
 		global $db;
 		if ($fk_training == 0) {
 			dol_include_once('/agefodd/class/agsession.class.php');
+			if (
+				$object_refletter->element_type === 'rfltr_agefodd_convention'
+				&& !is_object($obj_agefodd_convention)
+				&& !empty($socid)
+			) {
+				dol_include_once('/agefodd/class/agefodd_convention.class.php');
+				$convention = new Agefodd_convention($db);
+				$result = $convention->fetch((int) $id_object, (int) $socid);
+				if ($result > 0 && !empty($convention->id)) {
+					$obj_agefodd_convention = $convention;
+				}
+			}
 			$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
 			$object->fetch($id_object);
 		}else{
@@ -308,16 +324,17 @@ class RfltrTools {
 
 						if($page === 'document') {
 							?>
-								if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
-									path = path + '&sessiontrainerid=' + $(this).attr('socid');
-								} else {
-									if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
-										adresse = $(this).prev().prev().attr('href');
-										idform = adresse.substr(adresse.indexOf('idform=')+7);
-										path = path + '&idform=' + idform;
-									} else if($(this).attr('model') == 'courrier'){
-										adresse = $(this).prev().prev().attr('href');
-										goodlink = $(this).prev().prev().attr('name');
+									if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
+										path = path + '&sessiontrainerid=' + $(this).attr('socid');
+									} else {
+										if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
+											let idform = $(this).attr('data-idform');
+											if (typeof idform !== 'undefined' && idform !== '') {
+												path = path + '&idform=' + idform;
+											}
+										} else if($(this).attr('model') == 'courrier'){
+											adresse = $(this).prev().prev().attr('href');
+											goodlink = $(this).prev().prev().attr('name');
                                         if (typeof goodlink ==='undefined') {
                                             adresse = $(this).prev().prev().prev().attr('href');
                                         }

@@ -148,7 +148,7 @@ class SubstitutionCatalogBuilder
 	 */
 	public function appendThirdpartyCatalogKeys(array &$substArray, ?object $thirdparty = null): void
 	{
-		$this->getProvider('standard')->appendThirdpartyCatalogKeys($substArray);
+		$this->getProvider('standard')->appendThirdpartyCatalogKeys($substArray, $thirdparty);
 	}
 
 	/**
@@ -259,9 +259,9 @@ class SubstitutionCatalogBuilder
 	{
 		$tags = array();
 
-		$this->mergeDetectedTags($tags, $this->prefixKeys($this->docgen->get_substitutionarray_each_var_object($object, $this->langs, true), 'objvar_'), 'dynamic_object');
+		$this->mergeDetectedTags($tags, $this->prefixKeys($this->docgen->get_substitutionarray_each_var_object($object, $this->langs), 'objvar_'), 'dynamic_object');
 
-		$dynamicMap = $this->docgen->get_substitutionarray_each_var_object($object, $this->langs, true);
+		$dynamicMap = $this->docgen->get_substitutionarray_each_var_object($object, $this->langs);
 		if (is_array($dynamicMap)) {
 			if (!empty($dynamicMap['object_cond_reglement_code'])) {
 				$tags['objvar_object_cond_reglement_doc'] = array('source' => 'dynamic_object');
@@ -271,7 +271,7 @@ class SubstitutionCatalogBuilder
 			}
 		}
 
-		if (method_exists($this->docgen, 'get_substitutionarray_object')) {
+		if (method_exists($this->docgen, 'get_substitutionarray_object') && $this->shouldCollectObjectSubstitutions($object, $isAgefodd)) {
 			$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_object($object, $this->langs), 'object');
 		}
 
@@ -301,6 +301,31 @@ class SubstitutionCatalogBuilder
 
 		ksort($tags);
 		return $tags;
+	}
+
+	/**
+	 * Keep detected object_* keys aligned with runtime exposure rules.
+	 *
+	 * @param object $object
+	 * @param bool $isAgefodd
+	 * @return bool
+	 */
+	protected function shouldCollectObjectSubstitutions(object $object, bool $isAgefodd): bool
+	{
+		if ($isAgefodd) {
+			return false;
+		}
+
+		$excludedClasses = array(
+			'Societe',
+			'Contact',
+			'ModelePDFReferenceLetters',
+			'TCPDFRefletters',
+			'Agsession',
+			'Formation',
+		);
+
+		return !in_array(get_class($object), $excludedClasses, true);
 	}
 
 	/**

@@ -26,6 +26,11 @@ class SubstitutionCatalogThirdpartyProvider implements SubstitutionCatalogProvid
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
+		$thirdparty = isset($context['thirdparty']) && is_object($context['thirdparty']) ? $context['thirdparty'] : null;
+		if (!is_object($thirdparty) || empty($thirdparty->id)) {
+			return;
+		}
+
 		$extrafields = new ExtraFields($this->db);
 		$labels = $extrafields->fetch_name_optionals_label('societe', true);
 		if (empty($labels) || !is_array($labels)) {

@@ -16,6 +16,12 @@ class SubstitutionCatalogGroupingPolicy
 	public function resolveGroupLabel(string $tag, string $elementType, bool $isAgefodd): string
 	{
 		if ($isAgefodd) {
+			if (strpos($tag, 'objvar_object_convention_') === 0) {
+				return 'Agefodd Convention avance';
+			}
+			if (strpos($tag, 'objvar_object_session_catalogue_') === 0 || strpos($tag, 'objvar_object_formation_catalogue_') === 0) {
+				return 'Agefodd Session avance';
+			}
 			if (strpos($tag, 'objvar_object_stagiaire_') === 0 || strpos($tag, 'formation_agenda_ics') === 0) {
 				return 'Agefodd Stagiaire avance';
 			}

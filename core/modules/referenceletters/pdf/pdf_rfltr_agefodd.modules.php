@@ -71,8 +71,12 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
-		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
+		function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
+			global $db, $user, $langs, $conf, $mysoc, $hookmanager;
+
+		// TODO T6443: remove this once Agefodd DocEdit rendering is optimized and the heavy generation path is profiled.
+		// Agefodd + DocEdit can build very large HTML payloads before TCPDF rendering.
+		@set_time_limit(0);
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
@@ -80,13 +84,16 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		//ajout pansement pour le ticket #DA020165 : la fonction ne gérait pas le cas où "id_object" est l'id d'une formation
 		//TODO : gérer plus proprement le cas d'une formation en valeur du paramètre "$id_object" et uniformiser avec les différentes fonction whrite_file() comme celles du fichier pdf_fiche_pedago_modules.php
 
-		$object_refletter = new Referenceletters($db);
-		$object_refletter->fetch($id_model);
-
-		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago') {
+			$object_refletter = new Referenceletters($db);
+			$object_refletter->fetch($id_model);
+			$fk_training = (int) $fk_training;
+		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago' || $object_refletter->element_type == 'rfltr_agefodd_fiche_pedago_modules') {
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
 			$id = $id_object;
 			$agf = new Formation($db);
 			$agf->fetch($id);
+			$fk_training = (int) $id;
 
 			// Vilain hack si !empty($courrier) alors c'est un id de session
 			$agf_session = new Agsession($db);
@@ -98,9 +105,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		}
 
 		// Chargement du modèle utilisé
-		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
-        $instance_letter = $tmpTab[0];
-        $object = $tmpTab[1];
+			$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
+	        $instance_letter = $tmpTab[0];
+	        $object = $tmpTab[1];
 
 		$this->instance_letter = $instance_letter;
 
@@ -257,6 +264,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$TAgfArray = array(
 							'THorairesSession',
 							'TFormationObjPeda',
+							'TFormationModules',
 							'TStagiairesSession',
 							'TStagiairesSessionPresent',
 							'TStagiairesSessionSoc',
@@ -343,6 +351,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$this->pdf->AliasNbPages();
 
 				$this->pdf->Close();
+				if (file_exists($file)) {
+					@unlink($file);
+				}
 				$this->pdf->Output($file, 'F');
 
 				// Add pdfgeneration hook

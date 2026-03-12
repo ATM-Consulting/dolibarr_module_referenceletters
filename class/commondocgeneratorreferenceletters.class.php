@@ -136,6 +136,37 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
+	 * Override thirdparty substitutions to ensure thirdparty extrafields are always loaded
+	 * on the ReferenceLetters runtime, without relying on a pre-populated global $extrafields.
+	 *
+	 * @param Societe $object
+	 * @param Translate $outputlangs
+	 * @param string $array_key
+	 * @return array
+	 */
+	public function get_substitutionarray_thirdparty($object, $outputlangs, $array_key = 'company')
+	{
+		$arrayThirdparty = parent::get_substitutionarray_thirdparty($object, $outputlangs, $array_key);
+
+		if (!is_object($object)) {
+			return $arrayThirdparty;
+		}
+
+		if (!is_array($object->array_options)) {
+			$object->array_options = array();
+		}
+		if (method_exists($object, 'fetch_optionals')) {
+			$object->fetch_optionals();
+		}
+
+		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label($object->table_element, true);
+
+		return $this->fill_substitutionarray_with_extrafields($object, $arrayThirdparty, $extrafields, $array_key, $outputlangs);
+	}
+
+	/**
 	 *
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
@@ -290,6 +321,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
         // Multicurrency
+		$resarray['devise_label'] = '';
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 		return $resarray;
 	}
@@ -582,8 +614,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['date_ouverture'] = property_exists($line, 'date_ouverture') ? dol_print_date($line->date_ouverture, 'day', 'tzuser') : '';
 		$resarray['date_ouverture_prevue'] = property_exists($line, 'date_ouverture_prevue') ? dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser') : '';
 		$resarray['date_fin_validite'] = property_exists($line, 'date_fin_validite') ? dol_print_date($line->date_fin_validite, 'day', 'tzuser') : '';
-		if(empty($resarray['line_qty_shipped'])) $resarray['line_qty_shipped'] = price2num($line->qty_shipped);
-		if(empty($resarray['line_qty_asked'])) $resarray['line_qty_asked'] = price2num($line->qty_asked);
+		$lineQtyShipped = property_exists($line, 'qty_shipped') ? $line->qty_shipped : '';
+		$lineQtyAsked = property_exists($line, 'qty_asked') ? $line->qty_asked : '';
+		if (empty($resarray['line_qty_shipped']) && $lineQtyShipped !== '') $resarray['line_qty_shipped'] = price2num($lineQtyShipped);
+		if (empty($resarray['line_qty_asked']) && $lineQtyAsked !== '') $resarray['line_qty_asked'] = price2num($lineQtyAsked);
 		if(empty($resarray['line_weight'])) $resarray['line_weight'] = price2num($line->weight);
 		if(empty($resarray['line_vol'])) $resarray['line_vol'] = price2num($line->volume);
 
@@ -664,6 +698,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		$resarray['line_presence_bloc'] = '';
 		$resarray['line_presence_total'] = '';
+		$resarray['line_certif_code'] = '';
+		$resarray['line_certif_label'] = '';
+		$resarray['line_certif_date_debut'] = '';
+		$resarray['line_certif_date_fin'] = '';
+		$resarray['line_certif_date_alerte'] = '';
 
 		if($conf->agefoddcertificat->enabled) {
 			// Certificats
@@ -751,6 +790,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_objpeda_rang'] = $this->getObjectPropertyValue($line, 'priorite');
 		$resarray['line_objpeda_description'] = $this->getObjectPropertyValue($line, 'intitule');
 
+		// Substitutions modules de formation :
+		$resarray['line_module_title'] = $this->getObjectPropertyValue($line, 'title');
+		$resarray['line_module_duration'] = $this->getObjectPropertyValue($line, 'duration');
+		$resarray['line_module_obj_peda'] = $this->getObjectPropertyValue($line, 'obj_peda');
+		$resarray['line_module_content_text'] = $this->getObjectPropertyValue($line, 'content_text');
+
 		// Substitutions tableau des élément financier :
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
@@ -789,7 +834,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 		if ($fetchoptionnals) {
-			$line->fetch_optionals($line->rowid, $extralabels);
+			$line->fetch_optionals($line->rowid);
 		}
 
 		if(getDolGlobalInt('AGF_USE_STEPS')){
@@ -809,7 +854,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 
-		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && empty($line->array_options)) {
+		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && is_object($line->agefodd_stagiaire)) {
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
 			if(floatval(DOL_VERSION) >= 16) {
@@ -829,7 +874,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'] ?? array();
 				}
 			}
-			$line->array_options=$line->agefodd_stagiaire->array_options;
+			if (!is_array($line->array_options)) {
+				$line->array_options = array();
+			}
+			if (is_array($line->agefodd_stagiaire->array_options)) {
+				foreach ($line->agefodd_stagiaire->array_options as $keyOption => $valueOption) {
+					if (!array_key_exists($keyOption, $line->array_options) || $line->array_options[$keyOption] === '') {
+						$line->array_options[$keyOption] = $valueOption;
+					}
+				}
+			}
 		}
 
 		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
@@ -842,20 +896,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		$resarray['line_unit'] = (method_exists($line, 'getLabelOfUnit')) ? $langs->trans($line->getLabelOfUnit('short')) : '';
 		if (get_class($line)=='ExpeditionLigne') {
+			$lineQtyShipped = property_exists($line, 'qty_shipped') ? (float) $line->qty_shipped : 0.0;
+			$lineQtyAsked = property_exists($line, 'qty_asked') ? $line->qty_asked : '';
 			$weighttxt = '';
 			if ($line->fk_product_type == 0 && $line->weight)
 			{
-				$weighttxt = round($line->weight * $line->qty_shipped, 5).' '.measuringUnitString(0, "weight", $line->weight_units, 1);
+				$weighttxt = round($line->weight * $lineQtyShipped, 5).' '.measuringUnitString(0, "weight", $line->weight_units, 1);
 			}
 			$voltxt = '';
 			if ($line->fk_product_type == 0 && $line->volume)
 			{
-				$voltxt = round($line->volume * $line->qty_shipped, 5).' '.measuringUnitString(0, "volume", $line->volume_units ? $line->volume_units : 0, 1);
+				$voltxt = round($line->volume * $lineQtyShipped, 5).' '.measuringUnitString(0, "volume", $line->volume_units ? $line->volume_units : 0, 1);
 			}
 			$resarray['line_weight'] =$weighttxt;
 			$resarray['line_vol'] =$voltxt;
-			$resarray['line_qty_asked'] =$line->qty_asked;
-			$resarray['line_qty_shipped'] =$line->qty_shipped;
+			$resarray['line_qty_asked'] = $lineQtyAsked;
+			$resarray['line_qty_shipped'] = $lineQtyShipped;
 		}
 
 		// Spé pour les contrats
@@ -883,6 +939,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray = array();
 
 		$resarray['formation_nom']=$object->intitule;
+		$resarray['formation_id'] = $object->id ?? '';
 		$resarray['formation_ref']=$object->ref_obj;
 		$resarray['formation_statut']=$object->getLibStatut();
 		$resarray['formation_duree' ]= $object->duree;
@@ -916,17 +973,33 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		$resarray['formation_competences']=$tmp;
 
-		$localuser = new User($db);
-		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_ADMIN'));
-		$resarray['Mentor_administrator']	=  $localuser->getFullName($langs); 'Référent Administratif';
-		$listRef = $localuser->getFullName($langs);
-		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_PEDAGO'));
-		$resarray['Mentor_pedagogique']	=  $localuser->getFullName($langs);
-		$listRef .= ', '.$localuser->getFullName($langs);
-		$localuser->fetch(getDolGlobalInt('AGF_DEFAULT_MENTOR_HANDICAP'));
-		$resarray['Mentor_handicap'	]	=  $localuser->getFullName($langs); 'Référent handicap';
-		$listRef .= ', '.$localuser->getFullName($langs);
-		$resarray['AgfMentorList']=$listRef;
+		$resarray['Mentor_administrator'] = '';
+		$resarray['Mentor_pedagogique'] = '';
+		$resarray['Mentor_handicap'] = '';
+		$mentorLabels = array(
+			'Mentor_administrator' => array('const' => 'AGF_DEFAULT_MENTOR_ADMIN', 'label' => 'MentorAdmin'),
+			'Mentor_pedagogique' => array('const' => 'AGF_DEFAULT_MENTOR_PEDAGO', 'label' => 'MentorPedago'),
+			'Mentor_handicap' => array('const' => 'AGF_DEFAULT_MENTOR_HANDICAP', 'label' => 'MentorHandicap'),
+		);
+		$mentorList = array();
+		foreach ($mentorLabels as $tag => $mentorConfig) {
+			$mentorId = (int) getDolGlobalInt($mentorConfig['const']);
+			if ($mentorId <= 0) {
+				continue;
+			}
+			$localuser = new User($db);
+			if ($localuser->fetch($mentorId) <= 0) {
+				continue;
+			}
+			$civ = trim((string) $localuser->civility_code);
+			$fullName = trim(($civ !== '' ? $civ . ' ' : '') . $localuser->firstname . ' ' . $localuser->lastname);
+			if ($fullName === '') {
+				continue;
+			}
+			$resarray[$tag] = ucfirst($langs->trans($mentorConfig['label']) . ' : ' . $fullName);
+			$mentorList[] = $fullName;
+		}
+		$resarray['AgfMentorList'] = implode(', ', $mentorList);
    		// -----------
 
 		$e = new ExtraFields($db);
@@ -949,17 +1022,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 		$object->fetch_optionals();
-			if( is_array($e->attributes[$object->table_element])
-				&& array_key_exists('label',$e->attributes[$object->table_element])
-				&& is_array($e->attributes[$object->table_element]['label'])){
-				foreach($e->attributes[$object->table_element]['label'] as $key => $val) {
-					$fieldValue = '';
-					if (is_array($object->array_options) && array_key_exists('options_'.$key, $object->array_options)) {
-						$fieldValue = $object->array_options['options_'.$key];
-					}
-					$resarray['formation_options_'.$key] = strip_tags($e->showOutputField($key, $fieldValue));
-				}
-			}
+		$resarray = $this->fill_substitutionarray_with_extrafields($object, $resarray, $e, 'formation', $langs);
 
 		return $resarray;
 	}
@@ -994,6 +1057,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
 		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
 		$resarray['formation_ref'] = $object->formref;
+		$resarray['formation_ref_produit'] = '';
 
 
 		if(!empty($object->fk_product)) {
@@ -1084,6 +1148,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 
 		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
+		$resarray['Mentor_administrator'] = '';
+		$resarray['Mentor_pedagogique'] = '';
+		$resarray['Mentor_handicap'] = '';
         if (getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')){
 			$u = new User($this->db);
 			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')));
@@ -1110,12 +1177,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		// cela devrait être toujours vrai ici
-		if (! empty($object->fk_formation_catalogue)) {
+			if (! empty($object->fk_formation_catalogue)) {
 
-			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+				dol_include_once('/agefodd/class/agefodd_session_catalogue.class.php');
 
 
-			// est ce que j'ai une copie de la formation de la formation dans session_catalogue ?
+				// est ce que j'ai une copie de la formation de la formation dans session_catalogue ?
 			// dit autrement est ce que j'ai modifié le receuil depuis l'onglet receuil de la formation ?
 			//
 
@@ -1132,6 +1200,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}else{
 				$catalogue->fetch($object->fk_formation_catalogue);
 			}
+			if (method_exists($catalogue, 'fetch_optionals') && !empty($catalogue->id)) {
+				$catalogue->fetch_optionals($catalogue->id);
+			}
+
+			// Keep the full training/session clone object reachable from the runtime Agsession
+			// so advanced dynamic tags stay exhaustive for the current generation context.
+			$object->session_catalogue = $catalogue;
+			$object->formation_catalogue = $catalogue;
 
 			// ajouter les peda ici pour
 
@@ -1174,11 +1250,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 
-			if (isset($e->attributes[$catalogue->table_element]['label']) && is_array($e->attributes[$catalogue->table_element]['label'])){
-				foreach($e->attributes[$catalogue->table_element]['label'] as $key => $val) {
-					$resarray['formation_'.$key] = strip_tags($e->showOutputField($key, $catalogue->array_options['options_'.$key]));
-				}
-			}
+			$resarray = $this->fill_substitutionarray_with_extrafields($catalogue, $resarray, $extrafields, 'formation', $langs);
 
 			// surcharge pour le oui ou non à la place de 1 ou 0
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
@@ -1416,7 +1488,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			    $hidden=((string) $list === '0' ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 
 		}
@@ -1440,7 +1512,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			    $hidden= ($ishidden == 0 ?  1 : 0);
 			}
 			else{
-			    $hidden=(($list == 0) ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
+			    $hidden=((string) $list === '0' ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 			}
 		}
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
@@ -1731,9 +1803,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
 		if(floatval(DOL_VERSION) >= 16) {
 			if(!empty($object->table_element)
-			    && is_array($extrafields->attributes[$object->table_element])
-				&& is_array($extrafields->attributes[$object->table_element]['loaded'])
-				&&   $extrafields->attributes[$object->table_element]['loaded'] > 0) {
+			    && !empty($extrafields->attributes[$object->table_element])
+				&& !empty($extrafields->attributes[$object->table_element]['loaded'])) {
                 		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
                 		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
 				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
@@ -1753,70 +1824,88 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		// phpcs:enable
 		global $conf;
-		foreach($extrafields->attribute_label as $key=>$label)
-		{
-			if($extrafields->attribute_type[$key] == 'price')
+		$attributeSource = array();
+		if (!empty($extrafields) && is_object($extrafields) && !empty($object->element) && is_array($extrafields->attributes[$object->element] ?? null)) {
+			$attributeSource = $extrafields->attributes[$object->element];
+		} elseif (!empty($extrafields) && is_object($extrafields) && !empty($object->table_element) && is_array($extrafields->attributes[$object->table_element] ?? null)) {
+			$attributeSource = $extrafields->attributes[$object->table_element];
+		}
+		$attributeLabels = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_label ?? null))
+			? $extrafields->attribute_label
+			: (is_array($attributeSource['label'] ?? null) ? $attributeSource['label'] : array());
+		$attributeTypes = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_type ?? null))
+			? $extrafields->attribute_type
+			: (is_array($attributeSource['type'] ?? null) ? $attributeSource['type'] : array());
+		$attributeParams = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_param ?? null))
+			? $extrafields->attribute_param
+			: (is_array($attributeSource['param'] ?? null) ? $attributeSource['param'] : array());
+			foreach($attributeLabels as $key=>$label)
 			{
-				$object->array_options['options_'.$key] = price2num($object->array_options['options_'.$key]);
-				$object->array_options['options_'.$key.'_currency'] = price($object->array_options['options_'.$key], 0, $outputlangs, 0, 0, -1, $conf->currency);
-				//Add value to store price with currency
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_currency' => $object->array_options['options_'.$key.'_currency']));
-			}
-			elseif($extrafields->attribute_type[$key] == 'select')
-			{
-				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
-				if (isset($extrafields->attribute_param[$key]['options'][$currentValue])) {
-					$object->array_options['options_'.$key] = $extrafields->attribute_param[$key]['options'][$currentValue];
-				} else {
-					$object->array_options['options_'.$key] = '';
+				$currentType = $attributeTypes[$key] ?? '';
+				$currentParam = is_array($attributeParams[$key] ?? null) ? $attributeParams[$key] : array();
+				$currentOptionKey = 'options_'.$key;
+				$currentOptionValue = isset($object->array_options[$currentOptionKey]) ? $object->array_options[$currentOptionKey] : '';
+				if($currentType == 'price')
+				{
+					$object->array_options[$currentOptionKey] = price2num($currentOptionValue);
+					$object->array_options[$currentOptionKey.'_currency'] = price($object->array_options[$currentOptionKey], 0, $outputlangs, 0, 0, -1, $conf->currency);
+					//Add value to store price with currency
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_currency' => $object->array_options[$currentOptionKey.'_currency']));
 				}
-			}
-			elseif($extrafields->attribute_type[$key] == 'checkbox') {
-				$valArray=explode(',', $object->array_options['options_'.$key]);
-				$output=array();
-				if (is_array($extrafields->attribute_param[$key]['options'])){
-					foreach($extrafields->attribute_param[$key]['options'] as $keyopt=>$valopt) {
-						if  (in_array($keyopt, $valArray)) {
-							$output[]=$valopt;
-						}
+				elseif($currentType == 'select')
+				{
+					if (isset($currentParam['options'][$currentOptionValue])) {
+						$object->array_options[$currentOptionKey] = $currentParam['options'][$currentOptionValue];
+					} else {
+						$object->array_options[$currentOptionKey] = '';
 					}
 				}
+				elseif($currentType == 'checkbox') {
+					$valArray=($currentOptionValue === '' ? array() : explode(',', $currentOptionValue));
+					$output=array();
+					if (is_array($currentParam['options'] ?? null)){
+						foreach($currentParam['options'] as $keyopt=>$valopt) {
+						if  (in_array($keyopt, $valArray)) {
+							$output[]=$valopt;
+							}
+						}
+					}
 
-				$object->array_options['options_'.$key] = implode(', ', $output);
-			}
-			elseif($extrafields->attribute_type[$key] == 'date')
-			{
-				if (strlen($object->array_options['options_'.$key])>0)
+					$object->array_options[$currentOptionKey] = implode(', ', $output);
+				}
+				elseif($currentType == 'date')
 				{
-					$date = $object->array_options['options_'.$key];
-					$object->array_options['options_'.$key] = dol_print_date($date, 'day');                                       // using company output language
-					$object->array_options['options_'.$key.'_locale'] = dol_print_date($date, 'day', 'tzserver', $outputlangs);     // using output language format
-					$object->array_options['options_'.$key.'_rfc'] = dol_print_date($date, 'dayrfc');                             // international format
-				}
-				else
-				{
-					$object->array_options['options_'.$key] = '';
-					$object->array_options['options_'.$key.'_locale'] = '';
-					$object->array_options['options_'.$key.'_rfc'] = '';
-				}
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
-				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
-				}
-					elseif($extrafields->attribute_type[$key] == 'datetime')
+					if (strlen($currentOptionValue)>0)
 					{
-						$datetime = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
-						$object->array_options['options_'.$key] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour') : '');                            // using company output language
-						$object->array_options['options_'.$key.'_locale'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour', 'tzserver', $outputlangs) : '');    // using output language format
-						$object->array_options['options_'.$key.'_rfc'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhourrfc') : '');                             // international format
-					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options['options_'.$key.'_locale']));
-					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options['options_'.$key.'_rfc']));
-				}
-			elseif($extrafields->attribute_type[$key] == 'link')
-			{
-				$id = $object->array_options['options_'.$key];
-				if ($id != "")
+						$date = $currentOptionValue;
+						$object->array_options[$currentOptionKey] = dol_print_date($date, 'day');                                       // using company output language
+						$object->array_options[$currentOptionKey.'_locale'] = dol_print_date($date, 'day', 'tzserver', $outputlangs);     // using output language format
+						$object->array_options[$currentOptionKey.'_rfc'] = dol_print_date($date, 'dayrfc');                             // international format
+					}
+					else
+					{
+						$object->array_options[$currentOptionKey] = '';
+						$object->array_options[$currentOptionKey.'_locale'] = '';
+						$object->array_options[$currentOptionKey.'_rfc'] = '';
+					}
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options[$currentOptionKey.'_locale']));
+					$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options[$currentOptionKey.'_rfc']));
+					}
+						elseif($currentType == 'datetime')
+						{
+							$datetime = $currentOptionValue;
+							$object->array_options[$currentOptionKey] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour') : '');                            // using company output language
+							$object->array_options[$currentOptionKey.'_locale'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhour', 'tzserver', $outputlangs) : '');    // using output language format
+							$object->array_options[$currentOptionKey.'_rfc'] = ($datetime!="0000-00-00 00:00:00" && $datetime !== '' ? dol_print_date($datetime, 'dayhourrfc') : '');                             // international format
+						$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_locale' => $object->array_options[$currentOptionKey.'_locale']));
+						$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key.'_rfc' => $object->array_options[$currentOptionKey.'_rfc']));
+					}
+				elseif($currentType == 'link')
 				{
-					$param = $extrafields->attribute_param[$key];
+					$id = $currentOptionValue;
+					if ($id != "")
+					{
+					$param = $currentParam;
 					if(!empty($param['options'])){
 						$param_list=array_keys($param['options']);              // $param_list='ObjectName:classPath'
 						$InfoFieldList = explode(":", $param_list[0]);
@@ -1825,30 +1914,28 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						if (! empty($classpath))
 						{
 							dol_include_once($InfoFieldList[1]);
-							if ($classname && class_exists($classname))
-							{
-								$tmpobject = new $classname($this->db);
-								$tmpobject->fetch($id);
-								// completely replace the id with the linked object name
-								$object->array_options['options_'.$key] = $tmpobject->name;
+								if ($classname && class_exists($classname))
+								{
+									$tmpobject = new $classname($this->db);
+									$tmpobject->fetch($id);
+									// completely replace the id with the linked object name
+									$object->array_options[$currentOptionKey] = $tmpobject->name;
+								}
 							}
 						}
-					}
 
 				}
 			}
-			elseif($extrafields->attribute_type[$key] == 'sellist') {
-				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
-				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $currentValue);
-			}
-			elseif($extrafields->attribute_type[$key] == 'chkbxlst')
-			{
-				$currentValue = isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '';
-				$object->array_options['options_'.$key] = $this->showOutputFieldValue($extrafields, $key, $currentValue);
-			}
+				elseif($currentType == 'sellist') {
+					$object->array_options[$currentOptionKey] = $this->showOutputFieldValue($extrafields, $key, $currentOptionValue);
+				}
+				elseif($currentType == 'chkbxlst')
+				{
+					$object->array_options[$currentOptionKey] = $this->showOutputFieldValue($extrafields, $key, $currentOptionValue);
+				}
 
-			$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => (isset($object->array_options['options_'.$key]) ? $object->array_options['options_'.$key] : '')));
-		}
+				$array_to_fill=array_merge($array_to_fill, array($array_key.'_options_'.$key => (isset($object->array_options[$currentOptionKey]) ? $object->array_options[$currentOptionKey] : '')));
+			}
 
 
 		return $array_to_fill;

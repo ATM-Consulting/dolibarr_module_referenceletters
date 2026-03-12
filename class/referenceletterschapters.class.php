@@ -104,15 +104,15 @@ class ReferenceLettersChapters extends CommonObject
 
 		// Check parameters
 		// Put here code to add a control on parameters values
-        if (is_array($this->options_text) && count($this->options_text)>0) {
-        	//Remove empty values
-        	foreach($this->options_text as $key=>$option) {
-				if (empty($option)) unset($this->options_text[$key]);
-			}
-        	$option_text=serialize($this->options_text);
-        } else {
-        	$option_text=trim($this->options_text);
-        }
+	        if (is_array($this->options_text) && count($this->options_text)>0) {
+	        	//Remove empty values
+	        	foreach($this->options_text as $key=>$option) {
+					if (empty($option)) unset($this->options_text[$key]);
+				}
+	        	$option_text=serialize($this->options_text);
+	        } else {
+	        	$option_text=is_string($this->options_text) ? trim($this->options_text) : '';
+	        }
 
         if (empty($this->lang)) {
         	$this->lang=$langs->defaultlang;
@@ -240,7 +240,7 @@ class ReferenceLettersChapters extends CommonObject
 				$this->sort_order = $obj->sort_order;
 				$this->title = $obj->title;
 				$this->content_text = $obj->content_text;
-				$this->options_text = unserialize($obj->options_text);
+					$this->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
 				$this->readonly = $obj->readonly;
 				$this->same_page = $obj->same_page;
 				$this->status = $obj->status;
@@ -316,7 +316,7 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->sort_order = $obj->sort_order;
 					$chapter->title = $obj->title;
 					$chapter->content_text = $obj->content_text;
-					$chapter->options_text = unserialize($obj->options_text);
+						$chapter->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
 					$chapter->readonly = $obj->readonly;
 					$chapter->same_page = $obj->same_page;
 					$chapter->status = $obj->status;

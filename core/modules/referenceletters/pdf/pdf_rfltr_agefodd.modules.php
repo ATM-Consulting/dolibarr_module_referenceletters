@@ -109,6 +109,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	        $instance_letter = $tmpTab[0];
 	        $object = $tmpTab[1];
 
+		if ($fk_step > 0 && is_object($object)) {
+			// Preserve stepped Agefodd generation context for substitution runtime.
+			$object->fk_step = (int) $fk_step;
+		}
+
 		$this->instance_letter = $instance_letter;
 
 		$use_landscape_format = ( int ) $instance_letter->use_landscape_format;

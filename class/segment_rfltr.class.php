@@ -4,6 +4,7 @@ require_once DOL_DOCUMENT_ROOT . '/includes/odtphp/Segment.php';
 
 class SegmentRfltr extends Segment {
 	public $xml;
+	public $savxml = '';
 	
 	/**
 	 * Constructor

@@ -941,7 +941,12 @@ class ReferenceLetters extends CommonObject
 		global $langs;
 
 		$builder = new SubstitutionCatalogPresentationBuilder($langs, $this->db);
-		return $builder->buildCatalogPresentation($this->getSubtitutionKey($user), (string) $this->element_type, $this->lastCatalogUiObject);
+		return $builder->buildCatalogPresentation(
+			$this->getSubtitutionKey($user),
+			(string) $this->element_type,
+			$this->lastCatalogUiObject,
+			$this->getLoopCatalogPresentation()
+		);
 	}
 
 	/**

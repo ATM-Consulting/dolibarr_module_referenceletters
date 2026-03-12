@@ -25,6 +25,7 @@
 require_once (DOL_DOCUMENT_ROOT . "/core/class/commondocgenerator.class.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/company.lib.php");
 require_once (DOL_DOCUMENT_ROOT . "/core/lib/functions2.lib.php");
+dol_include_once('/agefodd/class/agefodd_place.class.php');
 
 /**
  * \class CommonDocGenerator
@@ -119,6 +120,50 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		return (string) $object->{$labelsProperty}[$status];
+	}
+
+	/**
+	 * Keep an existing substitution value unless a non-empty override is provided.
+	 *
+	 * @param array $resarray Current substitutions array.
+	 * @param string $key Target substitution key.
+	 * @param mixed $candidate Preferred replacement value.
+	 * @return array
+	 */
+	protected function setPreferredAgefoddValue(array $resarray, $key, $candidate)
+	{
+		if (!empty($candidate)) {
+			$resarray[$key] = $candidate;
+		} elseif (!isset($resarray[$key])) {
+			$resarray[$key] = '';
+		}
+
+		return $resarray;
+	}
+
+	/**
+	 * Apply the preferred Agefodd formation references with explicit precedence.
+	 * Session-level references stay authoritative; catalogue references are fallbacks.
+	 *
+	 * @param array $resarray Current substitutions array.
+	 * @param object|null $catalogue Formation/session catalogue clone when available.
+	 * @return array
+	 */
+	protected function applyAgefoddFormationReferenceFallbacks(array $resarray, $catalogue = null)
+	{
+		if (is_object($catalogue)) {
+			$resarray = $this->setPreferredAgefoddValue($resarray, 'formation_ref', $catalogue->ref_obj ?? '');
+			$resarray = $this->setPreferredAgefoddValue($resarray, 'formation_refint', $catalogue->ref_interne ?? '');
+		}
+
+		if (!isset($resarray['formation_ref'])) {
+			$resarray['formation_ref'] = '';
+		}
+		if (!isset($resarray['formation_refint'])) {
+			$resarray['formation_refint'] = '';
+		}
+
+		return $resarray;
 	}
 
 	/**
@@ -333,6 +378,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionarray_other($outputlangs, $object = '') {
 		global $conf;
+		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
 
 		$outputlangs->load('main');
 		$array_other = parent::get_substitutionarray_other($outputlangs);
@@ -350,7 +396,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			// Liste paiements
 			if (get_class($object) === 'Facture') {
 
-				$useMulticurrency = !empty($conf->multicurrency->enabled) && !empty($object->multicurrency_tx) && $object->multicurrency_tx != 1;
+				$useMulticurrency = $multicurrencyEnabled && !empty($object->multicurrency_tx) && $object->multicurrency_tx != 1;
 				$deja_regle = 0;
 				$creditnoteamount = 0;
 				$depositsamount = 0;
@@ -440,6 +486,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public static function get_detail_tva(&$object, &$outputlangs) {
 		global $conf, $langs;
+		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
 
 		$langs->load("referenceletters@referenceletters");
 
@@ -462,18 +509,18 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$prev_progress = $line->get_prev_progress($object->id);
 					if ($prev_progress > 0 && ! empty($line->situation_percent)) // Compute progress from previous situation
 					{
-						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+						if ($multicurrencyEnabled && $object->multicurrency_tx != 1)
 							$tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
 						else
 							$tvaligne = $sign * $line->total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
 					} else {
-						if ($conf->multicurrency->enabled && $object->multicurrency_tx != 1)
+						if ($multicurrencyEnabled && $object->multicurrency_tx != 1)
 							$tvaligne = $sign * $line->multicurrency_total_tva;
 						else
 							$tvaligne = $sign * $line->total_tva;
 					}
 				} else {
-					if (!empty($conf->multicurrency->enabled) && $object->multicurrency_tx != 1)
+					if ($multicurrencyEnabled && $object->multicurrency_tx != 1)
 						$tvaligne = $line->multicurrency_total_tva;
 					else
 						$tvaligne = $line->total_tva;
@@ -505,6 +552,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public static function get_liste_reglements(&$object, &$outputlangs) {
 		global $db, $conf;
+		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
 
 		$TPayments = array();
 
@@ -528,7 +576,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$text = $outputlangs->trans("UnknownType");
 
 				$date = dol_print_date($obj->datef, 'day', false, $outputlangs, true);
-				$amount = price(($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
+				$amount = price(($multicurrencyEnabled && $object->multicurrency_tx != 1) ? $obj->multicurrency_amount_ttc : $obj->amount_ttc, 0, $outputlangs);
 				$invoice_ref = $invoice->ref;
 				$TPayments[] = array(
 						$date,
@@ -556,7 +604,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$sign = - 1;
 			while ( $row = $db->fetch_object($resql) ) {
 				$date = dol_print_date($db->jdate($row->date), 'day', false, $outputlangs, true);
-				$amount = price($sign * (($conf->multicurrency->enabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
+				$amount = price($sign * (($multicurrencyEnabled && $object->multicurrency_tx != 1) ? $row->multicurrency_amount : $row->amount), 0, $outputlangs);
 				$oper = $outputlangs->transnoentitiesnoconv("PaymentTypeShort" . $row->code);
 				$num = $row->num;
 
@@ -708,7 +756,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			// Certificats
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);
-			$TCertif = $agf_certif->fetchAll('','',0, 0,array('fk_trainee' => $line->id, 'fk_session' => $line->sessid, 'isDeleted' => 0));
+			$lineSessionId = property_exists($line, 'sessid') ? (int) $line->sessid : 0;
+			$TCertif = ($lineSessionId > 0 && !empty($line->id))
+				? $agf_certif->fetchAll('', '', 0, 0, array('fk_trainee' => $line->id, 'fk_session' => $lineSessionId, 'isDeleted' => 0))
+				: array();
 			if(is_array($TCertif) && count($TCertif) > 0) {
 				$agf_certif = array_shift($TCertif);
 				$resarray['line_certif_code'] = $agf_certif->number;
@@ -800,7 +851,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
 		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
-        $resarray['line_fin_desciption'] = strip_tags($this->getObjectPropertyValue($line, 'description'), "<br><p><ul><ol><li><span><div><tr><td><th><table>");
+        $resarray['line_fin_desciption'] = strip_tags((string) $this->getObjectPropertyValue($line, 'description'), "<br><p><ul><ol><li><span><div><tr><td><th><table>");
 //		$resarray['line_fin_desciption_light'] = $line->form_label;
 		$resarray['line_fin_desciption_light_short'] = $this->getObjectPropertyValue($line, 'form_label_short');
 		$resarray['line_fin_qty'] = $this->getObjectPropertyValue($line, 'qty');
@@ -816,23 +867,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
 		$extrafields = new ExtraFields($this->db);
 		$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-		if(floatval(DOL_VERSION) >= 16) {
-			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if (!empty($extrafieldkey) && !empty($extrafields->attributes[$extrafieldkey]['loaded'])) {
-				$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? '';
-				$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? '';
-				$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? '';
-				$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'] ?? '';
-				$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'] ?? '';
-				$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'] ?? '';
-				$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'] ?? '';
-				$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'] ?? '';
-				$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'] ?? '';
-				$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'] ?? '';
-				$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'] ?? '';
-				$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden'] ?? '';
-			}
-		}
 		if ($fetchoptionnals) {
 			$line->fetch_optionals($line->rowid);
 		}
@@ -843,13 +877,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_step_date_end'] = $this->getFormattedDatePropertyValue($line, 'date_end', 'day');
 			$resarray['line_step_duration'] = property_exists($line, 'duration') && $line->duration !== null ? $line->duration : '';
 			// Lieu
-			$resarray['line_step_lieu'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'ref_interne'));
-			$resarray['line_step_lieu_adresse'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'adresse'));
-			$resarray['line_step_lieu_cp'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'cp'));
-			$resarray['line_step_lieu_ville'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'ville'));
-			$resarray['line_step_lieu_acces'] = str_replace('&amp;', '&', $this->getNestedObjectPropertyValue($line, 'place', 'acces_site'));
-			$resarray['line_step_lieu_horaires'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'timeschedule'));
-			$resarray['line_step_lieu_notes'] = strip_tags($this->getNestedObjectPropertyValue($line, 'place', 'notes'));
+			$resarray['line_step_lieu'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'ref_interne'));
+			$resarray['line_step_lieu_adresse'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'adresse'));
+			$resarray['line_step_lieu_cp'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'cp'));
+			$resarray['line_step_lieu_ville'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'ville'));
+			$resarray['line_step_lieu_acces'] = str_replace('&amp;', '&', (string) $this->getNestedObjectPropertyValue($line, 'place', 'acces_site'));
+			$resarray['line_step_lieu_horaires'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'timeschedule'));
+			$resarray['line_step_lieu_notes'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'notes'));
 			$resarray['line_step_lieu_divers'] = $this->getNestedObjectPropertyValue($line, 'place', 'note1');
 		}
 
@@ -857,23 +891,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if (property_exists($line, 'agefodd_stagiaire') && !empty($line->agefodd_stagiaire) && is_object($line->agefodd_stagiaire)) {
 			$extrafields = new ExtraFields($this->db);
 			$extralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
-			if(floatval(DOL_VERSION) >= 16) {
-				$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-				if (!empty($extrafields->attributes['agefodd_stagiaire']['loaded'])) {
-					$extrafields->attribute_type = $extrafields->attributes['agefodd_stagiaire']['type'];
-					$extrafields->attribute_size = $extrafields->attributes['agefodd_stagiaire']['size'];
-					$extrafields->attribute_unique = $extrafields->attributes['agefodd_stagiaire']['unique'];
-					$extrafields->attribute_required = $extrafields->attributes['agefodd_stagiaire']['required'];
-					$extrafields->attribute_label = $extrafields->attributes['agefodd_stagiaire']['label'];
-					$extrafields->attribute_default = $extrafields->attributes['agefodd_stagiaire']['default'];
-					$extrafields->attribute_computed = $extrafields->attributes['agefodd_stagiaire']['computed'];
-					$extrafields->attribute_param = $extrafields->attributes['agefodd_stagiaire']['param'];
-					$extrafields->attribute_perms = $extrafields->attributes['agefodd_stagiaire']['perms'];
-					$extrafields->attribute_langfile = $extrafields->attributes['agefodd_stagiaire']['langfile'];
-					$extrafields->attribute_list = $extrafields->attributes['agefodd_stagiaire']['list'];
-					$extrafields->attribute_hidden = $extrafields->attributes['agefodd_stagiaire']['hidden'] ?? array();
-				}
-			}
 			if (!is_array($line->array_options)) {
 				$line->array_options = array();
 			}
@@ -1002,27 +1019,30 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['AgfMentorList'] = implode(', ', $mentorList);
    		// -----------
 
-		$e = new ExtraFields($db);
-		$e->fetch_name_optionals_label($object->table_element);
-		if(floatval(DOL_VERSION) >= 16) {
-			$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-			if($extrafields->attributes[$object->table_element]['loaded'] > 0) {
-				$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size']?? array();
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique']?? array();
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required']?? array();
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label']?? array();
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default']?? array();
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed']?? array();
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param']?? array();
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms']?? array();
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile']?? array();
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list']?? array();
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden']?? array();
+			$e = new ExtraFields($db);
+			$e->fetch_name_optionals_label($object->table_element);
+			if(floatval(DOL_VERSION) >= 16) {
+				$e->attribute_type = $e->attribute_param = $e->attribute_size = $e->attribute_unique = $e->attribute_required = $e->attribute_label = array();
+				$attributeSource = is_array($e->attributes ?? null) && is_array($e->attributes[$object->table_element] ?? null)
+					? $e->attributes[$object->table_element]
+					: array();
+				if (($attributeSource['loaded'] ?? 0) > 0) {
+					$e->attribute_type = $attributeSource['type'] ?? array();
+					$e->attribute_size = $attributeSource['size'] ?? array();
+					$e->attribute_unique = $attributeSource['unique'] ?? array();
+					$e->attribute_required = $attributeSource['required'] ?? array();
+					$e->attribute_label = $attributeSource['label'] ?? array();
+					$e->attribute_default = $attributeSource['default'] ?? array();
+					$e->attribute_computed = $attributeSource['computed'] ?? array();
+					$e->attribute_param = $attributeSource['param'] ?? array();
+					$e->attribute_perms = $attributeSource['perms'] ?? array();
+					$e->attribute_langfile = $attributeSource['langfile'] ?? array();
+					$e->attribute_list = $attributeSource['list'] ?? array();
+					$e->attribute_hidden = $attributeSource['hidden'] ?? array();
+				}
 			}
-		}
-		$object->fetch_optionals();
-		$resarray = $this->fill_substitutionarray_with_extrafields($object, $resarray, $e, 'formation', $langs);
+			$object->fetch_optionals();
+			$resarray = $this->fill_substitutionarray_with_extrafields($object, $resarray, $e, 'formation', $langs);
 
 		return $resarray;
 	}
@@ -1042,6 +1062,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		dol_include_once('/societe/class/societe.class.php');
 
 		$fk_step = intval(GETPOST('fk_step', 'int'));
+		if ($fk_step <= 0) {
+			$fk_step = (int) $this->getObjectPropertyValue($object, 'fk_step');
+		}
 		if($fk_step > 0) {
 			$agfStep = new Agefodd_step($this->db);
 			$agfStep->fetch($fk_step);
@@ -1050,13 +1073,27 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$formAgefodd = new FormAgefodd($db);
 
 		$resarray = array();
-		$resarray['formation_nom'] = $object->formintitule;
-		$resarray['formation_nom_custo'] = $object->intitule_custo;
-		$resarray['formation_date_debut'] = dol_print_date($object->dated,'day','tzserver',$outputlangs);
-		$resarray['formation_date_debut_formated'] = dol_print_date($object->dated,'%A %d %B %Y','tzserver',$outputlangs);
-		$resarray['formation_date_fin'] = dol_print_date($object->datef,'day','tzserver',$outputlangs);
-		$resarray['formation_date_fin_formated'] = dol_print_date($object->datef,'%A %d %B %Y','tzserver',$outputlangs);
-		$resarray['formation_ref'] = $object->formref;
+		$formationName = $this->getObjectPropertyValue($object, 'formintitule');
+		if ($formationName === '') {
+			$formationName = $this->getObjectPropertyValue($object, 'intitule');
+		}
+		$formationCustomName = $this->getObjectPropertyValue($object, 'intitule_custo');
+		if ($formationCustomName === '') {
+			$formationCustomName = $formationName;
+		}
+		$formationRef = $this->getObjectPropertyValue($object, 'formref');
+		$formationRefInterne = $this->getObjectPropertyValue($object, 'formrefint');
+		if ($formationRef === '') {
+			$formationRef = $this->getObjectPropertyValue($object, 'ref');
+		}
+		$resarray['formation_nom'] = $formationName;
+		$resarray['formation_nom_custo'] = $formationCustomName;
+		$resarray['formation_date_debut'] = $this->getFormattedDatePropertyValue($object, 'dated', 'day');
+		$resarray['formation_date_debut_formated'] = $this->getFormattedDatePropertyValue($object, 'dated', '%A %d %B %Y');
+		$resarray['formation_date_fin'] = $this->getFormattedDatePropertyValue($object, 'datef', 'day');
+		$resarray['formation_date_fin_formated'] = $this->getFormattedDatePropertyValue($object, 'datef', '%A %d %B %Y');
+		$resarray['formation_ref'] = $formationRef;
+		$resarray['formation_refint'] = $formationRefInterne;
 		$resarray['formation_ref_produit'] = '';
 
 
@@ -1064,6 +1101,25 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$p = new Product($db);
 			$p->fetch($object->fk_product);
 			$resarray['formation_ref_produit'] = $p->ref;
+		}
+
+		// Some Agefodd session flows do not hydrate formref reliably.
+		// Fall back to the linked formation catalogue reference when available.
+		if (empty($resarray['formation_ref']) && !empty($object->fk_formation_catalogue)) {
+			if (class_exists('Agefodd')) {
+				$formationCatalog = new Agefodd($db);
+			} elseif (class_exists('Formation')) {
+				$formationCatalog = new Formation($db);
+			}
+			if (!empty($formationCatalog) && $formationCatalog->fetch($object->fk_formation_catalogue) > 0) {
+				$resarray['formation_ref'] = $formationCatalog->ref_obj;
+				if (empty($resarray['formation_ref_produit']) && !empty($formationCatalog->fk_product)) {
+					$p = new Product($db);
+					if ($p->fetch($formationCatalog->fk_product) > 0) {
+						$resarray['formation_ref_produit'] = $p->ref;
+					}
+				}
+			}
 		}
 
 
@@ -1115,7 +1171,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['presta_soc_note_private'] = dol_htmlentitiesbr($presta_soc->note_private);
 			}
 		}
-
 		$resarray['formation_statut'] = $object->statuslib ?? '';
 		$resarray['formation_id'] = $object->fk_formation_catalogue ?? '';
 		$resarray['formation_duree'] = $object->duree?? '';
@@ -1127,7 +1182,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_commercial_mail'] = $object->commercialemail?? '';
 		$resarray['formation_societe'] = $object->thirdparty->nom?? '';
 		$resarray['formation_commentaire'] = nl2br($object->notes ?? '') ;
-		$resarray['formation_type'] = $formAgefodd->type_session_def[$object->type_session] ?? '';
+		$formationTypeSession = property_exists($object, 'type_session') ? $object->type_session : null;
+		$resarray['formation_type'] = $formationTypeSession !== null ? ($formAgefodd->type_session_def[$formationTypeSession] ?? '') : '';
 		$resarray['formation_nb_stagiaire'] = $object->nb_stagiaire ?? '';
 		$resarray['formation_nb_stagiaire_convention'] = $object->nb_stagiaire_convention?? '';
 		$resarray['formation_stagiaire_convention'] = $object->stagiaire_convention?? '';
@@ -1213,8 +1269,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 
 			$resarray['formation_but'] = $catalogue->but;
-			$resarray['formation_ref'] = $catalogue->ref_obj;
-			$resarray['formation_refint'] = $catalogue->ref_interne;
+			$resarray = $this->applyAgefoddFormationReferenceFallbacks($resarray, $catalogue);
 			$resarray['formation_methode'] = $catalogue->methode;
 			$resarray['formation_prerequis'] = $catalogue->prerequis;
 			$resarray['formation_sanction'] = $catalogue->sanction;
@@ -1230,25 +1285,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			$extrafields = new ExtraFields($db);
 			$extrafields->fetch_name_optionals_label($catalogue->table_element);
-			if(floatval(DOL_VERSION) >= 16) {
-				if (isset($extrafields)){
-					$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-					if($extrafields->attributes[$catalogue->table_element]['loaded'] > 0) {
-					$extrafields->attribute_type = $extrafields->attributes[$catalogue->table_element]['type']?? array();
-					$extrafields->attribute_size = $extrafields->attributes[$catalogue->table_element]['size']?? array() ;
-					$extrafields->attribute_unique = $extrafields->attributes[$catalogue->table_element]['unique']?? array();
-					$extrafields->attribute_required = $extrafields->attributes[$catalogue->table_element]['required']?? array();
-					$extrafields->attribute_label = $extrafields->attributes[$catalogue->table_element]['label']?? array();
-					$extrafields->attribute_default = $extrafields->attributes[$catalogue->table_element]['default']?? array();
-					$extrafields->attribute_computed = $extrafields->attributes[$catalogue->table_element]['computed']?? array();
-					$extrafields->attribute_param = $extrafields->attributes[$catalogue->table_element]['param']?? array();
-					$extrafields->attribute_perms = $extrafields->attributes[$catalogue->table_element]['perms']?? array();
-					$extrafields->attribute_langfile = $extrafields->attributes[$catalogue->table_element]['langfile']?? array();
-					$extrafields->attribute_list = $extrafields->attributes[$catalogue->table_element]['list']?? array();
-					$extrafields->attribute_hidden = $extrafields->attributes[$catalogue->table_element]['hidden']?? array();
-				}
-				}
-			}
 
 			$resarray = $this->fill_substitutionarray_with_extrafields($catalogue, $resarray, $extrafields, 'formation', $langs);
 
@@ -1258,8 +1294,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		}
 
-		$fk_place = $object->placeid;
-		if (!empty($agfStep->id)) { //Si on est sur une étape, on prend le lieu de l'étape
+		$fk_place = property_exists($object, 'placeid') ? $object->placeid : null;
+		if (!empty($agfStep->id) && !empty($agfStep->fk_place)) { //Si l'étape porte un lieu, on le privilégie
 			$fk_place = $agfStep->fk_place;
 		}
 
@@ -1272,16 +1308,16 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$agf_place = new Agefodd_place($db);
 		if(! empty($fk_place)) $agf_place->fetch($fk_place);
 		// Lieu
-		$resarray['formation_lieu'] 				= strip_tags($agf_place->ref_interne);
-		$resarray['formation_lieu_adresse'] 		= strip_tags($agf_place->adresse);
-		$resarray['formation_lieu_cp'] 				= strip_tags($agf_place->cp);
-		$resarray['formation_lieu_ville'] 			= strip_tags($agf_place->ville);
+		$resarray['formation_lieu'] 				= strip_tags((string) ($agf_place->ref_interne ?? ''));
+		$resarray['formation_lieu_adresse'] 		= strip_tags((string) ($agf_place->adresse ?? ''));
+		$resarray['formation_lieu_cp'] 				= strip_tags((string) ($agf_place->cp ?? ''));
+		$resarray['formation_lieu_ville'] 			= strip_tags((string) ($agf_place->ville ?? ''));
 		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
 		// fix TK9760
-		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', $agf_place->acces_site);
+		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', (string) ($agf_place->acces_site ?? ''));
 		$resarray['formation_lieu_phone'] 			= dol_print_phone($agf_place->tel, $agf_place->country_code);
-		$resarray['formation_lieu_horaires'] 		= strip_tags($agf_place->timeschedule);
-		$resarray['formation_lieu_notes'] 			= strip_tags($agf_place->notes);
+		$resarray['formation_lieu_horaires'] 		= strip_tags((string) ($agf_place->timeschedule ?? ''));
+		$resarray['formation_lieu_notes'] 			= strip_tags((string) ($agf_place->notes ?? ''));
 		$resarray['formation_lieu_divers'] 			= $agf_place->note1;
 
 
@@ -1340,28 +1376,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-					if(floatval(DOL_VERSION) >= 16) {
-						if (isset($extrafields)) {
-								$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attribute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-								$extrafields->attribute_default = $extrafields->attribute_computed = $extrafields->attribute_perms = $extrafields->attribute_langfile = array();
-								$extrafields->attribute_list = $extrafields->attribute_hidden = $extrafields->attribute_elementtype = array();
-									if (!empty($extrafields->attributes[$extrafieldkey]) && !empty($extrafields->attributes[$extrafieldkey]['loaded'])) {
-										$extrafields->attribute_type = $extrafields->attributes[$extrafieldkey]['type'] ?? array();
-										$extrafields->attribute_size = $extrafields->attributes[$extrafieldkey]['size'] ?? array();
-										$extrafields->attribute_unique = $extrafields->attributes[$extrafieldkey]['unique'] ?? array();
-										$extrafields->attribute_required = $extrafields->attributes[$extrafieldkey]['required'] ?? array();
-									$extrafields->attribute_label = $extrafields->attributes[$extrafieldkey]['label'] ?? array();
-									$extrafields->attribute_default = $extrafields->attributes[$extrafieldkey]['default'] ?? array();
-									$extrafields->attribute_computed = $extrafields->attributes[$extrafieldkey]['computed'] ?? array();
-									$extrafields->attribute_param = $extrafields->attributes[$extrafieldkey]['param'] ?? array();
-									$extrafields->attribute_perms = $extrafields->attributes[$extrafieldkey]['perms'] ?? array();
-									$extrafields->attribute_langfile = $extrafields->attributes[$extrafieldkey]['langfile'] ?? array();
-									$extrafields->attribute_list = $extrafields->attributes[$extrafieldkey]['list'] ?? array();
-									$extrafields->attribute_hidden = $extrafields->attributes[$extrafieldkey]['hidden']?? array();
-									$extrafields->attribute_elementtype = $extrafields->attributes[$extrafieldkey]['elementtype']?? array();
-								}
-							}
-						}
 					if($isStagiaireSocExtrafields) {
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$extraKey = str_replace('stagiaire_soc_options_', '', $key);
@@ -1470,19 +1484,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		//TODO, Dolibarr deal it with diffrent way in commondocgenerator : why ?
 		if (! empty($extrafieldsobjectkey))
 		{
-			$elementtype=$extrafields->attributes[$extrafieldsobjectkey]['elementtype'][$key];	// seems not used
-			$label=$extrafields->attributes[$extrafieldsobjectkey]['label'][$key];
-			$type=$extrafields->attributes[$extrafieldsobjectkey]['type'][$key];
-			$size=$extrafields->attributes[$extrafieldsobjectkey]['size'][$key];
-			$default=$extrafields->attributes[$extrafieldsobjectkey]['default'][$key];
-			$computed=$extrafields->attributes[$extrafieldsobjectkey]['computed'][$key];
-			$unique=$extrafields->attributes[$extrafieldsobjectkey]['unique'][$key];
-			$required=$extrafields->attributes[$extrafieldsobjectkey]['required'][$key];
-			$param=$extrafields->attributes[$extrafieldsobjectkey]['param'][$key];
-			$perms=$extrafields->attributes[$extrafieldsobjectkey]['perms'][$key];
-			$langfile=$extrafields->attributes[$extrafieldsobjectkey]['langfile'][$key];
-			$list=$extrafields->attributes[$extrafieldsobjectkey]['list'][$key];
-			$ishidden=$extrafields->attributes[$extrafieldsobjectkey]['ishidden'][$key] ?? 0;
+			$attributeSource = is_array($extrafields->attributes ?? null) && is_array($extrafields->attributes[$extrafieldsobjectkey] ?? null)
+				? $extrafields->attributes[$extrafieldsobjectkey]
+				: array();
+			$elementtype = $attributeSource['elementtype'][$key] ?? '';	// seems not used
+			$label = $attributeSource['label'][$key] ?? '';
+			$type = $attributeSource['type'][$key] ?? '';
+			$size = $attributeSource['size'][$key] ?? '';
+			$default = $attributeSource['default'][$key] ?? '';
+			$computed = $attributeSource['computed'][$key] ?? '';
+			$unique = $attributeSource['unique'][$key] ?? '';
+			$required = $attributeSource['required'][$key] ?? '';
+			$param = is_array($attributeSource['param'][$key] ?? null) ? $attributeSource['param'][$key] : array();
+			$perms = $attributeSource['perms'][$key] ?? '';
+			$langfile = $attributeSource['langfile'][$key] ?? '';
+			$list = $attributeSource['list'][$key] ?? '';
+			$ishidden = $attributeSource['ishidden'][$key] ?? 0;
 
 			if( (float) DOL_VERSION < 7 ) {
 			    $hidden= ($ishidden == 0 ?  1 : 0);
@@ -1494,19 +1511,28 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 			else
 			{
-				$elementtype=$extrafields->attribute_elementtype[$key] ?? '';	// seems not used
-				$label=$extrafields->attribute_label[$key] ?? '';
-				$type=$extrafields->attribute_type[$key] ?? '';
-				$size=$extrafields->attribute_size[$key] ?? '';
-				$default=$extrafields->attribute_default[$key] ?? '';
-				$computed=$extrafields->attribute_computed[$key] ?? '';
-				$unique=$extrafields->attribute_unique[$key] ?? '';
-				$required=$extrafields->attribute_required[$key] ?? '';
-				$param=$extrafields->attribute_param[$key] ?? array();
-				$perms=$extrafields->attribute_perms[$key] ?? '';
-				$langfile=$extrafields->attribute_langfile[$key] ?? '';
-				$list=$extrafields->attribute_list[$key] ?? 0;
-				$ishidden=$extrafields->attribute_hidden[$key] ?? 0;
+				$attributeSource = array();
+				if (!empty($extrafields->attributes) && is_array($extrafields->attributes)) {
+					foreach ($extrafields->attributes as $definition) {
+						if (is_array($definition) && isset($definition['label'][$key])) {
+							$attributeSource = $definition;
+							break;
+						}
+					}
+				}
+				$elementtype=$attributeSource['elementtype'][$key] ?? '';	// seems not used
+				$label=$attributeSource['label'][$key] ?? '';
+				$type=$attributeSource['type'][$key] ?? '';
+				$size=$attributeSource['size'][$key] ?? '';
+				$default=$attributeSource['default'][$key] ?? '';
+				$computed=$attributeSource['computed'][$key] ?? '';
+				$unique=$attributeSource['unique'][$key] ?? '';
+				$required=$attributeSource['required'][$key] ?? '';
+				$param=is_array($attributeSource['param'][$key] ?? null) ? $attributeSource['param'][$key] : array();
+				$perms=$attributeSource['perms'][$key] ?? '';
+				$langfile=$attributeSource['langfile'][$key] ?? '';
+				$list=$attributeSource['list'][$key] ?? 0;
+				$ishidden=$attributeSource['hidden'][$key] ?? 0;
 
 			if( (float) DOL_VERSION < 7 ){
 			    $hidden= ($ishidden == 0 ?  1 : 0);
@@ -1529,12 +1555,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if ($type == 'date')
 		{
 			$showsize=10;
-			$value=dol_print_date($value, 'day');
+			$value = $this->formatExtrafieldDateValue($value, 'day');
 		}
 		elseif ($type == 'datetime')
 		{
 			$showsize=19;
-			$value=dol_print_date($value, 'dayhour');
+			$value = $this->formatExtrafieldDateValue($value, 'dayhour');
 		}
 		elseif ($type == 'int')
 		{
@@ -1568,7 +1594,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		elseif ($type == 'select')
 		{
-			$value=$param['options'][$value];
+			$value = isset($param['options'][$value]) ? $param['options'][$value] : '';
 		}
 		elseif ($type == 'sellist')
 		{
@@ -1784,6 +1810,33 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		return $out;
 	}
 
+	/**
+	 * Format date-like extrafield values without exploding on already formatted strings.
+	 *
+	 * @param mixed $value
+	 * @param string $format
+	 * @return string
+	 */
+	protected function formatExtrafieldDateValue($value, $format)
+	{
+		if ($value === null || $value === '' || $value === '0000-00-00' || $value === '0000-00-00 00:00:00') {
+			return '';
+		}
+
+		if (is_numeric($value)) {
+			return dol_print_date((int) $value, $format);
+		}
+
+		if (is_string($value)) {
+			$timestamp = strtotime($value);
+			if ($timestamp !== false) {
+				return dol_print_date($timestamp, $format);
+			}
+		}
+
+		return (string) $value;
+	}
+
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
 	 *	Fill array with couple extrafield key => extrafield value
@@ -1800,47 +1853,22 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
 
-		//TODO when dolibarr 13 wil lbe out, delete this and mark this module only comatible with dolibarr 10.0
-		if(floatval(DOL_VERSION) >= 16) {
-			if(!empty($object->table_element)
-			    && !empty($extrafields->attributes[$object->table_element])
-				&& !empty($extrafields->attributes[$object->table_element]['loaded'])) {
-                		$extrafields->attribute_type = $extrafields->attribute_param = $extrafields->attribute_size = $extrafields->attrbute_unique = $extrafields->attribute_required = $extrafields->attribute_label = array();
-                		$extrafields->attribute_type = $extrafields->attributes[$object->table_element]['type'] ?? array();
-				$extrafields->attribute_size = $extrafields->attributes[$object->table_element]['size'] ?? array();
-				$extrafields->attribute_unique = $extrafields->attributes[$object->table_element]['unique'] ?? array();
-				$extrafields->attribute_required = $extrafields->attributes[$object->table_element]['required'] ?? array();
-				$extrafields->attribute_label = $extrafields->attributes[$object->table_element]['label'] ?? array();
-				$extrafields->attribute_default = $extrafields->attributes[$object->table_element]['default'] ?? array();
-				$extrafields->attribute_computed = $extrafields->attributes[$object->table_element]['computed'] ?? array();
-				$extrafields->attribute_param = $extrafields->attributes[$object->table_element]['param'] ?? array();
-				$extrafields->attribute_perms = $extrafields->attributes[$object->table_element]['perms'] ?? array();
-				$extrafields->attribute_langfile = $extrafields->attributes[$object->table_element]['langfile'] ?? array();
-				$extrafields->attribute_list = $extrafields->attributes[$object->table_element]['list'] ?? array();
-				$extrafields->attribute_hidden = $extrafields->attributes[$object->table_element]['hidden'] ?? array();
-			}
-		}
-
-
 		// phpcs:enable
 		global $conf;
 		$attributeSource = array();
-		if (!empty($extrafields) && is_object($extrafields) && !empty($object->element) && is_array($extrafields->attributes[$object->element] ?? null)) {
+		if (!isset($object->array_options) || !is_array($object->array_options)) {
+			$object->array_options = array();
+		}
+		if (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attributes ?? null) && !empty($object->element) && is_array($extrafields->attributes[$object->element] ?? null)) {
 			$attributeSource = $extrafields->attributes[$object->element];
-		} elseif (!empty($extrafields) && is_object($extrafields) && !empty($object->table_element) && is_array($extrafields->attributes[$object->table_element] ?? null)) {
+		} elseif (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attributes ?? null) && !empty($object->table_element) && is_array($extrafields->attributes[$object->table_element] ?? null)) {
 			$attributeSource = $extrafields->attributes[$object->table_element];
 		}
-		$attributeLabels = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_label ?? null))
-			? $extrafields->attribute_label
-			: (is_array($attributeSource['label'] ?? null) ? $attributeSource['label'] : array());
-		$attributeTypes = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_type ?? null))
-			? $extrafields->attribute_type
-			: (is_array($attributeSource['type'] ?? null) ? $attributeSource['type'] : array());
-		$attributeParams = (!empty($extrafields) && is_object($extrafields) && is_array($extrafields->attribute_param ?? null))
-			? $extrafields->attribute_param
-			: (is_array($attributeSource['param'] ?? null) ? $attributeSource['param'] : array());
-			foreach($attributeLabels as $key=>$label)
-			{
+		$attributeLabels = is_array($attributeSource) && is_array($attributeSource['label'] ?? null) ? $attributeSource['label'] : array();
+		$attributeTypes = is_array($attributeSource) && is_array($attributeSource['type'] ?? null) ? $attributeSource['type'] : array();
+		$attributeParams = is_array($attributeSource) && is_array($attributeSource['param'] ?? null) ? $attributeSource['param'] : array();
+		foreach($attributeLabels as $key=>$label)
+		{
 				$currentType = $attributeTypes[$key] ?? '';
 				$currentParam = is_array($attributeParams[$key] ?? null) ? $attributeParams[$key] : array();
 				$currentOptionKey = 'options_'.$key;

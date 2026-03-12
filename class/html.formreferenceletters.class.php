@@ -457,15 +457,17 @@ class FormReferenceLetters extends Form
                    $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
 
                         var shortcodeTarget = $($("#subtitutionkey").data("target"));
+                        var rawShortcode = $(this).data("shortcode");
+                        var shortcode = (rawShortcode == undefined ? "" : String(rawShortcode)).replace(/\\\\n/g, "\n");
 
                         if(CKEDITOR.instances[shortcodeTarget.attr("id")] != undefined)
                         {
                             var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
 
                             try {
-                                evt.insertHtml( $(this).data("shortcode")  );
+                                evt.insertHtml(shortcode);
 
-                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + $(this).data("shortcode"),"3000","false",{ remove: function (){}})  ;
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + shortcode,"3000","false",{ remove: function (){}})  ;
 
                             }catch (err) {
                                 console.log("Unable to copy ckeditor not ready ?.");
@@ -473,6 +475,18 @@ class FormReferenceLetters extends Form
 
                             }
 
+                            $( "#subtitutionkey" ).dialog( "close" );
+                        }
+                        else if (shortcodeTarget.length && (shortcodeTarget.is("textarea") || shortcodeTarget.is("input")))
+                        {
+                            var targetNode = shortcodeTarget.get(0);
+                            var start = typeof targetNode.selectionStart === "number" ? targetNode.selectionStart : shortcodeTarget.val().length;
+                            var end = typeof targetNode.selectionEnd === "number" ? targetNode.selectionEnd : start;
+                            var currentValue = shortcodeTarget.val() || "";
+                            shortcodeTarget.val(currentValue.substring(0, start) + shortcode + currentValue.substring(end));
+                            targetNode.selectionStart = targetNode.selectionEnd = start + shortcode.length;
+                            shortcodeTarget.focus();
+                            $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + shortcode,"3000","false",{ remove: function (){}})  ;
                             $( "#subtitutionkey" ).dialog( "close" );
                         }
                         else{

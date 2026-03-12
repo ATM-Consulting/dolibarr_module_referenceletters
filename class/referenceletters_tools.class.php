@@ -314,6 +314,9 @@ class RfltrTools {
                         var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1); ?>';
                     } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
                     path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo intval(GETPOST('fk_step', 'int')); ?>;
+                    var selectSocId = $(this).attr('socid');
+                    var trainerCell = $(this).closest('td.trainerid');
+                    var trainerId = trainerCell.length ? trainerCell.attr('trainerid') : '';
                     // On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
                     lignetitre = $(this).parent().parent();
                     while (!lignetitre.hasClass('liste_titre')) {
@@ -324,8 +327,10 @@ class RfltrTools {
 
 						if($page === 'document') {
 							?>
-									if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
-										path = path + '&sessiontrainerid=' + $(this).attr('socid');
+									if ((model == 'mission_trainer' || model == 'contrat_trainer') && trainerId) {
+										path = path + '&sessiontrainerid=' + trainerId;
+									} else if(typeof sessiontrainerid != 'undefined' && typeof selectSocId != 'undefined' && sessiontrainerid == 'trainerid'+selectSocId) {
+										path = path + '&sessiontrainerid=' + selectSocId;
 									} else {
 										if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
 											let idform = $(this).attr('data-idform');
@@ -335,7 +340,7 @@ class RfltrTools {
 										} else if($(this).attr('model') == 'courrier'){
 											adresse = $(this).prev().prev().attr('href');
 											goodlink = $(this).prev().prev().attr('name');
-                                        if (typeof goodlink ==='undefined') {
+										if (typeof goodlink ==='undefined') {
                                             adresse = $(this).prev().prev().prev().attr('href');
                                         }
 										cour = adresse.substr(adresse.indexOf('&cour=')+6);
@@ -344,9 +349,15 @@ class RfltrTools {
 										} else {
 											courrier = cour.substr(0);
 										}
-										path = path + '&cour=' + courrier + '&socid=' + $(this).attr('socid');
+										if (typeof selectSocId !== 'undefined' && selectSocId !== '') {
+											path = path + '&cour=' + courrier + '&socid=' + selectSocId;
+										} else {
+											path = path + '&cour=' + courrier;
+										}
 									} else {
-										path = path + '&socid=' + $(this).attr('socid');
+										if (typeof selectSocId !== 'undefined' && selectSocId !== '') {
+											path = path + '&socid=' + selectSocId;
+										}
 									}
 								}
 							<?php

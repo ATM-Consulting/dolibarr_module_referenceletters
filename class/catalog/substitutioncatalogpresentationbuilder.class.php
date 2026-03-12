@@ -49,13 +49,13 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param array $catalog Raw catalog grouped by block.
 	 * @return array
 	 */
-	public function buildCatalogPresentation(array $catalog, $elementType = '', $catalogObject = null)
+	public function buildCatalogPresentation(array $catalog, $elementType = '', $catalogObject = null, array $loopCatalog = array())
 	{
 		$this->currentElementType = (string) $elementType;
 		$this->currentCatalogObject = is_object($catalogObject) ? $catalogObject : null;
 		$this->currentObjectExtraLabels = null;
 		$presentation = array();
-		$loopUsageMap = $this->buildLoopUsageMap($catalog);
+		$loopUsageMap = $this->buildLoopUsageMap($catalog, $loopCatalog);
 
 		foreach ($catalog as $block => $entries) {
 			$presentation[$block] = array();
@@ -506,7 +506,7 @@ class SubstitutionCatalogPresentationBuilder
 	{
 		if ($entryType === 'loop') {
 			if ($tag !== '' && isset($loopUsageMap[$tag]) && !empty($loopUsageMap[$tag])) {
-				return $this->langs->trans('RefLtrCatalogUsageLoopAvailable', implode(', ', $loopUsageMap[$tag]));
+				return $this->langs->trans('RefLtrCatalogUsageLoopAvailable', implode(', ', array_values(array_unique($loopUsageMap[$tag]))));
 			}
 
 			return $this->langs->trans('RefLtrCatalogUsageLoop');
@@ -590,54 +590,30 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param array $catalog
 	 * @return array<string,array<int,string>>
 	 */
-	protected function buildLoopUsageMap(array $catalog)
+	protected function buildLoopUsageMap(array $catalog, array $loopCatalog = array())
 	{
 		$map = array();
-		$groupLoopKeys = array(
-			'participants' => array(
-				'TStagiairesSession',
-				'TStagiairesSessionPresent',
-				'TStagiairesSessionSoc',
-				'TStagiairesSessionSocPresent',
-				'TStagiairesSessionSocConfirm',
-				'TStagiairesSessionSocMore',
-				'TStagiairesSessionConvention',
-				'TSessionStagiairesCertif',
-				'TSessionStagiairesCertifSoc',
-			),
-			'steps' => array(
-				'TSteps',
-				'TStepsDistanciel',
-				'TStepsPresentiel',
-			),
-			'schedules' => array(
-				'THorairesSession',
-			),
-			'trainers' => array(
-				'TFormateursSession',
-			),
-			'trainer_calendar' => array(
-				'TFormateursSessionCal',
-			),
-			'financial_lines' => array(
-				'TConventionFinancialLine',
-			),
-			'pedagogic_objectives' => array(
-				'TFormationObjPeda',
-			),
-			'document_lines' => array(
-				'lines',
-				'lines_active',
-			),
-		);
+		$groupLoopKeys = array();
+		foreach ($loopCatalog as $loop) {
+			if (!is_array($loop) || empty($loop['group_label']) || empty($loop['segment'])) {
+				continue;
+			}
+
+			$groupLabel = (string) $loop['group_label'];
+			if (empty($groupLoopKeys[$groupLabel])) {
+				$groupLoopKeys[$groupLabel] = array();
+			}
+
+			$groupLoopKeys[$groupLabel][] = (string) $loop['segment'];
+		}
 
 		foreach ($catalog as $block => $entries) {
 			if (!is_array($entries)) {
 				continue;
 			}
 
-			$blockKey = $this->resolveLoopGroupKey($entries);
-			if ($blockKey === '' || empty($groupLoopKeys[$blockKey])) {
+			$blockKey = (string) $block;
+			if (empty($groupLoopKeys[$blockKey])) {
 				continue;
 			}
 

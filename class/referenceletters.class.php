@@ -761,7 +761,7 @@ class ReferenceLetters extends CommonObject
 	 * @return array
 	 *
 	 */
-	public function getSubtitutionKey($user) {
+	public function getSubstitutionKey($user) {
 		global $conf, $langs, $mysoc, $hookmanager;
 
 		require_once 'commondocgeneratorreferenceletters.class.php';
@@ -890,7 +890,7 @@ class ReferenceLetters extends CommonObject
 
 		// Les groupes Agefodd ne doivent etre visibles que sur les documents Agefodd.
 		if(!empty($conf->agefodd->enabled) && $this->isAgefoddElementType($this->element_type)) {
-			$this->completeSubtitutionKeyArrayWithAgefoddData($subst_array);
+			$this->completeSubstitutionKeyArrayWithAgefoddData($subst_array);
 		}
 
 		// Fallback generique: si le catalogue detecte de nouvelles cles, on les remonte au moins
@@ -919,13 +919,13 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user Current user.
 	 * @return array
 	 */
-	public function getSubtitutionKeyPresentation($user)
+	public function getSubstitutionKeyPresentation($user)
 	{
 		global $langs;
 
 		$builder = new SubstitutionCatalogPresentationBuilder($langs, $this->db);
 		return $builder->buildCatalogPresentation(
-			$this->getSubtitutionKey($user),
+			$this->getSubstitutionKey($user),
 			(string) $this->element_type,
 			$this->lastCatalogUiObject,
 			$this->getLoopCatalogPresentation()
@@ -938,10 +938,10 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user Current user.
 	 * @return array<string,mixed>
 	 */
-	public function getSubtitutionKeyUiData($user)
+	public function getSubstitutionKeyUiData($user)
 	{
 		return array(
-			'tags' => $this->getSubtitutionKeyPresentation($user),
+			'tags' => $this->getSubstitutionKeyPresentation($user),
 			'loops' => $this->getLoopCatalogPresentation(),
 		);
 	}
@@ -1178,7 +1178,7 @@ class ReferenceLetters extends CommonObject
 	 * @param array $subst_array
 	 * @return void
 	 */
-	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
+	public function completeSubstitutionKeyArrayWithAgefoddData(&$subst_array) {
 
 		global $langs, $conf;
 
@@ -1271,6 +1271,48 @@ class ReferenceLetters extends CommonObject
 		}
 
 
+	}
+
+	/**
+	 * @deprecated Use getSubstitutionKey() instead.
+	 *
+	 * @param User $user
+	 * @return array
+	 */
+	public function getSubtitutionKey($user) {
+		return $this->getSubstitutionKey($user);
+	}
+
+	/**
+	 * @deprecated Use getSubstitutionKeyPresentation() instead.
+	 *
+	 * @param User $user
+	 * @return array
+	 */
+	public function getSubtitutionKeyPresentation($user)
+	{
+		return $this->getSubstitutionKeyPresentation($user);
+	}
+
+	/**
+	 * @deprecated Use getSubstitutionKeyUiData() instead.
+	 *
+	 * @param User $user
+	 * @return array<string,mixed>
+	 */
+	public function getSubtitutionKeyUiData($user)
+	{
+		return $this->getSubstitutionKeyUiData($user);
+	}
+
+	/**
+	 * @deprecated Use completeSubstitutionKeyArrayWithAgefoddData() instead.
+	 *
+	 * @param array<string,mixed> $subst_array
+	 * @return void
+	 */
+	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
+		$this->completeSubstitutionKeyArrayWithAgefoddData($subst_array);
 	}
 
 	protected function isAgefoddElementType($elementType)

@@ -23,7 +23,7 @@ class SubstitutionCatalogStandardProvider implements SubstitutionCatalogProvider
 	public function __construct(DoliDB $db, CommonDocGeneratorReferenceLetters $docgen, Translate $langs)
 	{
 		$this->providers = array(
-			'standard_scalar' => new SubstitutionCatalogStandardScalarProvider(),
+			'standard_scalar' => new SubstitutionCatalogStandardScalarProvider($langs),
 			'document_line' => new SubstitutionCatalogDocumentLineProvider($langs),
 			'contact' => new SubstitutionCatalogContactProvider($db, $docgen, $langs),
 			'thirdparty' => new SubstitutionCatalogThirdpartyProvider($db),

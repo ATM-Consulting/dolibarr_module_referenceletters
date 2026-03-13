@@ -7,6 +7,18 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
  */
 class SubstitutionCatalogStandardScalarProvider implements SubstitutionCatalogProviderInterface
 {
+	/** @var Translate */
+	protected $langs;
+
+	/**
+	 * @param Translate $langs
+	 */
+	public function __construct(Translate $langs)
+	{
+		$this->langs = $langs;
+		$this->langs->load('reflettersubstitution@referenceletters');
+	}
+
 	/**
 	 * @param array<string,mixed> $substArray
 	 * @param array<string,mixed> $context
@@ -15,20 +27,30 @@ class SubstitutionCatalogStandardScalarProvider implements SubstitutionCatalogPr
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
 		$elementType = isset($context['element_type']) ? $context['element_type'] : '';
-		$scalarLabels = array(
-			'devise_label' => 'Libellé de la devise du document',
-		);
+		$scalarKeys = array('devise_label');
 
 		if (in_array($elementType, array('expedition', 'shipping'), true)) {
-			$scalarLabels['object_tracking_number'] = 'Numéro de suivi expédition';
-			$scalarLabels['object_total_weight'] = 'Poids total du document';
-			$scalarLabels['object_total_volume'] = 'Volume total du document';
-			$scalarLabels['object_total_qty_ordered'] = 'Quantité totale commandée';
-			$scalarLabels['object_total_qty_toship'] = 'Quantité totale à expédier';
+			$scalarKeys[] = 'object_tracking_number';
+			$scalarKeys[] = 'object_total_weight';
+			$scalarKeys[] = 'object_total_volume';
+			$scalarKeys[] = 'object_total_qty_ordered';
+			$scalarKeys[] = 'object_total_qty_toship';
 		}
 
-		foreach ($scalarLabels as $key => $label) {
-			$substArray[$key] = $label;
+		foreach ($scalarKeys as $key) {
+			$substArray[$key] = $this->translateTag($key);
 		}
+	}
+
+	/**
+	 * @param string $tag
+	 * @return string
+	 */
+	protected function translateTag(string $tag): string
+	{
+		$key = 'reflettershortcode_' . $tag;
+		$translated = $this->langs->trans($key);
+
+		return ($translated !== $key) ? $translated : $tag;
 	}
 }

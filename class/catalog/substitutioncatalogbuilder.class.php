@@ -177,18 +177,16 @@ class SubstitutionCatalogBuilder
 	 * Append automatically detected keys that are not already listed in UI groups.
 	 *
 	 * @param array<string,mixed> $substArray
-	 * @param string|null $elementType
+	 * @param string $elementType
 	 * @param object|null $object
 	 * @param array<string,mixed> $context
 	 * @return void
 	 */
-	public function appendDetectedCatalogKeys(array &$substArray, $elementType, ?object $object = null, array $context = array()): void
+	public function appendDetectedCatalogKeys(array &$substArray, string $elementType, ?object $object = null, array $context = array()): void
 	{
 		if (!is_object($object)) {
 			return;
 		}
-
-		$elementType = (string) $elementType;
 
 		$isAgefodd = !empty($context['is_agefodd']);
 		$isAgefoddFormation = !empty($context['is_agefodd_formation']);
@@ -221,18 +219,16 @@ class SubstitutionCatalogBuilder
 	/**
 	 * Build metadata for all detected keys, including keys already visible in the UI.
 	 *
-	 * @param string|null $elementType
+	 * @param string $elementType
 	 * @param object|null $object
 	 * @param array<string,mixed> $context
 	 * @return array<string,array<string,mixed>>
 	 */
-	public function buildDetectedCatalogMetadata($elementType, ?object $object = null, array $context = array()): array
+	public function buildDetectedCatalogMetadata(string $elementType, ?object $object = null, array $context = array()): array
 	{
 		if (!is_object($object)) {
 			return array();
 		}
-
-		$elementType = (string) $elementType;
 
 		$isAgefodd = !empty($context['is_agefodd']);
 		$isAgefoddFormation = !empty($context['is_agefodd_formation']);

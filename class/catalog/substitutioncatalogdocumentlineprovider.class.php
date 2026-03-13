@@ -30,58 +30,75 @@ class SubstitutionCatalogDocumentLineProvider implements SubstitutionCatalogProv
 		}
 
 		$this->langs->load('admin');
-		$substArray[$this->langs->trans('RefLtrLines')] = array(
-			'line_fulldesc' => 'Description complète',
-			'line_product_ref' => 'Référence produit',
-			'line_product_ref_fourn' => 'Référence produit fournisseur (pour les documents fournisseurs)',
-			'line_product_label' => 'Libellé produit',
-			'line_libelle' => 'Libellé du produit/service',
-			'line_product_type' => 'Type produit',
-			'line_product_desc' => 'Description produit',
-			'line_product_barcode' => 'Code barre produit',
-			'line_desc' => 'Description',
-			'line_vatrate' => 'Taux de TVA',
-			'line_localtax1_rate' => 'Taux taxe locale 1',
-			'line_localtax2_rate' => 'Taux taxe locale 2',
-			'line_up' => 'Prix unitaire (format numérique)',
-			'line_multicurrency_code' => 'Code devise de la ligne',
-			'line_multicurrency_subprice' => 'Prix unitaire devisé (format numérique)',
-			'line_up_locale' => 'Prix unitaire (format prix)',
-			'line_multicurrency_subprice_locale' => 'Prix unitaire devisé (format prix)',
-			'line_qty' => 'Qté ligne',
-			'line_qty_asked' => 'Qté demandée',
-			'line_qty_shipped' => 'Qté expédiée',
-			'line_discount_percent' => 'Remise ligne',
-			'line_price_ht' => 'Total HT ligne (format numérique)',
-			'line_multicurrency_total_ht' => 'Total HT ligne devisé (format numérique)',
-			'line_price_ttc' => 'Total TTC ligne (format numérique)',
-			'line_multicurrency_total_ttc' => 'Total TTC ligne devisé (format numérique)',
-			'line_price_ht_locale' => 'Total HT ligne (format prix)',
-			'line_multicurrency_total_ht_locale' => 'Total HT ligne devisé (format prix)',
-			'line_price_ttc_locale' => 'Total TTC ligne (format prix)',
-			'line_multicurrency_total_ttc_locale' => 'Total TTC ligne devisé (format prix)',
-			'line_price_vat' => 'Montant TVA (format numérique)',
-			'line_multicurrency_total_tva' => 'Montant TVA devisé (format numérique)',
-			'line_price_vat_locale' => 'Montant TVA (format prix)',
-			'line_multicurrency_total_tva_locale' => 'Montant TVA devisé (format prix)',
-			'line_total_up' => 'Prix unitaire total (format numérique)',
-			'line_total_up_locale' => 'Prix unitaire total (format prix)',
-			'line_rang' => 'Rang de la ligne',
-			'line_pos' => 'Position de la ligne',
-			'line_weight' => 'Poids ligne',
-			'line_vol' => 'Volume ligne',
-			'line_date_start' => 'Date début service',
-			'line_date_start_locale' => 'Date début service format 1',
-			'line_date_start_rfc' => 'Date début service format 2',
-			'line_date_end' => 'Date fin service',
-			'line_date_end_locale' => 'Date fin service format 1',
-			'line_date_end_rfc' => 'Date fin service format 2',
-			'line_options_show_total_ht' => 'Afficher le total HT sur une ligne de sous-total',
-			'line_options_show_reduc' => 'Afficher la réduction sur une ligne de sous-total',
-			'line_options_subtotal_show_qty' => 'Afficher la quantité sur une ligne de sous-total',
-			'date_ouverture' => 'Date démarrage réelle (réservé aux contrats)',
-			'date_ouverture_prevue' => 'Date prévue de démarrage (réservé aux contrats)',
-			'date_fin_validite' => 'Date fin réelle (réservé aux contrats)',
+		$keys = array(
+			'line_fulldesc',
+			'line_product_ref',
+			'line_product_ref_fourn',
+			'line_product_label',
+			'line_libelle',
+			'line_product_type',
+			'line_product_desc',
+			'line_product_barcode',
+			'line_desc',
+			'line_vatrate',
+			'line_localtax1_rate',
+			'line_localtax2_rate',
+			'line_up',
+			'line_multicurrency_code',
+			'line_multicurrency_subprice',
+			'line_up_locale',
+			'line_multicurrency_subprice_locale',
+			'line_qty',
+			'line_qty_asked',
+			'line_qty_shipped',
+			'line_discount_percent',
+			'line_price_ht',
+			'line_multicurrency_total_ht',
+			'line_price_ttc',
+			'line_multicurrency_total_ttc',
+			'line_price_ht_locale',
+			'line_multicurrency_total_ht_locale',
+			'line_price_ttc_locale',
+			'line_multicurrency_total_ttc_locale',
+			'line_price_vat',
+			'line_multicurrency_total_tva',
+			'line_price_vat_locale',
+			'line_multicurrency_total_tva_locale',
+			'line_total_up',
+			'line_total_up_locale',
+			'line_rang',
+			'line_pos',
+			'line_weight',
+			'line_vol',
+			'line_date_start',
+			'line_date_start_locale',
+			'line_date_start_rfc',
+			'line_date_end',
+			'line_date_end_locale',
+			'line_date_end_rfc',
+			'line_options_show_total_ht',
+			'line_options_show_reduc',
+			'line_options_subtotal_show_qty',
+			'date_ouverture',
+			'date_ouverture_prevue',
+			'date_fin_validite',
 		);
+		$substArray[$this->langs->trans('RefLtrLines')] = $this->translateTags($keys);
+	}
+
+	/**
+	 * @param array<int,string> $tags
+	 * @return array<string,string>
+	 */
+	protected function translateTags(array $tags): array
+	{
+		$translated = array();
+		foreach ($tags as $tag) {
+			$key = 'reflettershortcode_' . $tag;
+			$label = $this->langs->trans($key);
+			$translated[$tag] = ($label !== $key) ? $label : $tag;
+		}
+
+		return $translated;
 	}
 }

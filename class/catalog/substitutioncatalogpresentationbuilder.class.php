@@ -137,7 +137,7 @@ class SubstitutionCatalogPresentationBuilder
 			return $detectedHint;
 		}
 
-		return 'Texte';
+		return $this->trans('RefLtrCatalogFormatText');
 	}
 
 	/**
@@ -187,13 +187,13 @@ class SubstitutionCatalogPresentationBuilder
 	protected function resolveStructuredDescription(string $tag, bool $includeGenericPrefixes = true): string
 	{
 		$technicalObjectPrefixes = array(
-			'objvar_object_contact_' => 'Propriete technique contact',
-			'objvar_object_thirdparty_' => 'Propriete technique tiers',
-			'objvar_object_user_' => 'Propriete technique utilisateur',
-			'objvar_object_formation_' => 'Propriete technique formation',
-			'objvar_object_array_options_options_' => 'Options techniques de l\'objet',
-			'objvar_object_options_' => 'Champs complementaires techniques',
-			'objvar_object_linkedObjectsFullLoaded_' => 'Objet lie charge',
+			'objvar_object_contact_' => 'RefLtrCatalogTechContact',
+			'objvar_object_thirdparty_' => 'RefLtrCatalogTechThirdparty',
+			'objvar_object_user_' => 'RefLtrCatalogTechUser',
+			'objvar_object_formation_' => 'RefLtrCatalogTechFormation',
+			'objvar_object_array_options_options_' => 'RefLtrCatalogTechObjectOptions',
+			'objvar_object_options_' => 'RefLtrCatalogTechExtraFields',
+			'objvar_object_linkedObjectsFullLoaded_' => 'RefLtrCatalogTechLinkedObject',
 		);
 
 		if (preg_match('/^cust_contactclient_([A-Z_]+)_([0-9]+)_(.+)$/', $tag, $matches)) {
@@ -214,26 +214,26 @@ class SubstitutionCatalogPresentationBuilder
 
 		foreach ($technicalObjectPrefixes as $prefix => $label) {
 			if (strpos($tag, $prefix) === 0) {
-				return $label . ' - ' . $this->humanizeToken(substr($tag, strlen($prefix)));
+				return $this->trans($label) . ' - ' . $this->humanizeToken(substr($tag, strlen($prefix)));
 			}
 		}
 
 		if (strpos($tag, 'objvar_object_') === 0) {
-			return $this->getCurrentObjectLabel() . ' avance - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_')));
+			return $this->trans('RefLtrCatalogCurrentObjectAdvanced', $this->getCurrentObjectLabel(), $this->humanizeToken(substr($tag, strlen('objvar_object_'))));
 		}
 
 		if ($includeGenericPrefixes) {
 			$prefixedDescriptions = array(
 				'object_' => $this->getCurrentObjectLabel(),
-				'cust_company_' => 'Tiers client',
-				'cust_contactclient' => 'Contacts client',
-				'referenceletters_' => 'DocEdit',
-				'formation_' => 'Formation',
-				'trainer_' => 'Formateur',
-				'step_' => 'Etape',
-				'current_' => 'Contexte courant',
-				'mycompany_' => 'Societe emettrice',
-				'myuser_' => 'Utilisateur courant',
+				'cust_company_' => $this->trans('RefLtrCatalogPrefixCustomerThirdparty'),
+				'cust_contactclient' => $this->trans('RefLtrCatalogPrefixCustomerContacts'),
+				'referenceletters_' => $this->trans('RefLtrCatalogPrefixDocEdit'),
+				'formation_' => $this->trans('RefLtrCatalogPrefixFormation'),
+				'trainer_' => $this->trans('RefLtrCatalogPrefixTrainer'),
+				'step_' => $this->trans('RefLtrCatalogPrefixStep'),
+				'current_' => $this->trans('RefLtrCatalogPrefixCurrentContext'),
+				'mycompany_' => $this->trans('RefLtrCatalogPrefixIssuerCompany'),
+				'myuser_' => $this->trans('RefLtrCatalogPrefixCurrentUser'),
 			);
 
 			foreach ($prefixedDescriptions as $prefix => $label) {
@@ -249,7 +249,7 @@ class SubstitutionCatalogPresentationBuilder
 		}
 
 		if (strpos($tag, 'stagiaire_') === 0 || strpos($tag, 'time_stagiaire_') === 0) {
-			return 'Stagiaire - ' . $this->humanizeToken(str_replace(array('time_stagiaire_', 'stagiaire_'), '', $tag));
+			return $this->trans('RefLtrCatalogPrefixTrainee') . ' - ' . $this->humanizeToken(str_replace(array('time_stagiaire_', 'stagiaire_'), '', $tag));
 		}
 
 		return '';
@@ -263,33 +263,33 @@ class SubstitutionCatalogPresentationBuilder
 	protected function getCurrentObjectLabel(): string
 	{
 		$map = array(
-			'contract' => 'Contrat',
-			'thirdparty' => 'Tiers',
-			'contact' => 'Contact',
-			'propal' => 'Proposition commerciale',
-			'invoice' => 'Facture',
-			'order' => 'Commande client',
-			'order_supplier' => 'Commande fournisseur',
-			'supplier_proposal' => 'Proposition fournisseur',
-			'expedition' => 'Expedition',
-			'shipping' => 'Reception',
-			'fichinter' => 'Intervention',
-			'rfltr_agefodd_formation' => 'Formation catalogue',
+			'contract' => 'RefLtrCatalogObjectContract',
+			'thirdparty' => 'RefLtrCatalogObjectThirdparty',
+			'contact' => 'RefLtrCatalogObjectContact',
+			'propal' => 'RefLtrCatalogObjectProposal',
+			'invoice' => 'RefLtrCatalogObjectInvoice',
+			'order' => 'RefLtrCatalogObjectCustomerOrder',
+			'order_supplier' => 'RefLtrCatalogObjectSupplierOrder',
+			'supplier_proposal' => 'RefLtrCatalogObjectSupplierProposal',
+			'expedition' => 'RefLtrCatalogObjectExpedition',
+			'shipping' => 'RefLtrCatalogObjectReception',
+			'fichinter' => 'RefLtrCatalogObjectIntervention',
+			'rfltr_agefodd_formation' => 'RefLtrCatalogObjectTrainingCatalog',
 		);
 
 		if (isset($map[$this->currentElementType])) {
-			return $map[$this->currentElementType];
+			return $this->trans($map[$this->currentElementType]);
 		}
 
 		if (strpos($this->currentElementType, 'rfltr_agefodd_') === 0) {
 			if (preg_match('/_(trainee|trainer)$/', $this->currentElementType)) {
-				return 'Document Agefodd participant';
+				return $this->trans('RefLtrCatalogObjectAgefoddParticipantDocument');
 			}
 
-			return 'Session Agefodd';
+			return $this->trans('RefLtrCatalogObjectAgefoddSession');
 		}
 
-		return 'Objet courant';
+		return $this->trans('RefLtrCatalogObjectCurrent');
 	}
 
 	/**
@@ -301,7 +301,7 @@ class SubstitutionCatalogPresentationBuilder
 	protected function resolveForcedFormatHint(string $tag): string
 	{
 		if (preg_match('/_rfc$/', $tag)) {
-			return 'Date RFC';
+			return $this->trans('RefLtrCatalogFormatDateRfc');
 		}
 
 		if (strpos($tag, '__[') === 0 && substr($tag, -3) === ']__') {
@@ -314,10 +314,10 @@ class SubstitutionCatalogPresentationBuilder
 
 		if (preg_match('/_locale$/', $tag)) {
 			if ($this->isMoneyTag($tag)) {
-				return 'Montant formate';
+				return $this->trans('RefLtrCatalogFormatFormattedAmount');
 			}
 
-			return 'Valeur formatee';
+			return $this->trans('RefLtrCatalogFormatFormattedValue');
 		}
 
 		return '';
@@ -333,31 +333,31 @@ class SubstitutionCatalogPresentationBuilder
 	protected function resolveDetectedFormatHint(string $tag, string $sampleValue): string
 	{
 		if ($this->isBooleanTag($tag, $sampleValue)) {
-			return 'Booleen';
+			return $this->trans('RefLtrCatalogFormatBoolean');
 		}
 
 		if ($this->isMoneyTag($tag)) {
-			return 'Montant';
+			return $this->trans('RefLtrCatalogFormatAmount');
 		}
 
 		if ($this->isDateTag($tag)) {
-			return 'Date';
+			return $this->trans('RefLtrCatalogFormatDate');
 		}
 
 		if ($this->isCodeTag($tag)) {
-			return 'Code';
+			return $this->trans('RefLtrCatalogFormatCode');
 		}
 
 		if ($this->isEmailTag($tag)) {
-			return 'Email';
+			return $this->trans('RefLtrCatalogFormatEmail');
 		}
 
 		if ($this->isPhoneTag($tag)) {
-			return 'Telephone';
+			return $this->trans('RefLtrCatalogFormatPhone');
 		}
 
 		if ($this->isUrlTag($tag)) {
-			return 'URL';
+			return $this->trans('RefLtrCatalogFormatUrl');
 		}
 
 		return '';
@@ -391,7 +391,7 @@ class SubstitutionCatalogPresentationBuilder
 		$fieldKey = substr($tag, strlen('cust_company_options_'));
 		$fieldKey = preg_replace('/_(locale|rfc)$/', '', $fieldKey);
 
-		return 'Champ complementaire tiers - ' . $this->humanizeToken($fieldKey);
+		return $this->trans('RefLtrCatalogCompanyExtraFieldLabel', $this->humanizeToken($fieldKey));
 	}
 
 	/**
@@ -415,11 +415,11 @@ class SubstitutionCatalogPresentationBuilder
 			$fieldLabel = $this->humanizeToken($fieldKey);
 		}
 
-		$description = 'Champ complémentaire - ' . $fieldLabel;
+		$description = $this->trans('RefLtrCatalogExtraFieldLabel', $fieldLabel);
 		if ($suffix === 'locale') {
-			$description .= ' formaté';
+			$description .= ' ' . $this->trans('RefLtrCatalogSuffixFormatted');
 		} elseif ($suffix === 'rfc') {
-			$description .= ' RFC';
+			$description .= ' ' . $this->trans('RefLtrCatalogSuffixRfc');
 		}
 
 		return $description;
@@ -714,13 +714,13 @@ class SubstitutionCatalogPresentationBuilder
 	protected function formatContactDescription(string $role, string $index, string $field): string
 	{
 		$roleMap = array(
-			'BILLING' => 'Contact facturation',
-			'SHIPPING' => 'Contact livraison',
-			'SERVICE' => 'Contact service',
-			'CUSTOMER' => 'Contact client',
+			'BILLING' => 'RefLtrCatalogContactBilling',
+			'SHIPPING' => 'RefLtrCatalogContactShipping',
+			'SERVICE' => 'RefLtrCatalogContactService',
+			'CUSTOMER' => 'RefLtrCatalogContactCustomer',
 		);
 
-		$roleLabel = isset($roleMap[$role]) ? $roleMap[$role] : 'Contact ' . $this->humanizeToken(strtolower($role));
+		$roleLabel = isset($roleMap[$role]) ? $this->trans($roleMap[$role]) : $this->trans('RefLtrCatalogContactGeneric', $this->humanizeToken(strtolower($role)));
 		return $roleLabel . ' ' . $index . ' - ' . $this->humanizeToken($field);
 	}
 
@@ -733,48 +733,48 @@ class SubstitutionCatalogPresentationBuilder
 	protected function humanizeToken(string $token): string
 	{
 		$map = array(
-			'ht' => 'HT',
-			'ttc' => 'TTC',
-			'tva' => 'TVA',
-			'vat' => 'TVA',
-			'bic' => 'BIC',
-			'iban' => 'IBAN',
-			'rfc' => 'RFC',
-			'qty' => 'quantite',
-			'ref' => 'reference',
-			'refint' => 'reference interne',
-			'locale' => 'formate',
-			'multicurrency' => 'multidevise',
-			'already' => 'deja',
-			'payed' => 'regle',
-			'deposit' => 'acompte',
-			'creditnote' => 'avoir',
-			'remain' => 'reste',
-			'pay' => 'payer',
-			'payment' => 'reglement',
-			'term' => 'echeance',
-			'mode' => 'mode',
-			'juridicalstatus' => 'forme juridique',
-			'fullname' => 'nom complet',
-			'lastname' => 'nom',
-			'firstname' => 'prenom',
-			'user' => 'utilisateur',
-			'username' => "nom d'utilisateur",
-			'utilisateur' => 'utilisateur',
-			'password' => 'mot de passe',
-			'motdepasse' => 'mot de passe',
-			'lien' => 'lien',
-			'link' => 'lien',
-			'paiement' => 'paiement',
-			'birthday' => 'date de naissance',
-			'civility' => 'civilite',
-			'socid' => 'id tiers',
-			'idprof1' => 'identifiant 1',
-			'idprof2' => 'identifiant 2',
-			'idprof3' => 'identifiant 3',
-			'idprof4' => 'identifiant 4',
-			'idprof5' => 'identifiant 5',
-			'idprof6' => 'identifiant 6',
+			'ht' => 'RefLtrCatalogTokenHt',
+			'ttc' => 'RefLtrCatalogTokenTtc',
+			'tva' => 'RefLtrCatalogTokenVat',
+			'vat' => 'RefLtrCatalogTokenVat',
+			'bic' => 'RefLtrCatalogTokenBic',
+			'iban' => 'RefLtrCatalogTokenIban',
+			'rfc' => 'RefLtrCatalogTokenRfc',
+			'qty' => 'RefLtrCatalogTokenQuantity',
+			'ref' => 'RefLtrCatalogTokenReference',
+			'refint' => 'RefLtrCatalogTokenInternalReference',
+			'locale' => 'RefLtrCatalogTokenFormatted',
+			'multicurrency' => 'RefLtrCatalogTokenMultiCurrency',
+			'already' => 'RefLtrCatalogTokenAlready',
+			'payed' => 'RefLtrCatalogTokenPaid',
+			'deposit' => 'RefLtrCatalogTokenDeposit',
+			'creditnote' => 'RefLtrCatalogTokenCreditNote',
+			'remain' => 'RefLtrCatalogTokenRemaining',
+			'pay' => 'RefLtrCatalogTokenPay',
+			'payment' => 'RefLtrCatalogTokenPayment',
+			'term' => 'RefLtrCatalogTokenTerm',
+			'mode' => 'RefLtrCatalogTokenMode',
+			'juridicalstatus' => 'RefLtrCatalogTokenJuridicalStatus',
+			'fullname' => 'RefLtrCatalogTokenFullName',
+			'lastname' => 'RefLtrCatalogTokenLastName',
+			'firstname' => 'RefLtrCatalogTokenFirstName',
+			'user' => 'RefLtrCatalogTokenUser',
+			'username' => 'RefLtrCatalogTokenUsername',
+			'utilisateur' => 'RefLtrCatalogTokenUser',
+			'password' => 'RefLtrCatalogTokenPassword',
+			'motdepasse' => 'RefLtrCatalogTokenPassword',
+			'lien' => 'RefLtrCatalogTokenLink',
+			'link' => 'RefLtrCatalogTokenLink',
+			'paiement' => 'RefLtrCatalogTokenPayment',
+			'birthday' => 'RefLtrCatalogTokenBirthday',
+			'civility' => 'RefLtrCatalogTokenCivility',
+			'socid' => 'RefLtrCatalogTokenThirdpartyId',
+			'idprof1' => 'RefLtrCatalogTokenProfessionalId1',
+			'idprof2' => 'RefLtrCatalogTokenProfessionalId2',
+			'idprof3' => 'RefLtrCatalogTokenProfessionalId3',
+			'idprof4' => 'RefLtrCatalogTokenProfessionalId4',
+			'idprof5' => 'RefLtrCatalogTokenProfessionalId5',
+			'idprof6' => 'RefLtrCatalogTokenProfessionalId6',
 		);
 
 		$parts = preg_split('/[_]+/', trim((string) $token, '_'));
@@ -787,7 +787,7 @@ class SubstitutionCatalogPresentationBuilder
 
 			$lower = strtolower($part);
 			if (isset($map[$lower])) {
-				$labels[] = $map[$lower];
+				$labels[] = $this->trans($map[$lower]);
 			} elseif ($lower === 'to') {
 				continue;
 			} elseif (ctype_digit($part)) {
@@ -848,6 +848,16 @@ class SubstitutionCatalogPresentationBuilder
 		return in_array($tag, array(
 			'object_already_payed_all',
 		), true);
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed ...$args
+	 * @return string
+	 */
+	protected function trans(string $key, ...$args): string
+	{
+		return $this->langs->trans($key, ...$args);
 	}
 
 	/**

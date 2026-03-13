@@ -253,11 +253,11 @@ class FormReferenceLetters extends Form
 	 * @return string HTML to print
 	 */
 
-	public function displaySubtitutionKey($user,$reflettersobject) {
+	public function displaySubstitutionKey($user,$reflettersobject) {
 		global $langs,$bc;
 
         $form = new Form($this->db);
-		$html=$this->getSubtitutionKeyTable($user,$reflettersobject);
+		$html=$this->getSubstitutionKeyTable($user,$reflettersobject);
 
 		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
 	}
@@ -268,7 +268,7 @@ class FormReferenceLetters extends Form
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
 	 */
-	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
+	public function displaySubstitutionKeyAdvanced($user, $reflettersobject) {
 		global $langs;
 
 		print '<div id="subtitutionkey" style="display: none;" >';
@@ -279,7 +279,7 @@ class FormReferenceLetters extends Form
 		print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
 		print '</div>';
 
-		$uiData = $reflettersobject->getSubtitutionKeyUiData($user);
+		$uiData = $reflettersobject->getSubstitutionKeyUiData($user);
 		$subs_array = isset($uiData['tags']) && is_array($uiData['tags']) ? $uiData['tags'] : array();
 		$loop_array = isset($uiData['loops']) && is_array($uiData['loops']) ? $uiData['loops'] : array();
 		$loopNoticeByGroup = $this->buildLoopNoticeByGroup($loop_array);
@@ -353,7 +353,6 @@ class FormReferenceLetters extends Form
 				$html .= '<th>'.$langs->trans('Format').'</th>';
 				$html .= '</tr>';
 				if (is_array($data) && count($data) > 0) {
-					$var = true;
 					foreach ($data as $key => $value) {
 						$html .= '<tr class="oddeven searchable search-match">';
 						$html .= '    <td class="referenceletter-subtitutionkey-desc">';
@@ -539,10 +538,10 @@ class FormReferenceLetters extends Form
      * @param User $user
      * @param CommonObject $object
      */
-	    public function getSubtitutionKeyTable($user,$reflettersobject){
+	    public function getSubstitutionKeyTable($user,$reflettersobject){
 	        global $langs,$bc;
 
-        $uiData = $reflettersobject->getSubtitutionKeyUiData($user);
+        $uiData = $reflettersobject->getSubstitutionKeyUiData($user);
         $subs_array = isset($uiData['tags']) && is_array($uiData['tags']) ? $uiData['tags'] : array();
         $loop_array = isset($uiData['loops']) && is_array($uiData['loops']) ? $uiData['loops'] : array();
         $loopNoticeByGroup = $this->buildLoopNoticeByGroup($loop_array);
@@ -602,8 +601,7 @@ class FormReferenceLetters extends Form
                 $html.=$langs->trans('Format');
                 $html.='</td>';
                 $html.='</tr>';
-                if (count($data)>0) {
-                    $var=true;
+				if (count($data)>0) {
 	                    foreach($data as $key=>$value) {
 	                        $html.="<tr class=\"oddeven\">";
 	                        $html.='<td>';
@@ -633,6 +631,39 @@ class FormReferenceLetters extends Form
 
         return $html;
     }
+
+	/**
+	 * @deprecated Use displaySubstitutionKey() instead.
+	 *
+	 * @param User $user
+	 * @param CommonObject $reflettersobject
+	 * @return string
+	 */
+	public function displaySubtitutionKey($user,$reflettersobject) {
+		return $this->displaySubstitutionKey($user, $reflettersobject);
+	}
+
+	/**
+	 * @deprecated Use displaySubstitutionKeyAdvanced() instead.
+	 *
+	 * @param User $user
+	 * @param ReferenceLetters $reflettersobject
+	 * @return void
+	 */
+	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
+		$this->displaySubstitutionKeyAdvanced($user, $reflettersobject);
+	}
+
+	/**
+	 * @deprecated Use getSubstitutionKeyTable() instead.
+	 *
+	 * @param User $user
+	 * @param ReferenceLetters $reflettersobject
+	 * @return string
+	 */
+	public function getSubtitutionKeyTable($user,$reflettersobject){
+		return $this->getSubstitutionKeyTable($user, $reflettersobject);
+	}
 
 	/**
 	 * Build one notice per block when some loops use the same field group.

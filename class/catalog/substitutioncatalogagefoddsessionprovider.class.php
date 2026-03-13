@@ -24,8 +24,6 @@ class SubstitutionCatalogAgefoddSessionProvider extends SubstitutionCatalogAgefo
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
-		global $conf;
-
 		if (empty($context['is_agefodd']) || empty($context['is_session_doc'])) {
 			return;
 		}
@@ -117,7 +115,7 @@ class SubstitutionCatalogAgefoddSessionProvider extends SubstitutionCatalogAgefo
 		$substArray[$groupLabels['participants']]['line_societe_options_sirene_update_date_locale'] = $this->translateTag('line_societe_options_sirene_update_date_locale');
 		$substArray[$groupLabels['participants']]['line_societe_options_sirene_update_date_rfc'] = $this->translateTag('line_societe_options_sirene_update_date_rfc');
 
-		if (!empty($conf->agefoddcertificat->enabled)) {
+		if (isModEnabled('agefoddcertificat')) {
 			$substArray[$groupLabels['participants']] += $this->translateTags(array(
 				'line_certif_code',
 				'line_certif_label',

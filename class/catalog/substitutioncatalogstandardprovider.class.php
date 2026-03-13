@@ -13,7 +13,7 @@ require_once __DIR__ . '/substitutioncatalogreferenceletterprovider.class.php';
 class SubstitutionCatalogStandardProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var SubstitutionCatalogProviderInterface[] */
-	protected $providers = array();
+	protected array $providers = array();
 
 	/**
 	 * @param DoliDB $db

@@ -10,27 +10,27 @@ class SubstitutionCatalogPresentationBuilder
 	/**
 	 * @var DoliDB|null
 	 */
-	protected $db;
+	protected ?DoliDB $db;
 
 	/**
 	 * @var Translate
 	 */
-	protected $langs;
+	protected Translate $langs;
 
 	/**
 	 * @var string
 	 */
-	protected $currentElementType = '';
+	protected string $currentElementType = '';
 
 	/**
 	 * @var object|null
 	 */
-	protected $currentCatalogObject = null;
+	protected ?object $currentCatalogObject = null;
 
 	/**
 	 * @var array<string,string>|null
 	 */
-	protected $currentObjectExtraLabels = null;
+	protected ?array $currentObjectExtraLabels = null;
 
 	/**
 	 * @param DoliDB|null $db Database handle used to resolve extrafield labels.

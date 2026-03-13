@@ -8,9 +8,9 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
 class SubstitutionCatalogReferenceLetterProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var CommonDocGeneratorReferenceLetters */
-	protected $docgen;
+	protected CommonDocGeneratorReferenceLetters $docgen;
 	/** @var Translate */
-	protected $langs;
+	protected Translate $langs;
 
 	/**
 	 * @param CommonDocGeneratorReferenceLetters $docgen

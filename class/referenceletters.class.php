@@ -348,7 +348,7 @@ class ReferenceLetters extends CommonObject
 					'trans' => 'agefodd',
 					'title' => 'AgfConvention',
 					'card' => '/agefodd/session/card.php',
-					'substitution_method' => 'get_substitutionsarray_agefodd',
+					'substitution_method' => 'get_substitutionarray_agefodd',
 					'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
@@ -403,7 +403,7 @@ class ReferenceLetters extends CommonObject
 				'trans' => 'agefodd',
 				'title' => 'AgfFormationInitiale',
 				'card' => '/agefodd/training/card.php',
-				'substitution_method' => 'get_substitutionsarray_agefodd_formation',
+				'substitution_method' => 'get_substitutionarray_agefodd_formation',
 				'substitution_method_line' => 'get_substitutionarray_lines_agefodd'
 			);
 
@@ -889,7 +889,7 @@ class ReferenceLetters extends CommonObject
 		);
 
 		// Les groupes Agefodd ne doivent etre visibles que sur les documents Agefodd.
-		if(!empty($conf->agefodd->enabled) && $this->isAgefoddElementType($this->element_type)) {
+		if (isModEnabled('agefodd') && $this->isAgefoddElementType($this->element_type)) {
 			$this->completeSubstitutionKeyArrayWithAgefoddData($subst_array);
 		}
 

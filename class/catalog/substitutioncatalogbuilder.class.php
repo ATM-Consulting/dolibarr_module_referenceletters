@@ -9,21 +9,21 @@ require_once __DIR__ . '/substitutioncatalogstandardprovider.class.php';
 class SubstitutionCatalogBuilder
 {
 	/** @var DoliDB */
-	protected $db;
+	protected DoliDB $db;
 	/** @var ReferenceLetters */
-	protected $referenceletters;
+	protected ReferenceLetters $referenceletters;
 	/** @var CommonDocGeneratorReferenceLetters */
-	protected $docgen;
+	protected CommonDocGeneratorReferenceLetters $docgen;
 	/** @var Translate */
-	protected $langs;
+	protected Translate $langs;
 	/** @var SubstitutionCatalogGroupingPolicy */
-	protected $groupingPolicy;
+	protected SubstitutionCatalogGroupingPolicy $groupingPolicy;
 	/** @var SubstitutionCatalogVisibilityPolicy */
-	protected $visibilityPolicy;
+	protected SubstitutionCatalogVisibilityPolicy $visibilityPolicy;
 	/** @var SubstitutionCatalogProviderInterface[] */
-	protected $providers = array();
+	protected array $providers = array();
 	/** @var array<string,array> */
-	protected $lastDetectedMetadata = array();
+	protected array $lastDetectedMetadata = array();
 
 	/**
 	 * @param DoliDB $db
@@ -276,10 +276,10 @@ class SubstitutionCatalogBuilder
 		}
 
 		if ($isAgefodd) {
-			if ($isAgefoddFormation && method_exists($this->docgen, 'get_substitutionsarray_agefodd_formation')) {
-				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionsarray_agefodd_formation($object, $this->langs), 'agefodd');
-			} elseif (method_exists($this->docgen, 'get_substitutionsarray_agefodd')) {
-				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionsarray_agefodd($object, $this->langs), 'agefodd');
+			if ($isAgefoddFormation && method_exists($this->docgen, 'get_substitutionarray_agefodd_formation')) {
+				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_agefodd_formation($object, $this->langs), 'agefodd');
+			} elseif (method_exists($this->docgen, 'get_substitutionarray_agefodd')) {
+				$this->mergeDetectedTags($tags, $this->docgen->get_substitutionarray_agefodd($object, $this->langs), 'agefodd');
 			}
 		}
 

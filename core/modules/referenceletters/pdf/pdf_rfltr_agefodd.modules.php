@@ -77,8 +77,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 
-		//ajout pansement pour le ticket #DA020165 : la fonction ne gérait pas le cas où "id_object" est l'id d'une formation
-		//TODO : gérer plus proprement le cas d'une formation en valeur du paramètre "$id_object" et uniformiser avec les différentes fonction whrite_file() comme celles du fichier pdf_fiche_pedago_modules.php
+		// Fallback de rétrocompatibilité pour les modèles formation (Ticket #DA020165).
 
 			$object_refletter = new Referenceletters($db);
 			$object_refletter->fetch($id_model);
@@ -91,7 +90,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			$agf->fetch($id);
 			$fk_training = (int) $id;
 
-			// Vilain hack si !empty($courrier) alors c'est un id de session
+			// Quand disponible, le contexte session prime sur le simple identifiant formation.
 			$agf_session = new Agsession($db);
 			if (! empty($courrier)) {
 				$agf_session->fetch($courrier);

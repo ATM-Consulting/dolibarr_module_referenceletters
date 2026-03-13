@@ -14,7 +14,7 @@ require_once __DIR__ . '/substitutioncatalogagefoddconventionprovider.class.php'
 class SubstitutionCatalogAgefoddProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var SubstitutionCatalogProviderInterface[] */
-	protected $providers = array();
+	protected array $providers = array();
 
 	/**
 	 * @param DoliDB $db

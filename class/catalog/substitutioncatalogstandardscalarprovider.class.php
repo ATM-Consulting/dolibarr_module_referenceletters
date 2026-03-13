@@ -8,7 +8,7 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
 class SubstitutionCatalogStandardScalarProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var Translate */
-	protected $langs;
+	protected Translate $langs;
 
 	/**
 	 * @param Translate $langs

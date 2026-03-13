@@ -8,16 +8,16 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
 abstract class SubstitutionCatalogAgefoddAbstractProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var DoliDB|null */
-	protected $db;
+	protected ?DoliDB $db;
 
 	/** @var Translate */
-	protected $langs;
+	protected Translate $langs;
 
 	/**
 	 * @param DoliDB|null $db
 	 * @param Translate $langs
 	 */
-	public function __construct($db, Translate $langs)
+	public function __construct(?DoliDB $db, Translate $langs)
 	{
 		$this->db = $db;
 		$this->langs = $langs;

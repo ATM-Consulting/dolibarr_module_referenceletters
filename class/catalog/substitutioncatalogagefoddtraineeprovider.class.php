@@ -24,8 +24,6 @@ class SubstitutionCatalogAgefoddTraineeProvider extends SubstitutionCatalogAgefo
 	 */
 	public function appendCatalogKeys(array &$substArray, array $context = array()): void
 	{
-		global $conf;
-
 		if (empty($context['is_agefodd']) || empty($context['is_trainee_doc'])) {
 			return;
 		}
@@ -64,7 +62,7 @@ class SubstitutionCatalogAgefoddTraineeProvider extends SubstitutionCatalogAgefo
 			}
 		}
 
-		if (!empty($conf->agefoddcertificat->enabled)) {
+		if (isModEnabled('agefoddcertificat')) {
 			$substArray[$groupLabels['trainee']] += $this->translateTags(array(
 				'objvar_object_stagiaire_certif_code',
 				'objvar_object_stagiaire_certif_label',

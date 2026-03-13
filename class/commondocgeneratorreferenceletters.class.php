@@ -470,7 +470,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public function get_substitutionarray_other($outputlangs, $object = '') {
 		global $conf;
-		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
+		$multicurrencyEnabled = isModEnabled('multicurrency');
 
 		$outputlangs->load('main');
 		$array_other = parent::get_substitutionarray_other($outputlangs);
@@ -578,7 +578,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public static function get_detail_tva($object, $outputlangs) {
 		global $conf, $langs;
-		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
+		$multicurrencyEnabled = isModEnabled('multicurrency');
 
 		$langs->load("referenceletters@referenceletters");
 
@@ -648,7 +648,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public static function get_liste_reglements($object, $outputlangs) {
 		global $db, $conf;
-		$multicurrencyEnabled = !empty($conf->multicurrency) && !empty($conf->multicurrency->enabled);
+		$multicurrencyEnabled = isModEnabled('multicurrency');
 
 		$TPayments = array();
 
@@ -848,7 +848,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_certif_date_fin'] = '';
 		$resarray['line_certif_date_alerte'] = '';
 
-		if($conf->agefoddcertificat->enabled) {
+		if (isModEnabled('agefoddcertificat')) {
 			// Certificats
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);
@@ -1042,7 +1042,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $outputlangs
 	 * @return array
 	 */
-	public function get_substitutionsarray_agefodd_formation(Formation $object, Translate $outputlangs)
+	public function get_substitutionarray_agefodd_formation(Formation $object, Translate $outputlangs)
 	{
 
 		global $db,  $langs, $extrafields;
@@ -1127,7 +1127,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
-	public function get_substitutionsarray_agefodd($object, $outputlangs)
+	public function get_substitutionarray_agefodd($object, $outputlangs)
 	{
 		global $db, $langs;
 
@@ -1284,16 +1284,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['Mentor_pedagogique'] = $mentorSubstitutions['items']['Mentor_pedagogique'];
 		$resarray['Mentor_handicap'] = $mentorSubstitutions['items']['Mentor_handicap'];
 
-		// cela devrait être toujours vrai ici
-			if (! empty($object->fk_formation_catalogue)) {
+		if (! empty($object->fk_formation_catalogue)) {
 
 				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 				dol_include_once('/agefodd/class/agefodd_session_catalogue.class.php');
 
-
-				// est ce que j'ai une copie de la formation de la formation dans session_catalogue ?
-			// dit autrement est ce que j'ai modifié le receuil depuis l'onglet receuil de la formation ?
-			//
+			// Utiliser la copie session si elle existe, sinon retomber sur le catalogue formation source.
 
 			if (class_exists('Agefodd')) {
 				$catalogue = new Agefodd($db);
@@ -1392,6 +1388,30 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		return $resarray;
+	}
+
+	/**
+	 * @deprecated Use get_substitutionarray_agefodd_formation() instead.
+	 *
+	 * @param Formation $object
+	 * @param Translate $outputlangs
+	 * @return array
+	 */
+	public function get_substitutionsarray_agefodd_formation(Formation $object, Translate $outputlangs)
+	{
+		return $this->get_substitutionarray_agefodd_formation($object, $outputlangs);
+	}
+
+	/**
+	 * @deprecated Use get_substitutionarray_agefodd() instead.
+	 *
+	 * @param CommonObject $object
+	 * @param Translate $outputlangs
+	 * @return array
+	 */
+	public function get_substitutionsarray_agefodd($object, $outputlangs)
+	{
+		return $this->get_substitutionarray_agefodd($object, $outputlangs);
 	}
 
 	/**

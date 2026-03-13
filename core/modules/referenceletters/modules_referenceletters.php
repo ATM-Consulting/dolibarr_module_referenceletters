@@ -759,7 +759,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Agsession' ) {
-			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$tmparray = $this->get_substitutionarray_agefodd($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -770,7 +770,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Formation' ) {
-			$tmparray = $this->get_substitutionsarray_agefodd_formation($object, $outputlangs);
+			$tmparray = $this->get_substitutionarray_agefodd_formation($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {

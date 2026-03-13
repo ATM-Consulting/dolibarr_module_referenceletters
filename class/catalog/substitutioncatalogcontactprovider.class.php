@@ -9,11 +9,11 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
 class SubstitutionCatalogContactProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var DoliDB */
-	protected $db;
+	protected DoliDB $db;
 	/** @var CommonDocGeneratorReferenceLetters */
-	protected $docgen;
+	protected CommonDocGeneratorReferenceLetters $docgen;
 	/** @var Translate */
-	protected $langs;
+	protected Translate $langs;
 
 	/**
 	 * @param DoliDB $db

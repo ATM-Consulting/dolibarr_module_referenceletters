@@ -9,7 +9,7 @@ require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
 class SubstitutionCatalogThirdpartyProvider implements SubstitutionCatalogProviderInterface
 {
 	/** @var DoliDB */
-	protected $db;
+	protected DoliDB $db;
 
 	/**
 	 * @param DoliDB $db

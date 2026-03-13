@@ -63,7 +63,7 @@ class modReferenceLetters extends DolibarrModules
 		// Possible values for version are: 'development', 'experimental' or version
 
 
-		$this->version = '2.21.8';
+		$this->version = '2.21.9';
 		// Url to the file with your last numberversion of this module
 		require_once __DIR__ . '/../../class/techatm.class.php';
 		$this->url_last_version = \referenceletters\TechATM::getLastModuleVersionUrl($this);
@@ -461,7 +461,7 @@ class modReferenceLetters extends DolibarrModules
 		    dol_include_once('/referenceletters/script/migrate_model_to_extrafields.php');
 		}
 
-		// fix pour la 2.15 et supérieures
+		// Compatibility fix for 2.15 and newer.
 		if(!getDolGlobalString('DOCEDIT_FIX_TMS_FOR_MYSQL')) {
 			$sqlTables = "SHOW TABLES LIKE '%referenceletters%'";
 			$resqlTables = $this->db->query($sqlTables);
@@ -479,7 +479,7 @@ class modReferenceLetters extends DolibarrModules
 					}
 				}
 
-				// const qui sera créée après l'init
+				// This constant is created after module init.
 				$this->const[] = [
 					'DOCEDIT_FIX_TMS_FOR_MYSQL',
 					'chaine',
@@ -528,7 +528,7 @@ class modReferenceLetters extends DolibarrModules
 	/**
 	 * Compare
 	 *
-	 * @param string $targetVersion numéro de version pour lequel il faut faire la comparaison
+	 * @param string $targetVersion Version number used for the comparison.
 	 * @return bool
 	 */
 	public function needUpdate($targetVersion){

@@ -745,7 +745,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_libelle'] = isset($line->libelle) ? $line->libelle : ''; // Product/service label.
 		if (empty($resarray['line_product_label']) && isset($line->label)) $resarray['line_product_label'] = $line->label;
 
-		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
+		if(empty($resarray['line_desc']) && isModEnabled('subtotal'))
 		{
 			dol_include_once('/subtotal/class/subtotal.class.php');
 
@@ -1554,7 +1554,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 				// So param will probably have different param so I created referenceletter_showPublicOutputField to prevent conflict
 					$methodVariable = array($object, 'referenceletter_showPublicOutputField');
 					if (is_callable($methodVariable, false, $callable_name)){
-						$value = $object->referenceletter_showPublicOutputField($key,$value);
+						if (method_exists($object, 'referenceletter_showPublicOutputField')) {
+							$value = $object->referenceletter_showPublicOutputField($key, $value);
+						}else{
+							$value  = '';
+						}
 					}
 
 

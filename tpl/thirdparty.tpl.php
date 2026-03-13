@@ -28,7 +28,7 @@ if ($object->fournisseur) {
 	print '</td></tr>';
 }
 
-if (! empty($conf->barcode->enabled)) {
+if (isModEnabled('barcode')) {
 	print '<tr><td>' . $langs->trans('Gencod') . '</td><td colspan="3">' . $object->barcode . '</td></tr>';
 }
 

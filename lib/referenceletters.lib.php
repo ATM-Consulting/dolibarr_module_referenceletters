@@ -307,7 +307,7 @@ function rl_userHasRight(User $user, string $module, string $permlevel1, string 
 			$permlevel1 = $tmp[0];
 		}
 
-		if(! $conf->$module->enabled) {
+		if(! isModEnabled($module)) {
 			return 0;
 		}
 

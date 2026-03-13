@@ -12,7 +12,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 	$subject = '';
 	$actionmsg = '';
 	$actionmsg2 = '';
-	if (! empty($conf->dolimail->enabled))
+	if (isModEnabled('dolimail'))
 		$langs->load("dolimail@dolimail");
 	$langs->load('mails');
 
@@ -173,7 +173,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 					$filename = $attachedfiles['names'];
 					$mimetype = $attachedfiles['mimes'];
 					// Feature to push mail sent into Sent folder
-					if (! empty($conf->dolimail->enabled)) {
+					if (isModEnabled('dolimail')) {
 						$mailfromid = explode("#", $_POST['frommail'], 3); // $_POST['frommail'] = 'aaa#Sent# <aaa@aaa.com>' // TODO Use a better way to define Sent dir.
 						if (count($mailfromid) == 0)
 							$from = $_POST['fromname'] . ' <' . $_POST['frommail'] . '>';
@@ -240,7 +240,7 @@ if (($action == 'send' || ! empty($_REQUEST['sendmail'])) && ! $_POST['addfile']
 						$result = $mailfile->sendfile();
 						if ($result) {
 							// FIXME This must be moved into the trigger for action $trigger_name
-							if (! empty($conf->dolimail->enabled)) {
+							if (isModEnabled('dolimail')) {
 								$mid = (GETPOST('mid', 'int') ? GETPOST('mid', 'int') : 0); // Original mail id is set ?
 								if ($mid) {
 									// set imap flag answered if it is an answered mail

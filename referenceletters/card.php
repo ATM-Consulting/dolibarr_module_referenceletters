@@ -376,7 +376,7 @@ if ($action == 'create' && rl_userHasRight($user, 'referenceletters', 'write')) 
 	print '</ul></div>';
 	print '<div class="inline-block floatleft valignmiddle refid refidpadding">';
 	print $langs->trans('RefLtrTitle').' : '. $form->editfieldval("RefLtrTitle", 'refltrtitle', $object->title, $object, rl_userHasRight($user, 'referenceletters', 'write'));
-	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
+	if ($action !== 'editrefltrtitle') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrtitle&token='.newToken().'&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
 	print '<div class="refidno">';
 	if ($action=='editrefltrelement') {
 		print '<form method="post" action="'.$_SERVER["PHP_SELF"].'">';
@@ -397,14 +397,14 @@ if ($action == 'create' && rl_userHasRight($user, 'referenceletters', 'write')) 
 		print '</form>'."\n";
 		print '<br>'."\n";
 	} else {
-		print $langs->trans('RefLtrElement').' : '. $object->displayElement(). '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrelement&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
+		print $langs->trans('RefLtrElement').' : '. $object->displayElement(). '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrelement&token='.newToken().'&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>'.'<BR>';
 	}
 	print $langs->trans('RefLtrUseLandscapeFormat') . ' : ';
-	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	if ($action !== 'editrefltruse_landscape_format') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltruse_landscape_format&token='.newToken().'&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
 	print '&nbsp;' . $form->editfieldval("RefLtrUseLandscapeFormat", 'refltruse_landscape_format', $object->use_landscape_format, $object, rl_userHasRight($user,'referenceletters', 'write'), 'select;1:'.$langs->trans('Yes').',0:'.$langs->trans('No')) . '<br>';
 	print $langs->trans('RefLtrDefaultDoc') . ' : ';
-	if ($action !== 'editrefltrdefault_doc') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrdefault_doc&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
-	print '&nbsp;' . $form->editfieldval("RefLtrDefaultDoc", 'refltrdefault_doc', $object->default_doc, $object, rl_userHasRight($user, 'referenceletters', 'write'), 'select;1:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES]).',0:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO])) . '<br>';
+	if ($action !== 'editrefltrdefault_doc') print '&nbsp;&nbsp;<a href="' . $_SERVER["PHP_SELF"] . '?action=editrefltrdefault_doc&token='.newToken().'&id=' . $object->id .'">' . img_picto('edit', 'edit') . '</a>';
+	print '&nbsp;' . $form->editfieldval("RefLtrDefaultDoc", 'refltrdefault_doc', $object->default_doc, $object, rl_userHasRight($user, 'referenceletters', 'write'), 'select;1:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_YES] ?? '').',0:'.$langs->trans($object->TDefaultDoc[ReferenceLetters::DEFAULTDOC_NO] ?? '')) . '<br>';
 
 	// Other attributes
 	$reshook = $hookmanager->executeHooks('formObjectOptions', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
@@ -737,7 +737,7 @@ if ($action == 'create' && rl_userHasRight($user, 'referenceletters', 'write')) 
 	    print '<a class="butAction" href="'.dol_buildpath('/referenceletters/referenceletters/chapter.php',1).'?action=create&idletter='.$object->id.'">' . $langs->trans("RefLtrNewChaters") . '</a>';
 	    print "</div><br>";
 		//print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=edit">' . $langs->trans("Edit") . "</a></div>\n";
-		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone">' . $langs->trans("Clone") . "</a></div>\n";
+		print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=clone&token='.newToken().'">' . $langs->trans("Clone") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Edit") . "</font></div>";
 	}
@@ -745,15 +745,15 @@ if ($action == 'create' && rl_userHasRight($user, 'referenceletters', 'write')) 
 	// Activ/Unactiv
 	if (rl_userHasRight($user,'referenceletters', 'write')) {
 		if (empty($object->status)) {
-			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrActive") . "</a></div>\n";
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus&token='.newToken().'">' . $langs->trans("RefLtrActive") . "</a></div>\n";
 		} else {
-			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus">' . $langs->trans("RefLtrUnactive") . "</a></div>\n";
+			print '<div class="inline-block divButAction"><a class="butAction" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=changestatus&token='.newToken().'">' . $langs->trans("RefLtrUnactive") . "</a></div>\n";
 		}
 	}
 
 	// Delete
 	if (rl_userHasRight($user,'referenceletters', 'delete')) {
-		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete'.$urlToken.'">' . $langs->trans("Delete") . "</a></div>\n";
+		print '<div class="inline-block divButAction"><a class="butActionDelete" href="' . $_SERVER['PHP_SELF'] . '?id=' . $object->id . '&action=delete'.$urlToken.'&token='.newToken().'">' . $langs->trans("Delete") . "</a></div>\n";
 	} else {
 		print '<div class="inline-block divButAction"><font class="butActionRefused" href="#" title="' . dol_escape_htmltag($langs->trans("NotEnoughPermissions")) . '">' . $langs->trans("Delete") . "</font></div>";
 	}

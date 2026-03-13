@@ -357,7 +357,7 @@ if (getDolGlobalString('REF_LETTER_PREDEF_HEADER_AND_FOOTER')) {
 
 print '<tr class="pair ifheadandfootyes"><td colspan="2">'.$langs->trans('RefLtrReInstallTemplate') . '<br><br>';
 print '</td><td align="center">';
-print '<a href="'.$_SERVER["PHP_SELF"].'?action=replacetemplate" class="butAction">'.$langs->trans('RefLtrReInstallTemplate').'</a>';
+print '<a href="'.$_SERVER["PHP_SELF"].'?action=replacetemplate&token='.newToken().'" class="butAction">'.$langs->trans('RefLtrReInstallTemplate').'</a>';
 print '</td>';
 print '</tr>';
 

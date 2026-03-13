@@ -49,7 +49,9 @@ class SubstitutionCatalogStandardScalarProvider implements SubstitutionCatalogPr
 	protected function translateTag(string $tag): string
 	{
 		$key = 'reflettershortcode_' . $tag;
-		$translated = $this->langs->trans($key);
+		$translated = method_exists($this->langs, 'transnoentitiesnoconv')
+			? $this->langs->transnoentitiesnoconv($key)
+			: $this->langs->trans($key);
 
 		return ($translated !== $key) ? $translated : $tag;
 	}

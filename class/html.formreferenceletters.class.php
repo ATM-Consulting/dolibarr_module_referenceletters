@@ -271,20 +271,20 @@ class FormReferenceLetters extends Form
 	public function displaySubstitutionKeyAdvanced($user, $reflettersobject) {
 		global $langs;
 
-		print '<div id="subtitutionkey" style="display: none;" >';
+		$html = '<div id="subtitutionkey" style="display: none;" >';
 
-		print '<div class="search-filter-wrap"  >';
-		print '<i class="fa fa-search"></i>';
-		print '<input type="text" id="item-filter" class="search-filter" data-target="" value="" placeholder="'.$langs->trans('Search').'" ';
-		print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
-		print '</div>';
+		$html .= '<div class="search-filter-wrap"  >';
+		$html .= '<i class="fa fa-search"></i>';
+		$html .= '<input type="text" id="item-filter" class="search-filter" data-target="" value="" placeholder="'.$langs->trans('Search').'" />';
+		$html .= '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+		$html .= '</div>';
 
 		$uiData = $reflettersobject->getSubstitutionKeyUiData($user);
 		$subs_array = isset($uiData['tags']) && is_array($uiData['tags']) ? $uiData['tags'] : array();
 		$loop_array = isset($uiData['loops']) && is_array($uiData['loops']) ? $uiData['loops'] : array();
 		$loopNoticeByGroup = $this->buildLoopNoticeByGroup($loop_array);
 
-		$html='<div id="accordion-refltertags" >';
+		$html .= '<div id="accordion-refltertags" >';
 
 		$loopSectionNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrLoopSectionNotice') : $langs->trans('RefLtrLoopSectionNotice');
 		$technicalNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrTechnicalConstantsNotice') : $langs->trans('RefLtrTechnicalConstantsNotice');
@@ -651,7 +651,7 @@ class FormReferenceLetters extends Form
 	 * @return void
 	 */
 	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
-		$this->displaySubstitutionKeyAdvanced($user, $reflettersobject);
+		return $this->displaySubstitutionKeyAdvanced($user, $reflettersobject);
 	}
 
 	/**

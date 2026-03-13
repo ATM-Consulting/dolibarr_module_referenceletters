@@ -1156,6 +1156,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if ($formationCustomName === '') {
 			$formationCustomName = $formationName;
 		}
+		$resarray['session_ref'] = $this->getObjectPropertyValue($object, 'ref');
+		$resarray['session_id'] = property_exists($object, 'id') && $object->id !== null ? (string) $object->id : '';
+		$resarray['session_status'] = method_exists($object, 'getLibStatut') ? (string) $object->getLibStatut() : '';
 		$formationRef = $this->getObjectPropertyValue($object, 'formref');
 		$formationRefInterne = $this->getObjectPropertyValue($object, 'formrefint');
 		if ($formationRef === '') {
@@ -1196,6 +1199,31 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				}
 			}
 		}
+
+		$sessionExtrafields = new ExtraFields($db);
+		$sessionExtrafields->fetch_name_optionals_label($object->table_element);
+		if (floatval(DOL_VERSION) >= 16) {
+			$sessionExtrafields->attribute_type = $sessionExtrafields->attribute_param = $sessionExtrafields->attribute_size = $sessionExtrafields->attribute_unique = $sessionExtrafields->attribute_required = $sessionExtrafields->attribute_label = array();
+			$attributeSource = is_array($sessionExtrafields->attributes ?? null) && is_array($sessionExtrafields->attributes[$object->table_element] ?? null)
+				? $sessionExtrafields->attributes[$object->table_element]
+				: array();
+			if (($attributeSource['loaded'] ?? 0) > 0) {
+				$sessionExtrafields->attribute_type = $attributeSource['type'] ?? array();
+				$sessionExtrafields->attribute_size = $attributeSource['size'] ?? array();
+				$sessionExtrafields->attribute_unique = $attributeSource['unique'] ?? array();
+				$sessionExtrafields->attribute_required = $attributeSource['required'] ?? array();
+				$sessionExtrafields->attribute_label = $attributeSource['label'] ?? array();
+				$sessionExtrafields->attribute_default = $attributeSource['default'] ?? array();
+				$sessionExtrafields->attribute_computed = $attributeSource['computed'] ?? array();
+				$sessionExtrafields->attribute_param = $attributeSource['param'] ?? array();
+				$sessionExtrafields->attribute_perms = $attributeSource['perms'] ?? array();
+				$sessionExtrafields->attribute_langfile = $attributeSource['langfile'] ?? array();
+				$sessionExtrafields->attribute_list = $attributeSource['list'] ?? array();
+				$sessionExtrafields->attribute_hidden = $attributeSource['hidden'] ?? array();
+			}
+		}
+		$object->fetch_optionals();
+		$resarray = $this->fill_substitutionarray_with_extrafields($object, $resarray, $sessionExtrafields, 'session', $langs);
 
 
 		// Substitution concernant le prestataire
@@ -1423,7 +1451,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
-	public function get_substitutionarray_each_var_object($object, $outputlangs, $recursive = true, $sub_element_label = '')
+	public function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = 1, $sub_element_label = '')
 	{
 		global $conf;
 

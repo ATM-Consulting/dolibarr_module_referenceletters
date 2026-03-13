@@ -150,7 +150,7 @@ class SubstitutionCatalogPresentationBuilder
 	{
 		$translationKey = 'reflettershortcode_' . $tag;
 		if (!empty($this->langs->tab_translate[$translationKey])) {
-			$translated = $this->langs->trans($translationKey);
+			$translated = $this->trans($translationKey);
 			if (strpos($tag, 'object_') === 0) {
 				return $this->getCurrentObjectLabel() . ' - ' . $translated;
 			}
@@ -857,7 +857,9 @@ class SubstitutionCatalogPresentationBuilder
 	 */
 	protected function trans(string $key, ...$args): string
 	{
-		return $this->langs->trans($key, ...$args);
+		return method_exists($this->langs, 'transnoentitiesnoconv')
+			? $this->langs->transnoentitiesnoconv($key, ...$args)
+			: $this->langs->trans($key, ...$args);
 	}
 
 	/**

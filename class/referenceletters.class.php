@@ -1192,6 +1192,8 @@ class ReferenceLetters extends CommonObject
 			'formation_catalogue' => 'Agefodd Formation catalogue',
 			'trainer_mission' => 'Agefodd Formateur mission',
 			'session' => 'Agefodd Session courante',
+			'training' => 'Agefodd Formation',
+			'organization' => 'Agefodd Contexte session',
 			'training_modules' => 'Agefodd Modules formation',
 			'participants' => 'Agefodd Liste des participants',
 			'steps' => 'Agefodd Liste des etapes',
@@ -1221,6 +1223,12 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$groupLabels['session']] = array(
 
 		);
+		$subst_array[$groupLabels['training']] = array(
+
+		);
+		$subst_array[$groupLabels['organization']] = array(
+
+		);
 
 		$catalogBuilder->appendScopedAgefoddCatalogKeys($subst_array, $groupLabels, array(
 			'is_agefodd' => true,
@@ -1234,6 +1242,7 @@ class ReferenceLetters extends CommonObject
 		if ($isFormationDoc) {
 			unset($subst_array[$groupLabels['trainer_mission']]);
 			unset($subst_array[$groupLabels['session']]);
+			unset($subst_array[$groupLabels['organization']]);
 			unset($subst_array[$groupLabels['participants']]);
 			unset($subst_array[$groupLabels['steps']]);
 			unset($subst_array[$groupLabels['step']]);

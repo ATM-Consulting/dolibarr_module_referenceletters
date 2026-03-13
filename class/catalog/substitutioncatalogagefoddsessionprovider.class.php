@@ -32,24 +32,33 @@ class SubstitutionCatalogAgefoddSessionProvider extends SubstitutionCatalogAgefo
 		$extrafields = new ExtraFields($this->db);
 
 		$substArray[$groupLabels['session']] = $this->translateTags(array(
-			'formation_nom', 'formation_nom_custo', 'formation_ref', 'formation_id', 'formation_programme',
-			'formation_statut', 'formation_date_debut', 'formation_date_debut_formated',
-			'formation_date_fin', 'formation_date_fin_formated', 'objvar_object_date_text',
-			'formation_duree', 'formation_duree_session', 'session_nb_days', 'formation_commercial',
-			'formation_commercial_phone', 'formation_commercial_mobile_phone', 'formation_commercial_mail',
-			'formation_societe', 'formation_commentaire', 'formation_type', 'formation_but',
-			'formation_methode', 'formation_moyens_pedagogique', 'formation_nb_stagiaire',
-			'formation_nb_stagiaire_convention', 'formation_nb_place', 'formation_stagiaire_convention',
-			'formation_type_stagiaire', 'formation_documents', 'formation_equipements',
-			'formation_lieu_phone', 'formation_prerequis', 'formation_prix', 'formation_ref_produit',
-			'formation_refint', 'formation_obj_peda', 'formation_lieu', 'formation_lieu_adresse',
-			'formation_lieu_cp', 'formation_lieu_ville', 'formation_lieu_acces',
-			'formation_lieu_horaires', 'formation_lieu_notes', 'formation_lieu_divers',
-			'formation_Accessibility_Handicap_label', 'formation_Accessibility_Handicap',
-			'formation_commercial_invert', 'stagiaire_presence_total', 'stagiaire_presence_bloc',
+			'session_ref', 'session_id', 'session_status',
+			'formation_duree_session', 'session_nb_days', 'formation_nb_stagiaire',
+			'formation_nb_stagiaire_convention', 'formation_nb_place',
+			'stagiaire_presence_total', 'stagiaire_presence_bloc',
 			'stagiaire_temps_realise_total', 'stagiaire_temps_att_total',
 			'stagiaire_temps_realise_att_total', 'time_stagiaire_temps_realise_total',
 			'time_stagiaire_temps_att_total', 'time_stagiaire_temps_realise_att_total',
+		));
+
+		$substArray[$groupLabels['training']] = $this->translateTags(array(
+			'formation_nom', 'formation_nom_custo', 'formation_ref', 'formation_refint',
+			'formation_id', 'formation_programme', 'formation_statut',
+			'formation_date_debut', 'formation_date_debut_formated',
+			'formation_date_fin', 'formation_date_fin_formated', 'objvar_object_date_text',
+			'formation_duree', 'formation_commentaire', 'formation_type', 'formation_but',
+			'formation_methode', 'formation_moyens_pedagogique', 'formation_stagiaire_convention',
+			'formation_type_stagiaire', 'formation_documents', 'formation_equipements',
+			'formation_prerequis', 'formation_prix', 'formation_ref_produit', 'formation_obj_peda',
+		));
+
+		$substArray[$groupLabels['organization']] = $this->translateTags(array(
+			'formation_commercial', 'formation_commercial_phone', 'formation_commercial_mobile_phone',
+			'formation_commercial_mail', 'formation_commercial_invert', 'formation_societe',
+			'formation_lieu', 'formation_lieu_adresse', 'formation_lieu_cp', 'formation_lieu_ville',
+			'formation_lieu_phone', 'formation_lieu_acces', 'formation_lieu_horaires',
+			'formation_lieu_notes', 'formation_lieu_divers',
+			'formation_Accessibility_Handicap_label', 'formation_Accessibility_Handicap',
 			'AgfMentorList', 'Mentor_administrator', 'Mentor_pedagogique', 'Mentor_handicap',
 		)) + array(
 			'presta_lastname' => $this->langs->trans('PrestaLastname'),
@@ -83,6 +92,22 @@ class SubstitutionCatalogAgefoddSessionProvider extends SubstitutionCatalogAgefo
 			'objvar_object_steps_remote_date_text' => $this->langs->trans('StepsRemoteDateText'),
 		);
 
+		$sessionExtralabels = $extrafields->fetch_name_optionals_label('agefodd_session', true);
+		if (!empty($sessionExtralabels)) {
+			foreach ($sessionExtralabels as $extrakey => $extralabel) {
+				$langFile = $extrafields->attributes['agefodd_session']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['session']]['session_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel, (string) $langFile);
+			}
+		}
+
+		$formationExtralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
+		if (!empty($formationExtralabels)) {
+			foreach ($formationExtralabels as $extrakey => $extralabel) {
+				$langFile = $extrafields->attributes['agefodd_formation_catalogue']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['training']]['formation_options_' . $extrakey] = $this->translateFormationExtraFieldLabel($extralabel, (string) $langFile);
+			}
+		}
+
 		$substArray[$groupLabels['participants']] = $this->translateTags(array(
 			'line_civilite', 'line_civilite_short', 'line_nom', 'line_prenom', 'line_nom_societe',
 			'line_societe_address', 'line_societe_town', 'line_societe_zip', 'line_societe_mail',
@@ -101,14 +126,16 @@ class SubstitutionCatalogAgefoddSessionProvider extends SubstitutionCatalogAgefo
 		$stagExtralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
 		if (!empty($stagExtralabels)) {
 			foreach ($stagExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['participants']]['line_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel);
+				$langFile = $extrafields->attributes['agefodd_stagiaire']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['participants']]['line_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel, (string) $langFile);
 			}
 		}
 
 		$socExtralabels = $extrafields->fetch_name_optionals_label('societe', true);
 		if (!empty($socExtralabels)) {
 			foreach ($socExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['participants']]['line_societe_options_' . $extrakey] = $this->translateCompanyExtraFieldLabel($extralabel);
+				$langFile = $extrafields->attributes['societe']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['participants']]['line_societe_options_' . $extrakey] = $this->translateCompanyExtraFieldLabel($extralabel, (string) $langFile);
 			}
 		}
 

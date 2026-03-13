@@ -51,14 +51,16 @@ class SubstitutionCatalogAgefoddTraineeProvider extends SubstitutionCatalogAgefo
 		$stagExtralabels = $extrafields->fetch_name_optionals_label('agefodd_stagiaire', true);
 		if (!empty($stagExtralabels)) {
 			foreach ($stagExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['trainee']]['objvar_object_stagiaire_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel);
+				$langFile = $extrafields->attributes['agefodd_stagiaire']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['trainee']]['objvar_object_stagiaire_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel, (string) $langFile);
 			}
 		}
 
 		$socExtralabels = $extrafields->fetch_name_optionals_label('societe', true);
 		if (!empty($socExtralabels)) {
 			foreach ($socExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['trainee']]['objvar_object_stagiaire_soc_options_' . $extrakey] = $this->translateCompanyExtraFieldLabel($extralabel);
+				$langFile = $extrafields->attributes['societe']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['trainee']]['objvar_object_stagiaire_soc_options_' . $extrakey] = $this->translateCompanyExtraFieldLabel($extralabel, (string) $langFile);
 			}
 		}
 

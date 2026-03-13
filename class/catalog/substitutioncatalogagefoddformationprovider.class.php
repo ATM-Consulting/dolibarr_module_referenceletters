@@ -48,7 +48,8 @@ class SubstitutionCatalogAgefoddFormationProvider extends SubstitutionCatalogAge
 		$formationExtralabels = $extrafields->fetch_name_optionals_label('agefodd_formation_catalogue', true);
 		if (!empty($formationExtralabels)) {
 			foreach ($formationExtralabels as $extrakey => $extralabel) {
-				$substArray[$groupLabels['formation_catalogue']]['formation_options_' . $extrakey] = $this->translateFormationExtraFieldLabel($extralabel);
+				$langFile = $extrafields->attributes['agefodd_formation_catalogue']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['formation_catalogue']]['formation_options_' . $extrakey] = $this->translateFormationExtraFieldLabel($extralabel, (string) $langFile);
 			}
 		}
 

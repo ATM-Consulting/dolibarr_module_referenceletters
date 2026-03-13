@@ -46,7 +46,9 @@ abstract class SubstitutionCatalogAgefoddAbstractProvider implements Substitutio
 	protected function translateTag(string $tag): string
 	{
 		$key = 'reflettershortcode_' . $tag;
-		$translated = $this->langs->trans($key);
+		$translated = method_exists($this->langs, 'transnoentitiesnoconv')
+			? $this->langs->transnoentitiesnoconv($key)
+			: $this->langs->trans($key);
 
 		return ($translated !== $key) ? $translated : $tag;
 	}
@@ -55,26 +57,46 @@ abstract class SubstitutionCatalogAgefoddAbstractProvider implements Substitutio
 	 * @param string $fieldLabel
 	 * @return string
 	 */
-	protected function translateExtraFieldLabel(string $fieldLabel): string
+	protected function translateExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
 	{
-		return $this->langs->trans('RefLtrCatalogExtraFieldLabel', $fieldLabel);
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
 	}
 
 	/**
 	 * @param string $fieldLabel
 	 * @return string
 	 */
-	protected function translateCompanyExtraFieldLabel(string $fieldLabel): string
+	protected function translateCompanyExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
 	{
-		return $this->langs->trans('RefLtrCatalogCompanyExtraFieldLabel', $fieldLabel);
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
 	}
 
 	/**
 	 * @param string $fieldLabel
 	 * @return string
 	 */
-	protected function translateFormationExtraFieldLabel(string $fieldLabel): string
+	protected function translateFormationExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
 	{
-		return $this->langs->trans('RefLtrCatalogFormationExtraFieldLabel', $fieldLabel);
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
+	}
+
+	/**
+	 * @param string $fieldLabel
+	 * @param string $langFile
+	 * @return string
+	 */
+	protected function resolveExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
+	{
+		if ($langFile !== '') {
+			$this->langs->load($langFile);
+			$translated = method_exists($this->langs, 'transnoentitiesnoconv')
+				? $this->langs->transnoentitiesnoconv($fieldLabel)
+				: $this->langs->trans($fieldLabel);
+			if ($translated !== $fieldLabel) {
+				return $translated;
+			}
+		}
+
+		return $fieldLabel;
 	}
 }

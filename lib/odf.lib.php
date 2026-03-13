@@ -978,17 +978,17 @@ IMG;
     /**
      * Delete the temporary file when the object is destroyed
      */
-    public function __destruct()
-    {
-        if (file_exists($this->tmpfile)) {
-            unlink($this->tmpfile);
-        }
+	    public function __destruct()
+	    {
+	        if (!empty($this->tmpfile) && file_exists($this->tmpfile)) {
+	            unlink($this->tmpfile);
+	        }
 
-        if (file_exists($this->tmpdir)) {
-            $this->_rrmdir($this->tmpdir);
-            rmdir($this->tmpdir);
-        }
-    }
+	        if (!empty($this->tmpdir) && file_exists($this->tmpdir)) {
+	            $this->_rrmdir($this->tmpdir);
+	            rmdir($this->tmpdir);
+	        }
+	    }
 
     /**
      * Empty the temporary working directory recursively

@@ -249,7 +249,7 @@ if ($action == 'buildoc') {
 	$outputlangs = $langs;
 	if (getDolGlobalString('MAIN_MULTILANGS')) {
 		$outputlangs = new Translate("", $conf);
-		$newlang = $object->thridparty->default_lang;
+		$newlang = (!empty($object->thirdparty) && !empty($object->thirdparty->default_lang)) ? $object->thirdparty->default_lang : $langs->defaultlang;
 		$outputlangs->setDefaultLang($newlang);
 	}
 

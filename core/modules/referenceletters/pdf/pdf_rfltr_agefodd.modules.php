@@ -24,7 +24,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 *
 	 * @param DoliDB $db handler
 	 */
-	function __construct($db) {
+	public function __construct(DoliDB $db) {
 		global $conf, $langs, $mysoc;
 
 		$langs->load("main");
@@ -35,7 +35,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		$this->name = "referenceletter_agefodd_convention";
 		$this->description = $langs->trans('Module103258Name');
 
-		// Dimension page pour format A4
+		// A4 page dimensions.
 		$this->type = 'pdf';
 		$formatarray = pdf_getFormat();
 		$this->page_largeur = $formatarray['width'];
@@ -49,7 +49,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		$this->marge_haute =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_TOP',10));
 		$this->marge_basse =  floatval(getDolGlobalString('MAIN_PDF_MARGIN_BOTTOM',10));
 
-		$this->option_logo = 1; // Affiche logo
+		$this->option_logo = 1; // Display logo.
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -71,24 +71,26 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-	function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
+	public function write_file_custom_agefodd(int $id_object, int $id_model, Translate $outputlangs, string $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', bool $isCertif = false, int $fk_step = 0, int $fk_training = 0): int {
 		global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 
-		//ajout pansement pour le ticket #DA020165 : la fonction ne gérait pas le cas où "id_object" est l'id d'une formation
-		//TODO : gérer plus proprement le cas d'une formation en valeur du paramètre "$id_object" et uniformiser avec les différentes fonction whrite_file() comme celles du fichier pdf_fiche_pedago_modules.php
+		// Backward-compatible fallback for formation-driven templates (Ticket #DA020165).
 
-		$object_refletter = new Referenceletters($db);
-		$object_refletter->fetch($id_model);
-
-		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago') {
+			$object_refletter = new Referenceletters($db);
+			$object_refletter->fetch($id_model);
+			$fk_training = (int) $fk_training;
+		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago' || $object_refletter->element_type == 'rfltr_agefodd_fiche_pedago_modules') {
+			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
+			dol_include_once('/agefodd/class/agsession.class.php');
 			$id = $id_object;
 			$agf = new Formation($db);
 			$agf->fetch($id);
+			$fk_training = (int) $id;
 
-			// Vilain hack si !empty($courrier) alors c'est un id de session
+			// When available, the session context takes precedence over a plain formation identifier.
 			$agf_session = new Agsession($db);
 			if (! empty($courrier)) {
 				$agf_session->fetch($courrier);
@@ -97,10 +99,15 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			$id_object= !empty($agf_session->id) ?  $agf_session->id : $id_object;
 		}
 
-		// Chargement du modèle utilisé
-		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
-        $instance_letter = $tmpTab[0];
-        $object = $tmpTab[1];
+		// Load the selected referenceletters model.
+			$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
+	        $instance_letter = $tmpTab[0];
+	        $object = $tmpTab[1];
+
+		if ($fk_step > 0 && is_object($object)) {
+			// Preserve stepped Agefodd generation context for substitution runtime.
+			$object->fk_step = (int) $fk_step;
+		}
 
 		$this->instance_letter = $instance_letter;
 
@@ -133,7 +140,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 			// $objectref = dol_sanitizeFileName($instance_letter->ref_int);
 			$dir = $dir_output;
 			if($fk_step > 0) {
-				//Si on est sur un modele trainee, on nous file quand même un $socid qui est l'id du trainee ... =)
+				// Trainee templates still receive the trainee id in $socid on historical flows.
 				if(substr($this->instance_letter->element_type, -8) ==='_trainee') $dir = getStrStepDir($id_object, 0, $fk_step);
 				else $dir = getStrStepDir($id_object, $socid, $fk_step);
 			}
@@ -241,11 +248,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 						continue;
 					}
 
-					// Remplacement des tags par les bonnes valeurs
+					// Replace placeholders with resolved runtime values.
 					$chapter_text = $this->setSubstitutions($object, $chapter_text );
 
-					// merge agefodd arrays
-					//TODO : define this order on logical order by template
+					// Merge Agefodd arrays.
+					// TODO: define this order from template hierarchy instead of hardcoding it here.
 					// BEGIN x1 =>
 					//   BEGIN x2 =>
 					//     BEGIN x4 => END x4
@@ -253,10 +260,11 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					//   BEGIN x3 => END x3
 					// END x1
 					// rather than hard coded
-					// Sould be x4 then x3,x2 (same level) then x1
+					// Should be x4, then x3/x2 (same level), then x1.
 					$TAgfArray = array(
 							'THorairesSession',
 							'TFormationObjPeda',
+							'TFormationModules',
 							'TStagiairesSession',
 							'TStagiairesSessionPresent',
 							'TStagiairesSessionSoc',
@@ -293,11 +301,12 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
     						}
     					}
 
-    					$posY = $this->page_hauteur -5; // force le saut de page en se rendant dans le pied de page
+    					$posY = $this->page_hauteur -5; // Force a page break by moving to the footer area.
 
 					}
 					if(count($test_array) > 1) {
-						//Do not apply this stuff for trainee docuement( générated from Document per trainee, if there is a @beakpage@ in this models, the last page should not be removes
+						// Do not apply this cleanup to trainee documents generated from "Document per trainee":
+						// when a @breakpage@ marker is present, the last page must be preserved.
 						if(getDolGlobalString('REF_LETTER_DELETE_LAST_BREAKPAGE_FROM_LOOP') && (substr($this->instance_letter->element_type, -8)!=='_trainee' || substr($this->instance_letter->element_type, -16)=='presence_trainee')) {
 							$this->pdf->deletePage($this->pdf->getPage());
 						}
@@ -317,7 +326,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					if (is_file($infile)) {
 						$count = $this->pdf->setSourceFile($infile);
 						if (is_array($count) && count($count) > 0) {
-							// Add footer manully beacuse auto footer won't work cause of setPrintFooter=false set just after
+							// Add the footer manually because the automatic footer is disabled just after.
 							$this->pdf->SetAutoPageBreak(0);
 							if(empty($instance_letter->use_custom_footer)) {
 							 	$this->_pagefoot($this->pdf,$object,$this->outputlangs);
@@ -343,6 +352,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$this->pdf->AliasNbPages();
 
 				$this->pdf->Close();
+				if (file_exists($file) && !unlink($file)) {
+					dol_syslog(__METHOD__ . ' failed to delete existing output file ' . $file, LOG_ERR);
+				}
 				$this->pdf->Output($file, 'F');
 
 				// Add pdfgeneration hook
@@ -361,7 +373,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 				if (getDolGlobalString('MAIN_UMASK'))
 					@chmod($file, octdec( getDolGlobalString('MAIN_UMASK')));
 
-				return 1; // Pas d'erreur
+				return 1; // No error.
 			} else {
 				$this->error = $langs->trans("ErrorCanNotCreateDir", $dir);
 				return 0;
@@ -372,7 +384,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		}
 
 		$this->error = $langs->trans("ErrorUnknown");
-		return 0; // Erreur par defaut
+		return 0; // Default error path.
 	}
 
 	/**
@@ -519,7 +531,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 
 			 // Recipient name
 			 if (! empty($usecontact)) {
-			 // On peut utiliser le nom de la societe du contact
+			 // The contact thirdparty name can be reused here.
 			 if (! empty($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT))
 			 $socname = $object->contact->socname;
 			 else

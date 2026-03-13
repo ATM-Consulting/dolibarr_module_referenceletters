@@ -277,7 +277,7 @@ if (($action == 'create' || $action=='edit' || $action=='delete') && rl_userHasR
 		print $langs->trans('RefLtrTag');
 		print '</td>';
 		print '<td>';
-		print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text"  ><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+		print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#content_text" role="button" tabindex="0" onclick="if(window.jQuery){var $dlg=jQuery(\'#subtitutionkey\');$dlg.data(\'target\', this.getAttribute(\'data-target\'));if(typeof $dlg.dialog===\'function\'){$dlg.dialog(\'open\');}else{$dlg.show();}jQuery(\'#item-filter\').focus();} return false;"><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
 		print $formrefleter->displaySubtitutionKeyAdvanced($user, $object_refletter);
 		print '</td>';
 		print '</tr>';

@@ -38,6 +38,99 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 */
 	public $error = '';
 
+	/**
+	 * Resolve a display label for a linked object loaded from an extrafield.
+	 *
+	 * @param object $object
+	 * @return string
+	 */
+	protected function resolveLinkedExtraFieldObjectLabel(object $object): string
+	{
+		$properties = array('name', 'ref', 'label', 'title', 'lastname', 'firstname');
+		foreach ($properties as $property) {
+			if (property_exists($object, $property) && is_scalar($object->{$property}) && trim((string) $object->{$property}) !== '') {
+				return trim((string) $object->{$property});
+			}
+		}
+
+		if (
+			property_exists($object, 'lastname')
+			&& property_exists($object, 'firstname')
+			&& (is_scalar($object->lastname) || is_scalar($object->firstname))
+		) {
+			$fullName = trim(((string) $object->firstname) . ' ' . ((string) $object->lastname));
+			if ($fullName !== '') {
+				return $fullName;
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Resolve configured Agefodd mentors once per request.
+	 *
+	 * @param Translate $langs
+	 * @return array{list:string,items:array<string,string>}
+	 */
+	protected function getAgefoddMentorSubstitutions(Translate $langs): array
+	{
+		static $mentorUserCache = array();
+
+		$mentorConfigMap = array(
+			'Mentor_administrator' => array('const' => 'AGF_DEFAULT_MENTOR_ADMIN', 'label' => 'MentorAdmin'),
+			'Mentor_pedagogique' => array('const' => 'AGF_DEFAULT_MENTOR_PEDAGO', 'label' => 'MentorPedago'),
+			'Mentor_handicap' => array('const' => 'AGF_DEFAULT_MENTOR_HANDICAP', 'label' => 'MentorHandicap'),
+		);
+
+		$result = array(
+			'list' => '',
+			'items' => array(
+				'Mentor_administrator' => '',
+				'Mentor_pedagogique' => '',
+				'Mentor_handicap' => '',
+			),
+		);
+
+		$mentorList = array();
+		foreach ($mentorConfigMap as $tag => $mentorConfig) {
+			$mentorId = (int) getDolGlobalInt($mentorConfig['const']);
+			if ($mentorId <= 0) {
+				continue;
+			}
+
+			if (!array_key_exists($mentorId, $mentorUserCache)) {
+				$mentorUserCache[$mentorId] = '';
+				$localUser = new User($this->db);
+				$fetchResult = $localUser->fetch($mentorId);
+				if ($fetchResult > 0) {
+					$civility = trim((string) $localUser->civility_code);
+					$fullName = trim(($civility !== '' ? $civility . ' ' : '') . $localUser->firstname . ' ' . $localUser->lastname);
+					if ($fullName !== '') {
+						$mentorUserCache[$mentorId] = $fullName;
+					}
+				} else {
+					dol_syslog(
+						__METHOD__ . ' mentor constant ' . $mentorConfig['const'] . ' points to missing or unreadable user #' . $mentorId,
+						LOG_WARNING
+					);
+				}
+			}
+
+			$fullName = $mentorUserCache[$mentorId];
+			if ($fullName === '') {
+				continue;
+			}
+
+			$result['items'][$tag] = ucfirst($langs->trans($mentorConfig['label']) . ' : ' . $fullName);
+			$mentorList[] = $fullName;
+		}
+
+		$result['list'] = implode(', ', $mentorList);
+
+		return $result;
+	}
+
     /**
      * @var string[]    Array of error strings
      */
@@ -991,33 +1084,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		$resarray['formation_competences']=$tmp;
 
-		$resarray['Mentor_administrator'] = '';
-		$resarray['Mentor_pedagogique'] = '';
-		$resarray['Mentor_handicap'] = '';
-		$mentorLabels = array(
-			'Mentor_administrator' => array('const' => 'AGF_DEFAULT_MENTOR_ADMIN', 'label' => 'MentorAdmin'),
-			'Mentor_pedagogique' => array('const' => 'AGF_DEFAULT_MENTOR_PEDAGO', 'label' => 'MentorPedago'),
-			'Mentor_handicap' => array('const' => 'AGF_DEFAULT_MENTOR_HANDICAP', 'label' => 'MentorHandicap'),
-		);
-		$mentorList = array();
-		foreach ($mentorLabels as $tag => $mentorConfig) {
-			$mentorId = (int) getDolGlobalInt($mentorConfig['const']);
-			if ($mentorId <= 0) {
-				continue;
-			}
-			$localuser = new User($db);
-			if ($localuser->fetch($mentorId) <= 0) {
-				continue;
-			}
-			$civ = trim((string) $localuser->civility_code);
-			$fullName = trim(($civ !== '' ? $civ . ' ' : '') . $localuser->firstname . ' ' . $localuser->lastname);
-			if ($fullName === '') {
-				continue;
-			}
-			$resarray[$tag] = ucfirst($langs->trans($mentorConfig['label']) . ' : ' . $fullName);
-			$mentorList[] = $fullName;
-		}
-		$resarray['AgfMentorList'] = implode(', ', $mentorList);
+		$mentorSubstitutions = $this->getAgefoddMentorSubstitutions($langs);
+		$resarray['Mentor_administrator'] = $mentorSubstitutions['items']['Mentor_administrator'];
+		$resarray['Mentor_pedagogique'] = $mentorSubstitutions['items']['Mentor_pedagogique'];
+		$resarray['Mentor_handicap'] = $mentorSubstitutions['items']['Mentor_handicap'];
+		$resarray['AgfMentorList'] = $mentorSubstitutions['list'];
    		// -----------
 
 			$e = new ExtraFields($db);
@@ -1204,34 +1275,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
  		$resarray['trainer_cost_planned'] = price($object->cost_trainer_planned ?? '');
 
 
-		$resarray['AgfMentorList'] =  $langs->trans("AgfMentorList");
-		$resarray['Mentor_administrator'] = '';
-		$resarray['Mentor_pedagogique'] = '';
-		$resarray['Mentor_handicap'] = '';
-        if (getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')){
-			$u = new User($this->db);
-			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_ADMIN')));
-			if ($res){
-				$resarray['Mentor_administrator'] = ucfirst($langs->trans('MentorAdmin') ." : " . $u->civility_code .' '.  $u->firstname . " " . $u->lastname);
-			}
-        }
-
-        if (getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')) {
-			$u = new User($this->db);
-			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_PEDAGO')));
-			if ($res) {
-				$resarray['Mentor_pedagogique'] = ucfirst($langs->trans('MentorPedago') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
-			}
-		}
-
-
-		if (getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')) {
-			$u = new User($this->db);
-			$res = $u->fetch(intval(getDolGlobalString('AGF_DEFAULT_MENTOR_HANDICAP')));
-			if ($res) {
-				$resarray['Mentor_handicap'] = ucfirst($langs->trans('MentorHandicap') . " : " . $u->civility_code . ' ' . $u->firstname . " " . $u->lastname);
-			}
-		}
+		$mentorSubstitutions = $this->getAgefoddMentorSubstitutions($langs);
+		$resarray['AgfMentorList'] = $mentorSubstitutions['list'];
+		$resarray['Mentor_administrator'] = $mentorSubstitutions['items']['Mentor_administrator'];
+		$resarray['Mentor_pedagogique'] = $mentorSubstitutions['items']['Mentor_pedagogique'];
+		$resarray['Mentor_handicap'] = $mentorSubstitutions['items']['Mentor_handicap'];
 
 		// cela devrait être toujours vrai ici
 			if (! empty($object->fk_formation_catalogue)) {
@@ -1313,7 +1361,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['formation_lieu_adresse'] 		= strip_tags((string) ($agf_place->adresse ?? ''));
 		$resarray['formation_lieu_cp'] 				= strip_tags((string) ($agf_place->cp ?? ''));
 		$resarray['formation_lieu_ville'] 			= strip_tags((string) ($agf_place->ville ?? ''));
-		// TODO si le str_replace est trop brutal, faire un preg_replace du style : src="(.*)\&amp;(.*)"
 		// fix TK9760
 		$resarray['formation_lieu_acces'] 			= str_replace('&amp;', '&', (string) ($agf_place->acces_site ?? ''));
 		$resarray['formation_lieu_phone'] 			= dol_print_phone($agf_place->tel, $agf_place->country_code);
@@ -1482,7 +1529,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	{
 		global $conf,$langs;
 
-		//TODO, Dolibarr deal it with diffrent way in commondocgenerator : why ?
 		if (! empty($extrafieldsobjectkey))
 		{
 			$attributeSource = is_array($extrafields->attributes ?? null) && is_array($extrafields->attributes[$extrafieldsobjectkey] ?? null)
@@ -1547,8 +1593,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		// If field is a computed field, value must become result of compute
 		if ($computed)
 		{
-			// Make the eval of compute string
-			//var_dump($computed);
 			$value = dol_eval($computed, 1, 0);
 		}
 
@@ -1943,14 +1987,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						if (! empty($classpath))
 						{
 							dol_include_once($InfoFieldList[1]);
-								if ($classname && class_exists($classname))
-								{
-									$tmpobject = new $classname($this->db);
-									$tmpobject->fetch($id);
-									// completely replace the id with the linked object name
-									$object->array_options[$currentOptionKey] = $tmpobject->name;
+							if ($classname && class_exists($classname))
+							{
+								$tmpobject = new $classname($this->db);
+								if ($tmpobject instanceof CommonObject && method_exists($tmpobject, 'fetch') && $tmpobject->fetch((int) $id) > 0) {
+									$resolvedLabel = $this->resolveLinkedExtraFieldObjectLabel($tmpobject);
+									$object->array_options[$currentOptionKey] = ($resolvedLabel !== '' ? $resolvedLabel : (string) $id);
 								}
 							}
+						}
 						}
 
 				}

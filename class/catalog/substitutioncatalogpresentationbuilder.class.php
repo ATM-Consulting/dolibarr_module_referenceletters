@@ -36,7 +36,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param DoliDB|null $db Database handle used to resolve extrafield labels.
 	 * @param Translate $langs Translation helper.
 	 */
-	public function __construct($langs, $db = null)
+	public function __construct(Translate $langs, ?DoliDB $db = null)
 	{
 		$this->db = $db;
 		$this->langs = $langs;
@@ -49,7 +49,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param array $catalog Raw catalog grouped by block.
 	 * @return array
 	 */
-	public function buildCatalogPresentation(array $catalog, $elementType = '', $catalogObject = null, array $loopCatalog = array())
+	public function buildCatalogPresentation(array $catalog, string $elementType = '', ?object $catalogObject = null, array $loopCatalog = array()): array
 	{
 		$this->currentElementType = (string) $elementType;
 		$this->currentCatalogObject = is_object($catalogObject) ? $catalogObject : null;
@@ -64,15 +64,16 @@ class SubstitutionCatalogPresentationBuilder
 			}
 
 			foreach ($entries as $tag => $sampleValue) {
+				$sampleValueString = (string) $sampleValue;
 				$entryType = $this->resolveEntryType($tag);
 				$presentation[$block][$tag] = array(
-					'description' => $this->formatDescription($tag, $sampleValue, $block),
-					'format_hint' => $this->formatHint($tag, $sampleValue),
+					'description' => $this->formatDescription((string) $tag, $sampleValueString, (string) $block),
+					'format_hint' => $this->formatHint((string) $tag, $sampleValueString),
 					'sample_value' => $sampleValue,
 					'is_loop_tag' => ($entryType === 'loop'),
 					'entry_type' => $entryType,
 					'type_label' => $this->formatTypeLabel($entryType),
-					'usage_hint' => $this->formatUsageHint($entryType, $tag, $loopUsageMap),
+					'usage_hint' => $this->formatUsageHint($entryType, (string) $tag, $loopUsageMap),
 				);
 			}
 		}
@@ -88,7 +89,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $block Source UI block.
 	 * @return string
 	 */
-	protected function formatDescription($tag, $sampleValue, $block = '')
+	protected function formatDescription(string $tag, string $sampleValue, string $block = ''): string
 	{
 		$translatedDescription = $this->resolveTranslatedDescription($tag);
 		if ($translatedDescription !== '') {
@@ -124,7 +125,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $sampleValue Raw sample value from catalog.
 	 * @return string
 	 */
-	protected function formatHint($tag, $sampleValue)
+	protected function formatHint(string $tag, string $sampleValue): string
 	{
 		$forcedHint = $this->resolveForcedFormatHint($tag);
 		if ($forcedHint !== '') {
@@ -145,7 +146,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function resolveTranslatedDescription($tag)
+	protected function resolveTranslatedDescription(string $tag): string
 	{
 		$translationKey = 'reflettershortcode_' . $tag;
 		if (!empty($this->langs->tab_translate[$translationKey])) {
@@ -168,7 +169,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $block
 	 * @return string
 	 */
-	protected function resolveCatalogDescription($tag, $sampleValue, $block)
+	protected function resolveCatalogDescription(string $tag, string $sampleValue, string $block): string
 	{
 		if ($this->shouldPreferCatalogDescription($tag, $sampleValue, $block)) {
 			return trim((string) $sampleValue);
@@ -183,7 +184,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function resolveStructuredDescription($tag, $includeGenericPrefixes = true)
+	protected function resolveStructuredDescription(string $tag, bool $includeGenericPrefixes = true): string
 	{
 		if (preg_match('/^cust_contactclient_([A-Z_]+)_([0-9]+)_(.+)$/', $tag, $matches)) {
 			return $this->formatContactDescription($matches[1], $matches[2], $matches[3]);
@@ -271,7 +272,7 @@ class SubstitutionCatalogPresentationBuilder
 	 *
 	 * @return string
 	 */
-	protected function getCurrentObjectLabel()
+	protected function getCurrentObjectLabel(): string
 	{
 		$map = array(
 			'contract' => 'Contrat',
@@ -309,7 +310,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function resolveForcedFormatHint($tag)
+	protected function resolveForcedFormatHint(string $tag): string
 	{
 		if (preg_match('/_rfc$/', $tag)) {
 			return 'Date RFC';
@@ -341,7 +342,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $sampleValue
 	 * @return string
 	 */
-	protected function resolveDetectedFormatHint($tag, $sampleValue)
+	protected function resolveDetectedFormatHint(string $tag, string $sampleValue): string
 	{
 		if ($this->isBooleanTag($tag, $sampleValue)) {
 			return 'Booleen';
@@ -382,7 +383,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $label
 	 * @return string
 	 */
-	protected function formatPrefixedDescription($tag, $prefix, $label)
+	protected function formatPrefixedDescription(string $tag, string $prefix, string $label): string
 	{
 		if (strpos($tag, $prefix) !== 0) {
 			return '';
@@ -397,7 +398,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function formatThirdpartyOptionDescription($tag)
+	protected function formatThirdpartyOptionDescription(string $tag): string
 	{
 		$fieldKey = substr($tag, strlen('cust_company_options_'));
 		$fieldKey = preg_replace('/_(locale|rfc)$/', '', $fieldKey);
@@ -411,7 +412,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function formatCurrentObjectOptionDescription($tag)
+	protected function formatCurrentObjectOptionDescription(string $tag): string
 	{
 		$fieldKey = substr($tag, strlen('object_options_'));
 		$suffix = '';
@@ -442,7 +443,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $fieldKey
 	 * @return string
 	 */
-	protected function getCurrentObjectExtraLabel($fieldKey)
+	protected function getCurrentObjectExtraLabel(string $fieldKey): string
 	{
 		if ($fieldKey === '' || !is_string($fieldKey)) {
 			return '';
@@ -469,7 +470,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return string
 	 */
-	protected function resolveEntryType($tag)
+	protected function resolveEntryType(string $tag): string
 	{
 		if (strpos($tag, '__[') === 0 && substr($tag, -3) === ']__') {
 			return 'technical';
@@ -486,7 +487,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $entryType
 	 * @return string
 	 */
-	protected function formatTypeLabel($entryType)
+	protected function formatTypeLabel(string $entryType): string
 	{
 		if ($entryType === 'loop') {
 			return $this->langs->trans('RefLtrCatalogTypeLoop');
@@ -502,7 +503,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $entryType
 	 * @return string
 	 */
-	protected function formatUsageHint($entryType, $tag = '', array $loopUsageMap = array())
+	protected function formatUsageHint(string $entryType, string $tag = '', array $loopUsageMap = array()): string
 	{
 		if ($entryType === 'loop') {
 			if ($tag !== '' && isset($loopUsageMap[$tag]) && !empty($loopUsageMap[$tag])) {
@@ -542,7 +543,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $block
 	 * @return bool
 	 */
-	protected function shouldPreferCatalogDescription($tag, $sampleValue, $block)
+	protected function shouldPreferCatalogDescription(string $tag, string $sampleValue, string $block): bool
 	{
 		if (!is_string($sampleValue) || !$this->isMeaningfulTextSample($sampleValue)) {
 			return false;
@@ -569,7 +570,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $sampleValue
 	 * @return bool
 	 */
-	protected function isGenericDetectedDescription($sampleValue)
+	protected function isGenericDetectedDescription(string $sampleValue): bool
 	{
 		$value = trim((string) $sampleValue);
 		if ($value === '') {
@@ -590,7 +591,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param array $catalog
 	 * @return array<string,array<int,string>>
 	 */
-	protected function buildLoopUsageMap(array $catalog, array $loopCatalog = array())
+	protected function buildLoopUsageMap(array $catalog, array $loopCatalog = array()): array
 	{
 		$map = array();
 		$groupLoopKeys = array();
@@ -634,7 +635,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param array $entries
 	 * @return string
 	 */
-	protected function resolveLoopGroupKey(array $entries)
+	protected function resolveLoopGroupKey(array $entries): string
 	{
 		$tags = array();
 		foreach (array_keys($entries) as $tag) {
@@ -686,7 +687,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $prefix
 	 * @return bool
 	 */
-	protected function hasTagPrefix(array $tags, $prefix)
+	protected function hasTagPrefix(array $tags, string $prefix): bool
 	{
 		foreach ($tags as $tag) {
 			if (strpos($tag, $prefix) === 0) {
@@ -705,7 +706,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isNonPrefixedLoopTag($tag)
+	protected function isNonPrefixedLoopTag(string $tag): bool
 	{
 		return in_array($tag, array(
 			'date_ouverture',
@@ -722,7 +723,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $field Field name.
 	 * @return string
 	 */
-	protected function formatContactDescription($role, $index, $field)
+	protected function formatContactDescription(string $role, string $index, string $field): string
 	{
 		$roleMap = array(
 			'BILLING' => 'Contact facturation',
@@ -741,7 +742,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $token Raw token.
 	 * @return string
 	 */
-	protected function humanizeToken($token)
+	protected function humanizeToken(string $token): string
 	{
 		$map = array(
 			'ht' => 'HT',
@@ -817,7 +818,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $sampleValue Sample value.
 	 * @return bool
 	 */
-	protected function isMeaningfulTextSample($sampleValue)
+	protected function isMeaningfulTextSample(string $sampleValue): bool
 	{
 		$value = trim((string) $sampleValue);
 		if ($value === '' || $this->isNumericLike($value)) {
@@ -831,7 +832,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isMoneyTag($tag)
+	protected function isMoneyTag(string $tag): bool
 	{
 		return (bool) preg_match('/(^|_)(total|amount|price|discount|capital|limit|payed|deposit|creditnote|remain)(_|$)/', $tag);
 	}
@@ -840,7 +841,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isDateTag($tag)
+	protected function isDateTag(string $tag): bool
 	{
 		return (bool) preg_match('/(^|_)(date|birthday|hour|heured|heuref)(_|$)/', $tag);
 	}
@@ -850,7 +851,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $sampleValue
 	 * @return bool
 	 */
-	protected function isBooleanTag($tag, $sampleValue)
+	protected function isBooleanTag(string $tag, string $sampleValue): bool
 	{
 		if (preg_match('/(^|_)(enabled|disable|active|confirm|certifying|required)(_|$)/', $tag)) {
 			return true;
@@ -865,7 +866,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isCodeTag($tag)
+	protected function isCodeTag(string $tag): bool
 	{
 		return (bool) preg_match('/(_code$|^code_|_id$|^id_)/', $tag);
 	}
@@ -874,7 +875,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isEmailTag($tag)
+	protected function isEmailTag(string $tag): bool
 	{
 		return strpos($tag, 'email') !== false || strpos($tag, 'mail') !== false;
 	}
@@ -883,7 +884,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isPhoneTag($tag)
+	protected function isPhoneTag(string $tag): bool
 	{
 		return strpos($tag, 'phone') !== false || strpos($tag, 'fax') !== false || strpos($tag, 'tel') !== false;
 	}
@@ -892,7 +893,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $tag
 	 * @return bool
 	 */
-	protected function isUrlTag($tag)
+	protected function isUrlTag(string $tag): bool
 	{
 		return strpos($tag, 'url') !== false || strpos($tag, 'web') !== false;
 	}
@@ -901,7 +902,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $value
 	 * @return bool
 	 */
-	protected function isIntegerSample($value)
+	protected function isIntegerSample(string $value): bool
 	{
 		return preg_match('/^-?[0-9]+$/', trim((string) $value)) === 1;
 	}
@@ -910,7 +911,7 @@ class SubstitutionCatalogPresentationBuilder
 	 * @param string $value
 	 * @return bool
 	 */
-	protected function isNumericLike($value)
+	protected function isNumericLike(string $value): bool
 	{
 		$normalized = str_replace(array(' ', "\xc2\xa0"), '', trim((string) $value));
 		$normalized = str_replace(',', '.', $normalized);

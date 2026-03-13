@@ -75,6 +75,28 @@ class ReferenceLetters extends CommonObject
 	protected $forcedCatalogUiObject = null;
 
 	/**
+	 * Resolve the sample object used to enrich the UI catalog.
+	 *
+	 * The UI catalog must not depend on an opportunistic fetch against production
+	 * tables. We only reuse an object explicitly injected by the caller.
+	 *
+	 * @param object $testObj
+	 * @return object|null
+	 */
+	protected function resolveForcedCatalogObject(object $testObj): ?object
+	{
+		if (
+			is_object($this->forcedCatalogUiObject)
+			&& get_class($this->forcedCatalogUiObject) === get_class($testObj)
+			&& !empty($this->forcedCatalogUiObject->id)
+		) {
+			return $this->forcedCatalogUiObject;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Draft status
 	 */
 	const STATUS_DRAFT = 0;
@@ -766,45 +788,19 @@ class ReferenceLetters extends CommonObject
 		$subst_array[$langs->trans('User')] = $docgen->get_substitutionarray_user($user, $langs);
 		$subst_array[$langs->trans('MenuCompanySetup')] = $docgen->get_substitutionarray_mysoc($mysoc, $langs);
 		$subst_array[$langs->trans('Other')] = $docgen->get_substitutionarray_other($langs);
-
-        complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
+		complete_substitutions_array($subst_array[$langs->trans('Other')], $langs);
 		$catalogBuilder->sanitizeGlobalCatalogKeys($subst_array[$langs->trans('Other')], $mailOnlyTags);
 
-		foreach ( $this->element_type_list as $type => $item ) {
+		foreach ($this->element_type_list as $type => $item) {
 			if ($this->element_type == $type) {
-
 				$langs->load($item['trans']);
-				//var_dump($item);exit;
 				/** @var $testObj CommonObject */
 				require_once $item['classpath'] . $item['class'];
 				$testObj = new $item['objectclass']($this->db);
 
-				$forcedCatalogObject = null;
-				if (is_object($this->forcedCatalogUiObject) && get_class($this->forcedCatalogUiObject) === get_class($testObj)) {
-					$forcedCatalogObject = $this->forcedCatalogUiObject;
-				}
-
-				$num = 0;
-				$obj = null;
-				if (is_object($forcedCatalogObject) && !empty($forcedCatalogObject->id)) {
+				$forcedCatalogObject = $this->resolveForcedCatalogObject($testObj);
+				if (is_object($forcedCatalogObject)) {
 					$testObj = $forcedCatalogObject;
-					$num = 1;
-					$obj = (object) array('rowid' => (int) $forcedCatalogObject->id);
-				} else {
-					$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ORDER BY rowid ASC ' . $this->db->plimit(1);
-					dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-					$resql = $this->db->query($sql);
-					if ($resql) {
-						$num = $this->db->num_rows($resql);
-						if ($num > 0) {
-							$obj = $this->db->fetch_object($resql);
-						}
-					}
-				}
-				if (! empty($obj->rowid) && $num > 0) {
-					if (!is_object($forcedCatalogObject)) {
-						$testObj->fetch($obj->rowid);
-					}
 					$currentCatalogObject = $testObj;
 
 					if (method_exists($testObj, 'fetch_thirdparty') && (!isset($testObj->thirdparty) || !is_object($testObj->thirdparty))) {
@@ -817,16 +813,16 @@ class ReferenceLetters extends CommonObject
 						$testObj->fetch_lines();
 					}
 
-					$array_second_thirdparty_object = array ();
+					$array_second_thirdparty_object = array();
 
-					if($testObj->element == 'societe'){
+					if ($testObj->element == 'societe') {
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
 						foreach ($array_first_thirdparty_object as $key => $value) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
 						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
-					}else {
+					} else {
 						dol_syslog($item['substitution_method']);
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
@@ -837,7 +833,7 @@ class ReferenceLetters extends CommonObject
 
 					if (! empty($testObj->thirdparty->id)) {
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
-						foreach ( $array_first_thirdparty_object as $key => $value ) {
+						foreach ($array_first_thirdparty_object as $key => $value) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
 					}
@@ -850,16 +846,16 @@ class ReferenceLetters extends CommonObject
 					$catalogBuilder->sanitizeGlobalCatalogKeys($contextOther, $mailOnlyTags);
 					$subst_array[$langs->trans('Other')] = array_merge($subst_array[$langs->trans('Other')], $contextOther);
 				} else {
-					$array_second_thirdparty_object = array ();
+					$array_second_thirdparty_object = array();
 					$currentCatalogObject = $testObj;
-					if($testObj->element == 'societe'){
+					if ($testObj->element == 'societe') {
 						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
 						foreach ($array_first_thirdparty_object as $key => $value) {
 							$array_second_thirdparty_object['cust_' . $key] = $value;
 						}
 						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
-					}else {
+					} else {
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
 						if ($item['substitution_method'] === 'get_substitutionarray_object') {
@@ -880,24 +876,11 @@ class ReferenceLetters extends CommonObject
 					$catalogBuilder->sanitizeGlobalCatalogKeys($contextOther, $mailOnlyTags);
 					$subst_array[$langs->trans('Other')] = array_merge($subst_array[$langs->trans('Other')], $contextOther);
 				}
-				//TODO : add line replacement
 			}
 		}
 
 		require_once 'referenceletterselements.class.php';
 		$testObj = new ReferenceLettersElements($this->db);
-		$sql = 'SELECT rowid FROM ' . MAIN_DB_PREFIX . $testObj->table_element . ' WHERE entity IN (' . getEntity($conf->entity, 1) . ') ORDER BY rowid ASC ' . $this->db->plimit(1);
-		dol_syslog(get_class($this) . "::" . __METHOD__, LOG_DEBUG);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			if ($num > 0) {
-				$obj = $this->db->fetch_object($resql);
-			}
-		}
-		if (! empty($obj->rowid) && $num > 0) {
-			$testObj->fetch($obj->rowid);
-		}
 		$catalogBuilder->appendReferenceLetterCatalogKeys($subst_array, $testObj);
 
 		$catalogBuilder->appendDocumentLineCatalogKeys(

@@ -74,10 +74,6 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
 			global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
-		// TODO T6443: remove this once Agefodd DocEdit rendering is optimized and the heavy generation path is profiled.
-		// Agefodd + DocEdit can build very large HTML payloads before TCPDF rendering.
-		@set_time_limit(0);
-
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 
@@ -356,8 +352,8 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 					$this->pdf->AliasNbPages();
 
 				$this->pdf->Close();
-				if (file_exists($file)) {
-					@unlink($file);
+				if (file_exists($file) && !unlink($file)) {
+					dol_syslog(__METHOD__ . ' failed to delete existing output file ' . $file, LOG_ERR);
 				}
 				$this->pdf->Output($file, 'F');
 

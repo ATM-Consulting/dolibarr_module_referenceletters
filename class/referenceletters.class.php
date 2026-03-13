@@ -1240,6 +1240,7 @@ class ReferenceLetters extends CommonObject
 		));
 
 		if ($isFormationDoc) {
+			unset($subst_array[$groupLabels['training']]);
 			unset($subst_array[$groupLabels['trainer_mission']]);
 			unset($subst_array[$groupLabels['session']]);
 			unset($subst_array[$groupLabels['organization']]);

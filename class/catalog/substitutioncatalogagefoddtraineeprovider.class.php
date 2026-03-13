@@ -64,6 +64,14 @@ class SubstitutionCatalogAgefoddTraineeProvider extends SubstitutionCatalogAgefo
 			}
 		}
 
+		$socpeopleExtralabels = $extrafields->fetch_name_optionals_label('socpeople', true);
+		if (!empty($socpeopleExtralabels)) {
+			foreach ($socpeopleExtralabels as $extrakey => $extralabel) {
+				$langFile = $extrafields->attributes['socpeople']['langfile'][$extrakey] ?? '';
+				$substArray[$groupLabels['trainee']]['objvar_object_stagiaire_socpeople_options_' . $extrakey] = $this->translateExtraFieldLabel($extralabel, (string) $langFile);
+			}
+		}
+
 		if (isModEnabled('agefoddcertificat')) {
 			$substArray[$groupLabels['trainee']] += $this->translateTags(array(
 				'objvar_object_stagiaire_certif_code',

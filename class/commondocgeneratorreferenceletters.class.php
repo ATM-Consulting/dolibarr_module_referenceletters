@@ -1477,8 +1477,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			foreach ( $object as $key => $value ) {
 				$isStagiaireOptionsContainer = $key === 'stagiaire_options';
 				$isStagiaireSocOptionsContainer = $key === 'stagiaire_soc_options';
+				$isStagiaireSocpeopleOptionsContainer = $key === 'stagiaire_socpeople_options';
 				if ($key == 'db') continue;
-				else if (($key == 'array_options' && is_object($object)) || $isStagiaireOptionsContainer || $isStagiaireSocOptionsContainer)
+				else if (($key == 'array_options' && is_object($object)) || $isStagiaireOptionsContainer || $isStagiaireSocOptionsContainer || $isStagiaireSocpeopleOptionsContainer)
 				{
 					// Inspired by Dolibarr (@see CommonDocGenerator::get_substitutionarray_object()).
 					// If the object has no extrafield row in the database, the
@@ -1489,12 +1490,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					else $extrafieldkey=$object->element;
 					if ($isStagiaireOptionsContainer) $extrafieldkey = 'agefodd_stagiaire';
 					if ($isStagiaireSocOptionsContainer) $extrafieldkey = 'societe';
+					if ($isStagiaireSocpeopleOptionsContainer) $extrafieldkey = 'socpeople';
 
 					require_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
 					$extrafields = new ExtraFields($this->db);
 					$extralabels = $extrafields->fetch_name_optionals_label($extrafieldkey, true);
-					if (($isStagiaireOptionsContainer || $isStagiaireSocOptionsContainer) && is_array($value)) {
-						$keyPrefix = $isStagiaireSocOptionsContainer ? 'object_stagiaire_soc_options_' : 'object_stagiaire_options_';
+					if (($isStagiaireOptionsContainer || $isStagiaireSocOptionsContainer || $isStagiaireSocpeopleOptionsContainer) && is_array($value)) {
+						$keyPrefix = 'object_stagiaire_options_';
+						if ($isStagiaireSocOptionsContainer) $keyPrefix = 'object_stagiaire_soc_options_';
+						if ($isStagiaireSocpeopleOptionsContainer) $keyPrefix = 'object_stagiaire_socpeople_options_';
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$array_other[$keyPrefix . $key_opt] = '';
 							if (array_key_exists('options_' . $key_opt, $value)) {

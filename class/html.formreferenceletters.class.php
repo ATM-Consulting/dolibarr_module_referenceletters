@@ -37,7 +37,7 @@ class FormReferenceLetters extends Form
 	 * @param DoliDB $db
 	 *        	handler
 	 */
-	public function __construct($db)
+	public function __construct(DoliDB $db)
 	{
 		$this->db = $db;
 	}
@@ -105,7 +105,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectElementType($selected='',$htmlname='element_type',$showempty=0, $in_array=array()) {
+	public function selectElementType($selected = '', string $htmlname = 'element_type', int $showempty = 0, array $in_array = array()): string {
 		global $langs;
 
 		require_once 'referenceletters.class.php';
@@ -147,7 +147,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectStatus($selected='',$htmlname='element_type',$showempty=1) {
+	public function selectStatus($selected = '', string $htmlname = 'element_type', int $showempty = 1): string {
 		global $langs;
 
 		$status_array=array();
@@ -182,7 +182,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectDefaultDoc($selected='',$htmlname='defaultdoc',$showempty=1) {
+	public function selectDefaultDoc($selected = '', string $htmlname = 'defaultdoc', int $showempty = 1): string {
 		global $langs;
 
 		$status_array=array();
@@ -218,7 +218,7 @@ class FormReferenceLetters extends Form
 	 * @param string $htmlname
 	 * @return select HTML
 	 */
-	public function selectReferenceletters($selected='',$htmlname='refletter',$element_type='',$showempty=0) {
+	public function selectReferenceletters($selected = '', string $htmlname = 'refletter', string $element_type = '', int $showempty = 0): string {
 		global $langs;
 
 		require_once 'referenceletters.class.php';
@@ -253,7 +253,7 @@ class FormReferenceLetters extends Form
 	 * @return string HTML to print
 	 */
 
-	public function displaySubstitutionKey($user,$reflettersobject) {
+	public function displaySubstitutionKey(User $user, ReferenceLetters $reflettersobject): string {
 		global $langs,$bc;
 
         $form = new Form($this->db);
@@ -268,7 +268,7 @@ class FormReferenceLetters extends Form
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
 	 */
-	public function displaySubstitutionKeyAdvanced($user, $reflettersobject) {
+	public function displaySubstitutionKeyAdvanced(User $user, ReferenceLetters $reflettersobject): string {
 		global $langs;
 
 		$html = '<div id="subtitutionkey" style="display: none;" >';
@@ -381,18 +381,6 @@ class FormReferenceLetters extends Form
 				$html .= '</div>';
 			}
 
-			// Generate traduction for dev only
-			/*print '<pre>';
-			foreach($subs_array as $block=>$data) {
-				print '#' . $block."\n";
-				if (is_array($data) && count($data) > 0) {
-					$var = true;
-					foreach ($data as $key => $value) {
-						print 'reflettershortcode_' . $key."=\n";
-					}
-				}
-			}
-			print '</pre>';*/
 		}
 
 		$html.='</div>';
@@ -420,15 +408,19 @@ class FormReferenceLetters extends Form
 
                          // open dialog and add target key
                          $( "#subtitutionkey" ).data("target", $(this).data("target"));
-                         $( "#subtitutionkey" ).dialog( "open" );
+                         if (typeof $( "#subtitutionkey" ).dialog === "function") {
+                             $( "#subtitutionkey" ).dialog( "open" );
+                         } else {
+                             $( "#subtitutionkey" ).show();
+                         }
 
-                         // Focus on search input
+                         // Focus the search input.
                          $("#item-filter").focus();
                     });
 
                      $(".docedit_setbool").click(function() {
 
-						//Get the Chapter Id
+						// Get the chapter id.
 						var chapter=$(this);
 
 						$.ajax({
@@ -538,7 +530,8 @@ class FormReferenceLetters extends Form
      * @param User $user
      * @param CommonObject $object
      */
-	    public function getSubstitutionKeyTable($user,$reflettersobject){
+	public function getSubstitutionKeyTable(User $user, ReferenceLetters $reflettersobject): string
+	{
 	        global $langs,$bc;
 
         $uiData = $reflettersobject->getSubstitutionKeyUiData($user);
@@ -627,10 +620,10 @@ class FormReferenceLetters extends Form
             }
         }
 
-        $html.='</table>';
+		$html.='</table>';
 
-        return $html;
-    }
+		return $html;
+	}
 
 	/**
 	 * @deprecated Use displaySubstitutionKey() instead.
@@ -639,7 +632,7 @@ class FormReferenceLetters extends Form
 	 * @param CommonObject $reflettersobject
 	 * @return string
 	 */
-	public function displaySubtitutionKey($user,$reflettersobject) {
+	public function displaySubtitutionKey(User $user, ReferenceLetters $reflettersobject): string {
 		return $this->displaySubstitutionKey($user, $reflettersobject);
 	}
 
@@ -648,9 +641,9 @@ class FormReferenceLetters extends Form
 	 *
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
-	 * @return void
+	 * @return string
 	 */
-	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
+	public function displaySubtitutionKeyAdvanced(User $user, ReferenceLetters $reflettersobject): string {
 		return $this->displaySubstitutionKeyAdvanced($user, $reflettersobject);
 	}
 
@@ -661,7 +654,7 @@ class FormReferenceLetters extends Form
 	 * @param ReferenceLetters $reflettersobject
 	 * @return string
 	 */
-	public function getSubtitutionKeyTable($user,$reflettersobject){
+	public function getSubtitutionKeyTable(User $user, ReferenceLetters $reflettersobject): string {
 		return $this->getSubstitutionKeyTable($user, $reflettersobject);
 	}
 
@@ -711,7 +704,7 @@ class FormReferenceLetters extends Form
 		return $notices;
 	}
 
-	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
+	public function renderChapterHTML(ReferenceLettersChapters $chapter, string $mode='view'): string {
 		global $langs;
 
 		$urlToken = '';

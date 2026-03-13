@@ -45,11 +45,11 @@ class RfltrTools {
 
 
 	/**
-	 * Charge le modèle référence letter choisi
+	 * Load the selected referenceletters model.
 	 *
 	 * @param $id_object
 	 * @param $id_model
-	 * @param $object peut être une convention pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $object Can be an Agefodd convention, proposal, order, and so on.
 	 * @param $socid
 	 * @param $lang_id
 	 * @param $fk_training
@@ -75,17 +75,17 @@ class RfltrTools {
 			$object_refletter->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
 			$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
 
-			if(!empty($id_rfltr)) { // Il existe un modèle par défaut, on le charge
+			if(!empty($id_rfltr)) { // A default model exists, load it.
 				$object_refletter->fetch($id_rfltr);
 				if (!empty($object_refletter->element_type)) {
 					$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
 				}
 			}else{
-				// sinon on prend le premier dans la liste.
+				// Otherwise load the first model in the list.
 				$object_refletter->fetch_all('DESC', 'rowid', 0, 0, array('t.element_type'=>"invoice"));
 				$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
 
-				if(!empty($id_rfltr)) { // Il existe  ...  on le charge
+				if(!empty($id_rfltr)) { // A fallback model exists, load it.
 					$object_refletter->fetch($id_rfltr);
 					if (!empty($object_refletter->element_type)) {
 						$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
@@ -167,13 +167,13 @@ class RfltrTools {
 			}
 		}
 
-		// On load le modèle
+		// Load the selected model.
 		$instance_letter = new ReferenceLettersElements($db);
 		$instance_letter->fetch($id_model);
 		$instance_letter->srcobject=$object;
 		$instance_letter->content_letter = self::setImgLinkToUrlWithArray($content_letter);
 		if(is_object($object) && empty($object->thirdparty)) $object->fetch_thirdparty();
-		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODO pour l'instant on garde le même nom de pdf que fait agefodd
+		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODO keep the historical Agefodd PDF file name for now.
 		$instance_letter->title = $object_refletter->title;
 		$instance_letter->fk_element = $object->id;
 		$instance_letter->element_type = $object_refletter->element_type;
@@ -192,7 +192,7 @@ class RfltrTools {
 
 
 	/**
-	 *  Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 * Load the Agefodd session object with all associated data (participants, schedules).
 	 * @param $id_object
 	 * @param $object_refletter
 	 * @param $socid
@@ -225,7 +225,7 @@ class RfltrTools {
 			$object = new $object_refletter->element_type_list['rfltr_agefodd_formation']['objectclass']($db);
 			$object->fetch($fk_training);
 		}
-		// on load les informations de l'object (la méthode n'a pas le même nom selon la version d'Agefodd)
+		// Load object data. The method name differs depending on the Agefodd version.
 		$agefoddInfoLoader = 'load_all_data_agefodd';
 		if (! method_exists($object, $agefoddInfoLoader)) {
 			$agefoddInfoLoader = 'load_all_data_agefodd_session';
@@ -317,7 +317,7 @@ class RfltrTools {
 
 				});
 
-				// Affichage de la liste des modèles disponibles
+				// Show the list of available models.
 				$(".btn_show_external_model_list").click(function() {
 
 					var class_to_show = '.' + $(this).attr('class_to_show');
@@ -334,7 +334,7 @@ class RfltrTools {
 					}
 
 				});
-                // Sélection du modèle et génération du document
+                // Select the model and generate the document.
                 $('.id_external_model').change(function () {
                     let model = $(this).attr('model');
                     //Dans le cas du module agefoddcertificat il faut rediriger vers agefoddcertificat_documents.backend.php
@@ -345,7 +345,7 @@ class RfltrTools {
                     var selectSocId = $(this).attr('socid');
                     var trainerCell = $(this).closest('td.trainerid');
                     var trainerId = trainerCell.length ? trainerCell.attr('trainerid') : '';
-                    // On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
+                    // Read the name attribute from the nearest previous liste_titre anchor.
                     lignetitre = $(this).parent().parent();
                     while (!lignetitre.hasClass('liste_titre')) {
                         lignetitre = lignetitre.prev();

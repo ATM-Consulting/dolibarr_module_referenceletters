@@ -222,7 +222,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param mixed $candidate Preferred replacement value.
 	 * @return array
 	 */
-	protected function setPreferredAgefoddValue(array $resarray, string $key, $candidate)
+	protected function setPreferredAgefoddValue(array $resarray, string $key, $candidate): array
 	{
 		if (!empty($candidate)) {
 			$resarray[$key] = $candidate;
@@ -241,7 +241,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param object|null $catalogue Formation/session catalogue clone when available.
 	 * @return array
 	 */
-	protected function applyAgefoddFormationReferenceFallbacks(array $resarray, ?object $catalogue = null)
+	protected function applyAgefoddFormationReferenceFallbacks(array $resarray, ?object $catalogue = null): array
 	{
 		if (is_object($catalogue)) {
 			$resarray = $this->setPreferredAgefoddValue($resarray, 'formation_ref', $catalogue->ref_obj ?? '');
@@ -264,7 +264,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return NULL[]
 	 */
-	public function get_substitutionarray_refletter($referenceletters, $outputlangs) {
+	public function get_substitutionarray_refletter($referenceletters, $outputlangs): array {
 		return array(
 				'referenceletters_title' => $referenceletters->title,
 				'referenceletters_ref_int' => $referenceletters->ref_int,
@@ -281,7 +281,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param string $array_key
 	 * @return array
 	 */
-	public function get_substitutionarray_thirdparty($object, $outputlangs, $array_key = 'company')
+	public function get_substitutionarray_thirdparty($object, $outputlangs, $array_key = 'company'): array
 	{
 		$arrayThirdparty = parent::get_substitutionarray_thirdparty($object, $outputlangs, $array_key);
 
@@ -308,7 +308,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
-	public function get_substitutionarray_object($object, $outputlangs, $array_key = 'object')
+	public function get_substitutionarray_object($object, $outputlangs, $array_key = 'object'): array
 	{
 		global $db;
 		$resarray = parent::get_substitutionarray_object($object, $outputlangs, $array_key);
@@ -336,7 +336,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$resarray['object_references'] = '';
 			}
 		}
-		// contact emetteur
+		// Sender contact.
 		$arrayidcontact = $object->getIdContact('internal', 'SALESREPFOLL');
 		$resarray[$array_key . '_contactsale'] = '';
 		if (!empty($arrayidcontact)) {
@@ -346,7 +346,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		// contact tiers
+		// Thirdparty contact.
 		unset($arrayidcontact);
 		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 
@@ -358,7 +358,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		// contact tiers facturation
+		// Thirdparty billing contact.
 		unset($arrayidcontact_inv);
 		$arrayidcontact_inv = $object->getIdContact('external', 'BILLING');
 
@@ -375,7 +375,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		// contact tiers livraison
+		// Thirdparty shipping contact.
 		unset($arrayidcontact_inv);
 		$arrayidcontact_inv = $object->getIdContact('external', 'SHIPPING');
 
@@ -400,10 +400,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		// Contacts sélectionnés
+		// Selected contacts.
 		require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 
-        if(!empty($object->id)) $linkedContacts = $object->liste_contact(); // External par défaut
+        if(!empty($object->id)) $linkedContacts = $object->liste_contact(); // External by default.
         $TCounts = array();
 
         if(!empty($object->id)) $TContactTypes = $object->liste_type_contact('external', 'position', 1);
@@ -413,10 +413,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		if(!empty($linkedContacts)) {
 	        foreach ($linkedContacts as $TContactRef)
 	        {
-	            $code = $TContactRef['code']; // Code
-	            if(empty($TCounts[$code])) // Index
+	            $code = $TContactRef['code']; // Contact type code.
+	            if(empty($TCounts[$code])) // Position index.
 	            {
-	                $TCounts[$code] = 1; // On commence à 1 parce que l'utilisateur n'est pas formé aux tableaux zero-indexed :o)
+	                $TCounts[$code] = 1; // Start at 1 to keep template usage human-friendly.
 	            }
 
         	    $object->fetch_contact($TContactRef['id']);
@@ -431,20 +431,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	        }
 		}
 
-        // Types de contacts non sélectionnés mais disponibles
+        // Available contact types without a selected linked contact.
         $i = 0;
 		if(!empty($TContactTypes)) {
 	        foreach($TContactTypes as $code => $label)
 	        {
 		        $contactPrefix = $contactKey . $code . '_1';
 
-		        // S'il n'y a aucun contact associé, on détaille tous les champs disponibles. Sinon, ça a déjà été fait
-		        // ci-dessus : on ne fait donc que préciser les codes des types de contacts qui n'ont pas de contact lié
+		        // If no contact is linked, expose the full field set once.
+		        // Otherwise only expose the missing contact type codes.
 		        if (empty($atLeastOneContact) && $i == 0)
 		        {
 			        $contactstatic = new Contact($db);
-			        $contactstatic->id = 0; // On empêche une erreur SQL au chargement des extrafields
-			        $contactstatic->statut = ''; // Champ prérempli par le constructeur
+			        $contactstatic->id = 0; // Prevent SQL errors while loading extrafields.
+			        $contactstatic->statut = ''; // Property prefilled by the constructor.
 			        $contactarray = parent::get_substitutionarray_contact($contactstatic, $outputlangs, $contactPrefix);
 			        $resarray = array_merge($resarray, $contactarray);
 		        }
@@ -457,7 +457,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	        }
 		}
 
-        // Multicurrency
+        // Multicurrency.
 		$resarray['devise_label'] = '';
 		if(!empty($object->multicurrency_code)) $resarray['devise_label'] = currency_name($object->multicurrency_code);
 		return $resarray;
@@ -468,7 +468,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * {@inheritdoc}
 	 * @see CommonDocGenerator::get_substitutionarray_other()
 	 */
-	public function get_substitutionarray_other($outputlangs, $object = '') {
+	public function get_substitutionarray_other($outputlangs, $object = ''): array {
 		global $conf;
 		$multicurrencyEnabled = isModEnabled('multicurrency');
 
@@ -507,7 +507,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$array_other['somme_avoirs'] = price($creditnoteamount, 0, $outputlangs);
 				}
 
-				// Reste à payer
+				// Remaining amount to pay.
 				$resteapayer = price2num($total_ttc - $deja_regle - $creditnoteamount - $depositsamount, 'MT');
 				$array_other['reste_a_payer'] = price($resteapayer, 0, $outputlangs);
 			}
@@ -517,7 +517,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			// @see function pdf_getLinkedObjects() in pdf.lib.php
 			$array_other['objets_lies;element=facture'] = '';
-			$array_other['objets_lies;element=invoice_supplier'] = ''; // Non utilisable pour le moment
+			$array_other['objets_lies;element=invoice_supplier'] = ''; // Not usable yet.
 			$array_other['objets_lies;element=propal'] = '';
 			$array_other['objets_lies;element=supplier_proposal'] = '';
 			$array_other['objets_lies;element=commande'] = '';
@@ -542,7 +542,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param stdClass $element Element
 	 * @return string
 	 */
-	public static function getLinkedObjects($object, $outputlangs, $element = null) {
+	public static function getLinkedObjects($object, $outputlangs, $element = null): string {
 		global $linkedobjects;
 
 		if (empty($linkedobjects))
@@ -597,10 +597,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				if ($line->product_type != 9) {
 					$vatrate = isset($line->tva_tx) ? $line->tva_tx : 0;
 
-				// Collecte des totaux par valeur de tva dans $this->tva["taux"]=total_tva
+				// Aggregate totals per VAT rate in $this->tva["rate"] = total_vat.
 				if (get_class($object) === 'Facture') {
 					$prev_progress = $line->get_prev_progress($object->id);
-					if ($prev_progress > 0 && ! empty($line->situation_percent)) // Compute progress from previous situation
+					if ($prev_progress > 0 && ! empty($line->situation_percent)) // Compute progress from the previous situation.
 					{
 						if ($multicurrencyEnabled && $object->multicurrency_tx != 1)
 							$tvaligne = $sign * $line->multicurrency_total_tva * ($line->situation_percent - $prev_progress) / $line->situation_percent;
@@ -628,12 +628,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			unset($line);
 		}
 
-		// formatage sortie
+		// Format output values.
 		foreach ( $TTva as $k => &$v )
 			$v = price($v);
 		unset($v);
 
-		// Retour fonction
+		// Return the formatted VAT breakdown.
 		return array(
 				'TTitres' => array_keys($TTva),
 				'TValues' => $TTva
@@ -646,7 +646,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return number|array[]|number[][]
 	 */
-	public static function get_liste_reglements($object, $outputlangs) {
+	public static function get_liste_reglements($object, $outputlangs): string {
 		global $db, $conf;
 		$multicurrencyEnabled = isModEnabled('multicurrency');
 
@@ -689,7 +689,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf, " . MAIN_DB_PREFIX . "paiement as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as cp ON p.fk_paiement = cp.id ";
 		if (( float ) DOL_VERSION > 6)
-			$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity apparaît en 7.0
+			$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity exists from 7.0 onward.
 		$sql .= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = " . $object->id;
 		$sql .= " ORDER BY p.datep";
 
@@ -734,15 +734,15 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate Instance
 	 * @return number|array[]|number[][]
 	 */
-	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0)
+	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0): array
 	{
 		global $conf;
 
 		$resarray = parent::get_substitutionarray_lines($line, $outputlangs, 0);
 
-		$resarray['line_product_ref_fourn'] = isset($line->ref_fourn) ? $line->ref_fourn : ''; // for supplier doc lines
+		$resarray['line_product_ref_fourn'] = isset($line->ref_fourn) ? $line->ref_fourn : ''; // For supplier document lines.
 		$resarray['line_rang'] = isset($line->rang) ? $line->rang : '';
-		$resarray['line_libelle'] = isset($line->libelle) ? $line->libelle : ''; // récupére le libellé du produit/service
+		$resarray['line_libelle'] = isset($line->libelle) ? $line->libelle : ''; // Product/service label.
 		if (empty($resarray['line_product_label']) && isset($line->label)) $resarray['line_product_label'] = $line->label;
 
 		if(empty($resarray['line_desc']) && ! empty($conf->subtotal->enabled))
@@ -775,13 +775,13 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Lang object to use for output
 	 * @return array Return a substitution array
 	 */
-	public function get_substitutionarray_lines_agefodd($line, $outputlangs, $fetchoptionnals = true) {
+	public function get_substitutionarray_lines_agefodd($line, $outputlangs, $fetchoptionnals = true): array {
 		global $db, $conf, $langs;
 
 		require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
         dol_include_once('/agefodd/class/agefodd_session_stagiaire.class.php');
 
-        // Substitutions tableau de participants :
+        // Participant list substitutions.
         $sessionStag = new Agefodd_session_stagiaire($this->db);
         $resarray = array();
         $resarray['line_poste'] = $this->getObjectPropertyValue($line, 'poste');
@@ -826,7 +826,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			&& is_object($line->agefodd_stagiaire)
 			&& property_exists($line->agefodd_stagiaire, 'thirdparty')
 			&& is_object($line->agefodd_stagiaire->thirdparty);
-		if(!$hasTraineeThirdparty) { //Retro compat < 2.17
+		if(!$hasTraineeThirdparty) { // Backward compatibility for versions < 2.17.
 			$resarray['line_societe_address'] = $this->getObjectPropertyValue($line, 'societe_address');
 			$resarray['line_societe_zip'] = $this->getObjectPropertyValue($line, 'societe_zip');
 			$resarray['line_societe_town'] = $this->getObjectPropertyValue($line, 'societe_town');
@@ -849,7 +849,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_certif_date_alerte'] = '';
 
 		if (isModEnabled('agefoddcertificat')) {
-			// Certificats
+			// Certificates.
 			dol_include_once('/agefoddcertificat/class/agefoddcertificat.class.php');
 			$agf_certif = new AgefoddCertificat($db);
 			$lineSessionId = property_exists($line, 'sessid') ? (int) $line->sessid : 0;
@@ -866,7 +866,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			}
 		}
 
-		// Display session stagiaire heure
+		// Display trainee session hours.
 		if(!empty($line->sessid) && !empty($line->id))
 		{
 		    dol_include_once('agefodd/class/agefodd_session_stagiaire_heures.class.php');
@@ -915,12 +915,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		    }
 		}
 
-		// Substitutions tableau d'horaires
+		// Schedule line substitutions.
 		$resarray['line_date_session'] = $this->getFormattedDatePropertyValue($line, 'date_session');
 		$resarray['line_heure_debut_session'] = $this->getFormattedDatePropertyValue($line, 'heured', 'hour');
 		$resarray['line_heure_fin_session'] = $this->getFormattedDatePropertyValue($line, 'heuref', 'hour');
 
-		// Substitutions tableau des formateurs :
+		// Trainer line substitutions.
 		$resarray['line_formateur_nom'] = $this->getObjectPropertyValue($line, 'lastname');
 		$resarray['line_formateur_prenom'] = $this->getObjectPropertyValue($line, 'firstname');
 		$resarray['line_formateur_phone'] = $this->getObjectPropertyValue($line, 'phone');
@@ -933,20 +933,21 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_formateur_zip'] = $this->getObjectPropertyValue($line, 'zip');
 		$resarray['line_formateur_statut'] = $this->getStatusLabelValue($line, 'trainer_status', 'labelstatut');
 
-		// Substitutions tableau des objectif :
+		// Pedagogic objective substitutions.
 		$resarray['line_objpeda_rang'] = $this->getObjectPropertyValue($line, 'priorite');
 		$resarray['line_objpeda_description'] = $this->getObjectPropertyValue($line, 'intitule');
 
-		// Substitutions modules de formation :
+		// Training module substitutions.
 		$resarray['line_module_title'] = $this->getObjectPropertyValue($line, 'title');
 		$resarray['line_module_duration'] = $this->getObjectPropertyValue($line, 'duration');
 		$resarray['line_module_obj_peda'] = $this->getObjectPropertyValue($line, 'obj_peda');
 		$resarray['line_module_content_text'] = $this->getObjectPropertyValue($line, 'content_text');
 
-		// Substitutions tableau des élément financier :
+		// Financial line substitutions.
 //		$resarray['line_fin_desciption'] = str_replace('<br />', "\n", str_replace('<BR>', "\n", $line->description));
 
-		//strip_tags permet de supprimer les balises HTML et PHP d'une chaine, la mise en forme faisait disparaître une partie du pdf de convention docedit
+		// Keep a minimal whitelist of HTML tags. A fully stripped value breaks
+		// part of the DocEdit convention PDF rendering.
         $resarray['line_fin_desciption'] = strip_tags((string) $this->getObjectPropertyValue($line, 'description'), "<br><p><ul><ol><li><span><div><tr><td><th><table>");
         $resarray['line_fin_description'] = $resarray['line_fin_desciption'];
 //		$resarray['line_fin_desciption_light'] = $line->form_label;
@@ -958,7 +959,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$resarray['line_fin_discount'] = property_exists($line, 'remise_percent') ? dol_print_reduction($line->remise_percent, $outputlangs) : '';
 		$resarray['line_fin_pu_ht'] = property_exists($line, 'price') ? price($line->price, 0, $outputlangs, 1, - 1, 2) : '';
 
-		// Retrieve extrafields
+		// Retrieve extrafields.
 		$extrafieldkey = $this->getObjectPropertyValue($line, 'element');
 		$array_key = "line";
 		require_once DOL_DOCUMENT_ROOT . '/core/class/extrafields.class.php';
@@ -973,7 +974,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_step_date_start'] = $this->getFormattedDatePropertyValue($line, 'date_start', 'day');
 			$resarray['line_step_date_end'] = $this->getFormattedDatePropertyValue($line, 'date_end', 'day');
 			$resarray['line_step_duration'] = property_exists($line, 'duration') && $line->duration !== null ? $line->duration : '';
-			// Lieu
+			// Place.
 			$resarray['line_step_lieu'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'ref_interne'));
 			$resarray['line_step_lieu_adresse'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'adresse'));
 			$resarray['line_step_lieu_cp'] = strip_tags((string) $this->getNestedObjectPropertyValue($line, 'place', 'cp'));
@@ -1002,7 +1003,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 		$resarray = $this->fill_substitutionarray_with_extrafields($line, $resarray, $extrafields, $array_key, $outputlangs);
 
-		// Appel de la fonction parente pour les lignes des documents std dolibarr (propal, cmd, facture, contrat)
+		// Reuse the parent implementation for standard Dolibarr document lines
+		// (proposals, orders, invoices and contracts).
 		$arrayTypeObj=array('PropaleLigne','OrderLine','FactureLigne','ContratLigne','CommandeFournisseurLigne','ExpeditionLigne');
 		if (in_array(get_class($line),$arrayTypeObj)) {
 			$resarray = parent::get_substitutionarray_lines($line, $outputlangs, 0);
@@ -1028,7 +1030,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 			$resarray['line_qty_shipped'] = $lineQtyShipped;
 		}
 
-		// Spé pour les contrats
+		// Contract-specific fields.
 		$resarray['date_ouverture'] = property_exists($line, 'date_ouverture') ? dol_print_date($line->date_ouverture, 'day', 'tzuser') : '';
 		$resarray['date_ouverture_prevue'] = property_exists($line, 'date_ouverture_prevue') ? dol_print_date($line->date_ouverture_prevue, 'day', 'tzuser') : '';
 		$resarray['date_fin_validite'] = property_exists($line, 'date_fin_validite') ? dol_print_date($line->date_fin_validite, 'day', 'tzuser') : '';
@@ -1037,12 +1039,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
-	 * executée depuis la fiche formation
+	 * Executed from the formation card.
 	 * @param Formation $object
 	 * @param string $outputlangs
 	 * @return array
 	 */
-	public function get_substitutionarray_agefodd_formation(Formation $object, Translate $outputlangs)
+	public function get_substitutionarray_agefodd_formation(Formation $object, Translate $outputlangs): array
 	{
 
 		global $db,  $langs, $extrafields;
@@ -1127,7 +1129,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return string[]|NULL[]|mixed[]|array[]
 	 */
-	public function get_substitutionarray_agefodd($object, $outputlangs)
+	public function get_substitutionarray_agefodd($object, $outputlangs): array
 	{
 		global $db, $langs;
 
@@ -1235,7 +1237,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		);
 
 		foreach ($TDefaultSub as $ksub){
-			$resarray[$ksub] = '';// si pas de substitution remplacer par vide
+			$resarray[$ksub] = ''; // If no substitution exists, replace with an empty value.
 		}
 
 		if (!empty($object->fk_socpeople_presta)) {
@@ -1317,7 +1319,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 				dol_include_once('/agefodd/class/agefodd_session_catalogue.class.php');
 
-			// Utiliser la copie session si elle existe, sinon retomber sur le catalogue formation source.
+			// Use the session clone when available, otherwise fall back to the source training catalogue.
 
 			if (class_exists('Agefodd')) {
 				$catalogue = new Agefodd($db);
@@ -1364,14 +1366,14 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 			$resarray = $this->fill_substitutionarray_with_extrafields($catalogue, $resarray, $extrafields, 'formation', $langs);
 
-			// surcharge pour le oui ou non à la place de 1 ou 0
+			// Override boolean rendering to display Yes/No instead of 1/0.
 			$resarray['formation_Accessibility_Handicap'] = $catalogue->accessibility_handicap == 1 ? 'oui':'non';
 
 
 		}
 
 		$fk_place = property_exists($object, 'placeid') ? $object->placeid : null;
-		if (!empty($agfStep->id) && !empty($agfStep->fk_place)) { //Si l'étape porte un lieu, on le privilégie
+		if (!empty($agfStep->id) && !empty($agfStep->fk_place)) { // Prefer the step place when it is defined.
 			$fk_place = $agfStep->fk_place;
 		}
 
@@ -1425,7 +1427,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs
 	 * @return array
 	 */
-	public function get_substitutionsarray_agefodd_formation(Formation $object, Translate $outputlangs)
+	public function get_substitutionsarray_agefodd_formation(Formation $object, Translate $outputlangs): array
 	{
 		return $this->get_substitutionarray_agefodd_formation($object, $outputlangs);
 	}
@@ -1437,7 +1439,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs
 	 * @return array
 	 */
-	public function get_substitutionsarray_agefodd($object, $outputlangs)
+	public function get_substitutionsarray_agefodd($object, $outputlangs): array
 	{
 		return $this->get_substitutionarray_agefodd($object, $outputlangs);
 	}
@@ -1448,10 +1450,23 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Object $object Dolibarr Object
 	 * @param Translate $outputlangs Language object for output
 	 * @param boolean $recursive Want to fetch child array or child object
+	 * @return array Array of substitution key->code
+	 */
+	public function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = 1): array
+	{
+		return $this->build_substitutionarray_each_var_object($object, $outputlangs, (bool) $recursive);
+	}
+
+	/**
+	 * Internal implementation supporting nested element label prefixes.
+	 *
+	 * @param object $object Dolibarr Object
+	 * @param Translate $outputlangs Language object for output
+	 * @param bool $recursive Want to fetch child array or child object
 	 * @param string $sub_element_label Object Element
 	 * @return array Array of substitution key->code
 	 */
-	public function get_substitutionarray_each_var_object(&$object, $outputlangs, $recursive = 1, $sub_element_label = '')
+	private function build_substitutionarray_each_var_object(&$object, $outputlangs, bool $recursive = true, string $sub_element_label = '')
 	{
 		global $conf;
 
@@ -1465,10 +1480,11 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				if ($key == 'db') continue;
 				else if (($key == 'array_options' && is_object($object)) || $isStagiaireOptionsContainer || $isStagiaireSocOptionsContainer)
 				{
-					// Inspiration depuis Dolibarr ( @see CommonDocGenerator::get_substitutionarray_object() )
-					// à la différence que si l'objet n'a pas de ligne extrafield en BDD, le tag {objvar_object_array_options_options_XXX} affichera vide
-					// au lieu de laisser la clé, ce qui est le cas avec les clés standards Dolibarr : {object_options_XXX}
-					// Retrieve extrafields
+					// Inspired by Dolibarr (@see CommonDocGenerator::get_substitutionarray_object()).
+					// If the object has no extrafield row in the database, the
+					// {objvar_object_array_options_options_XXX} tag resolves to an empty value
+					// instead of keeping the raw placeholder, unlike standard Dolibarr tags such as {object_options_XXX}.
+					// Retrieve extrafields.
 					if (substr($object->element, 0, 7) === 'agefodd') $extrafieldkey=$object->table_element;
 					else $extrafieldkey=$object->element;
 					if ($isStagiaireOptionsContainer) $extrafieldkey = 'agefodd_stagiaire';
@@ -1489,7 +1505,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						foreach ($extralabels as $key_opt => $label_opt) {
 							$array_other['object_options_' . $key_opt] = '';
 							$array_other['object_array_options_options_' . $key_opt] = ''; // backward compatibility
-							// Attention, ce test est différent d'un isset()
+							// Note: this check is intentionally stricter than isset().
 							if (is_array($object->array_options) && count($object->array_options) > 0 && array_key_exists('options_' . $key_opt, $object->array_options)) {
 								$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_' . $key_opt]);
 								$array_other['object_options_' . $key_opt] = $val;
@@ -1498,7 +1514,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						}
 					}
 
-					// Si les clés des extrafields ne sont pas remplacé, c'est que fetch_name_optionals_label() un poil plus haut retour vide (pas la bonne valeur passé en param)
+					// If extrafield keys are not replaced, fetch_name_optionals_label()
+					// most likely returned an empty definition because the wrong element type was provided.
 					continue;
 				}
 				else if ($key === 'agf_globals' && is_array($value))
@@ -1512,7 +1529,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					continue;
 				}
 
-				// Test si attribut public pour les objets pour éviter un bug sure les attributs non publics
+				// Only inspect public object properties to avoid touching non-public attributes.
 				if (is_object($object)) {
 					$reflection = new ReflectionProperty($object, $key);
 					if (! $reflection->isPublic())
@@ -1540,7 +1557,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					$array_other['object_' . $sub_element_label . $key] = $value;
 				} elseif ($recursive && ! empty($value)) {
 					$sub = strtr('object_' . $sub_element_label . $key, array('object_' . $sub_element_label => '')) . '_';
-					$array_other = array_merge($array_other, $this->get_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
+					$array_other = array_merge($array_other, $this->build_substitutionarray_each_var_object($value, $outputlangs, false, $sub));
 				}
 			}
 
@@ -1580,7 +1597,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	}
 
 	/**
-	 * Override de la fonction ExtraFields::showOutputField()
+	 * Override ExtraFields::showOutputField().
 	 *
 	 * @param ExtraFields	$extrafields Extrafields Object
 	 * @param string		$key Key
@@ -1590,7 +1607,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @return string
 	 * @throws Exception
 	 */
-	public function showOutputFieldValue($extrafields, $key, $value, $moreparam='', $extrafieldsobjectkey='')
+	public function showOutputFieldValue($extrafields, $key, $value, $moreparam='', $extrafieldsobjectkey=''): string
 	{
 		global $conf,$langs;
 
@@ -1789,7 +1806,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 		elseif ($type == 'checkbox')
 		{
-			// mise en commentaire pour afficher directement $value
+			// Keep the raw value available when needed.
 //			$value_arr=explode(',',$value);
 //			$value='';
 //			$toprint=array();
@@ -1915,7 +1932,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		}
 
 		//print $type.'-'.$size;
-		$out=$value;
+		$out = ($value === null) ? '' : (string) $value;
 
 		return $out;
 	}
@@ -1949,7 +1966,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
 	/**
-	 *	Fill array with couple extrafield key => extrafield value
+	 * Fill an array with extrafield key => extrafield value pairs.
 	 *
 	 *	@param  Object			$object				Object with extrafields (must have $object->array_options filled)
 	 *	@param  array			$array_to_fill      Substitution array
@@ -1958,10 +1975,10 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 *  @param  Translate		$outputlangs        Lang object to use for output
 	 *	@return	array								Substitution array
 	 */
-	public function fill_substitutionarray_with_extrafields($object, $array_to_fill, $extrafields, $array_key, $outputlangs)
+	public function fill_substitutionarray_with_extrafields($object, $array_to_fill, $extrafields, $array_key, $outputlangs): array
 	{
 
-		//Duplication of code until https://github.com/Dolibarr/dolibarr/pull/11794 is merge
+		// Duplicate local logic until https://github.com/Dolibarr/dolibarr/pull/11794 is merged.
 
 		// phpcs:enable
 		global $conf;

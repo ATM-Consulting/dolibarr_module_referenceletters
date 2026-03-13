@@ -240,7 +240,7 @@ class ReferenceLettersChapters extends CommonObject
 				$this->sort_order = $obj->sort_order;
 				$this->title = $obj->title;
 				$this->content_text = $obj->content_text;
-					$this->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
+				$this->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
 				$this->readonly = $obj->readonly;
 				$this->same_page = $obj->same_page;
 				$this->status = $obj->status;
@@ -316,7 +316,7 @@ class ReferenceLettersChapters extends CommonObject
 					$chapter->sort_order = $obj->sort_order;
 					$chapter->title = $obj->title;
 					$chapter->content_text = $obj->content_text;
-						$chapter->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
+					$chapter->options_text = !empty($obj->options_text) ? unserialize($obj->options_text) : array();
 					$chapter->readonly = $obj->readonly;
 					$chapter->same_page = $obj->same_page;
 					$chapter->status = $obj->status;

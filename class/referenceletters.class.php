@@ -340,7 +340,7 @@ class ReferenceLetters extends CommonObject
 
 		if(!empty($conf->agefodd->enabled)) {
 
-			// Convention de formation
+			// Training convention.
 			$this->element_type_list['rfltr_agefodd_convention'] = array (
 					'class' => 'agsession.class.php',
 					'objectclass' => 'Agsession',
@@ -395,7 +395,7 @@ class ReferenceLetters extends CommonObject
 			}
 
 
-			// programme  formation initial
+			// Initial training program.
 			$this->element_type_list['rfltr_agefodd_formation'] = array (
 				'class' => 'agefodd_formation_catalogue.class.php',
 				'objectclass' => 'Formation',
@@ -416,9 +416,9 @@ class ReferenceLetters extends CommonObject
 			}
 		}
 
-		// Hook permettant à d'autres modules d'ajouter des types de documents
-		// (à terme, on pourrait même utiliser ce hook dans Agefodd et débarrasser DocEdit de toute référence
-		// à Agefodd)
+		// Hook allowing other modules to register additional document types.
+		// In the long term, Agefodd could rely on this hook as well and remove
+		// direct Agefodd-specific knowledge from DocEdit.
 		$parameters = array('element_type_list' => &$this->element_type_list);
 		$hookmanager->executeHooks('referencelettersConstruct', $parameters, $this);
 
@@ -761,7 +761,7 @@ class ReferenceLetters extends CommonObject
 	 * @return array
 	 *
 	 */
-	public function getSubstitutionKey($user) {
+	public function getSubstitutionKey($user): array {
 		global $conf, $langs, $mysoc, $hookmanager;
 
 		require_once 'commondocgeneratorreferenceletters.class.php';
@@ -888,13 +888,13 @@ class ReferenceLetters extends CommonObject
 			!empty($this->element_type_list[$this->element_type]['substitution_method_line'])
 		);
 
-		// Les groupes Agefodd ne doivent etre visibles que sur les documents Agefodd.
+		// Agefodd UI groups must only be exposed on Agefodd documents.
 		if (isModEnabled('agefodd') && $this->isAgefoddElementType($this->element_type)) {
 			$this->completeSubstitutionKeyArrayWithAgefoddData($subst_array);
 		}
 
-		// Fallback generique: si le catalogue detecte de nouvelles cles, on les remonte au moins
-		// dans des groupes avances, sans attendre un ajout manuel dans getSubtitutionKey().
+		// Generic fallback: expose newly detected keys in advanced groups
+		// until they are promoted into explicit UI groups.
 		$catalogBuilder->appendDetectedCatalogKeys($subst_array, (string) $this->element_type, $currentCatalogObject, array(
 			'is_agefodd' => $this->isAgefoddElementType($this->element_type),
 			'is_agefodd_formation' => $this->isAgefoddFormationElementType($this->element_type),
@@ -919,7 +919,7 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user Current user.
 	 * @return array
 	 */
-	public function getSubstitutionKeyPresentation($user)
+	public function getSubstitutionKeyPresentation($user): array
 	{
 		global $langs;
 
@@ -938,7 +938,7 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user Current user.
 	 * @return array<string,mixed>
 	 */
-	public function getSubstitutionKeyUiData($user)
+	public function getSubstitutionKeyUiData($user): array
 	{
 		return array(
 			'tags' => $this->getSubstitutionKeyPresentation($user),
@@ -951,7 +951,7 @@ class ReferenceLetters extends CommonObject
 	 *
 	 * @return array<int,array<string,mixed>>
 	 */
-	public function getLoopCatalogPresentation()
+	public function getLoopCatalogPresentation(): array
 	{
 		global $conf, $langs;
 
@@ -971,8 +971,8 @@ class ReferenceLetters extends CommonObject
 				if ($this->element_type === 'contract') {
 					$loops[] = $this->buildLoopDefinition(
 						'lines_active',
-						'Lignes actives du contrat',
-						'Boucle reservee aux lignes de contrat actives.',
+						'Active contract lines',
+						'Loop limited to active contract lines.',
 						array('line_fulldesc', 'line_date_start_locale', 'line_date_end_locale', 'line_price_ht_locale'),
 						$langs->trans('RefLtrLines')
 					);
@@ -985,15 +985,15 @@ class ReferenceLetters extends CommonObject
 		if ($this->isAgefoddFormationElementType($this->element_type)) {
 			$loops[] = $this->buildLoopDefinition(
 				'TFormationObjPeda',
-				'Objectifs pedagogiques',
-				'Boucle des objectifs pedagogiques de la formation.',
+				'Pedagogic objectives',
+				'Loop over formation pedagogic objectives.',
 				array('line_objpeda_rang', 'line_objpeda_description'),
 				'Agefodd Liste des objectifs pedagogiques'
 			);
 			$loops[] = $this->buildLoopDefinition(
 				'TFormationModules',
-				'Modules de formation',
-				'Boucle des modules de la formation.',
+				'Training modules',
+				'Loop over formation modules.',
 				array('line_module_title', 'line_module_duration', 'line_module_obj_peda', 'line_module_content_text'),
 				'Agefodd Modules formation'
 			);
@@ -1006,113 +1006,113 @@ class ReferenceLetters extends CommonObject
 
 		$loops[] = $this->buildLoopDefinition(
 			'THorairesSession',
-			'Horaires de session',
-			'Boucle des horaires de la session.',
+			'Session schedules',
+			'Loop over session schedules.',
 			array('line_date_session', 'line_heure_debut_session', 'line_heure_fin_session'),
 			'Agefodd Liste des horaires'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TFormationObjPeda',
-			'Objectifs pedagogiques',
-			'Boucle des objectifs pedagogiques de la session.',
+			'Pedagogic objectives',
+			'Loop over session pedagogic objectives.',
 			array('line_objpeda_rang', 'line_objpeda_description'),
 			'Agefodd Liste des objectifs pedagogiques'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TFormationModules',
-			'Modules de formation',
-			'Boucle des modules de la formation.',
+			'Training modules',
+			'Loop over training modules.',
 			array('line_module_title', 'line_module_duration', 'line_module_obj_peda', 'line_module_content_text'),
 			'Agefodd Modules formation'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSession',
 			'Participants',
-			'Boucle de la liste complete des participants.',
+			'Loop over the full participant list.',
 			array('line_nom', 'line_prenom', 'line_email', 'line_statut'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionPresent',
-			'Participants presents',
-			'Boucle des participants presentes dans la session.',
+			'Present participants',
+			'Loop over participants marked as present in the session.',
 			array('line_nom', 'line_prenom', 'line_statut', 'line_stagiaire_presence_total'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionSoc',
-			'Participants par societe',
-			'Boucle des participants regroupes par societe.',
+			'Participants by thirdparty',
+			'Loop over participants grouped by thirdparty.',
 			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_email'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionSocPresent',
-			'Participants presents par societe',
-			'Boucle des participants presents regroupes par societe.',
+			'Present participants by thirdparty',
+			'Loop over present participants grouped by thirdparty.',
 			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_statut'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionSocConfirm',
-			'Participants confirmes par societe',
-			'Boucle des participants confirmes regroupes par societe.',
+			'Confirmed participants by thirdparty',
+			'Loop over confirmed participants grouped by thirdparty.',
 			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_email'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionSocMore',
-			'Participants par societe (detail complementaire)',
-			'Boucle complementaire de participants regroupes par societe.',
+			'Participants by thirdparty (extended details)',
+			'Additional participant loop grouped by thirdparty.',
 			array('line_nom_societe', 'line_nom', 'line_prenom', 'line_type'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStagiairesSessionConvention',
-			'Participants convention',
-			'Boucle reservee aux participants de convention.',
+			'Convention participants',
+			'Loop limited to convention participants.',
 			array('line_nom', 'line_prenom', 'line_email', 'line_financiers_trainee'),
 			'Agefodd Liste des participants'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TFormateursSession',
-			'Formateurs',
-			'Boucle des formateurs rattaches a la session.',
+			'Trainers',
+			'Loop over trainers attached to the session.',
 			array('line_formateur_nom', 'line_formateur_prenom', 'line_formateur_mail', 'line_formateur_phone'),
 			'Agefodd Liste des formateurs'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TConventionFinancialLine',
-			'Lignes financieres convention',
-			'Boucle des lignes financieres de convention.',
+			'Convention financial lines',
+			'Loop over convention financial lines.',
 			array('line_fin_desciption', 'line_fin_qty', 'line_fin_amount_ht', 'line_fin_amount_ttc'),
 			'Agefodd Lignes financieres session'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TFormateursSessionCal',
-			'Agenda formateur',
-			'Boucle du calendrier formateur.',
+			'Trainer schedule',
+			'Loop over the trainer schedule.',
 			array('line_formateur_nom', 'line_date_session', 'line_heure_debut_session', 'line_heure_fin_session'),
 			'Agefodd Agenda formateur'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TSteps',
-			'Etapes',
-			'Boucle de toutes les etapes de la session.',
+			'Steps',
+			'Loop over all session steps.',
 			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_lieu'),
 			'Agefodd Liste des etapes'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStepsDistanciel',
-			'Etapes distancielles',
-			'Boucle des etapes distancielles.',
+			'Remote steps',
+			'Loop over remote steps.',
 			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_duration'),
 			'Agefodd Liste des etapes'
 		);
 		$loops[] = $this->buildLoopDefinition(
 			'TStepsPresentiel',
-			'Etapes presentiel',
-			'Boucle des etapes en presentiel.',
+			'On-site steps',
+			'Loop over on-site steps.',
 			array('line_step_label', 'line_step_date_start', 'line_step_date_end', 'line_step_lieu'),
 			'Agefodd Liste des etapes'
 		);
@@ -1120,15 +1120,15 @@ class ReferenceLetters extends CommonObject
 		if (!empty($conf->agefoddcertificat->enabled)) {
 			$loops[] = $this->buildLoopDefinition(
 				'TSessionStagiairesCertif',
-				'Certificats stagiaires',
-				'Boucle des certificats relies aux stagiaires.',
+				'Trainee certificates',
+				'Loop over trainee certificates.',
 				array('line_certif_code', 'line_certif_label', 'line_certif_date_debut', 'line_certif_date_fin'),
 				'Agefodd Liste des participants'
 			);
 			$loops[] = $this->buildLoopDefinition(
 				'TSessionStagiairesCertifSoc',
-				'Certificats stagiaires par societe',
-				'Boucle des certificats stagiaires regroupes par societe.',
+				'Trainee certificates by thirdparty',
+				'Loop over trainee certificates grouped by thirdparty.',
 				array('line_nom_societe', 'line_certif_code', 'line_certif_label', 'line_certif_date_fin'),
 				'Agefodd Liste des participants'
 			);
@@ -1147,7 +1147,7 @@ class ReferenceLetters extends CommonObject
 	 * @param string $groupLabel UI group label containing the related fields.
 	 * @return array<string,mixed>
 	 */
-	protected function buildLoopDefinition($segment, $label, $description, array $sampleTags, $groupLabel = '')
+	protected function buildLoopDefinition(string $segment, string $label, string $description, array $sampleTags, string $groupLabel = ''): array
 	{
 		global $langs;
 
@@ -1178,7 +1178,7 @@ class ReferenceLetters extends CommonObject
 	 * @param array $subst_array
 	 * @return void
 	 */
-	public function completeSubstitutionKeyArrayWithAgefoddData(&$subst_array) {
+	public function completeSubstitutionKeyArrayWithAgefoddData(array &$subst_array): void {
 
 		global $langs, $conf;
 
@@ -1189,28 +1189,28 @@ class ReferenceLetters extends CommonObject
 		$isSessionDoc = $this->isAgefoddSessionElementType($this->element_type);
 
 		$groupLabels = array(
-			'formation_catalogue' => 'Agefodd Formation catalogue',
-			'trainer_mission' => 'Agefodd Formateur mission',
-			'session' => 'Agefodd Session courante',
-			'training' => 'Agefodd Formation',
-			'organization' => 'Agefodd Contexte session',
-			'training_modules' => 'Agefodd Modules formation',
-			'participants' => 'Agefodd Liste des participants',
-			'steps' => 'Agefodd Liste des etapes',
-			'step' => 'Agefodd Etape courante',
-			'horaires' => 'Agefodd Liste des horaires',
-			'formateurs' => 'Agefodd Liste des formateurs',
-			'financial_lines' => 'Agefodd Lignes financieres session',
-			'pedagogic_objectives' => 'Agefodd Liste des objectifs pedagogiques',
-			'trainee' => 'Agefodd Stagiaire courant',
-			'convention' => 'Agefodd Convention',
-			'trainer_times' => 'Agefodd Agenda formateur',
+			'formation_catalogue' => $langs->trans('RefLtrGroupAgefoddFormationCatalogue'),
+			'trainer_mission' => $langs->trans('RefLtrGroupAgefoddTrainerMission'),
+			'session' => $langs->trans('RefLtrGroupAgefoddCurrentSession'),
+			'training' => $langs->trans('RefLtrGroupAgefoddTraining'),
+			'organization' => $langs->trans('RefLtrGroupAgefoddSessionContext'),
+			'training_modules' => $langs->trans('RefLtrGroupAgefoddTrainingModules'),
+			'participants' => $langs->trans('RefLtrGroupAgefoddParticipants'),
+			'steps' => $langs->trans('RefLtrGroupAgefoddSteps'),
+			'step' => $langs->trans('RefLtrGroupAgefoddCurrentStep'),
+			'horaires' => $langs->trans('RefLtrGroupAgefoddSchedules'),
+			'formateurs' => $langs->trans('RefLtrGroupAgefoddTrainers'),
+			'financial_lines' => $langs->trans('RefLtrGroupAgefoddFinancialLines'),
+			'pedagogic_objectives' => $langs->trans('RefLtrGroupAgefoddPedagogicObjectives'),
+			'trainee' => $langs->trans('RefLtrGroupAgefoddCurrentTrainee'),
+			'convention' => $langs->trans('RefLtrGroupAgefoddConvention'),
+			'trainer_times' => $langs->trans('RefLtrGroupAgefoddTrainerSchedule'),
 		);
 
 			$catalogBuilder = new SubstitutionCatalogBuilder($this->db, $this, new CommonDocGeneratorReferenceLetters($this->db), $langs);
 
-			// On supprime le bloc legacy brut du document Agefodd ainsi que l'ancien groupe Agsession
-			// pour ne conserver que les groupes metier refaits a la main.
+			// Drop the raw legacy Agefodd block and the old Agsession group
+			// to keep only the curated business-oriented groups.
 			$legacyTitle = '';
 			if (!empty($this->element_type_list[$this->element_type]['title'])) {
 				$legacyTitle = $langs->trans($this->element_type_list[$this->element_type]['title']);
@@ -1270,7 +1270,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 
-		// Réservé aux lignes de contrats
+		// Reserved for contract lines only.
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture'] = 'Date démarrage réelle (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_ouverture_prevue'] = 'Date prévue de démarrage (réservé aux contrats)';
 		$subst_array[$langs->trans('RefLtrLines')]['date_fin_validite'] = 'Date fin réelle (réservé aux contrats)';
@@ -1288,7 +1288,7 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user
 	 * @return array
 	 */
-	public function getSubtitutionKey($user) {
+	public function getSubtitutionKey($user): array {
 		return $this->getSubstitutionKey($user);
 	}
 
@@ -1298,7 +1298,7 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user
 	 * @return array
 	 */
-	public function getSubtitutionKeyPresentation($user)
+	public function getSubtitutionKeyPresentation($user): array
 	{
 		return $this->getSubstitutionKeyPresentation($user);
 	}
@@ -1309,7 +1309,7 @@ class ReferenceLetters extends CommonObject
 	 * @param User $user
 	 * @return array<string,mixed>
 	 */
-	public function getSubtitutionKeyUiData($user)
+	public function getSubtitutionKeyUiData($user): array
 	{
 		return $this->getSubstitutionKeyUiData($user);
 	}
@@ -1320,16 +1320,16 @@ class ReferenceLetters extends CommonObject
 	 * @param array<string,mixed> $subst_array
 	 * @return void
 	 */
-	public function completeSubtitutionKeyArrayWithAgefoddData(&$subst_array) {
+	public function completeSubtitutionKeyArrayWithAgefoddData(array &$subst_array): void {
 		$this->completeSubstitutionKeyArrayWithAgefoddData($subst_array);
 	}
 
-	protected function isAgefoddElementType($elementType)
+	protected function isAgefoddElementType(string $elementType): bool
 	{
 		return is_string($elementType) && strpos($elementType, 'rfltr_agefodd_') === 0;
 	}
 
-	protected function isAgefoddFormationElementType($elementType)
+	protected function isAgefoddFormationElementType(string $elementType): bool
 	{
 		return in_array($elementType, array(
 			'rfltr_agefodd_formation',
@@ -1338,22 +1338,22 @@ class ReferenceLetters extends CommonObject
 		), true);
 	}
 
-	protected function isAgefoddSessionElementType($elementType)
+	protected function isAgefoddSessionElementType(string $elementType): bool
 	{
 		return $this->isAgefoddElementType($elementType) && !$this->isAgefoddFormationElementType($elementType);
 	}
 
-	protected function isAgefoddTrainerElementType($elementType)
+	protected function isAgefoddTrainerElementType(string $elementType): bool
 	{
 		return in_array($elementType, array('rfltr_agefodd_mission_trainer', 'rfltr_agefodd_contrat_trainer'), true);
 	}
 
-	protected function isAgefoddTraineeElementType($elementType)
+	protected function isAgefoddTraineeElementType(string $elementType): bool
 	{
 		return is_string($elementType) && preg_match('/_trainee$/', $elementType);
 	}
 
-	protected function isAgefoddConventionElementType($elementType)
+	protected function isAgefoddConventionElementType(string $elementType): bool
 	{
 		return $elementType === 'rfltr_agefodd_convention';
 	}
@@ -1587,7 +1587,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error) {
-			// Clone Chapters
+			// Clone chapters.
 			require_once 'referenceletterschapters.class.php';
 			$chapters = new ReferenceLettersChapters($this->db);
 			$chaptersnew = new ReferenceLettersChapters($this->db);

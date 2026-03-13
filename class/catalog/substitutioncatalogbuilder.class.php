@@ -37,7 +37,7 @@ class SubstitutionCatalogBuilder
 		$this->referenceletters = $referenceletters;
 		$this->docgen = $docgen;
 		$this->langs = $langs;
-		$this->groupingPolicy = new SubstitutionCatalogGroupingPolicy();
+		$this->groupingPolicy = new SubstitutionCatalogGroupingPolicy($langs);
 		$this->visibilityPolicy = new SubstitutionCatalogVisibilityPolicy();
 		$this->providers = array(
 			'standard' => new SubstitutionCatalogStandardProvider($db, $docgen, $langs),

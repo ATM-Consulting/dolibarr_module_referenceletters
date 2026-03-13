@@ -5,6 +5,17 @@
  */
 class SubstitutionCatalogGroupingPolicy
 {
+	/** @var Translate */
+	protected Translate $langs;
+
+	/**
+	 * @param Translate $langs
+	 */
+	public function __construct(Translate $langs)
+	{
+		$this->langs = $langs;
+	}
+
 	/**
 	 * Resolve the display group label for a detected key.
 	 *
@@ -17,42 +28,42 @@ class SubstitutionCatalogGroupingPolicy
 	{
 		if ($isAgefodd) {
 			$agefoddGroupPrefixes = array(
-				'objvar_object_convention_' => 'Agefodd Convention avance',
-				'objvar_object_signataire_' => 'Agefodd Convention avance',
-				'objvar_object_session_catalogue_' => 'Agefodd Session avance',
-				'objvar_object_formation_catalogue_' => 'Agefodd Session avance',
-				'formation_' => 'Agefodd Session avance',
-				'stagiaire_' => 'Agefodd Session avance',
-				'time_stagiaire_' => 'Agefodd Session avance',
-				'objvar_object_stagiaire_' => 'Agefodd Stagiaire avance',
-				'formation_agenda_ics' => 'Agefodd Stagiaire avance',
-				'objvar_object_formateur_session_' => 'Agefodd Formateur avance',
-				'trainer_' => 'Agefodd Formateur avance',
-				'line_' => 'Agefodd Lignes avancees',
+				'objvar_object_convention_' => 'RefLtrGroupAgefoddConventionAdvanced',
+				'objvar_object_signataire_' => 'RefLtrGroupAgefoddConventionAdvanced',
+				'objvar_object_session_catalogue_' => 'RefLtrGroupAgefoddSessionAdvanced',
+				'objvar_object_formation_catalogue_' => 'RefLtrGroupAgefoddSessionAdvanced',
+				'formation_' => 'RefLtrGroupAgefoddSessionAdvanced',
+				'stagiaire_' => 'RefLtrGroupAgefoddSessionAdvanced',
+				'time_stagiaire_' => 'RefLtrGroupAgefoddSessionAdvanced',
+				'objvar_object_stagiaire_' => 'RefLtrGroupAgefoddTraineeAdvanced',
+				'formation_agenda_ics' => 'RefLtrGroupAgefoddTraineeAdvanced',
+				'objvar_object_formateur_session_' => 'RefLtrGroupAgefoddTrainerAdvanced',
+				'trainer_' => 'RefLtrGroupAgefoddTrainerAdvanced',
+				'line_' => 'RefLtrGroupAgefoddLinesAdvanced',
 			);
 
-			foreach ($agefoddGroupPrefixes as $prefix => $label) {
+			foreach ($agefoddGroupPrefixes as $prefix => $labelKey) {
 				if (strpos($tag, $prefix) === 0) {
-					return $label;
+					return $this->langs->trans($labelKey);
 				}
 			}
 		}
 
 		$genericGroupPrefixes = array(
-			'cust_contactclient_' => 'Contacts externes avances',
-			'cust_company_' => 'Tiers avance',
-			'line_' => 'Lignes avancees',
-			'objvar_' => 'Objet avance',
-			'object_' => 'Objet avance',
-			'referenceletters_' => 'ReferenceLetters avance',
+			'cust_contactclient_' => 'RefLtrGroupExternalContactsAdvanced',
+			'cust_company_' => 'RefLtrGroupThirdpartyAdvanced',
+			'line_' => 'RefLtrGroupLinesAdvanced',
+			'objvar_' => 'RefLtrGroupObjectAdvanced',
+			'object_' => 'RefLtrGroupObjectAdvanced',
+			'referenceletters_' => 'RefLtrGroupReferenceLettersAdvanced',
 		);
 
-		foreach ($genericGroupPrefixes as $prefix => $label) {
+		foreach ($genericGroupPrefixes as $prefix => $labelKey) {
 			if (strpos($tag, $prefix) === 0) {
-				return $label;
+				return $this->langs->trans($labelKey);
 			}
 		}
 
-		return $isAgefodd ? 'Agefodd avance' : 'Autres cles avancees';
+		return $this->langs->trans($isAgefodd ? 'RefLtrGroupAgefoddAdvanced' : 'RefLtrGroupOtherAdvancedKeys');
 	}
 }

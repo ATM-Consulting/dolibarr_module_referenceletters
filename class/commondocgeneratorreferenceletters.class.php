@@ -264,7 +264,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	 * @param Translate $outputlangs Translate instance
 	 * @return NULL[]
 	 */
-	function get_substitutionarray_refletter($referenceletters, $outputlangs) {
+	public function get_substitutionarray_refletter($referenceletters, $outputlangs) {
 		return array(
 				'referenceletters_title' => $referenceletters->title,
 				'referenceletters_ref_int' => $referenceletters->ref_int,

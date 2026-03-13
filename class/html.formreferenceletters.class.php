@@ -470,7 +470,6 @@ class FormReferenceLetters extends Form
                                 $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + shortcode,"3000","false",{ remove: function (){}})  ;
 
                             }catch (err) {
-                                console.log("Unable to copy ckeditor not ready ?.");
                                 $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
 
                             }
@@ -490,7 +489,7 @@ class FormReferenceLetters extends Form
                             $( "#subtitutionkey" ).dialog( "close" );
                         }
                         else{
-                            console.log("shortcodeTarget notfound");
+                            $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
                         }
                    });
 
@@ -528,89 +527,7 @@ class FormReferenceLetters extends Form
                 });
                 </script>
 
-                <style>
-                .ui-dialog { z-index: 1000 !important ;}
-                #subtitutionkey {
-                    overflow-x: hidden;
-                }
-                #subtitutionkey .accordion-refltertags-body {
-                    overflow-x: hidden;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-table {
-                    width: 100%;
-                    table-layout: fixed;
-                    border-collapse: collapse;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-table .referenceletter-subtitutionkey-col-desc {
-                    width: 44%;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-table .referenceletter-subtitutionkey-col-tag {
-                    width: 36%;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-table .referenceletter-subtitutionkey-col-format {
-                    width: 20%;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-table th,
-                #subtitutionkey .referenceletter-subtitutionkey-table td {
-                    vertical-align: top;
-                    overflow-wrap: anywhere;
-                    word-break: break-word;
-                    white-space: normal;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey,
-                #subtitutionkey .referenceletter-subtitutionkey-desc,
-                #subtitutionkey .referenceletter-subtitutionkey-col {
-                    overflow-wrap: anywhere;
-                    word-break: break-word;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-desc .referenceletter-subtitutionkey,
-                #subtitutionkey .referenceletter-subtitutionkey-col .referenceletter-subtitutionkey {
-                    display: block;
-                }
-                #subtitutionkey .referenceletter-subtitutionkey-col .referenceletter-subtitutionkey {
-                    font-family: monospace;
-                    font-size: 0.95em;
-                }
-                #subtitutionkey .referenceletter-loop-notice {
-                    margin: 0 0 12px 0;
-                    padding: 10px 12px;
-                    background: #f4f7fb;
-                    border: 1px solid #d7e3f0;
-                    border-radius: 4px;
-                    line-height: 1.4;
-                }
-                #subtitutionkey .referenceletter-entry-meta {
-                    margin-top: 6px;
-                }
-                #subtitutionkey .referenceletter-entry-badge {
-                    display: inline-block;
-                    margin-right: 8px;
-                    margin-bottom: 4px;
-                    padding: 2px 8px;
-                    border-radius: 999px;
-                    font-size: 11px;
-                    font-weight: 600;
-                    line-height: 1.5;
-                }
-                #subtitutionkey .referenceletter-entry-badge-scalar {
-                    background: #e7f4ea;
-                    color: #1c6b35;
-                }
-                #subtitutionkey .referenceletter-entry-badge-loop {
-                    background: #fff1d6;
-                    color: #8a5a00;
-                }
-                #subtitutionkey .referenceletter-entry-badge-technical {
-                    background: #eceff3;
-                    color: #465468;
-                }
-                #subtitutionkey .referenceletter-entry-usage {
-                    display: inline;
-                    color: #5f6f82;
-                    font-size: 12px;
-                    line-height: 1.5;
-                }
-                </style>
+                <link rel="stylesheet" type="text/css" href="'.dol_buildpath('/referenceletters/css/view_documents.css', 1).'">
                 ';
 		return $html;
 	}

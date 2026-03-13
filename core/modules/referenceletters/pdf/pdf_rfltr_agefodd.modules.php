@@ -71,7 +71,7 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 	 * @param int $fk_step
 	 * @return int 1=OK, 0=KO
 	 */
-		function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
+	public function write_file_custom_agefodd($id_object, $id_model, $outputlangs, $file, $obj_agefodd_convention = '', $socid = '', $courrier = '', $isCertif = false, $fk_step = 0, $fk_training = 0) {
 			global $db, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		dol_include_once('/referenceletters/class/referenceletters_tools.class.php');

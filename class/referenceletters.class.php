@@ -813,15 +813,15 @@ class ReferenceLetters extends CommonObject
 						$testObj->fetch_lines();
 					}
 
-					$array_second_thirdparty_object = array();
+					$arraySecondThirdpartyObject = array();
 
 					if ($testObj->element == 'societe') {
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
+						$arrayFirstThirdpartyObject = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
-						foreach ($array_first_thirdparty_object as $key => $value) {
-							$array_second_thirdparty_object['cust_' . $key] = $value;
+						foreach ($arrayFirstThirdpartyObject as $key => $value) {
+							$arraySecondThirdpartyObject['cust_' . $key] = $value;
 						}
-						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
+						$subst_array[$langs->trans($item['title'])] = $arraySecondThirdpartyObject;
 					} else {
 						dol_syslog($item['substitution_method']);
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
@@ -832,13 +832,13 @@ class ReferenceLetters extends CommonObject
 					}
 
 					if (! empty($testObj->thirdparty->id)) {
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
-						foreach ($array_first_thirdparty_object as $key => $value) {
-							$array_second_thirdparty_object['cust_' . $key] = $value;
+						$arrayFirstThirdpartyObject = $docgen->get_substitutionarray_thirdparty($testObj->thirdparty, $langs);
+						foreach ($arrayFirstThirdpartyObject as $key => $value) {
+							$arraySecondThirdpartyObject['cust_' . $key] = $value;
 						}
 					}
 
-					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+					$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $arraySecondThirdpartyObject);
 					$catalogBuilder->appendThirdpartyCatalogKeys($subst_array[$langs->trans($item['title'])], !empty($testObj->thirdparty) ? $testObj->thirdparty : null);
 
 					$contextOther = $docgen->get_substitutionarray_other($langs, $testObj);
@@ -846,15 +846,15 @@ class ReferenceLetters extends CommonObject
 					$catalogBuilder->sanitizeGlobalCatalogKeys($contextOther, $mailOnlyTags);
 					$subst_array[$langs->trans('Other')] = array_merge($subst_array[$langs->trans('Other')], $contextOther);
 				} else {
-					$array_second_thirdparty_object = array();
+					$arraySecondThirdpartyObject = array();
 					$currentCatalogObject = $testObj;
 					if ($testObj->element == 'societe') {
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
+						$arrayFirstThirdpartyObject = $docgen->get_substitutionarray_thirdparty($testObj, $langs);
 
-						foreach ($array_first_thirdparty_object as $key => $value) {
-							$array_second_thirdparty_object['cust_' . $key] = $value;
+						foreach ($arrayFirstThirdpartyObject as $key => $value) {
+							$arraySecondThirdpartyObject['cust_' . $key] = $value;
 						}
-						$subst_array[$langs->trans($item['title'])] = $array_second_thirdparty_object;
+						$subst_array[$langs->trans($item['title'])] = $arraySecondThirdpartyObject;
 					} else {
 						$subst_array[$langs->trans($item['title'])] = $docgen->{$item['substitution_method']}($testObj, $langs);
 						$catalogBuilder->appendExternalContactCatalogKeys($subst_array[$langs->trans($item['title'])], $testObj);
@@ -863,11 +863,11 @@ class ReferenceLetters extends CommonObject
 						}
 
 						$thirdpartyStatic = new Societe($this->db);
-						$array_first_thirdparty_object = $docgen->get_substitutionarray_thirdparty($thirdpartyStatic, $langs);
-						foreach ($array_first_thirdparty_object as $key => $value) {
-							$array_second_thirdparty_object['cust_' . $key] = $value;
+						$arrayFirstThirdpartyObject = $docgen->get_substitutionarray_thirdparty($thirdpartyStatic, $langs);
+						foreach ($arrayFirstThirdpartyObject as $key => $value) {
+							$arraySecondThirdpartyObject['cust_' . $key] = $value;
 						}
-						$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $array_second_thirdparty_object);
+						$subst_array[$langs->trans($item['title'])] = array_merge($subst_array[$langs->trans($item['title'])], $arraySecondThirdpartyObject);
 						$catalogBuilder->appendThirdpartyCatalogKeys($subst_array[$langs->trans($item['title'])], $thirdpartyStatic);
 					}
 

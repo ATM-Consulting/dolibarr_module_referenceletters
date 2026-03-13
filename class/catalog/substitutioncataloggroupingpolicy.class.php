@@ -16,46 +16,41 @@ class SubstitutionCatalogGroupingPolicy
 	public function resolveGroupLabel(string $tag, string $elementType, bool $isAgefodd): string
 	{
 		if ($isAgefodd) {
-			if (strpos($tag, 'objvar_object_convention_') === 0) {
-				return 'Agefodd Convention avance';
-			}
-			if (strpos($tag, 'objvar_object_session_catalogue_') === 0 || strpos($tag, 'objvar_object_formation_catalogue_') === 0) {
-				return 'Agefodd Session avance';
-			}
-			if (strpos($tag, 'objvar_object_stagiaire_') === 0 || strpos($tag, 'formation_agenda_ics') === 0) {
-				return 'Agefodd Stagiaire avance';
-			}
-			if (strpos($tag, 'objvar_object_formateur_session_') === 0 || strpos($tag, 'trainer_') === 0) {
-				return 'Agefodd Formateur avance';
-			}
-			if (strpos($tag, 'objvar_object_signataire_') === 0) {
-				return 'Agefodd Convention avance';
-			}
-			if (strpos($tag, 'formation_') === 0 || strpos($tag, 'stagiaire_') === 0 || strpos($tag, 'time_stagiaire_') === 0) {
-				return 'Agefodd Session avance';
-			}
-			if (strpos($tag, 'line_') === 0) {
-				return 'Agefodd Lignes avancees';
+			$agefoddGroupPrefixes = array(
+				'objvar_object_convention_' => 'Agefodd Convention avance',
+				'objvar_object_signataire_' => 'Agefodd Convention avance',
+				'objvar_object_session_catalogue_' => 'Agefodd Session avance',
+				'objvar_object_formation_catalogue_' => 'Agefodd Session avance',
+				'formation_' => 'Agefodd Session avance',
+				'stagiaire_' => 'Agefodd Session avance',
+				'time_stagiaire_' => 'Agefodd Session avance',
+				'objvar_object_stagiaire_' => 'Agefodd Stagiaire avance',
+				'formation_agenda_ics' => 'Agefodd Stagiaire avance',
+				'objvar_object_formateur_session_' => 'Agefodd Formateur avance',
+				'trainer_' => 'Agefodd Formateur avance',
+				'line_' => 'Agefodd Lignes avancees',
+			);
+
+			foreach ($agefoddGroupPrefixes as $prefix => $label) {
+				if (strpos($tag, $prefix) === 0) {
+					return $label;
+				}
 			}
 		}
 
-		if (strpos($tag, 'cust_contactclient_') === 0) {
-			return 'Contacts externes avances';
-		}
-		if (strpos($tag, 'cust_company_') === 0) {
-			return 'Tiers avance';
-		}
-		if (strpos($tag, 'line_') === 0) {
-			return 'Lignes avancees';
-		}
-		if (strpos($tag, 'objvar_') === 0) {
-			return 'Objet avance';
-		}
-		if (strpos($tag, 'object_') === 0) {
-			return 'Objet avance';
-		}
-		if (strpos($tag, 'referenceletters_') === 0) {
-			return 'ReferenceLetters avance';
+		$genericGroupPrefixes = array(
+			'cust_contactclient_' => 'Contacts externes avances',
+			'cust_company_' => 'Tiers avance',
+			'line_' => 'Lignes avancees',
+			'objvar_' => 'Objet avance',
+			'object_' => 'Objet avance',
+			'referenceletters_' => 'ReferenceLetters avance',
+		);
+
+		foreach ($genericGroupPrefixes as $prefix => $label) {
+			if (strpos($tag, $prefix) === 0) {
+				return $label;
+			}
 		}
 
 		return $isAgefodd ? 'Agefodd avance' : 'Autres cles avancees';

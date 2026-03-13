@@ -22,7 +22,7 @@ abstract class SubstitutionCatalogAgefoddAbstractProvider implements Substitutio
 		$this->db = $db;
 		$this->langs = $langs;
 		$this->langs->load('referenceletters@referenceletters');
-		$this->langs->load('refflettersubtitution@referenceletters');
+		$this->langs->load('reflettersubstitution@referenceletters');
 	}
 
 	/**

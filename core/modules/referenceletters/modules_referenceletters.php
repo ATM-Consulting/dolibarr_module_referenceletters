@@ -662,7 +662,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param Translate $outputlangs Translate langs
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt='', $outputlangs=null) {
+	public function setSubstitutions(&$object, $txt='', $outputlangs=null) {
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
@@ -823,8 +823,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if ($substitution_array['{object_total_volume}'] != '') {
 						$substitution_array['{object_total_volume}'] = showDimensionInBestUnit($substitution_array['{object_total_volume}'], 0, "volume", $outputlangs);
 					}
-						if (property_exists($object, 'trueWeight') && !empty($object->trueWeight)) $substitution_array['object_total_weight}'] = showDimensionInBestUnit($object->trueWeight, $object->weight_units, "weight", $outputlangs);
-						if (property_exists($object, 'trueVolume') && !empty($object->trueVolume)) $substitution_array['object_total_volume}'] = showDimensionInBestUnit($object->trueVolume, $object->volume_units, "volume", $outputlangs);
+					if (property_exists($object, 'trueWeight') && !empty($object->trueWeight)) {
+						$substitution_array['{object_total_weight}'] = showDimensionInBestUnit($object->trueWeight, $object->weight_units, "weight", $outputlangs);
+					}
+					if (property_exists($object, 'trueVolume') && !empty($object->trueVolume)) {
+						$substitution_array['{object_total_volume}'] = showDimensionInBestUnit($object->trueVolume, $object->volume_units, "volume", $outputlangs);
+					}
 				}
 				$substitution_array['{object_total_qty_ordered}'] = $tmparraytotal['ordered'];
 				$substitution_array['{object_total_qty_toship}'] = $tmparraytotal['toship'];

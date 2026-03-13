@@ -58,7 +58,7 @@ restrictedArea($user, 'referenceletters');
 
 // Load translation files required by the page
 $langs->load("referenceletters@referenceletters");
-$langs->load("refflettersubtitution@referenceletters");
+$langs->load("reflettersubstitution@referenceletters");
 
 $urlToken = '';
 if(function_exists('newToken')) $urlToken = '&token='.newToken();
@@ -850,4 +850,3 @@ function _print_docedit_header($object, $norepeat=false){
 
     print '</div><!-- END docedit_document_head -->';
 }
-

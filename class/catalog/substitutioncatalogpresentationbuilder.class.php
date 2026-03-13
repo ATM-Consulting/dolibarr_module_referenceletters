@@ -40,7 +40,7 @@ class SubstitutionCatalogPresentationBuilder
 	{
 		$this->db = $db;
 		$this->langs = $langs;
-		$this->langs->load('refflettersubtitution@referenceletters');
+		$this->langs->load('reflettersubstitution@referenceletters');
 	}
 
 	/**
@@ -186,6 +186,16 @@ class SubstitutionCatalogPresentationBuilder
 	 */
 	protected function resolveStructuredDescription(string $tag, bool $includeGenericPrefixes = true): string
 	{
+		$technicalObjectPrefixes = array(
+			'objvar_object_contact_' => 'Propriete technique contact',
+			'objvar_object_thirdparty_' => 'Propriete technique tiers',
+			'objvar_object_user_' => 'Propriete technique utilisateur',
+			'objvar_object_formation_' => 'Propriete technique formation',
+			'objvar_object_array_options_options_' => 'Options techniques de l\'objet',
+			'objvar_object_options_' => 'Champs complementaires techniques',
+			'objvar_object_linkedObjectsFullLoaded_' => 'Objet lie charge',
+		);
+
 		if (preg_match('/^cust_contactclient_([A-Z_]+)_([0-9]+)_(.+)$/', $tag, $matches)) {
 			return $this->formatContactDescription($matches[1], $matches[2], $matches[3]);
 		}
@@ -202,32 +212,10 @@ class SubstitutionCatalogPresentationBuilder
 			return $this->formatCurrentObjectOptionDescription($tag);
 		}
 
-		if (strpos($tag, 'objvar_object_contact_') === 0) {
-			return 'Propriete technique contact - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_contact_')));
-		}
-
-		if (strpos($tag, 'objvar_object_thirdparty_') === 0) {
-			return 'Propriete technique tiers - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_thirdparty_')));
-		}
-
-		if (strpos($tag, 'objvar_object_user_') === 0) {
-			return 'Propriete technique utilisateur - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_user_')));
-		}
-
-		if (strpos($tag, 'objvar_object_formation_') === 0) {
-			return 'Propriete technique formation - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_formation_')));
-		}
-
-		if (strpos($tag, 'objvar_object_array_options_options_') === 0) {
-			return 'Options techniques de l\'objet - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_array_options_options_')));
-		}
-
-		if (strpos($tag, 'objvar_object_options_') === 0) {
-			return 'Champs complementaires techniques - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_options_')));
-		}
-
-		if (strpos($tag, 'objvar_object_linkedObjectsFullLoaded_') === 0) {
-			return 'Objet lie charge - ' . $this->humanizeToken(substr($tag, strlen('objvar_object_linkedObjectsFullLoaded_')));
+		foreach ($technicalObjectPrefixes as $prefix => $label) {
+			if (strpos($tag, $prefix) === 0) {
+				return $label . ' - ' . $this->humanizeToken(substr($tag, strlen($prefix)));
+			}
 		}
 
 		if (strpos($tag, 'objvar_object_') === 0) {

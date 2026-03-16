@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ## Release 2.21 - 13/05/2024
 
+- FIX : Stabilisation DocEdit / Agefodd sur la chaîne UI -> runtime -> rendu, correction des substitutions manquantes, boucles exposées de façon cohérente avec l'UI et durcissement des modèles Agefodd liés *12/03/2026* - 2.21.9
 - FIX : DA025953 les extrafields numériques de société liées aux stagaires ne fonctionnaient pas *10/01/2025* - 2.21.8
 - FIX : DA025482 Clés manquantes : formation_id formation_programme *14/10/2024* - 2.21.7
 - FIX : DA025482 Formatage du champs datec - *12/09/2024* - 2.21.6

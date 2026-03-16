@@ -662,7 +662,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 	 * @param Translate $outputlangs Translate langs
 	 * @return mixed
 	 */
-	function setSubstitutions(&$object, $txt='', $outputlangs=null) {
+	public function setSubstitutions(&$object, $txt='', $outputlangs=null) {
 		global $user, $mysoc, $conf;
 
 		if (empty($outputlangs)) $outputlangs = $this->outputlangs;
@@ -704,10 +704,10 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		$tmparray = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 		$substitution_array = array();
 		if (is_array($tmparray) && count($tmparray) > 0) {
-			foreach ( $tmparray as $key => $value ) {
-			    if ($key == 'company_address') $value = nl2br($value);
-				$substitution_array['{cust_' . $key . '}'] = $value;
-			}
+				foreach ( $tmparray as $key => $value ) {
+				    if ($key == 'company_address') $value = is_string($value) ? nl2br($value) : '';
+					$substitution_array['{cust_' . $key . '}'] = $value;
+				}
 			$txt = str_replace(array_keys($substitution_array), array_values($substitution_array), $txt);
 		}
 
@@ -759,7 +759,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Agsession' ) {
-			$tmparray = $this->get_substitutionsarray_agefodd($object, $outputlangs);
+			$tmparray = $this->get_substitutionarray_agefodd($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -770,7 +770,7 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 		}
 
 		if (get_class($object) === 'Formation' ) {
-			$tmparray = $this->get_substitutionsarray_agefodd_formation($object, $outputlangs);
+			$tmparray = $this->get_substitutionarray_agefodd_formation($object, $outputlangs);
 			$substitution_array = array();
 			if (is_array($tmparray) && count($tmparray) > 0) {
 				foreach ( $tmparray as $key => $value ) {
@@ -823,8 +823,12 @@ abstract class ModelePDFReferenceLetters extends CommonDocGeneratorReferenceLett
 					if ($substitution_array['{object_total_volume}'] != '') {
 						$substitution_array['{object_total_volume}'] = showDimensionInBestUnit($substitution_array['{object_total_volume}'], 0, "volume", $outputlangs);
 					}
-					if ($object->trueWeight) $substitution_array['object_total_weight}'] = showDimensionInBestUnit($object->trueWeight, $object->weight_units, "weight", $outputlangs);
-					if ($object->trueVolume) $substitution_array['object_total_volume}'] = showDimensionInBestUnit($object->trueVolume, $object->volume_units, "volume", $outputlangs);
+					if (property_exists($object, 'trueWeight') && !empty($object->trueWeight)) {
+						$substitution_array['{object_total_weight}'] = showDimensionInBestUnit($object->trueWeight, $object->weight_units, "weight", $outputlangs);
+					}
+					if (property_exists($object, 'trueVolume') && !empty($object->trueVolume)) {
+						$substitution_array['{object_total_volume}'] = showDimensionInBestUnit($object->trueVolume, $object->volume_units, "volume", $outputlangs);
+					}
 				}
 				$substitution_array['{object_total_qty_ordered}'] = $tmparraytotal['ordered'];
 				$substitution_array['{object_total_qty_toship}'] = $tmparraytotal['toship'];

@@ -236,10 +236,33 @@ MoveChapter=Déplacer / réorganiser
 Saved=Sauvegardé
 RefLtrShortCodeAdded=Code ajouté
 RefLtrShortCodeAddError=Erreur, votre curseur n'a pas été trouvé dans dans le block de text, impossible de copier le code !
+RefLtrLoopSectionTitle=Listes répétées disponibles
+RefLtrLoopSectionNotice=Les tags préfixés par <code>line_</code> ne fonctionnent que dans une liste répétée, entre un <code>BEGIN</code> et un <code>END</code> compatibles.
+RefLtrLoopSyntax=Syntaxe
+RefLtrLoopMarker=Repère
+RefLtrLoopGroupUsage=Voir les champs dans le bloc : %s
+RefLtrBlockLoopsNotice=Les champs de ce bloc s'utilisent dans les listes répétées : %s.
+RefLtrTechnicalConstantsTitle=Constantes techniques
+RefLtrTechnicalConstantsNotice=Section exhaustive des constantes de configuration. Elles restent disponibles, mais elles sont plus techniques et moins stables fonctionnellement.
+RefLtrCatalogTypeDirect=Champ direct
+RefLtrCatalogTypeLoop=Dans une liste
+RefLtrCatalogTypeTechnical=Technique
+RefLtrCatalogUsageDirect=À utiliser directement dans le document.
+RefLtrCatalogUsageLoop=À utiliser uniquement entre un BEGIN et un END compatibles.
+RefLtrCatalogUsageLoopAvailable=Disponible dans : %s
+RefLtrCatalogUsageTechnical=Expose une constante de configuration technique.
+RefLtrCatalogUsageObjvarObject=Champ technique de l'objet courant. Peut être vide selon le document et les données chargées.
+RefLtrCatalogUsageObjvarThirdparty=Champ technique du tiers lié. Peut être vide si aucun tiers n'est chargé dans ce contexte.
+RefLtrCatalogUsageObjvarContact=Champ technique du contact lié. Peut être vide si aucun contact n'est chargé dans ce contexte.
+RefLtrCatalogUsageObjvarUser=Champ technique de l'utilisateur lié. Peut être vide selon le contexte ou les données disponibles.
+RefLtrCatalogUsageObjvarFormation=Champ technique de la formation liée. Peut être vide si aucune formation n'est chargée dans ce contexte.
+RefLtrCatalogConfigConstant=Constante de configuration
+RefLtrCatalogLoopOnly=Uniquement dans une liste répétée
+RefLtrCatalogTechnicalDescription=Constante technique - %s
+RefLtrCatalogLoopFieldDescription=Champ de liste répétée - %s
 
 
 #
 # Erreurs
 #
 RefLtrErrorCannotRecognizeModel=Erreur technique DocEdit : impossible de déterminer le type de modèle
-

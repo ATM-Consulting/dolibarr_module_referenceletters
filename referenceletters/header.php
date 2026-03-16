@@ -149,7 +149,7 @@ if(!empty($object->id)) {
 	print $langs->trans('RefLtrTag');
 	print '</td>';
 	print '<td>';
-	print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#header"><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
+	print $langs->trans("RefLtrDisplayTag").'<span class="docedit_shortcode classfortooltip" data-target="#header" role="button" tabindex="0" onclick="if(window.jQuery){var $dlg=jQuery(\'#subtitutionkey\');$dlg.data(\'target\', this.getAttribute(\'data-target\'));if(typeof $dlg.dialog===\'function\'){$dlg.dialog(\'open\');}else{$dlg.show();}jQuery(\'#item-filter\').focus();} return false;"><span class="fa fa-code marginleftonly valignmiddle" style=" color: #444;" alt="'.$langs->trans('DisplaySubtitutionTable').'" title="'.$langs->trans('DisplaySubtitutionTable').'"></span></span>';
 	print $formrefleter->displaySubtitutionKeyAdvanced($user, $object);
 	print '</td>';
 	print '</tr>';

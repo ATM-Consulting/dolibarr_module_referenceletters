@@ -1,0 +1,102 @@
+<?php
+
+require_once __DIR__ . '/substitutioncatalogproviderinterface.class.php';
+
+/**
+ * Shared translation helpers for Agefodd catalog providers.
+ */
+abstract class SubstitutionCatalogAgefoddAbstractProvider implements SubstitutionCatalogProviderInterface
+{
+	/** @var DoliDB|null */
+	protected ?DoliDB $db;
+
+	/** @var Translate */
+	protected Translate $langs;
+
+	/**
+	 * @param DoliDB|null $db
+	 * @param Translate $langs
+	 */
+	public function __construct(?DoliDB $db, Translate $langs)
+	{
+		$this->db = $db;
+		$this->langs = $langs;
+		$this->langs->load('referenceletters@referenceletters');
+		$this->langs->load('reflettersubstitution@referenceletters');
+	}
+
+	/**
+	 * @param array<int,string> $tags
+	 * @return array<string,string>
+	 */
+	protected function translateTags(array $tags): array
+	{
+		$translated = array();
+		foreach ($tags as $tag) {
+			$translated[$tag] = $this->translateTag($tag);
+		}
+
+		return $translated;
+	}
+
+	/**
+	 * @param string $tag
+	 * @return string
+	 */
+	protected function translateTag(string $tag): string
+	{
+		$key = 'reflettershortcode_' . $tag;
+		$translated = method_exists($this->langs, 'transnoentitiesnoconv')
+			? $this->langs->transnoentitiesnoconv($key)
+			: $this->langs->trans($key);
+
+		return ($translated !== $key) ? $translated : $tag;
+	}
+
+	/**
+	 * @param string $fieldLabel
+	 * @return string
+	 */
+	protected function translateExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
+	{
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
+	}
+
+	/**
+	 * @param string $fieldLabel
+	 * @return string
+	 */
+	protected function translateCompanyExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
+	{
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
+	}
+
+	/**
+	 * @param string $fieldLabel
+	 * @return string
+	 */
+	protected function translateFormationExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
+	{
+		return $this->resolveExtraFieldLabel($fieldLabel, $langFile);
+	}
+
+	/**
+	 * @param string $fieldLabel
+	 * @param string $langFile
+	 * @return string
+	 */
+	protected function resolveExtraFieldLabel(string $fieldLabel, string $langFile = ''): string
+	{
+		if ($langFile !== '') {
+			$this->langs->load($langFile);
+			$translated = method_exists($this->langs, 'transnoentitiesnoconv')
+				? $this->langs->transnoentitiesnoconv($fieldLabel)
+				: $this->langs->trans($fieldLabel);
+			if ($translated !== $fieldLabel) {
+				return $translated;
+			}
+		}
+
+		return $fieldLabel;
+	}
+}

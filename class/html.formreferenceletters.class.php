@@ -37,7 +37,7 @@ class FormReferenceLetters extends Form
 	 * @param DoliDB $db
 	 *        	handler
 	 */
-	public function __construct($db)
+	public function __construct(DoliDB $db)
 	{
 		$this->db = $db;
 	}
@@ -107,7 +107,7 @@ class FormReferenceLetters extends Form
 	 * @param array  $in_array  In array
 	 * @return string select HTML
 	 */
-	public function selectElementType($selected='',$htmlname='element_type',$showempty=0, $in_array=array()) {
+	public function selectElementType($selected = '', string $htmlname = 'element_type', int $showempty = 0, array $in_array = array()): string {
 		global $langs;
 
 		require_once 'referenceletters.class.php';
@@ -150,7 +150,7 @@ class FormReferenceLetters extends Form
 	 * @param int    $showempty Show empty
 	 * @return string select HTML
 	 */
-	public function selectStatus($selected='',$htmlname='element_type',$showempty=1) {
+	public function selectStatus($selected = '', string $htmlname = 'element_type', int $showempty = 1): string {
 		global $langs;
 
 		$status_array=array();
@@ -186,24 +186,25 @@ class FormReferenceLetters extends Form
 	 * @param int    $showempty Show empty
 	 * @return string HTML
 	 */
-	public function selectDefaultDoc($selected = '', $htmlname = 'defaultdoc', $showempty = 1) {
+	public function selectDefaultDoc($selected = '', string $htmlname = 'defaultdoc', int $showempty = 1): string {
 		global $langs;
 
-		$status_array = array();
+		$status_array=array();
 
 		$select_elemnt = '<select class="flat" name="' . $htmlname . '">';
 		if (!empty($showempty)) {
-			$status_array[-1] = '';
+			$status_array[-1]='';
 		}
 		require_once 'referenceletters.class.php';
 		$refletter = new Referenceletters($this->db);
 		$refletter->TDefaultDoc = $refletter->TDefaultDoc ?? [];
+		$status_array+=$refletter->TDefaultDoc;
 
-		foreach($refletter->TDefaultDoc as $key => $val) {
-			if ($selected == $key) {
-				$option_selected = 'selected="selected" ';
+		foreach($status_array as $key=>$val) {
+			if ($selected==$key) {
+				$option_selected=' selected="selected" ';
 			}else {
-				$option_selected = '';
+				$option_selected='';
 			}
 
 			$select_elemnt .= '<option value="' . $key . '" '.$option_selected.'>' . $langs->trans($val) . '</option>';
@@ -223,7 +224,7 @@ class FormReferenceLetters extends Form
 	 * @param int    $showempty    Show empty
 	 * @return string select HTML
 	 */
-	public function selectReferenceletters($selected='',$htmlname='refletter',$element_type='',$showempty=0) {
+	public function selectReferenceletters($selected = '', string $htmlname = 'refletter', string $element_type = '', int $showempty = 0): string {
 		global $langs;
 
 		require_once 'referenceletters.class.php';
@@ -258,11 +259,11 @@ class FormReferenceLetters extends Form
 	 * @return string HTML to print
 	 */
 
-	public function displaySubtitutionKey($user,$reflettersobject) {
+	public function displaySubstitutionKey(User $user, ReferenceLetters $reflettersobject): string {
 		global $langs,$bc;
 
         $form = new Form($this->db);
-		$html=$this->getSubtitutionKeyTable($user,$reflettersobject);
+		$html=$this->getSubstitutionKeyTable($user,$reflettersobject);
 
 		return $form->textwithpicto($langs->trans("RefLtrDisplayTag"), $html, 1, 'help', '', 0, 2, 'refltertags');
 	}
@@ -273,48 +274,111 @@ class FormReferenceLetters extends Form
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
 	 */
-	public function displaySubtitutionKeyAdvanced($user, $reflettersobject) {
+	public function displaySubstitutionKeyAdvanced(User $user, ReferenceLetters $reflettersobject): string {
 		global $langs;
 
-		print '<div id="subtitutionkey" style="display: none;" >';
+		$html = '<div id="subtitutionkey" style="display: none;" >';
 
-		print '<div class="search-filter-wrap"  >';
-		print '<i class="fa fa-search"></i>';
-		print '<input type="text" id="item-filter" class="search-filter" data-target="" value="" placeholder="'.$langs->trans('Search').'" ';
-		print '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
-		print '</div>';
+		$html .= '<div class="search-filter-wrap"  >';
+		$html .= '<i class="fa fa-search"></i>';
+		$html .= '<input type="text" id="item-filter" class="search-filter" data-target="" value="" placeholder="'.$langs->trans('Search').'" />';
+		$html .= '<span id="filter-count-wrap" >'.$langs->trans('Result').': <span id="filter-count" ></span></span>';
+		$html .= '</div>';
 
-		$subs_array = $reflettersobject->getSubtitutionKey($user);
+		$uiData = $reflettersobject->getSubstitutionKeyUiData($user);
+		$subs_array = isset($uiData['tags']) && is_array($uiData['tags']) ? $uiData['tags'] : array();
+		$loop_array = isset($uiData['loops']) && is_array($uiData['loops']) ? $uiData['loops'] : array();
+		$loopNoticeByGroup = $this->buildLoopNoticeByGroup($loop_array);
 
-		$html = '<div id="accordion-refltertags" >';
+		$html .= '<div id="accordion-refltertags" >';
+
+		$loopSectionNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrLoopSectionNotice') : $langs->trans('RefLtrLoopSectionNotice');
+		$technicalNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrTechnicalConstantsNotice') : $langs->trans('RefLtrTechnicalConstantsNotice');
+
+		if (!empty($loop_array)) {
+			$html .= '<h3 class="accordion-refltertags-title">'.$langs->trans('RefLtrLoopSectionTitle').'<span class="h3-element-count badge" data-element-count=""></span></h3>';
+			$html .= '<div class="accordion-refltertags-body">';
+			$html .= '<div class="referenceletter-loop-notice">'.$loopSectionNotice.'</div>';
+			$html .= '<table class="referenceletter-subtitutionkey-table referenceletter-subtitutionloop-table">';
+			$html .= '<colgroup>';
+			$html .= '<col class="referenceletter-subtitutionkey-col-desc">';
+			$html .= '<col class="referenceletter-subtitutionkey-col-tag">';
+			$html .= '<col class="referenceletter-subtitutionkey-col-format">';
+			$html .= '</colgroup>';
+			$html .= '<tr class="liste_titre">';
+			$html .= '<th>'.$langs->trans('Description').'</th>';
+			$html .= '<th>'.$langs->trans('RefLtrLoopSyntax').'</th>';
+			$html .= '<th>'.$langs->trans('RefLtrLoopMarker').'</th>';
+			$html .= '</tr>';
+			foreach ($loop_array as $loop) {
+				$loopSyntax = str_replace("\\n", "\n", $loop['syntax']);
+				$loopSyntaxDisplay = htmlspecialchars($loopSyntax, ENT_QUOTES, 'UTF-8');
+				$html .= '<tr class="oddeven searchable search-match">';
+				$html .= '<td class="referenceletter-subtitutionkey-desc">';
+				$html .= '<strong>' . dol_escape_htmltag($loop['label']) . '</strong><br>';
+				$html .= dol_escape_htmltag($loop['description']);
+				if (!empty($loop['group_usage_label'])) {
+					$html .= '<div class="referenceletter-entry-meta">';
+					$html .= '<span class="referenceletter-entry-usage">' . dol_escape_htmltag($loop['group_usage_label']) . '</span>';
+					$html .= '</div>';
+				}
+				$html .= '</td>';
+				$html .= '<td class="referenceletter-subtitutionkey-col">';
+				$html .= '<span class="referenceletter-subtitutionkey referenceletter-subtitutionloop classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="' . dol_escape_htmltag($loopSyntax) . '">';
+				$html .= nl2br($loopSyntaxDisplay);
+				$html .= '</span>';
+				$html .= '</td>';
+				$html .= '<td>';
+				$html .= dol_escape_htmltag(implode(', ', $loop['sample_tags']));
+				$html .= '</td>';
+				$html .= '</tr>';
+			}
+			$html .= '</table>';
+			$html .= '</div>';
+		}
 
 		if (is_array($subs_array) && count($subs_array)>0) {
 			foreach($subs_array as $block=>$data) {
 				$html .= '<h3 class="accordion-refltertags-title">' . $block . '<span class="h3-element-count badge" data-element-count=""></span></h3>';
 
 				$html .= '<div class="accordion-refltertags-body" >';
-				$html .= '<table>';
+				if ($block === $langs->trans('RefLtrTechnicalConstantsTitle')) {
+					$html .= '<div class="referenceletter-loop-notice">'.$technicalNotice.'</div>';
+				} elseif (!empty($loopNoticeByGroup[$block])) {
+					$html .= '<div class="referenceletter-loop-notice">'.$loopNoticeByGroup[$block].'</div>';
+				}
+				$html .= '<table class="referenceletter-subtitutionkey-table">';
+				$html .= '<colgroup>';
+				$html .= '<col class="referenceletter-subtitutionkey-col-desc">';
+				$html .= '<col class="referenceletter-subtitutionkey-col-tag">';
+				$html .= '<col class="referenceletter-subtitutionkey-col-format">';
+				$html .= '</colgroup>';
 				$html .= '<tr class="liste_titre">';
 				$html .= '<th>'.$langs->trans('Description').'</th>';
-				$html .= '<th width="50px">'.$langs->trans('RefLtrTag').'</th>';
-				$html .= '<th>'.$langs->trans('Value').'</th>';
+				$html .= '<th>'.$langs->trans('RefLtrTag').'</th>';
+				$html .= '<th>'.$langs->trans('Format').'</th>';
 				$html .= '</tr>';
 				if (is_array($data) && count($data) > 0) {
-					$var = true;
 					foreach ($data as $key => $value) {
 						$html .= '<tr class="oddeven searchable search-match">';
 						$html .= '    <td class="referenceletter-subtitutionkey-desc">';
-						if (!empty($langs->tab_translate['reflettershortcode_' . $key])) {   // Translation is available
-							$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
-							$html .= $langs->trans('reflettershortcode_' . $key);
-							$html .= '</span>';
+						$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '" data-shortcode="{' . $key . '}" >';
+						$html .= dol_escape_htmltag($value['description']);
+						$html .= '</span>';
+						if (!empty($value['type_label'])) {
+							$html .= '<div class="referenceletter-entry-meta">';
+							$html .= '<span class="referenceletter-entry-badge referenceletter-entry-badge-' . dol_escape_htmltag(strtolower($value['entry_type'])) . '">' . dol_escape_htmltag($value['type_label']) . '</span>';
+							if (!empty($value['usage_hint'])) {
+								$html .= '<span class="referenceletter-entry-usage">' . dol_escape_htmltag($value['usage_hint']) . '</span>';
+							}
+							$html .= '</div>';
 						}
 						$html .= '    </td>';
 						$html .= '    <td class="referenceletter-subtitutionkey-col">';
 						$html .= '        <span class="referenceletter-subtitutionkey classfortooltip" title="' . $langs->trans('ClickToAddOnEditor') . '"  data-shortcode="{' . $key . '}"  >{' . $key . '}</span>';
 						$html .= '    </td>';
 						$html .= '    <td>';
-						$html .= dol_escape_htmltag($value);// to prevent js execution like redirect...
+						$html .= dol_escape_htmltag($value['format_hint']);
 						$html .= '    </td>';
 						$html .= '</tr>';
 					}
@@ -323,18 +387,6 @@ class FormReferenceLetters extends Form
 				$html .= '</div>';
 			}
 
-			// Generate traduction for dev only
-			/*print '<pre>';
-			foreach($subs_array as $block=>$data) {
-				print '#' . $block."\n";
-				if (is_array($data) && count($data) > 0) {
-					$var = true;
-					foreach ($data as $key => $value) {
-						print 'reflettershortcode_' . $key."=\n";
-					}
-				}
-			}
-			print '</pre>';*/
 		}
 
 		$html.='</div>';
@@ -362,15 +414,19 @@ class FormReferenceLetters extends Form
 
                          // open dialog and add target key
                          $( "#subtitutionkey" ).data("target", $(this).data("target"));
-                         $( "#subtitutionkey" ).dialog( "open" );
+                         if (typeof $( "#subtitutionkey" ).dialog === "function") {
+                             $( "#subtitutionkey" ).dialog( "open" );
+                         } else {
+                             $( "#subtitutionkey" ).show();
+                         }
 
-                         // Focus on search input
+                         // Focus the search input.
                          $("#item-filter").focus();
                     });
 
                      $(".docedit_setbool").click(function() {
 
-						//Get the Chapter Id
+						// Get the chapter id.
 						var chapter=$(this);
 
 						$.ajax({
@@ -398,26 +454,39 @@ class FormReferenceLetters extends Form
                    $(".referenceletter-subtitutionkey").click(function(btnshortcode) {
 
                         var shortcodeTarget = $($("#subtitutionkey").data("target"));
+                        var rawShortcode = $(this).data("shortcode");
+                        var shortcode = (rawShortcode == undefined ? "" : String(rawShortcode)).replace(/\\\\n/g, "\n");
 
                         if(CKEDITOR.instances[shortcodeTarget.attr("id")] != undefined)
                         {
                             var evt = CKEDITOR.instances[shortcodeTarget.attr("id")];
 
                             try {
-                                evt.insertHtml( $(this).data("shortcode")  );
+                                evt.insertHtml(shortcode);
 
-                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + $(this).data("shortcode"),"3000","false",{ remove: function (){}})  ;
+                                $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + shortcode,"3000","false",{ remove: function (){}})  ;
 
                             }catch (err) {
-                                console.log("Unable to copy ckeditor not ready ?.");
                                 $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
 
                             }
 
                             $( "#subtitutionkey" ).dialog( "close" );
                         }
+                        else if (shortcodeTarget.length && (shortcodeTarget.is("textarea") || shortcodeTarget.is("input")))
+                        {
+                            var targetNode = shortcodeTarget.get(0);
+                            var start = typeof targetNode.selectionStart === "number" ? targetNode.selectionStart : shortcodeTarget.val().length;
+                            var end = typeof targetNode.selectionEnd === "number" ? targetNode.selectionEnd : start;
+                            var currentValue = shortcodeTarget.val() || "";
+                            shortcodeTarget.val(currentValue.substring(0, start) + shortcode + currentValue.substring(end));
+                            targetNode.selectionStart = targetNode.selectionEnd = start + shortcode.length;
+                            shortcodeTarget.focus();
+                            $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAdded')).' : " + shortcode,"3000","false",{ remove: function (){}})  ;
+                            $( "#subtitutionkey" ).dialog( "close" );
+                        }
                         else{
-                            console.log("shortcodeTarget notfound");
+                            $.jnotify("'.dol_escape_js($langs->transnoentities('RefLtrShortCodeAddError')).'","error","true",{ remove: function (){}})  ;
                         }
                    });
 
@@ -455,50 +524,101 @@ class FormReferenceLetters extends Form
                 });
                 </script>
 
-                <style>.ui-dialog { z-index: 1000 !important ;}</style>
+                <link rel="stylesheet" type="text/css" href="'.dol_buildpath('/referenceletters/css/view_documents.css', 1).'">
                 ';
 		return $html;
 	}
 
 
     /**
-     * getSubtitutionKeyTable
      *
      * @param User             $user             User
      * @param ReferenceLetters $reflettersobject Ref letters object
      * @return string
      */
-    public function getSubtitutionKeyTable($user,$reflettersobject){
-        global $langs,$bc;
+	public function getSubstitutionKeyTable(User $user, ReferenceLetters $reflettersobject): string
+	{
+	        global $langs,$bc;
 
-        $subs_array=$reflettersobject->getSubtitutionKey($user);
+        $uiData = $reflettersobject->getSubstitutionKeyUiData($user);
+        $subs_array = isset($uiData['tags']) && is_array($uiData['tags']) ? $uiData['tags'] : array();
+        $loop_array = isset($uiData['loops']) && is_array($uiData['loops']) ? $uiData['loops'] : array();
+        $loopNoticeByGroup = $this->buildLoopNoticeByGroup($loop_array);
 
-        $html='<table id="refltertags" >';
+	        $html='<table id="refltertags" >';
 
-        if (is_array($subs_array) && count($subs_array)>0) {
-            foreach($subs_array as $block=>$data) {
-                $html.='<tr class="liste_titre">';
-                $html.='<td colspan="2">';
-                $html.=$block;
-                $html.='</td>';
+	        $loopSectionNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrLoopSectionNotice') : $langs->trans('RefLtrLoopSectionNotice');
+	        $technicalNotice = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv') ? $langs->transnoentitiesnoconv('RefLtrTechnicalConstantsNotice') : $langs->trans('RefLtrTechnicalConstantsNotice');
+
+	        if (!empty($loop_array)) {
+	            $html .= '<tr><td colspan="3"><div class="referenceletter-loop-notice">'.$loopSectionNotice.'</div></td></tr>';
+	            $html.='<tr class="liste_titre">';
+	            $html.='<td colspan="3">'.$langs->trans('RefLtrLoopSectionTitle').'</td>';
+	            $html.='</tr>';
+            $html.='<tr class="liste_titre">';
+            $html.='<td>'.$langs->trans('Description').'</td>';
+            $html.='<td>'.$langs->trans('RefLtrLoopSyntax').'</td>';
+            $html.='<td>'.$langs->trans('RefLtrLoopMarker').'</td>';
+            $html.='</tr>';
+		            foreach ($loop_array as $loop) {
+		                $loopSyntax = str_replace("\\n", "\n", $loop['syntax']);
+		                $loopSyntaxDisplay = htmlspecialchars($loopSyntax, ENT_QUOTES, 'UTF-8');
+		                $html.='<tr class="oddeven">';
+	                $html.='<td><strong>'.dol_escape_htmltag($loop['label']).'</strong><br>'.dol_escape_htmltag($loop['description']);
+	                if (!empty($loop['group_usage_label'])) {
+	                    $html.='<div class="referenceletter-entry-meta">';
+	                    $html.='<span class="referenceletter-entry-usage">'.dol_escape_htmltag($loop['group_usage_label']).'</span>';
+	                    $html.='</div>';
+	                }
+	                $html.='</td>';
+		                $html.='<td class="referenceletter-subtitutionkey">'.nl2br($loopSyntaxDisplay).'</td>';
+                $html.='<td>'.dol_escape_htmltag(implode(', ', $loop['sample_tags'])).'</td>';
                 $html.='</tr>';
-                $html.='<tr class="liste_titre">';
+            }
+        }
+
+	        if (is_array($subs_array) && count($subs_array)>0) {
+	            foreach($subs_array as $block=>$data) {
+	                $html.='<tr class="liste_titre">';
+	                $html.='<td colspan="3">';
+	                $html.=$block;
+	                $html.='</td>';
+	                $html.='</tr>';
+		                if ($block === $langs->trans('RefLtrTechnicalConstantsTitle')) {
+		                    $html .= '<tr><td colspan="3"><div class="referenceletter-loop-notice">'.$technicalNotice.'</div></td></tr>';
+		                } elseif (!empty($loopNoticeByGroup[$block])) {
+		                    $html .= '<tr><td colspan="3"><div class="referenceletter-loop-notice">'.$loopNoticeByGroup[$block].'</div></td></tr>';
+		                }
+	                $html.='<tr class="liste_titre">';
+	                $html.='<td>';
+	                $html.=$langs->trans('Description');
+                $html.='</td>';
                 $html.='<td width="50px">';
                 $html.=$langs->trans('RefLtrTag');
                 $html.='</td>';
                 $html.='<td>';
-                $html.=$langs->trans('Value');
+                $html.=$langs->trans('Format');
                 $html.='</td>';
                 $html.='</tr>';
-                if (count($data)>0) {
-                    $var=true;
-                    foreach($data as $key=>$value) {
-                        $html.="<tr class=\"oddeven\">";
-                        $html.='<td class="referenceletter-subtitutionkey">';
-                        $html.='{'.$key.'}';
+				if (count($data)>0) {
+	                    foreach($data as $key=>$value) {
+	                        $html.="<tr class=\"oddeven\">";
+	                        $html.='<td>';
+	                        $html.= dol_escape_htmltag($value['description']);
+	                        if (!empty($value['type_label'])) {
+	                            $html.='<div class="referenceletter-entry-meta">';
+	                            $html.='<span class="referenceletter-entry-badge referenceletter-entry-badge-' . dol_escape_htmltag(strtolower($value['entry_type'])) . '">' . dol_escape_htmltag($value['type_label']) . '</span>';
+	                            if (!empty($value['usage_hint'])) {
+	                                $html.='<span class="referenceletter-entry-usage">' . dol_escape_htmltag($value['usage_hint']) . '</span>';
+	                            }
+	                            $html.='</div>';
+	                        }
+	                        $html.='</td>';
+	                        $html.='<td class="referenceletter-subtitutionkey">';
+	                        $html.='{'.$key.'}';
                         $html.='</td>';
                         $html.='<td>';
-                        $html.= dol_escape_htmltag($value);// to prevent js execution like redirect...
+                        $html.= dol_escape_htmltag($value['format_hint']);
                         $html.='</td>';
                         $html.='</tr>';
                     }
@@ -506,19 +626,91 @@ class FormReferenceLetters extends Form
             }
         }
 
-        $html.='</table>';
+		$html.='</table>';
 
-        return $html;
-    }
+		return $html;
+	}
 
 	/**
-	 * renderChapterHTML
+	 * @deprecated Use displaySubstitutionKey() instead.
 	 *
-	 * @param ReferenceLettersChapters $chapter Chapter
-	 * @param string                   $mode    Mode
+	 * @param User $user
+	 * @param CommonObject $reflettersobject
 	 * @return string
 	 */
-	public function renderChapterHTML(ReferenceLettersChapters $chapter, $mode='view') {
+	public function displaySubtitutionKey(User $user, ReferenceLetters $reflettersobject): string {
+		return $this->displaySubstitutionKey($user, $reflettersobject);
+	}
+
+	/**
+	 * @deprecated Use displaySubstitutionKeyAdvanced() instead.
+	 *
+	 * @param User $user
+	 * @param ReferenceLetters $reflettersobject
+	 * @return string
+	 */
+	public function displaySubtitutionKeyAdvanced(User $user, ReferenceLetters $reflettersobject): string {
+		return $this->displaySubstitutionKeyAdvanced($user, $reflettersobject);
+	}
+
+	/**
+	 * @deprecated Use getSubstitutionKeyTable() instead.
+	 *
+	 * @param User $user
+	 * @param ReferenceLetters $reflettersobject
+	 * @return string
+	 */
+	public function getSubtitutionKeyTable(User $user, ReferenceLetters $reflettersobject): string {
+		return $this->getSubstitutionKeyTable($user, $reflettersobject);
+	}
+
+	/**
+	 * Build one notice per block when some loops use the same field group.
+	 *
+	 * @param array<int,array<string,mixed>> $loopArray
+	 * @return array<string,string>
+	 */
+	protected function buildLoopNoticeByGroup(array $loopArray)
+	{
+		global $langs;
+
+		$segmentsByGroup = array();
+
+		foreach ($loopArray as $loop) {
+			if (empty($loop['group_label']) || empty($loop['segment'])) {
+				continue;
+			}
+
+			$groupLabel = (string) $loop['group_label'];
+			if (empty($segmentsByGroup[$groupLabel])) {
+				$segmentsByGroup[$groupLabel] = array();
+			}
+
+			$segmentsByGroup[$groupLabel][] = (string) $loop['segment'];
+		}
+
+		$notices = array();
+		foreach ($segmentsByGroup as $groupLabel => $segments) {
+			$segments = array_values(array_unique(array_filter($segments)));
+			if (empty($segments)) {
+				continue;
+			}
+
+			$segmentLabels = array();
+			foreach ($segments as $segment) {
+				$segmentLabels[] = '<code>' . dol_escape_htmltag($segment) . '</code>';
+			}
+
+			$template = is_object($langs) && method_exists($langs, 'transnoentitiesnoconv')
+				? $langs->transnoentitiesnoconv('RefLtrBlockLoopsNotice', implode(', ', $segmentLabels))
+				: $langs->trans('RefLtrBlockLoopsNotice', implode(', ', $segmentLabels));
+			$notices[$groupLabel] = $template;
+		}
+
+		return $notices;
+	}
+
+	public function renderChapterHTML(ReferenceLettersChapters $chapter, string $mode='view'): string {
 		global $langs;
 
 		$urlToken = '';

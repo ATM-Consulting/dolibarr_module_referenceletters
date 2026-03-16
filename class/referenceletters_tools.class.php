@@ -7,7 +7,29 @@
  */
 class RfltrTools {
 
+	/**
+	 * Normalize historical Agefodd DocEdit element type aliases when reading
+	 * persisted models. This keeps existing customer models visible in the UI
+	 * without changing stored data or historical Agefodd file names.
+	 *
+	 * @param string $elementType
+	 * @return string
+	 */
+	public static function normalizeAgefoddElementTypeAlias(string $elementType): string
+	{
+		$aliases = array(
+			'rfltr_agefodd_certificat_completion_trainee' => 'rfltr_agefodd_certificate_completion_trainee',
+			'rfltr_agefodd_fichepres_trainee' => 'rfltr_agefodd_fiche_presence_trainee',
+		);
+
+		return isset($aliases[$elementType]) ? $aliases[$elementType] : $elementType;
+	}
+
 	public static function setImgLinkToUrl($txt) {
+
+		if (!is_string($txt) || $txt === '') {
+			return '';
+		}
 
 		return strtr($txt, array('src="'.dol_buildpath('viewimage.php', 1) => 'src="'.dol_buildpath('viewimage.php', 2), '&amp;'=>'&'));
 
@@ -23,18 +45,18 @@ class RfltrTools {
 
 
 	/**
-	 * Charge le modèle référence letter choisi
+	 * Load the selected referenceletters model.
 	 *
 	 * @param $id_object
 	 * @param $id_model
-	 * @param $object peut être une convention pour Agefodd ou une propal, une cmd, etc ...
+	 * @param $object Can be an Agefodd convention, proposal, order, and so on.
 	 * @param $socid
 	 * @param $lang_id
 	 * @param $fk_training
 	 * @return array [0] => ReferenceLettersElements, [1] => $object
 	 */
 
-	public static function load_object_refletter($id_object, $id_model, $object='', $socid='', $lang_id='',$fk_training = 0) {
+	public static function load_object_refletter($id_object, $id_model, $object = null, $socid = '', $lang_id = '', $fk_training = 0) {
 
 		global $db, $conf;
 
@@ -44,6 +66,9 @@ class RfltrTools {
 
 		$object_refletter = new Referenceletters($db);
 		$res_fetch = $object_refletter->fetch($id_model);
+		if (!empty($object_refletter->element_type)) {
+			$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+		}
 
 		//
 		if(empty($res_fetch)) {
@@ -54,15 +79,21 @@ class RfltrTools {
 			}
 
 
-			if(!empty($id_rfltr)) { // Il existe un modèle par défaut, on le charge
+			if(!empty($id_rfltr)) { // A default model exists, load it.
 				$object_refletter->fetch($id_rfltr);
+				if (!empty($object_refletter->element_type)) {
+					$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+				}
 			}else{
-				// sinon on prend le premier dans la liste.
+				// Otherwise load the first model in the list.
 				$object_refletter->fetch_all('DESC', 'rowid', 0, 0, array('t.element_type'=>"invoice"));
 				$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
 
-				if(!empty($id_rfltr)) { // Il existe  ...  on le charge
+				if(!empty($id_rfltr)) { // A fallback model exists, load it.
 					$object_refletter->fetch($id_rfltr);
+					if (!empty($object_refletter->element_type)) {
+						$object_refletter->element_type = self::normalizeAgefoddElementTypeAlias((string) $object_refletter->element_type);
+					}
 				}
 			}
 		}
@@ -108,7 +139,7 @@ class RfltrTools {
 				}
 			}
 		}
-		else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, $object, $outputlangs, $fk_training);
+			else $object = self::load_agefodd_object($id_object, $object_refletter, $socid, is_object($object) ? $object : null, $outputlangs, $fk_training);
 
 		if (!empty($lang_id)) $langs_chapter = $outputlangs->defaultlang;
 		else {
@@ -140,13 +171,13 @@ class RfltrTools {
 			}
 		}
 
-		// On load le modèle
+		// Load the selected model.
 		$instance_letter = new ReferenceLettersElements($db);
 		$instance_letter->fetch($id_model);
 		$instance_letter->srcobject=$object;
 		$instance_letter->content_letter = self::setImgLinkToUrlWithArray($content_letter);
 		if(is_object($object) && empty($object->thirdparty)) $object->fetch_thirdparty();
-		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODO pour l'instant on garde le même nom de pdf que fait agefodd
+		//$instance_letter->ref_int = $instance_letter->getNextNumRef($object->thirdparty, $user->id, $element_type); // TODO keep the historical Agefodd PDF file name for now.
 		$instance_letter->title = $object_refletter->title;
 		$instance_letter->fk_element = $object->id;
 		$instance_letter->element_type = $object_refletter->element_type;
@@ -165,7 +196,7 @@ class RfltrTools {
 
 
 	/**
-	 *  Charge l'objet Agefodd session ainsi que toutes les données associées (liste des participants, horaires)
+	 * Load the Agefodd session object with all associated data (participants, schedules).
 	 * @param $id_object
 	 * @param $object_refletter
 	 * @param $socid
@@ -174,11 +205,23 @@ class RfltrTools {
 	 * @param $fk_training
 	 * @return mixed
 	 */
-	public static function load_agefodd_object($id_object, &$object_refletter, $socid='', $obj_agefodd_convention='', $outputlangs='',$fk_training = 0) {
+	public static function load_agefodd_object($id_object, &$object_refletter, $socid = 0, $obj_agefodd_convention = null, $outputlangs = null, $fk_training = 0) {
 
 		global $db;
 		if ($fk_training == 0) {
 			dol_include_once('/agefodd/class/agsession.class.php');
+			if (
+				$object_refletter->element_type === 'rfltr_agefodd_convention'
+				&& !is_object($obj_agefodd_convention)
+				&& !empty($socid)
+			) {
+				dol_include_once('/agefodd/class/agefodd_convention.class.php');
+				$convention = new Agefodd_convention($db);
+				$result = $convention->fetch((int) $id_object, (int) $socid);
+				if ($result > 0 && !empty($convention->id)) {
+					$obj_agefodd_convention = $convention;
+				}
+			}
 			$object = new $object_refletter->element_type_list['rfltr_agefodd_convention']['objectclass']($db);
 			$object->fetch($id_object);
 		}else{
@@ -186,12 +229,12 @@ class RfltrTools {
 			$object = new $object_refletter->element_type_list['rfltr_agefodd_formation']['objectclass']($db);
 			$object->fetch($fk_training);
 		}
-		// on load les informations de l'object (la méthode n'a pas le même nom selon la version d'Agefodd)
+		// Load object data. The method name differs depending on the Agefodd version.
 		$agefoddInfoLoader = 'load_all_data_agefodd';
 		if (! method_exists($object, $agefoddInfoLoader)) {
 			$agefoddInfoLoader = 'load_all_data_agefodd_session';
 		}
-		$object->$agefoddInfoLoader($object_refletter, $socid, $obj_agefodd_convention, false, $outputlangs);
+		$object->$agefoddInfoLoader($object_refletter, (int) $socid, $obj_agefodd_convention, false, $outputlangs);
 
 		return $object;
 
@@ -212,8 +255,8 @@ class RfltrTools {
 
 			$TModels=array();
 			while($res = $db->fetch_object($resql)) {
-
-				$TModels[$res->element_type][$res->rowid]=$res->title;
+				$elementType = self::normalizeAgefoddElementTypeAlias((string) $res->element_type);
+				$TModels[$elementType][$res->rowid]=$res->title;
 
 			}
 			return $TModels;
@@ -235,6 +278,7 @@ class RfltrTools {
 
 			$TModels=array();
 			while($res = $db->fetch_object($resql)) {
+				$res->element_type = self::normalizeAgefoddElementTypeAlias((string) $res->element_type);
 
 				$TModels[]=$res;
 
@@ -277,7 +321,7 @@ class RfltrTools {
 
 				});
 
-				// Affichage de la liste des modèles disponibles
+				// Show the list of available models.
 				$(".btn_show_external_model_list").click(function() {
 
 					var class_to_show = '.' + $(this).attr('class_to_show');
@@ -294,15 +338,18 @@ class RfltrTools {
 					}
 
 				});
-                // Sélection du modèle et génération du document
+                // Select the model and generate the document.
                 $('.id_external_model').change(function () {
                     let model = $(this).attr('model');
                     //Dans le cas du module agefoddcertificat il faut rediriger vers agefoddcertificat_documents.backend.php
                     if (['certificateA4_trainee', 'certificatecard_trainee', 'certificateA4', 'certificatecard'].includes(model)) {
-                        var path = '<?php echo dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1); ?>';
-                    } else var path = '<?php echo $_SERVER['PHP_SELF']; ?>';
-                    path += '?id='+ <?php echo GETPOST('id', 'none'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo intval(GETPOST('fk_step', 'int')); ?>;
-                    // On récupère l'attribut name du lien présent dans la première ligne liste_titre avant celle sur laquelle on se trouve
+                        var path = '<?php echo dol_escape_js(dol_buildpath('/agefoddcertificat/agefoddcertificat_documents.backend.php', 1)); ?>';
+                    } else var path = '<?php echo dol_escape_js((string) $_SERVER['PHP_SELF']); ?>';
+                    path += '?id='+ <?php echo (int) GETPOST('id', 'int'); ?> +'&model='+$(this).attr('model')+'&action=create&id_external_model='+$(this).val()+'&fk_step='+<?php echo (int) GETPOST('fk_step', 'int'); ?>;
+                    var selectSocId = $(this).attr('socid');
+                    var trainerCell = $(this).closest('td.trainerid');
+                    var trainerId = trainerCell.length ? trainerCell.attr('trainerid') : '';
+                    // Read the name attribute from the nearest previous liste_titre anchor.
                     lignetitre = $(this).parent().parent();
                     while (!lignetitre.hasClass('liste_titre')) {
                         lignetitre = lignetitre.prev();
@@ -312,17 +359,20 @@ class RfltrTools {
 
 						if($page === 'document') {
 							?>
-								if(typeof sessiontrainerid != 'undefined' && sessiontrainerid == 'trainerid'+$(this).attr('socid')) {
-									path = path + '&sessiontrainerid=' + $(this).attr('socid');
-								} else {
-									if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
-										adresse = $(this).prev().prev().attr('href');
-										idform = adresse.substr(adresse.indexOf('idform=')+7);
-										path = path + '&idform=' + idform;
-									} else if($(this).attr('model') == 'courrier'){
-										adresse = $(this).prev().prev().attr('href');
-										goodlink = $(this).prev().prev().attr('name');
-                                        if (typeof goodlink ==='undefined') {
+									if ((model == 'mission_trainer' || model == 'contrat_trainer') && trainerId) {
+										path = path + '&sessiontrainerid=' + trainerId;
+									} else if(typeof sessiontrainerid != 'undefined' && typeof selectSocId != 'undefined' && sessiontrainerid == 'trainerid'+selectSocId) {
+										path = path + '&sessiontrainerid=' + selectSocId;
+									} else {
+										if($(this).attr('model') == 'fiche_pedago_modules' || $(this).attr('model') == 'fiche_pedago'){
+											let idform = $(this).attr('data-idform');
+											if (typeof idform !== 'undefined' && idform !== '') {
+												path = path + '&idform=' + idform;
+											}
+										} else if($(this).attr('model') == 'courrier'){
+											adresse = $(this).prev().prev().attr('href');
+											goodlink = $(this).prev().prev().attr('name');
+										if (typeof goodlink ==='undefined') {
                                             adresse = $(this).prev().prev().prev().attr('href');
                                         }
 										cour = adresse.substr(adresse.indexOf('&cour=')+6);
@@ -331,9 +381,15 @@ class RfltrTools {
 										} else {
 											courrier = cour.substr(0);
 										}
-										path = path + '&cour=' + courrier + '&socid=' + $(this).attr('socid');
+										if (typeof selectSocId !== 'undefined' && selectSocId !== '') {
+											path = path + '&cour=' + courrier + '&socid=' + selectSocId;
+										} else {
+											path = path + '&cour=' + courrier;
+										}
 									} else {
-										path = path + '&socid=' + $(this).attr('socid');
+										if (typeof selectSocId !== 'undefined' && selectSocId !== '') {
+											path = path + '&socid=' + selectSocId;
+										}
 									}
 								}
 							<?php

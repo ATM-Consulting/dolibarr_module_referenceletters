@@ -73,7 +73,11 @@ class RfltrTools {
 		//
 		if(empty($res_fetch)) {
 			$object_refletter->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
-			$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
+
+			if (!empty($object_refletter->lines[key($object_refletter->lines)]->id)) {
+				$id_rfltr = $object_refletter->lines[key($object_refletter->lines)]->id;
+			}
+
 
 			if(!empty($id_rfltr)) { // A default model exists, load it.
 				$object_refletter->fetch($id_rfltr);

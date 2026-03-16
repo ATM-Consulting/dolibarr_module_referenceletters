@@ -101,9 +101,11 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
-	 * @param string $htmlname
-	 * @return select HTML
+	 * @param string $selected Selected
+	 * @param string $htmlname HTML name
+	 * @param int    $showempty Show empty
+	 * @param array  $in_array  In array
+	 * @return string select HTML
 	 */
 	public function selectElementType($selected = '', string $htmlname = 'element_type', int $showempty = 0, array $in_array = array()): string {
 		global $langs;
@@ -143,9 +145,10 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param string $selected
-	 * @param string $htmlname
-	 * @return select HTML
+	 * @param string $selected  Selected
+	 * @param string $htmlname  HTML name
+	 * @param int    $showempty Show empty
+	 * @return string select HTML
 	 */
 	public function selectStatus($selected = '', string $htmlname = 'element_type', int $showempty = 1): string {
 		global $langs;
@@ -178,9 +181,10 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
-	 * @param string $htmlname
-	 * @return select HTML
+	 * @param string $selected  Selected
+	 * @param string $htmlname  HTML name
+	 * @param int    $showempty Show empty
+	 * @return string HTML
 	 */
 	public function selectDefaultDoc($selected = '', string $htmlname = 'defaultdoc', int $showempty = 1): string {
 		global $langs;
@@ -214,9 +218,11 @@ class FormReferenceLetters extends Form
 	/**
 	 * Return a Select Element
 	 *
-	 * @param strint $selected
-	 * @param string $htmlname
-	 * @return select HTML
+	 * @param string $selected     Selected
+	 * @param string $htmlname     HTML name
+	 * @param string $element_type Element type
+	 * @param int    $showempty    Show empty
+	 * @return string select HTML
 	 */
 	public function selectReferenceletters($selected = '', string $htmlname = 'refletter', string $element_type = '', int $showempty = 0): string {
 		global $langs;
@@ -263,7 +269,7 @@ class FormReferenceLetters extends Form
 	}
 
 	/**
-	 *
+	 * Add list of substitute key
 	 *
 	 * @param User $user
 	 * @param ReferenceLetters $reflettersobject
@@ -526,9 +532,9 @@ class FormReferenceLetters extends Form
 
     /**
      *
-     *
-     * @param User $user
-     * @param CommonObject $object
+     * @param User             $user             User
+     * @param ReferenceLetters $reflettersobject Ref letters object
+     * @return string
      */
 	public function getSubstitutionKeyTable(User $user, ReferenceLetters $reflettersobject): string
 	{
@@ -729,7 +735,7 @@ class FormReferenceLetters extends Form
 		elseif (strpos($chapter->content_text,'@pdfdoc')===0) {
 			$documentModel=str_replace('@','',str_replace('pdfdoc_','',$chapter->content_text));
 			$out = '<div class="sortable sortabledisable docedit_pdfmodel"  data-sortable-chapter="'.$chapter->id.'" >';
-			$out .= img_pdf($langs->trans('RefLtrPDFDoc')) . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
+			$out .= img_picto('', 'pdf') . $langs->trans('RefLtrPDFDoc').' ('.$documentModel.')';
 			if ($mode == 'view') {
 				$out .= '<a href="' . dol_buildpath('/referenceletters/referenceletters/chapter.php', 1) . '?id=' . $chapter->id . '&action=delete'.$urlToken.'">' . img_picto($langs->trans('Delete'), 'delete') . '</a>';
 			}

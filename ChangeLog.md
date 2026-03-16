@@ -3,6 +3,28 @@ All notable changes to this project will be documented in this file.
 
 ### UNRELEASED
 
+## Release 2.23 
+- FIX : Missing Extrafield agefodd - *06/01/2026* - 2.23.17
+- FIX : COMPAT V23 - *06/01/2026* - 2.23.16
+- FIX : Default doc select - *15/09/2025* - 2.23.15
+- FIX : COMPAT V22 - *15/07/2025* - 2.23.14
+- FIX : Line substituion, delete instance of - *14/08/2025* - 2.23.13
+- FIX : substitution variable for trainee line - *08/08/2025* - 2.23.12
+- FIX : remove warning  - *21/07/2025* - 2.23.11
+  +  fix objvar substitution variable
+  +  fix line_objpeda substitution variable
+- FIX : remove warning  - *06/06/2025* - 2.23.10  
+- FIX : warning generation - *27/05/2025* - 2.23.9  
+- FIX : DA026076 Pre-selected model for document - *21/02/2025* - 2.23.8
+- FIX : DA026043 Fatal à la génération d'une convocation - *04/02/2025* - 2.23.7
+- FIX : Compat 21 - *10/12/2024* - 2.23.6
+- FIX : DA025643 - Chargement des extrafields pour les stagaires - *24/10/2024* - 2.23.5
+- FIX : Prise de en compte de la conf de backgroundcolor soustotal - *19/09/2024* - 2.23.4
+- FIX : Affichage des extrafields de lignes dans la liste des tags - *19/09/2024* - 2.23.3
+- FIX : Beaucoup de warning - *18/09/2024* - 2.23.2
+- FIX : Gestion des extrafields : vérification si l'objet n'a pas table_element a null et si cet élément possède des attributs de type "label"  - *17/09/2024* - 2.23.1
+- NEW : Gestion des extrafields de commande fournisseurs  - *29/08/2024* - 2.23.0  
+
 ## Release 2.22 - 07/08/2024
 - NEW : Compat V20 et php 8.2 - *26/07/2024* - 2.22.0
 

@@ -196,7 +196,7 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 	// We need to instantiate tcpdi or fpdi object (instead of tcpdf) to use merging features. But we can disable it (this will break all merge features).
 	/*if (empty($conf->global->MAIN_DISABLE_TCPDI))
 		require_once TCPDI_PATH . 'tcpdi.php';
-	else if (empty($conf->global->MAIN_DISABLE_FPDI))
+	else if (empty(getDolGlobalString('MAIN_DISABLE_FPDI')))
 		require_once FPDI_PATH . 'fpdi.php';*/
 
 	// $arrayformat=pdf_getFormat();
@@ -204,7 +204,7 @@ function pdf_getInstance_refletters($object, $instance_letter, &$model, $format 
 	// $metric=$arrayformat['unit'];
 
 	// Protection and encryption of pdf
-	/*if (empty($conf->global->MAIN_USE_FPDF) && ! empty($conf->global->PDF_SECURITY_ENCRYPTION))
+	/*if (empty(getDolGlobalString('MAIN_USE_FPDF')) && ! empty($conf->global->PDF_SECURITY_ENCRYPTION))
 	 {
 	 // Permission supported by TCPDF
 	 // - print : Print the document;

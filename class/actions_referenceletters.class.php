@@ -34,7 +34,7 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 {
 	/**
 	 *
-	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
+	 * @var array Hook results. Propagated to $this->results for later reuse
 	 */
 	public $results = array ();
 
@@ -247,10 +247,86 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				}
 			}
 
+			if ($action === 'create') {
+				// Determine the element type to use based on the condition
+				$elementType = ($object->element !== 'order_supplier') ? $object->element : $object->table_element;
+                if($elementType == 'facture') $elementType = 'invoice';
+
+				// Include the necessary file and instantiate the Referenceletters object
+				require_once __DIR__.'/referenceletters.class.php';
+				$referenceLetters = new Referenceletters($db);
+
+				// Fetch all reference letters
+				$fetchResult = $referenceLetters->fetch_all('ASC', 't.rowid', 0, 0, ['t.element_type' => $elementType, 't.status' => ReferenceLetters::STATUS_VALIDATED]);
+				// If an error occurs, display an error message
+				if ($fetchResult < 0) {
+					setEventMessages(null, $referenceLetters->errors, 'errors');
+				} else {
+					// Prepare model data from fetched reference lines
+					$modelsData = self::prepareModelsData($referenceLetters->lines);
+
+					// Generate the JavaScript for adding options and selection
+					echo self::generateModelSelectionScript($modelsData);
+				}
+			}
 		}
 
 		return 0;
 
+	}
+
+
+	/**
+	 * Prepares the model data from the fetched reference lines.
+	 *
+	 * @param array|null $referenceLines The lines fetched from the Referenceletters object.
+	 * @return array An array of model data containing 'id', 'title', and 'default_doc'.
+	 */
+	static function prepareModelsData(?array $referenceLines): array {
+		return array_map(function($line) {
+			return [
+				'id' => $line->id,
+				'title' => $line->title,
+				'default_doc' => $line->default_doc,
+			];
+		}, $referenceLines ?? []);
+	}
+
+	/**
+	 * Generates the JavaScript for adding options to the select element and selecting a model.
+	 *
+	 * @param array $modelsData The data of the models to be added to the select.
+	 * @return string The generated JavaScript as a string.
+	 */
+	static function generateModelSelectionScript(array $modelsData): string {
+		ob_start(); // Start capturing the output
+
+		?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let selectElement = document.getElementById("model");
+                let selectedModelId = null;
+
+				<?php foreach ($modelsData as $model) { ?>
+                let option = new Option('<?php echo addslashes($model['title']); ?>', 'rfltr_<?php echo $model['id']; ?>', false);
+                    selectElement.appendChild(option);
+
+                    <?php if (!empty($model['default_doc'])) { ?>
+                        selectedModelId = "<?php echo $model['id']; ?>";
+                    <?php } ?>
+				<?php } ?>
+
+                // If a default model is found, select it
+                if (selectedModelId) {
+                    selectElement.value = 'rfltr_' + selectedModelId;
+                    let changeEvent = new Event('change');
+                    selectElement.dispatchEvent(changeEvent);
+                }
+            });
+        </script>
+		<?php
+
+		return ob_get_clean(); // Return the captured output
 	}
 
 
@@ -425,12 +501,12 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 		$object_refletters = new Referenceletters($db);
 		$result = $object_refletters->fetch_all('ASC', 't.rowid', 0, 0, array('t.element_type'=>$element,'t.status'=>1));
 
-		if ($result<0) {
+		if ($result < 0) {
 			setEventMessages(null,$object_refletters->errors,'errors');
 		} else {
 			if (is_array($object_refletters->lines) && count($object_refletters->lines)>0) {
 				foreach($object_refletters->lines as $line) {
-					$TModelsID[] = array('id'=>$line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
+					$TModelsID[] = array('id' => $line->id, 'title'=>$line->title, 'default_doc'=>$line->default_doc);
 				}
 			}
 		}
@@ -449,7 +525,6 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 				{
 					modelgeneric[0].remove();
 				}
-
 				<?php
 
 
@@ -465,7 +540,10 @@ class ActionsReferenceLetters extends \referenceletters\RetroCompatCommonHookAct
 			    if (strpos($object->model_pdf, 'rfltr') !== false){
 					$object_refletters->lines = array();
 					$object_refletters->fetch_all('', '', 0, 0, array('t.default_doc'=>1));
-					$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+					// si null warning qui fait péter le js pour ajouter les modéles à la liste
+					if (!empty($object_refletters->lines)) {
+						$id_rfltr = $object_refletters->lines[key($object_refletters->lines)]->id;
+					}
 					if(empty($object->array_options['options_rfltr_model_id'])) {
 						// Si modele jamais généré avec un docedit déjà existant
 						// Alors on voit s'il y a un document docedit apr défaut

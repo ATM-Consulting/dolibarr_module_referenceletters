@@ -34,6 +34,8 @@ require_once __DIR__ . '/catalog/substitutioncatalogpresentationbuilder.class.ph
  */
 class ReferenceLetters extends CommonObject
 {
+	const TRIGGER_PREFIX = 'REFERENCELETTERS_';
+
 	public $db; // !< To store db handler
 	public $error; // !< To return error code (or message)
 	public $errors = array (); // !< To return several error codes (or messages)
@@ -165,7 +167,7 @@ class ReferenceLetters extends CommonObject
 		}
 		$this->element_type_list['contact'] = array (
 				'class' => 'contact.class.php',
-				'securityclass' => (DOL_VERSION >=8)?'contact':'societe',
+				'securityclass' => 'contact',
 				'securityfeature' => 'socpeople&societe',
 				'objectclass' => 'Contact',
 				'classpath' => DOL_DOCUMENT_ROOT . '/contact/class/',
@@ -197,7 +199,7 @@ class ReferenceLetters extends CommonObject
 		);
 		}
 
-		if (isModEnabled('invoice') ){
+		if (isModEnabled('facture') ){
 			$this->element_type_list['invoice'] = array (
 				'class' => 'facture.class.php',
 				'securityclass' => 'facture',
@@ -216,8 +218,8 @@ class ReferenceLetters extends CommonObject
                 'document_dir' => $conf->invoice->dir_output
 		);
 		}
-		if (isModEnabled('order') ){
-
+		//jusqu'en v19 il faut conserver commande
+		if (isModEnabled('commande') ){
 			$this->element_type_list['order'] = array (
 					'class' => 'commande.class.php',
 					'securityclass' => 'commande',
@@ -482,7 +484,7 @@ class ReferenceLetters extends CommonObject
 			// Put here code to add control on parameters values
 
 		// Insert request
-		$sql = "INSERT INTO " . MAIN_DB_PREFIX . "referenceletters(";
+		$sql = "INSERT INTO " . $this->db->prefix() . "referenceletters(";
 
 		$sql .= "entity,";
 		$sql .= "title,";
@@ -525,7 +527,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error) {
-			$this->id = $this->db->last_insert_id(MAIN_DB_PREFIX . "referenceletters");
+			$this->id = $this->db->last_insert_id($this->db->prefix() . "referenceletters");
 
 			if (! $notrigger) {
 				// Uncomment this and change MYOBJECT to your own tag if you
@@ -595,7 +597,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.footer,";
 		$sql .= " t.use_landscape_format";
 
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
+		$sql .= " FROM " . $this->db->prefix() . "referenceletters as t";
 		$sql .= " WHERE 1 ";
 		if(!empty($id)) $sql .= " AND t.rowid = " . $id;
 		if(!empty($title)) $sql .= " AND t.title = '".$this->db->escape($title)."'";
@@ -669,7 +671,7 @@ class ReferenceLetters extends CommonObject
 		$sql .= " t.fk_user_mod,";
 		$sql .= " t.tms";
 
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as t";
+		$sql .= " FROM " . $this->db->prefix() . "referenceletters as t";
 
 		$sql .= " WHERE t.entity IN (" . getEntity('referenceletters') . ")";
 
@@ -1403,7 +1405,7 @@ class ReferenceLetters extends CommonObject
 			// Put here code to add a control on parameters values
 
 		// Update request
-		$sql = "UPDATE " . MAIN_DB_PREFIX . "referenceletters SET";
+		$sql = "UPDATE " . $this->db->prefix() . "referenceletters SET";
 
 		$sql .= " title=" . (isset($this->title) ? "'" . $this->db->escape($this->title) . "'" : "null") . ",";
 		$sql .= " element_type=" . (isset($this->element_type) ? "'" . $this->db->escape($this->element_type) . "'" : "null") . ",";
@@ -1499,7 +1501,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error && $forceDeleteElements) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
+			$sql = "DELETE FROM " . $this->db->prefix() . "referenceletters_elements";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
 			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
@@ -1511,7 +1513,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_chapters";
+			$sql = "DELETE FROM " . $this->db->prefix() . "referenceletters_chapters";
 			$sql .= " WHERE fk_referenceletters=" . $this->id;
 
 			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
@@ -1523,7 +1525,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters";
+			$sql = "DELETE FROM " . $this->db->prefix() . "referenceletters";
 			$sql .= " WHERE rowid=" . $this->id;
 
 			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
@@ -1535,7 +1537,7 @@ class ReferenceLetters extends CommonObject
 		}
 
 		if (! $error) {
-			$sql = "DELETE FROM " . MAIN_DB_PREFIX . "referenceletters_extrafields";
+			$sql = "DELETE FROM " . $this->db->prefix() . "referenceletters_extrafields";
 			$sql .= " WHERE fk_object=" . $this->id;
 
 			dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);
@@ -1665,7 +1667,7 @@ class ReferenceLetters extends CommonObject
 
 		$sql = "SELECT";
 		$sql .= " p.rowid, p.datec, p.tms, p.fk_user_mod, p.fk_user_author";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters as p";
+		$sql .= " FROM " . $this->db->prefix() . "referenceletters as p";
 		$sql .= " WHERE p.rowid = " . $id;
 
 		dol_syslog(get_class($this) . "::".__METHOD__, LOG_DEBUG);

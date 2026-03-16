@@ -169,7 +169,7 @@ class pdf_rfltr_order_supplier extends ModelePDFReferenceLetters
 		$posy += 1;
 		$this->pdf->SetFont('', '', $default_font_size - 1);
 
-		if ($object->ref_client) {
+		if (isset($object->ref_client)) {
 			$posy += 5;
 			$this->pdf->SetXY($posx, $posy);
 			$this->pdf->SetTextColor(0, 0, 60);

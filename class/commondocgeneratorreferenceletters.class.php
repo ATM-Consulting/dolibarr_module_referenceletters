@@ -306,6 +306,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 *
 	 * {@inheritdoc}
+	 * @param CommonObject $object Object
+	 * @param Translate $outputlangs Output langs
+	 * @param string $array_key Array key
 	 * @see CommonDocGenerator::get_substitutionarray_object()
 	 */
 	public function get_substitutionarray_object($object, $outputlangs, $array_key = 'object'): array
@@ -466,6 +469,8 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 *
 	 * {@inheritdoc}
+	 * @param Translate $outputlangs Output langs
+	 * @param CommonObject|string $object Object
 	 * @see CommonDocGenerator::get_substitutionarray_other()
 	 */
 	public function get_substitutionarray_other($outputlangs, $object = ''): array {
@@ -619,9 +624,12 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 						$tvaligne = $line->total_tva;
 				}
 
-				if (!empty($object->remise_percent))
+				if (isset($object->remise_percent) && !empty($object->remise_percent)) {
 					$tvaligne -= ($tvaligne * $object->remise_percent) / 100;
-				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])) $TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				}
+				if(empty($TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'])){
+					$TTva[$langs->trans('TotalVAT'). ' ' . round($vatrate, 2) . '%'] = 0;
+				}
 				$TTva[$langs->trans('TotalVAT'). " " . round($vatrate, 2) . '%'] += $tvaligne;
 			}
 			}
@@ -688,8 +696,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 		$sql .= " cp.code";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf, " . MAIN_DB_PREFIX . "paiement as p";
 		$sql .= " LEFT JOIN " . MAIN_DB_PREFIX . "c_paiement as cp ON p.fk_paiement = cp.id ";
-		if (( float ) DOL_VERSION > 6)
-			$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity exists from 7.0 onward.
+		$sql .= " AND cp.entity = " . getEntity('c_paiement'); // cp.entity apparaît en 7.0
 		$sql .= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = " . $object->id;
 		$sql .= " ORDER BY p.datep";
 
@@ -730,8 +737,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 
 	/**
 	 *
-	 * @param stdClass $object Object
+	 * @param CommonObject $line Line
 	 * @param Translate $outputlangs Translate Instance
+	 * @param int $linenumber Line number
 	 * @return number|array[]|number[][]
 	 */
 	public function get_substitutionarray_lines($line, $outputlangs, $linenumber = 0): array
@@ -771,8 +779,9 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 	/**
 	 * Define array with couple substitution key => substitution value
 	 *
-	 * @param array $line Array of lines
+	 * @param Object $line Array of lines
 	 * @param Translate $outputlangs Lang object to use for output
+	 * @param bool $fetchoptionnals Fetch optionals
 	 * @return array Return a substitution array
 	 */
 	public function get_substitutionarray_lines_agefodd($line, $outputlangs, $fetchoptionnals = true): array {
@@ -1511,7 +1520,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 							$array_other['object_array_options_options_' . $key_opt] = ''; // backward compatibility
 							// Note: this check is intentionally stricter than isset().
 							if (is_array($object->array_options) && count($object->array_options) > 0 && array_key_exists('options_' . $key_opt, $object->array_options)) {
-								$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_' . $key_opt]);
+								$val = $this->showOutputFieldValue($extrafields, $key_opt, $object->array_options['options_' . $key_opt], '', $object->table_element);
 								$array_other['object_options_' . $key_opt] = $val;
 								$array_other['object_array_options_options_' . $key_opt] = $val;
 							}
@@ -1556,8 +1565,6 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					if (is_callable($methodVariable, false, $callable_name)){
 						if (method_exists($object, 'referenceletter_showPublicOutputField')) {
 							$value = $object->referenceletter_showPublicOutputField($key, $value);
-						}else{
-							$value  = '';
 						}
 					}
 
@@ -1671,12 +1678,7 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 				$list=$attributeSource['list'][$key] ?? 0;
 				$ishidden=$attributeSource['hidden'][$key] ?? 0;
 
-			if( (float) DOL_VERSION < 7 ){
-			    $hidden= ($ishidden == 0 ?  1 : 0);
-			}
-			else{
-			    $hidden=((string) $list === '0' ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
-			}
+			$hidden=(($list == 0)  ? 1 : 0);		// If zero, we are sure it is hidden, otherwise we show. If it depends on mode (view/create/edit form or list, this must be filtered by caller)
 		}
 		if ($hidden) return '';		// This is a protection. If field is hidden, we should just not call this method.
 
@@ -1794,15 +1796,20 @@ class CommonDocGeneratorReferenceLetters extends CommonDocGenerator
 					}
 				}
 				else
-				{
-					$translabel='';
-					if (!empty($obj->{$InfoFieldList[1]})) {
-						$translabel=$langs->trans($obj->{$InfoFieldList[1]});
-					}
-					if ($translabel!=$obj->{$InfoFieldList[1]}) {
-						$value=dol_trunc($translabel,18);
-					}else {
-						$value=$obj->{$InfoFieldList[1]};
+				{// Add a check to ensure $obj is a valid object
+					if (is_object($obj)) {
+						$translabel = '';
+						$property_name = $InfoFieldList[1]; // Get the property name for clarity
+
+						if (!empty($obj->{$property_name})) {
+							$translabel = $langs->trans($obj->{$property_name});
+						}
+
+						if ($translabel != $obj->{$property_name}) {
+							$value = dol_trunc($translabel, 18);
+						} else {
+							$value = $obj->{$property_name};
+						}
 					}
 				}
 			}

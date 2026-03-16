@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * Copyright (C) 2014 Florian HENRY <florian.henry@open-concept.pro>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -66,10 +66,10 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 	function canBeActivated()
 	{
 		global $conf, $langs;
-		
+
 		$coyymm = '';
 		$max = '';
-		
+
 		$posindice = 8;
 		$sql = "SELECT MAX(SUBSTRING(ref_int FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
@@ -105,22 +105,22 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 	function getNextValue($fk_user, $element_type, $objsoc, $referenceletters_element)
 	{
 		global $db, $conf;
-		
+
 		if (!empty($element_type)) {
 			$this->prefix .= mb_strtoupper(substr($element_type,0,3)).'-';
 			$posindice = 12 + strlen(mb_strtoupper(substr($element_type,0,3)))+1;
 		} else {
 			$posindice = 12;
 		}
-		
+
 		// D'abord on recupere la valeur max
-		
+
 		$sql = "SELECT MAX(SUBSTRING(ref_int FROM " . $posindice . ")) as max";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "referenceletters_elements";
 		$sql .= " WHERE ref_int like '" . $this->prefix . "____-%'";
 		$sql .= " AND element_type='".$element_type."'";
 		$sql.= " AND entity = ".$conf->entity;
-		
+
 		dol_syslog(get_class($this).'::getNextValue sql='.$sql,LOG_DEBUG);
 		$resql = $db->query($sql);
 		if ($resql) {
@@ -133,13 +133,13 @@ class mod_referenceletters_simple extends ModeleNumRefrReferenceLetters
 			dol_syslog("mod_referenceletters_simple::getNextValue sql=" . $sql);
 			return - 1;
 		}
-		
+
 		$date = empty($referenceletters_element->datec) ? dol_now() : $referenceletters_element->datec;
-		
+
 		// $yymm = strftime("%y%m",time());
 		$yymm = strftime("%y%m", $date);
 		$num = sprintf("%04s", $max + 1);
-		
+
 		dol_syslog("mod_referenceletters_simple::getNextValue return " . $this->prefix . $yymm . "-" . $num);
 		return $this->prefix . $yymm . "-" . $num;
 	}

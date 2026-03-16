@@ -1,4 +1,19 @@
 <?php
+/* Copyright (C) 2025 ATM Consulting
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 if (is_file('../main.inc.php'))
 	$dir = '../';
 else if (is_file('../../../main.inc.php'))
@@ -1346,7 +1361,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	
+
 	$rfltr->tms = dol_now();
 	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>
@@ -1649,7 +1664,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	
+
 	$rfltr->tms = dol_now();
 	$rfltr->header = '&nbsp;<br />
 &nbsp;<br />
@@ -1897,7 +1912,7 @@ if ($result == 0) {
 	$rfltr->status = 0;
 	$rfltr->fk_user_author = $user->id;
 	$rfltr->datec = dol_now();
-	
+
 	$rfltr->tms = dol_now();
 	$rfltr->header = '<table border="0" cellpadding="1" cellspacing="1" style="width:500px">
 	<tbody>

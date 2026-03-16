@@ -78,10 +78,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		dol_include_once('/referenceletters/class/referenceletters.class.php');
 
 		// Backward-compatible fallback for formation-driven templates (Ticket #DA020165).
-
-			$object_refletter = new Referenceletters($db);
-			$object_refletter->fetch($id_model);
-			$fk_training = (int) $fk_training;
+		$object_refletter = new Referenceletters($db);
+		$object_refletter->fetch($id_model);
+		$fk_training = (int) $fk_training;
 		if ($object_refletter->element_type == 'rfltr_agefodd_fiche_pedago' || $object_refletter->element_type == 'rfltr_agefodd_fiche_pedago_modules') {
 			dol_include_once('/agefodd/class/agefodd_formation_catalogue.class.php');
 			dol_include_once('/agefodd/class/agsession.class.php');
@@ -100,9 +99,9 @@ class pdf_rfltr_agefodd extends ModelePDFReferenceLetters
 		}
 
 		// Load the selected referenceletters model.
-			$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
-	        $instance_letter = $tmpTab[0];
-	        $object = $tmpTab[1];
+		$tmpTab = RfltrTools::load_object_refletter($id_object, $id_model, $obj_agefodd_convention, $socid, $outputlangs->defaultlang, $fk_training);
+		$instance_letter = $tmpTab[0];
+		$object = $tmpTab[1];
 
 		if ($fk_step > 0 && is_object($object)) {
 			// Preserve stepped Agefodd generation context for substitution runtime.

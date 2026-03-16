@@ -104,21 +104,21 @@ class ReferenceLettersChapters extends CommonObject
 
 		// Check parameters
 		// Put here code to add a control on parameters values
-	        if (is_array($this->options_text) && count($this->options_text)>0) {
-	        	//Remove empty values
-	        	foreach($this->options_text as $key=>$option) {
-					if (empty($option)) unset($this->options_text[$key]);
-				}
-	        	$option_text=serialize($this->options_text);
-	        } else {
-	        	$option_text=is_string($this->options_text) ? trim($this->options_text) : '';
-	        }
+		if (is_array($this->options_text) && count($this->options_text)>0) {
+			//Remove empty values
+			foreach($this->options_text as $key=>$option) {
+				if (empty($option)) unset($this->options_text[$key]);
+			}
+			$option_text=serialize($this->options_text);
+		} else {
+			$option_text=is_string($this->options_text) ? trim($this->options_text) : '';
+		}
 
-        if (empty($this->lang)) {
-        	$this->lang=$langs->defaultlang;
-        }
+		if (empty($this->lang)) {
+			$this->lang=$langs->defaultlang;
+		}
 
-        // Insert request
+		// Insert request
 		$sql = "INSERT INTO ".MAIN_DB_PREFIX."referenceletters_chapters(";
 
 		$sql.= "entity,";
@@ -135,7 +135,7 @@ class ReferenceLettersChapters extends CommonObject
 		$sql.= "fk_user_author,";
 		$sql.= "datec,";
 		$sql.= "fk_user_mod";
-        $sql.= ") VALUES (";
+		$sql.= ") VALUES (";
 		$sql.= " ".$conf->entity.",";
 		$sql.= " ".(! isset($this->fk_referenceletters)?'NULL':"'".$this->fk_referenceletters."'").",";
 		$sql.= " ".(empty($this->lang)?'':"'".$this->db->escape($this->lang)."'").",";
